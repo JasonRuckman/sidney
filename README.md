@@ -1,7 +1,9 @@
 sidney
 ======
 
-An experimental serializer using Dremel encoding, state of the art encoding techniques and code generation
+Sidney is an experimental serializer using Dremel encoding, state of the art encoding techniques and code generation. 
+
+It's named after my dog Sid.
 
 Currently a WIP, not usable at all to anyone. 
 
