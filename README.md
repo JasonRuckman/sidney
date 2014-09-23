@@ -13,3 +13,5 @@ Planned features:
 * Code generation on hot paths to avoid megamorphic call sites (if benchmarking shows that it actually does anything)
 
 Not intended for any sort of long term storage, its main use case is in something like Apache Spark for RDD serialization.
+
+Currently working on boolean and int32 encoding, the other types have placeholder classes right now. 
