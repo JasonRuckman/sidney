@@ -1,13 +1,15 @@
 package org.sidney.encoding.int32;
 
 import org.sidney.core.Bytes;
+import parquet.column.values.bitpacking.BytePacker;
+import parquet.column.values.bitpacking.Packer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class DeltaInt32Encoder implements Int32Encoder {
     public static final int DEFAULT_BLOCK_SIZE = 128;
-    private final byte[] miniBlockBuffer = new byte[256];
+    private final byte[] miniBlockBuffer = new byte[2048];
     private int[][] miniBlocks;
     private int firstValue = 0;
     private int prevValue = 0;
@@ -74,28 +76,54 @@ public class DeltaInt32Encoder implements Int32Encoder {
 
     @Override
     public void reset() {
+        firstValue = 0;
+        prevValue = 0;
         numDeltasInMiniBlock = 0;
         currentMiniBlockIndex = 0;
+        deltasIndex = 0;
+        totalValueCount = 0;
     }
 
     @Override
     public int writeToBuffer(byte[] buffer, int offset) {
         //write header, then write each of the mini blocks
         int newOffset = writeHeader(buffer, offset);
-        return 0;
+
+        for (int i = 0; i < numMiniBlocks; i++) {
+            int firstValue = firstValues[i];
+            Bytes.writeIntOn4Bytes(firstValue, buffer, newOffset);
+            newOffset += 4;
+            int length = writeMiniBlock(i);
+            //length is bitWidth * 4, if we store this, we divide by 4 on read to get the bitwidth to unpack on
+            Bytes.writeIntOn4Bytes(length, buffer, newOffset);
+            newOffset += 4;
+            System.arraycopy(miniBlockBuffer, 0, buffer, newOffset, length);
+            newOffset += length;
+        }
+
+        return newOffset;
     }
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         outputStream.write(totalValueCount);
         outputStream.write(numMiniBlocks);
+
+        for (int i = 0; i < numMiniBlocks; i++) {
+            int firstValue = firstValues[i];
+            outputStream.write(firstValue);
+            int length = writeMiniBlock(i);
+            //length is bitWidth * 4, if we store this, we divide by 4 on read to get the bitwidth to unpack on
+            outputStream.write(length);
+            outputStream.write(miniBlockBuffer, 0, length);
+        }
     }
 
     private int writeHeader(byte[] buffer, int offset) {
         Bytes.writeIntOn4Bytes(totalValueCount, buffer, offset);
         Bytes.writeIntOn4Bytes(numMiniBlocks, buffer, offset + 4);
 
-        return 0;
+        return offset + 8;
     }
 
     private void ensureMiniBlockCapacity() {
@@ -110,39 +138,44 @@ public class DeltaInt32Encoder implements Int32Encoder {
             //also copy our first values
             int[] newFirstBuf = new int[miniBlocks.length];
             System.arraycopy(firstValues, 0, newFirstBuf, 0, newFirstBuf.length);
+
             firstValues = newFirstBuf;
         }
     }
 
     private int getBitWidth(int value) {
-        int numZeros = Integer.numberOfLeadingZeros(value);
-        return 32 - numZeros;
+        return 32 - Integer.numberOfLeadingZeros(value);
     }
 
-    private void flushDeltaBuffer() {
-        /*int maxWidth = Integer.MIN_VALUE;
-
-        for (int i = 0; i < numDeltas; i++) {
-            int positiveDelta = currentDeltas[i] - minDelta;
-            maxWidth = Math.max(maxWidth, getBitWidth(positiveDelta));
-            currentDeltas[i] = currentDeltas[i] - minDelta;
+    private int writeMiniBlock(int index) {
+        int[] miniBlock = miniBlocks[index];
+        int length = miniBlock.length;
+        if (index == numMiniBlocks - 1) {
+            //we are the last miniblock, so don't use the array length
+            length = numDeltasInMiniBlock;
         }
 
-        require((numDeltas * 4) + 4);
-
-        Bytes.writeIntOn4Bytes(minDelta, buffer, 0);
-
-        position += 4;
-
-        BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(maxWidth);
-
-        for(int i = 0; i < numDeltas; i += 8) {
-            packer.pack8Values(currentDeltas, i, miniBlockBuffer, 0);
-            System.arraycopy(miniBlockBuffer, 0, buffer, position, maxWidth);
-            position += maxWidth;
+        int maxBitWidth = Integer.MIN_VALUE;
+        int minDelta = Integer.MAX_VALUE;
+        //go through twice, once to calculate min-delta, then again to align new values to min delta and compute bit-widths
+        for (int i = 0; i < length; i++) {
+            minDelta = Math.min(minDelta, miniBlock[i]);
         }
 
-        numDeltas = 0;
-        minDelta = Integer.MAX_VALUE;*/
+        //adjust deltas, calculate bit-widths
+        for(int i = 0; i < length; i++) {
+            int adjustedDelta = miniBlock[i] - minDelta;
+
+            miniBlock[i] = adjustedDelta;
+            maxBitWidth = Math.max(maxBitWidth, getBitWidth(adjustedDelta));
+        }
+
+        BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(maxBitWidth);
+        //now, walk through the miniblock and back into buffer
+        for (int i = 0; i < length; i += 32) {
+            packer.pack32Values(miniBlock, 0, miniBlockBuffer, 0);
+        }
+
+        return maxBitWidth * 4;
     }
 }

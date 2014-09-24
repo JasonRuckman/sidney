@@ -29,7 +29,7 @@ public class IntEncoderBenchmarks {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = random.nextInt(1000000);
+            ints[i] = random.nextInt(10000);
         }
     }
 

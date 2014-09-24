@@ -47,6 +47,7 @@ public class FastPFORInt32Encoder implements Int32Encoder {
 
         Bytes.writeIntOn4Bytes(currentIndex, buffer, offset);
         Bytes.writeIntOn4Bytes(destinationWrapper.get(), buffer, 4);
+
         copyToBuffer(buffer, 0, offset + 8, destinationWrapper.get());
 
         return offset + 8;

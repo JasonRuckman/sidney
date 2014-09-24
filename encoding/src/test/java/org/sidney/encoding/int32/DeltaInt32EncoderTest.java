@@ -15,7 +15,7 @@ public class DeltaInt32EncoderTest {
             arr[i] = random.nextInt(500);
             encoder.writeInt(arr[i]);
         }
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[65536];
         encoder.writeToBuffer(buffer, 0);
     }
 }
