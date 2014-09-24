@@ -5,6 +5,7 @@ import com.esotericsoftware.kryo.io.KryoDataInput;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,16 +34,6 @@ public class EWAHBoolDecoder implements BoolDecoder {
             booleans[i] = nextBool();
         }
         return booleans;
-    }
-
-    @Override
-    public void readFromBuffer(byte[] buffer) {
-        Input input = new Input(buffer);
-        try {
-            readBitmap(input);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

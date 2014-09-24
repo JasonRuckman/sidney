@@ -34,12 +34,6 @@ public class BitPackingBoolDecoder implements BoolDecoder {
     }
 
     @Override
-    public void readFromBuffer(byte[] buffer) {
-        currentInput = new Input(buffer);
-        init();
-    }
-
-    @Override
     public void readFromStream(InputStream inputStream) {
         currentInput = new Input(inputStream);
         init();

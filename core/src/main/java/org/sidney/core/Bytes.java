@@ -1,5 +1,7 @@
 package org.sidney.core;
 
+import java.io.ByteArrayInputStream;
+
 public class Bytes {
     public static void writeIntOn4Bytes(int value, byte[] bytes, int offset) {
         bytes[offset + 3] = (byte) (value >>> 24);
@@ -47,5 +49,9 @@ public class Bytes {
 
     public static byte bitAt(byte b, int position) {
         return (byte) (b >> position & 1);
+    }
+
+    public static ByteArrayInputStream wrap(byte[] bytes) {
+        return new ByteArrayInputStream(bytes);
     }
 }

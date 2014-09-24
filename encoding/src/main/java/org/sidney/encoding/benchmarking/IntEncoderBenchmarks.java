@@ -6,11 +6,13 @@ import org.openjdk.jmh.annotations.Group;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.sidney.core.Bytes;
 import org.sidney.encoding.int32.FastPFORInt32Decoder;
 import org.sidney.encoding.int32.FastPFORInt32Encoder;
 import org.sidney.encoding.int32.KryoInt32Decoder;
 import org.sidney.encoding.int32.KryoInt32Encoder;
 
+import java.io.IOException;
 import java.util.Random;
 
 @State(Scope.Group)
@@ -35,27 +37,27 @@ public class IntEncoderBenchmarks {
 
     @Benchmark
     @Group("intEncoders")
-    public int[] fastPforInt32Encoder() {
+    public int[] fastPforInt32Encoder() throws IOException {
         FastPFORInt32Encoder encoder = encoders.get();
         encoder.reset();
         byte[] buffer = buffers.get();
         encoder.writeInts(ints);
         encoder.writeToBuffer(buffer, 0);
         FastPFORInt32Decoder decoder = decoders.get();
-        decoder.readFromBuffer(buffer);
+        decoder.readFromStream(Bytes.wrap(buffer));
         return decoder.nextInts(num);
     }
 
     @Benchmark
     @Group("intEncoders")
-    public int[] kryoInt32Encoder() {
+    public int[] kryoInt32Encoder() throws IOException {
         KryoInt32Encoder encoder = kryoEncoders.get();
         encoder.reset();
         byte[] buffer = buffers.get();
         encoder.writeInts(ints);
         encoder.writeToBuffer(buffer, 0);
         KryoInt32Decoder decoder = kryoDecoders.get();
-        decoder.readFromBuffer(buffer);
+        decoder.readFromStream(Bytes.wrap(buffer));
         return decoder.nextInts(num);
     }
 }

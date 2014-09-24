@@ -2,12 +2,14 @@ package org.sidney.encoding.int32;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.sidney.core.Bytes;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class KryoInt32EncoderTest {
     @Test
-    public void testReadWrite() {
+    public void testReadWrite() throws IOException {
         int nums = 10000;
         KryoInt32Encoder encoder = new KryoInt32Encoder();
 
@@ -21,7 +23,7 @@ public class KryoInt32EncoderTest {
         byte[] buf = new byte[65536 + 4];
         encoder.writeToBuffer(buf, 0);
         KryoInt32Decoder decoder = new KryoInt32Decoder();
-        decoder.readFromBuffer(buf);
+        decoder.readFromStream(Bytes.wrap(buf));
 
         int[] other = decoder.nextInts(nums);
         Assert.assertArrayEquals(arr, other);

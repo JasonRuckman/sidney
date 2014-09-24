@@ -44,14 +44,6 @@ public class FastPFORInt32Decoder implements Int32Decoder {
     }
 
     @Override
-    public void readFromBuffer(byte[] buffer) {
-        int numInts = Bytes.bytesToInt(buffer, 0);
-        int compressedSize = Bytes.bytesToInt(buffer, 4);
-
-        unpack(numInts, compressedSize, buffer, 8);
-    }
-
-    @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         byte[] buf = new byte[4];
         inputStream.read(buf);
@@ -60,16 +52,18 @@ public class FastPFORInt32Decoder implements Int32Decoder {
         inputStream.read(buf);
 
         int compressedSize = Bytes.bytesToInt(buf, 0);
-        inputStream.read(sourceByteBuffer, 8, compressedSize * 4);
+        requireBytes(compressedSize * 4);
 
-        unpack(numInts, compressedSize, sourceByteBuffer, 0);
+        inputStream.read(sourceByteBuffer, 0, compressedSize * 4);
+
+        unpack(numInts, compressedSize);
     }
 
-    private void unpack(int numInts, int compressedSize, byte[] buffer, int offset) {
+    private void unpack(int numInts, int compressedSize) {
         require(Math.max(numInts, compressedSize * 8));
         reset();
 
-        UnsafeBytes.copyBytesToInts(buffer, offset, sourceBuffer, 0, compressedSize * 8);
+        UnsafeBytes.copyBytesToInts(sourceByteBuffer, 0, sourceBuffer, 0, compressedSize * 8);
 
         codec.uncompress(sourceBuffer, sourceWrapper, compressedSize, destinationBuffer, destinationWrapper);
     }
@@ -80,11 +74,16 @@ public class FastPFORInt32Decoder implements Int32Decoder {
         index = 0;
     }
 
+    private void requireBytes(int size) {
+        if(size > sourceByteBuffer.length) {
+            sourceByteBuffer = new byte[size * 2];
+        }
+    }
+
     private void require(int size) {
         if (size > sourceBuffer.length) {
             sourceBuffer = new int[size * 2];
             destinationBuffer = new int[size * 4];
-            require(size);
         }
     }
 }

@@ -2,12 +2,14 @@ package org.sidney.encoding.int32;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.sidney.core.Bytes;
 
+import java.io.IOException;
 import java.util.Random;
 
 public class FastPFORInt32EncoderTest {
     @Test
-    public void testReadWrite() {
+    public void testReadWrite() throws IOException {
         int nums = 10000;
         FastPFORInt32Encoder encoder = new FastPFORInt32Encoder();
 
@@ -21,7 +23,7 @@ public class FastPFORInt32EncoderTest {
         byte[] buf = new byte[(nums * 4) + 4];
         encoder.writeToBuffer(buf, 0);
         FastPFORInt32Decoder fastPfor = new FastPFORInt32Decoder();
-        fastPfor.readFromBuffer(buf);
+        fastPfor.readFromStream(Bytes.wrap(buf));
 
         int[] other = fastPfor.nextInts(nums);
         Assert.assertArrayEquals(arr, other);

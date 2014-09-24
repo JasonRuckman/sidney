@@ -6,11 +6,14 @@ import org.openjdk.jmh.annotations.Group;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.sidney.core.Bytes;
 import org.sidney.encoding.bool.BitPackingBoolDecoder;
 import org.sidney.encoding.bool.BitPackingBoolEncoder;
 import org.sidney.encoding.bool.EWAHBoolDecoder;
 import org.sidney.encoding.bool.EWAHBoolEncoder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Random;
 
 @State(Scope.Group)
@@ -40,7 +43,7 @@ public class BoolEncoderBenchmarks {
 
     @Benchmark
     @Group("boolEncoding")
-    public boolean[] ewahBoolEncoderOnRandomInputs() {
+    public boolean[] ewahBoolEncoderOnRandomInputs() throws IOException {
         byte[] bytes = byteArrs.get();
 
         EWAHBoolEncoder EWAHBoolEncoder = ewahBoolEncoders.get();
@@ -50,7 +53,7 @@ public class BoolEncoderBenchmarks {
         EWAHBoolEncoder.writeBools(booleans);
         EWAHBoolEncoder.writeToBuffer(bytes, 0);
 
-        EWAHBoolDecoder.readFromBuffer(bytes);
+        EWAHBoolDecoder.readFromStream(Bytes.wrap(bytes));
         return EWAHBoolDecoder.nextBools(num);
     }
 
@@ -64,7 +67,7 @@ public class BoolEncoderBenchmarks {
         packingBoolEncoder.writeBools(booleans);
         packingBoolEncoder.writeToBuffer(byteArrs.get(), 0);
 
-        packingBoolDecoder.readFromBuffer(byteArrs.get());
+        packingBoolDecoder.readFromStream(Bytes.wrap(byteArrs.get()));
         return packingBoolDecoder.nextBools(num);
     }
 }
