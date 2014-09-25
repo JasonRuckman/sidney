@@ -5,9 +5,9 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
-import org.sidney.core.Bytes;
 import org.sidney.core.unsafe.UnsafeBytes;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -45,25 +45,24 @@ public class FastPFORInt32Decoder implements Int32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        byte[] buf = new byte[4];
-        inputStream.read(buf);
+        DataInputStream dis = new DataInputStream(inputStream);
 
-        int numInts = Bytes.bytesToInt(buf, 0);
-        inputStream.read(buf);
+        int numInts = dis.readInt();
+        int compressedSize = dis.readInt();
 
-        int compressedSize = Bytes.bytesToInt(buf, 0);
         requireBytes(compressedSize * 4);
+        require(Math.max(numInts, compressedSize * 4));
 
-        inputStream.read(sourceByteBuffer, 0, compressedSize * 4);
+        dis.read(sourceByteBuffer, 0, compressedSize * 4);
 
         unpack(numInts, compressedSize);
     }
 
     private void unpack(int numInts, int compressedSize) {
-        require(Math.max(numInts, compressedSize * 8));
+        require(Math.max(numInts, compressedSize * 4));
         reset();
 
-        UnsafeBytes.copyBytesToInts(sourceByteBuffer, 0, sourceBuffer, 0, compressedSize * 8);
+        UnsafeBytes.copyBytesToInts(sourceByteBuffer, 0, sourceBuffer, 0, compressedSize * 4);
 
         codec.uncompress(sourceBuffer, sourceWrapper, compressedSize, destinationBuffer, destinationWrapper);
     }
@@ -75,7 +74,7 @@ public class FastPFORInt32Decoder implements Int32Decoder {
     }
 
     private void requireBytes(int size) {
-        if(size > sourceByteBuffer.length) {
+        if (size > sourceByteBuffer.length) {
             sourceByteBuffer = new byte[size * 2];
         }
     }
@@ -83,7 +82,7 @@ public class FastPFORInt32Decoder implements Int32Decoder {
     private void require(int size) {
         if (size > sourceBuffer.length) {
             sourceBuffer = new int[size * 2];
-            destinationBuffer = new int[size * 4];
+            destinationBuffer = new int[size * 2];
         }
     }
 }

@@ -5,13 +5,13 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
-import org.sidney.core.Bytes;
 import org.sidney.core.unsafe.UnsafeInts;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-//TODO: Fix this to work with more than 65536 ints at a time
+//TODO: Fix this to work with more than 65536 ints at a time, basically create pages that get compressed as we go, then flush them all together
 
 /**
  * Uses https://github.com/lemire/JavaFastPFOR to encode blocks of ints.
@@ -21,15 +21,15 @@ public class FastPFORInt32Encoder implements Int32Encoder {
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
     private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
-    private int[] sourceBuffer;
-    private int[] destinationBuffer;
-    private byte[] destinationByteBuffer;
+    private int[] uncompressedInts;
+    private int[] compressedInts;
+    private byte[] compressedBytes;
     private int currentIndex = 0;
 
     public FastPFORInt32Encoder() {
-        sourceBuffer = new int[256];
-        destinationBuffer = new int[512];
-        destinationByteBuffer = new byte[destinationBuffer.length * 4];
+        uncompressedInts = new int[256];
+        compressedInts = new int[512];
+        compressedBytes = new byte[compressedInts.length * 4];
 
         reset();
     }
@@ -42,41 +42,26 @@ public class FastPFORInt32Encoder implements Int32Encoder {
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        compressIntoDestinationBuffer();
-
-        Bytes.writeIntOn4Bytes(currentIndex, buffer, offset);
-        Bytes.writeIntOn4Bytes(destinationWrapper.get(), buffer, 4);
-
-        copyToBuffer(buffer, 0, offset + 8, destinationWrapper.get());
-
-        return offset + 8;
-    }
-
-    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
+        DataOutputStream dos = new DataOutputStream(outputStream);
         compressIntoDestinationBuffer();
 
-        outputStream.write(currentIndex);
-        outputStream.write(destinationWrapper.get());
+        dos.writeInt(currentIndex);
+        dos.writeInt(destinationWrapper.get());
 
         final int sizeInBytes = destinationWrapper.get() * 4;
         ensureDestinationByteBufferCapacity(sizeInBytes);
 
-        //two copies, but faster than looping through the int array and shifting out the values
-        copyToBuffer(destinationByteBuffer, 0, 0, destinationWrapper.get());
+        //two copies, but much faster than looping through the int array and shifting out the values
+        UnsafeInts.copyIntsToBytes(compressedInts, 0, compressedBytes, 0, sizeInBytes);
 
-        outputStream.write(destinationByteBuffer, 0, sizeInBytes);
-    }
-
-    private void copyToBuffer(byte[] buffer, int sourceOffset, int destinationOffset, int numInts) {
-        UnsafeInts.copyIntsToBytes(destinationBuffer, sourceOffset, buffer, destinationOffset, numInts * 4);
+        dos.write(compressedBytes, 0, sizeInBytes);
     }
 
     @Override
     public void writeInt(int value) {
         ensureSourceCapacity(currentIndex + 1);
-        sourceBuffer[currentIndex++] = value;
+        uncompressedInts[currentIndex++] = value;
     }
 
     @Override
@@ -87,30 +72,30 @@ public class FastPFORInt32Encoder implements Int32Encoder {
     }
 
     private void compressIntoDestinationBuffer() {
-        ensureDestinationCapacity(sourceBuffer.length * 4);
-        codec.compress(sourceBuffer, sourceWrapper, currentIndex, destinationBuffer, destinationWrapper);
+        ensureDestinationCapacity(uncompressedInts.length * 4);
+        codec.compress(uncompressedInts, sourceWrapper, currentIndex, compressedInts, destinationWrapper);
     }
 
     private void ensureSourceCapacity(int size) {
-        if (size >= sourceBuffer.length) {
+        if (size >= uncompressedInts.length) {
             int[] newBuf = new int[size * 2];
-            System.arraycopy(sourceBuffer, 0, newBuf, 0, sourceBuffer.length);
-            sourceBuffer = newBuf;
+            System.arraycopy(uncompressedInts, 0, newBuf, 0, uncompressedInts.length);
+            uncompressedInts = newBuf;
             ensureSourceCapacity(size);
         }
     }
 
     private void ensureDestinationCapacity(int size) {
-        if (size >= destinationBuffer.length) {
-            destinationBuffer = new int[destinationBuffer.length * 2];
+        if (size >= compressedInts.length) {
+            compressedInts = new int[compressedInts.length * 2];
             ensureDestinationCapacity(size);
         }
     }
 
     private void ensureDestinationByteBufferCapacity(int size) {
-        if (size >= destinationByteBuffer.length) {
-            destinationByteBuffer = new byte[destinationByteBuffer.length * 2];
-            ensureDestinationCapacity(size);
+        if (size >= compressedBytes.length) {
+            compressedBytes = new byte[compressedBytes.length * 2];
+            ensureDestinationByteBufferCapacity(size);
         }
     }
 }

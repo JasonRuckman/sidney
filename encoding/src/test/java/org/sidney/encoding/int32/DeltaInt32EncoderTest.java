@@ -1,8 +1,10 @@
 package org.sidney.encoding.int32;
 
 import org.junit.Test;
+import org.sidney.core.Bytes;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -17,9 +19,9 @@ public class DeltaInt32EncoderTest {
             arr[i] = random.nextInt(500);
             encoder.writeInt(arr[i]);
         }
-        byte[] buffer = new byte[65536];
-        encoder.writeToBuffer(buffer, 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encoder.writeToStream(baos);
         DeltaInt32Decoder decoder = new DeltaInt32Decoder();
-        decoder.readFromStream(new ByteArrayInputStream(buffer));
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
     }
 }

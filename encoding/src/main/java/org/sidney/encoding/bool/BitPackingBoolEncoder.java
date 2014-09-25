@@ -2,6 +2,7 @@ package org.sidney.encoding.bool;
 
 import com.esotericsoftware.kryo.io.Output;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -52,21 +53,10 @@ public class BitPackingBoolEncoder implements BoolEncoder {
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        Output output = new Output(buffer);
-        output.setPosition(offset);
-        output.writeInt(numBools);
-        output.write(buffer, 0, sizeInBytes());
-        output.close();
-
-        return output.position();
-    }
-
-    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        Output output = new Output(outputStream);
-        output.write(numBools);
-        output.write(buffer, 0, sizeInBytes());
+        DataOutputStream dos = new DataOutputStream(outputStream);
+        dos.writeInt(numBools);
+        dos.write(buffer, 0, sizeInBytes());
     }
 
     private int sizeInBytes() {

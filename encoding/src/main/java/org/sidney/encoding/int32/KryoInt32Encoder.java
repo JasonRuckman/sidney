@@ -1,12 +1,15 @@
 package org.sidney.encoding.int32;
 
 import com.esotericsoftware.kryo.io.Output;
+import com.google.common.io.ByteStreams;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class KryoInt32Encoder implements Int32Encoder {
-    private byte[] buffer = new byte[256];
-    private Output output = new Output(buffer, Integer.MAX_VALUE);
+    private Output output = new Output(256, 1024000);
 
     @Override
     public void writeInt(int value) {
@@ -22,18 +25,11 @@ public class KryoInt32Encoder implements Int32Encoder {
 
     @Override
     public void reset() {
-        output.setPosition(0);
+        output = new Output(256, 1024000);
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        System.arraycopy(output.getBuffer(), 0, buffer, offset, output.position());
-        return offset + output.position();
-    }
-
-    @Override
-    public void writeToStream(OutputStream outputStream) {
-        output.setOutputStream(outputStream);
-        output.write(buffer, 0, output.position());
+    public void writeToStream(OutputStream outputStream) throws IOException {
+        outputStream.write(output.getBuffer(), 0, output.position());
     }
 }

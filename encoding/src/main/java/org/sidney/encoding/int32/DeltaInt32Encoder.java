@@ -4,6 +4,7 @@ import org.sidney.core.Bytes;
 import parquet.column.values.bitpacking.BytePacker;
 import parquet.column.values.bitpacking.Packer;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -85,45 +86,20 @@ public class DeltaInt32Encoder implements Int32Encoder {
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        //write header, then write each of the mini blocks
-        int newOffset = writeHeader(buffer, offset);
-
-        for (int i = 0; i < numMiniBlocks; i++) {
-            int firstValue = firstValues[i];
-            Bytes.writeIntOn4Bytes(firstValue, buffer, newOffset);
-            newOffset += 4;
-            int length = writeMiniBlock(i);
-            //length is bitWidth * 4, if we store this, we divide by 4 on read to get the bitwidth to unpack on
-            Bytes.writeIntOn4Bytes(length, buffer, newOffset);
-            newOffset += 4;
-            System.arraycopy(miniBlockBuffer, 0, buffer, newOffset, length);
-            newOffset += length;
-        }
-
-        return newOffset;
-    }
-
-    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        outputStream.write(totalValueCount);
-        outputStream.write(numMiniBlocks);
+        DataOutputStream dos = new DataOutputStream(outputStream);
+
+        dos.writeInt(totalValueCount);
+        dos.writeInt(numMiniBlocks);
 
         for (int i = 0; i < numMiniBlocks; i++) {
             int firstValue = firstValues[i];
             outputStream.write(firstValue);
             int length = writeMiniBlock(i);
             //length is bitWidth * 4, if we store this, we divide by 4 on read to get the bitwidth to unpack on
-            outputStream.write(length);
-            outputStream.write(miniBlockBuffer, 0, length);
+            dos.writeInt(length);
+            dos.write(miniBlockBuffer, 0, length);
         }
-    }
-
-    private int writeHeader(byte[] buffer, int offset) {
-        Bytes.writeIntOn4Bytes(totalValueCount, buffer, offset);
-        Bytes.writeIntOn4Bytes(numMiniBlocks, buffer, offset + 4);
-
-        return offset + 8;
     }
 
     private void ensureMiniBlockCapacity() {
@@ -171,9 +147,10 @@ public class DeltaInt32Encoder implements Int32Encoder {
         }
 
         BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(maxBitWidth);
+        Bytes.writeIntOn4Bytes(length, miniBlockBuffer, 0);
         //now, walk through the miniblock and back into buffer
         for (int i = 0; i < length; i += 32) {
-            packer.pack32Values(miniBlock, 0, miniBlockBuffer, 0);
+            packer.pack32Values(miniBlock, 0, miniBlockBuffer, 4);
         }
 
         return maxBitWidth * 4;

@@ -12,6 +12,7 @@ import org.sidney.encoding.int32.FastPFORInt32Encoder;
 import org.sidney.encoding.int32.KryoInt32Decoder;
 import org.sidney.encoding.int32.KryoInt32Encoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -40,11 +41,11 @@ public class IntEncoderBenchmarks {
     public int[] fastPforInt32Encoder() throws IOException {
         FastPFORInt32Encoder encoder = encoders.get();
         encoder.reset();
-        byte[] buffer = buffers.get();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeInts(ints);
-        encoder.writeToBuffer(buffer, 0);
+        encoder.writeToStream(baos);
         FastPFORInt32Decoder decoder = decoders.get();
-        decoder.readFromStream(Bytes.wrap(buffer));
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         return decoder.nextInts(num);
     }
 
@@ -55,7 +56,8 @@ public class IntEncoderBenchmarks {
         encoder.reset();
         byte[] buffer = buffers.get();
         encoder.writeInts(ints);
-        encoder.writeToBuffer(buffer, 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encoder.writeToStream(baos);
         KryoInt32Decoder decoder = kryoDecoders.get();
         decoder.readFromStream(Bytes.wrap(buffer));
         return decoder.nextInts(num);

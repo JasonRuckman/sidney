@@ -13,6 +13,7 @@ import org.sidney.encoding.bool.EWAHBoolDecoder;
 import org.sidney.encoding.bool.EWAHBoolEncoder;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -30,7 +31,6 @@ public class BoolEncoderBenchmarks {
     private final ThreadLocal<BitPackingBoolDecoder> packingBoolDecoders = ThreadLocal.withInitial(
         BitPackingBoolDecoder::new
     );
-    private final ThreadLocal<byte[]> byteArrs;
     private int num = 65536;
 
     public BoolEncoderBenchmarks() {
@@ -38,36 +38,35 @@ public class BoolEncoderBenchmarks {
         for (int i = 0; i < num; i++) {
             booleans[i] = random.nextInt() % 2 == 0;
         }
-        byteArrs = ThreadLocal.withInitial(() -> new byte[num * 8 + 4]);
     }
 
     @Benchmark
     @Group("boolEncoding")
     public boolean[] ewahBoolEncoderOnRandomInputs() throws IOException {
-        byte[] bytes = byteArrs.get();
-
         EWAHBoolEncoder EWAHBoolEncoder = ewahBoolEncoders.get();
         EWAHBoolDecoder EWAHBoolDecoder = ewahBoolDecoders.get();
 
         EWAHBoolEncoder.reset();
         EWAHBoolEncoder.writeBools(booleans);
-        EWAHBoolEncoder.writeToBuffer(bytes, 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        EWAHBoolEncoder.writeToStream(baos);
 
-        EWAHBoolDecoder.readFromStream(Bytes.wrap(bytes));
+        EWAHBoolDecoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         return EWAHBoolDecoder.nextBools(num);
     }
 
     @Benchmark
     @Group("boolEncoding")
-    public boolean[] bitpackingEncoderOnRandomInputs() {
+    public boolean[] bitpackingEncoderOnRandomInputs() throws IOException {
         BitPackingBoolEncoder packingBoolEncoder = packingBoolEncoders.get();
         BitPackingBoolDecoder packingBoolDecoder = packingBoolDecoders.get();
 
         packingBoolEncoder.reset();
         packingBoolEncoder.writeBools(booleans);
-        packingBoolEncoder.writeToBuffer(byteArrs.get(), 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        packingBoolEncoder.writeToStream(baos);
 
-        packingBoolDecoder.readFromStream(Bytes.wrap(byteArrs.get()));
+        packingBoolDecoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         return packingBoolDecoder.nextBools(num);
     }
 }

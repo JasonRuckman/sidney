@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.sidney.core.Bytes;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -20,10 +21,10 @@ public class FastPFORInt32EncoderTest {
             encoder.writeInt(arr[i]);
         }
 
-        byte[] buf = new byte[(nums * 4) + 4];
-        encoder.writeToBuffer(buf, 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encoder.writeToStream(baos);
         FastPFORInt32Decoder fastPfor = new FastPFORInt32Decoder();
-        fastPfor.readFromStream(Bytes.wrap(buf));
+        fastPfor.readFromStream(Bytes.wrap(baos.toByteArray()));
 
         int[] other = fastPfor.nextInts(nums);
         Assert.assertArrayEquals(arr, other);

@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.sidney.core.Bytes;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -20,10 +21,10 @@ public class KryoInt32EncoderTest {
             encoder.writeInt(arr[i]);
         }
 
-        byte[] buf = new byte[65536 + 4];
-        encoder.writeToBuffer(buf, 0);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encoder.writeToStream(baos);
         KryoInt32Decoder decoder = new KryoInt32Decoder();
-        decoder.readFromStream(Bytes.wrap(buf));
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
 
         int[] other = decoder.nextInts(nums);
         Assert.assertArrayEquals(arr, other);

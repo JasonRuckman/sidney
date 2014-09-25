@@ -3,6 +3,8 @@ package org.sidney.encoding.bool;
 import com.esotericsoftware.kryo.io.Input;
 import org.sidney.core.Bytes;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -11,14 +13,18 @@ import java.io.InputStream;
 public class BitPackingBoolDecoder implements BoolDecoder {
     private int currentLength;
     private int currentIndex;
-    private Input currentInput;
+    private DataInputStream dis;
     private byte currentByte;
 
     @Override
     public boolean nextBool() {
         if (currentIndex == 8) {
             currentIndex = 0;
-            currentByte = currentInput.readByte();
+            try {
+                currentByte = dis.readByte();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return Bytes.bitAt(currentByte, currentIndex++) > 0;
@@ -35,12 +41,16 @@ public class BitPackingBoolDecoder implements BoolDecoder {
 
     @Override
     public void readFromStream(InputStream inputStream) {
-        currentInput = new Input(inputStream);
+        dis = new DataInputStream(inputStream);
         init();
     }
 
     private void init() {
-        currentLength = currentInput.readInt();
-        currentByte = currentInput.readByte();
+        try {
+            currentLength = dis.readInt();
+            currentByte = dis.readByte();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -26,11 +26,6 @@ public class KryoInt16Encoder implements Int16Encoder {
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        return delegateEncoder.writeToBuffer(buffer, offset);
-    }
-
-    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         delegateEncoder.writeToStream(outputStream);
     }

@@ -31,9 +31,20 @@ public class DeltaInt32Decoder implements Int32Decoder {
         intBuffer = new int[totalValueCount];
         inputStream.read(buf);
         int numMiniBlocks = Bytes.bytesToInt(buf, 0);
+        unpack(numMiniBlocks, inputStream);
     }
 
-    private void unpack(int numMiniBlocks, InputStream inputStream) {
+    private void unpack(int numMiniBlocks, InputStream inputStream) throws IOException {
+        byte[] buf = new byte[4];
 
+        for(int i = 0; i < numMiniBlocks; i++) {
+            inputStream.read(buf);
+            int numInts = Bytes.bytesToInt(buf, 0);
+            inputStream.read(buf);
+            int length = Bytes.bytesToInt(buf, 0);
+            int bitwidth = length / 4;
+
+            int k = 0;
+        }
     }
 }

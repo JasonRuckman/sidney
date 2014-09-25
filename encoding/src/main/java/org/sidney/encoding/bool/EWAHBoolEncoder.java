@@ -41,14 +41,6 @@ public class EWAHBoolEncoder implements BoolEncoder {
     }
 
     @Override
-    public int writeToBuffer(byte[] buffer, int offset) {
-        Output output = new Output(buffer);
-        output.setPosition(offset);
-        writeBitmapToOutput(output);
-        return output.position();
-    }
-
-    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         writeBitmapToOutput(new Output(outputStream));
     }

@@ -54,6 +54,10 @@
             <artifactId>jmh-generator-annprocess</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>parquet-column</artifactId>
             <version>1.6.0rc2</version>
