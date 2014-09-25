@@ -66,9 +66,9 @@ public class FastPFORInt32Encoder implements Int32Encoder {
 
     @Override
     public void writeInts(int[] values) {
-        for (int k : values) {
-            writeInt(k);
-        }
+        ensureSourceCapacity(currentIndex + values.length);
+        System.arraycopy(values, 0, uncompressedInts, currentIndex, values.length);
+        currentIndex += values.length;
     }
 
     private void compressIntoDestinationBuffer() {
