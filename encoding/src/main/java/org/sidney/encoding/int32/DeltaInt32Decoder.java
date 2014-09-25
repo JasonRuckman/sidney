@@ -1,6 +1,8 @@
 package org.sidney.encoding.int32;
 
-import org.sidney.core.Bytes;
+import parquet.bytes.LittleEndianDataInputStream;
+import parquet.column.values.bitpacking.BytePacker;
+import parquet.column.values.bitpacking.Packer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,26 +27,24 @@ public class DeltaInt32Decoder implements Int32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        byte[] buf = new byte[4];
-        inputStream.read(buf);
-        int totalValueCount = Bytes.bytesToInt(buf, 0);
+        LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
+        int totalValueCount = dis.readInt();
         intBuffer = new int[totalValueCount];
-        inputStream.read(buf);
-        int numMiniBlocks = Bytes.bytesToInt(buf, 0);
-        unpack(numMiniBlocks, inputStream);
+        int numMiniBlocks = dis.readInt();
+        unpack(numMiniBlocks, dis);
     }
 
-    private void unpack(int numMiniBlocks, InputStream inputStream) throws IOException {
-        byte[] buf = new byte[4];
+    private void unpack(int numMiniBlocks, LittleEndianDataInputStream dis) throws IOException {
+        byte[] buf = new byte[32 * 128];
+        int[] tmp = new int[128];
+        int index = 0;
 
-        for(int i = 0; i < numMiniBlocks; i++) {
-            inputStream.read(buf);
-            int numInts = Bytes.bytesToInt(buf, 0);
-            inputStream.read(buf);
-            int length = Bytes.bytesToInt(buf, 0);
-            int bitwidth = length / 4;
-
-            int k = 0;
+        //read firstvalue|numvalues|mindelta|bitwidth
+        for (int i = 0; i < numMiniBlocks; i++) {
+            int firstValue = dis.readInt();
+            int numValues = dis.readInt();
+            int minDelta = dis.readInt();
+            int bitwidth = dis.readInt();
         }
     }
 }

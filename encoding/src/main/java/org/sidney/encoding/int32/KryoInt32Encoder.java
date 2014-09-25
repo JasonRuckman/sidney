@@ -1,10 +1,7 @@
 package org.sidney.encoding.int32;
 
 import com.esotericsoftware.kryo.io.Output;
-import com.google.common.io.ByteStreams;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

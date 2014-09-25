@@ -1,6 +1,7 @@
 package org.sidney.encoding.int32;
 
 import org.sidney.core.Bytes;
+import parquet.bytes.LittleEndianDataOutputStream;
 import parquet.column.values.bitpacking.BytePacker;
 import parquet.column.values.bitpacking.Packer;
 
@@ -87,17 +88,14 @@ public class DeltaInt32Encoder implements Int32Encoder {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        DataOutputStream dos = new DataOutputStream(outputStream);
+        LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(outputStream);
 
         dos.writeInt(totalValueCount);
         dos.writeInt(numMiniBlocks);
 
         for (int i = 0; i < numMiniBlocks; i++) {
-            int firstValue = firstValues[i];
-            outputStream.write(firstValue);
             int length = writeMiniBlock(i);
-            //length is bitWidth * 4, if we store this, we divide by 4 on read to get the bitwidth to unpack on
-            dos.writeInt(length);
+
             dos.write(miniBlockBuffer, 0, length);
         }
     }
@@ -147,12 +145,20 @@ public class DeltaInt32Encoder implements Int32Encoder {
         }
 
         BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(maxBitWidth);
-        Bytes.writeIntOn4Bytes(length, miniBlockBuffer, 0);
+
+        //write firstvalue|numvalues|mindelta|bitwidth
+        Bytes.writeIntOn4Bytes(firstValues[index], miniBlockBuffer, 0);
+        Bytes.writeIntOn4Bytes(length, miniBlockBuffer, 4);
+        Bytes.writeIntOn4Bytes(minDelta, miniBlockBuffer, 8);
+        Bytes.writeIntOn4Bytes(maxBitWidth, miniBlockBuffer, 12);
+
+        int counter = 0;
         //now, walk through the miniblock and back into buffer
-        for (int i = 0; i < length; i += 32) {
-            packer.pack32Values(miniBlock, 0, miniBlockBuffer, 4);
+        for (int i = 0; i < length; i += 8) {
+            packer.pack8Values(miniBlock, i, miniBlockBuffer, (maxBitWidth * counter) + 16);
+            counter++;
         }
 
-        return maxBitWidth * 4;
+        return maxBitWidth * counter + 16;
     }
 }

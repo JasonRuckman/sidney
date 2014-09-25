@@ -1,5 +1,6 @@
 package org.sidney.encoding.benchmarking;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -12,8 +13,6 @@ import org.sidney.encoding.bool.BitPackingBoolEncoder;
 import org.sidney.encoding.bool.EWAHBoolDecoder;
 import org.sidney.encoding.bool.EWAHBoolEncoder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 

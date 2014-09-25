@@ -1,5 +1,6 @@
 package org.sidney.encoding.benchmarking;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -12,7 +13,6 @@ import org.sidney.encoding.int32.FastPFORInt32Encoder;
 import org.sidney.encoding.int32.KryoInt32Decoder;
 import org.sidney.encoding.int32.KryoInt32Encoder;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -42,7 +42,9 @@ public class IntEncoderBenchmarks {
         FastPFORInt32Encoder encoder = encoders.get();
         encoder.reset();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeInts(ints);
+        for(int i : ints) {
+            encoder.writeInt(i);
+        }
         encoder.writeToStream(baos);
         FastPFORInt32Decoder decoder = decoders.get();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
@@ -55,7 +57,9 @@ public class IntEncoderBenchmarks {
         KryoInt32Encoder encoder = kryoEncoders.get();
         encoder.reset();
         byte[] buffer = buffers.get();
-        encoder.writeInts(ints);
+        for(int i : ints) {
+            encoder.writeInt(i);
+        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         KryoInt32Decoder decoder = kryoDecoders.get();
