@@ -19,10 +19,17 @@ State:
 Encodings: 
 
 Boolean: Bit Packed / Ewah DONE
+
 Int8: Bit Packed / Kryo / Delta IN PROGRESS
+
 Int16: Bit Packed / Kryo / Delta  IN PROGRESS
+
 Int32: Bit Packed / Kryo / Delta DONE
+
 Int64: Bit Packed / Kryo / Delta PLANNED
+
 Char: PLANNED
+
 Float32: PLANNED
+
 Float64: Kryo / FPC IN PROGRESS
