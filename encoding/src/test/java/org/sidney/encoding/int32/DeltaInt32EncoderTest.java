@@ -87,17 +87,5 @@ public class DeltaInt32EncoderTest {
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         int[] ints = decoder.nextInts(nums);
         Assert.assertArrayEquals(arr, ints);
-
-        encoder.reset();
-        arr = new int[nums];
-        for (int i = 0; i < nums; i++) {
-            arr[i] = random.nextInt(500);
-            encoder.writeInt(arr[i]);
-        }
-        baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
-        ints = decoder.nextInts(nums);
-        Assert.assertArrayEquals(arr, ints);
     }
 }

@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class DeltaInt32Decoder implements Int32Decoder {
     private static final int PACK_SIZE = 8;
-    private int[] intBuffer = new int[1024];
+    private int[] intBuffer = new int[2048];
     private int currentIndex = 0;
     private int currentReadIndex = 0;
 
@@ -53,6 +53,7 @@ public class DeltaInt32Decoder implements Int32Decoder {
         }
 
         totalValueCount--;
+
         for (int i = 0; i < numMiniBlocks; i++) {
             totalValueCount = unpackMiniBlock(
                 minDeltas[i], firstValue, bitwidths[i], totalValueCount, dis
@@ -65,42 +66,39 @@ public class DeltaInt32Decoder implements Int32Decoder {
         int minDelta, int firstValue, int bitWidth, int numValuesLeft,
         LittleEndianDataInputStream dis
     ) throws IOException {
-        int[] miniBlockBuffer = new int[128];
-
         int numToUnpack = Math.min(numValuesLeft, 128);
         int numCounter = numToUnpack;
 
+        ensureCapacity(currentReadIndex + 128);
+
         BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(bitWidth);
 
-        int miniIndex = 0;
         byte[] buf = new byte[bitWidth];
 
+        int miniBlockStartIndex = currentReadIndex;
         while (numToUnpack > 0) {
-            int[] tmp = new int[8];
             dis.read(buf);
-            packer.unpack8Values(buf, 0, tmp, 0);
-            System.arraycopy(tmp, 0, miniBlockBuffer, miniIndex, 8);
-            miniIndex += 8;
-            numToUnpack -= 8;
+            packer.unpack8Values(buf, 0, intBuffer, miniBlockStartIndex);
+            numToUnpack -= PACK_SIZE;
+            miniBlockStartIndex += PACK_SIZE;
         }
 
         //go adjust min-deltas
         for (int i = 0; i < numCounter; i++) {
-            miniBlockBuffer[i] = miniBlockBuffer[i] + minDelta;
+            int idx = i + currentReadIndex;
+            intBuffer[idx] = intBuffer[idx] + minDelta;
         }
 
         for (int i = 0; i < numCounter; i++) {
+            int idx = i + currentReadIndex;
             if (i == 0) {
-                miniBlockBuffer[i] += firstValue;
+                intBuffer[idx] += firstValue;
                 continue;
             }
 
-            miniBlockBuffer[i] += miniBlockBuffer[i - 1];
+            intBuffer[idx] += intBuffer[idx - 1];
         }
 
-        ensureCapacity(currentReadIndex + numCounter);
-
-        System.arraycopy(miniBlockBuffer, 0, intBuffer, currentReadIndex, numCounter);
         currentReadIndex += numCounter;
         return numValuesLeft - numCounter;
     }
@@ -110,6 +108,7 @@ public class DeltaInt32Decoder implements Int32Decoder {
             int[] buf = new int[size * 2];
             System.arraycopy(intBuffer, 0, buf, 0, intBuffer.length);
             intBuffer = buf;
+            ensureCapacity(size);
         }
     }
 }
