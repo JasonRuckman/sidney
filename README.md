@@ -14,4 +14,15 @@ Planned features:
 
 Not intended for any sort of long term storage, its main use case is in something like Apache Spark for RDD serialization.
 
-Currently working on boolean and int32 encoding, the other types have placeholder classes right now. 
+State: 
+
+Encodings: 
+
+Boolean: Bit Packed / Ewah DONE
+Int8: Bit Packed / Kryo / Delta IN PROGRESS
+Int16: Bit Packed / Kryo / Delta  IN PROGRESS
+Int32: Bit Packed / Kryo / Delta DONE
+Int64: Bit Packed / Kryo / Delta PLANNED
+Char: PLANNED
+Float32: PLANNED
+Float64: Kryo / FPC IN PROGRESS
