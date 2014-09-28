@@ -8,8 +8,12 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
+import org.sidney.encoding.int32.DeltaInt32Decoder;
+import org.sidney.encoding.int32.DeltaInt32Encoder;
 import org.sidney.encoding.int32.FastPFORInt32Decoder;
 import org.sidney.encoding.int32.FastPFORInt32Encoder;
+import org.sidney.encoding.int32.Int32Decoder;
+import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int32.KryoInt32Decoder;
 import org.sidney.encoding.int32.KryoInt32Encoder;
 
@@ -27,6 +31,8 @@ public class IntEncoderBenchmarks {
     private ThreadLocal<FastPFORInt32Decoder> decoders = ThreadLocal.withInitial(FastPFORInt32Decoder::new);
     private ThreadLocal<KryoInt32Encoder> kryoEncoders = ThreadLocal.withInitial(KryoInt32Encoder::new);
     private ThreadLocal<KryoInt32Decoder> kryoDecoders = ThreadLocal.withInitial(KryoInt32Decoder::new);
+    private ThreadLocal<DeltaInt32Encoder> deltaEncoders = ThreadLocal.withInitial(DeltaInt32Encoder::new);
+    private ThreadLocal<DeltaInt32Decoder> deltaDecoders = ThreadLocal.withInitial(DeltaInt32Decoder::new);
 
     public IntEncoderBenchmarks() {
         ints = new int[num];
@@ -42,7 +48,7 @@ public class IntEncoderBenchmarks {
         FastPFORInt32Encoder encoder = encoders.get();
         encoder.reset();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for(int i : ints) {
+        for (int i : ints) {
             encoder.writeInt(i);
         }
         encoder.writeToStream(baos);
@@ -56,14 +62,28 @@ public class IntEncoderBenchmarks {
     public int[] kryoInt32Encoder() throws IOException {
         KryoInt32Encoder encoder = kryoEncoders.get();
         encoder.reset();
-        byte[] buffer = buffers.get();
-        for(int i : ints) {
+        for (int i : ints) {
             encoder.writeInt(i);
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         KryoInt32Decoder decoder = kryoDecoders.get();
-        decoder.readFromStream(Bytes.wrap(buffer));
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
+        return decoder.nextInts(num);
+    }
+
+    @Benchmark
+    @Group("intEncoders")
+    public int[] deltaInt32Encoder() throws IOException {
+        Int32Encoder encoder = deltaEncoders.get();
+        for (int i : ints) {
+            encoder.writeInt(i);
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        encoder.writeToStream(baos);
+        encoder.reset();
+        Int32Decoder decoder = deltaDecoders.get();
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         return decoder.nextInts(num);
     }
 }

@@ -6,6 +6,7 @@ import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
 import org.sidney.core.unsafe.UnsafeBytes;
+import parquet.bytes.LittleEndianDataInputStream;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class FastPFORInt32Decoder implements Int32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        DataInputStream dis = new DataInputStream(inputStream);
+        LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
 
         int numInts = dis.readInt();
         int compressedSize = dis.readInt();

@@ -6,6 +6,7 @@ import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
 import org.sidney.core.unsafe.UnsafeInts;
+import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class FastPFORInt32Encoder implements Int32Encoder {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        DataOutputStream dos = new DataOutputStream(outputStream);
+        LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(outputStream);
         compressIntoDestinationBuffer();
 
         dos.writeInt(currentIndex);
