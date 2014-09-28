@@ -8,11 +8,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
-public class FastPFORInt32EncoderTest {
+public class FastBitPackInt32EncoderTest {
     @Test
     public void testReadWrite() throws IOException {
-        int nums = 10000;
-        FastPFORInt32Encoder encoder = new FastPFORInt32Encoder();
+        int nums = 65536;
+        FastBitPackInt32Encoder encoder = new FastBitPackInt32Encoder();
 
         Random random = new Random(11L);
         int[] arr = new int[nums];
@@ -23,7 +23,7 @@ public class FastPFORInt32EncoderTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        FastPFORInt32Decoder fastPfor = new FastPFORInt32Decoder();
+        FastBitPackInt32Decoder fastPfor = new FastBitPackInt32Decoder();
         fastPfor.readFromStream(Bytes.wrap(baos.toByteArray()));
 
         int[] other = fastPfor.nextInts(nums);

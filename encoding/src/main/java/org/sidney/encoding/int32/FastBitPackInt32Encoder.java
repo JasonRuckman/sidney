@@ -18,7 +18,7 @@ import java.io.OutputStream;
  * Uses https://github.com/lemire/JavaFastPFOR to encode blocks of ints.
  * Slower than kryo for smaller data, faster for larger data (up to a point).  Generates a generally smaller binary footprint
  */
-public class FastPFORInt32Encoder implements Int32Encoder {
+public class FastBitPackInt32Encoder implements Int32Encoder {
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
     private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
@@ -27,7 +27,7 @@ public class FastPFORInt32Encoder implements Int32Encoder {
     private byte[] compressedBytes;
     private int currentIndex = 0;
 
-    public FastPFORInt32Encoder() {
+    public FastBitPackInt32Encoder() {
         uncompressedInts = new int[256];
         compressedInts = new int[512];
         compressedBytes = new byte[compressedInts.length * 4];
@@ -88,14 +88,14 @@ public class FastPFORInt32Encoder implements Int32Encoder {
 
     private void ensureDestinationCapacity(int size) {
         if (size >= compressedInts.length) {
-            compressedInts = new int[compressedInts.length * 2];
+            compressedInts = new int[size * 2];
             ensureDestinationCapacity(size);
         }
     }
 
     private void ensureDestinationByteBufferCapacity(int size) {
         if (size >= compressedBytes.length) {
-            compressedBytes = new byte[compressedBytes.length * 2];
+            compressedBytes = new byte[size * 2];
             ensureDestinationByteBufferCapacity(size);
         }
     }

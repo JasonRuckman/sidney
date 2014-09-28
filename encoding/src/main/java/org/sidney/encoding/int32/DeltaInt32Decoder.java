@@ -84,6 +84,7 @@ public class DeltaInt32Decoder implements Int32Decoder {
         }
 
         //go adjust min-deltas
+        //TODO: try and see if I can use yeppp and SIMD ops to speed the min delta calculations up
         for (int i = 0; i < numCounter; i++) {
             int idx = i + currentReadIndex;
             intBuffer[idx] = intBuffer[idx] + minDelta;

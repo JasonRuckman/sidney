@@ -10,6 +10,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
 import org.sidney.encoding.bool.BitPackingBoolDecoder;
 import org.sidney.encoding.bool.BitPackingBoolEncoder;
+import org.sidney.encoding.bool.BoolDecoder;
+import org.sidney.encoding.bool.BoolEncoder;
 import org.sidney.encoding.bool.EWAHBoolDecoder;
 import org.sidney.encoding.bool.EWAHBoolEncoder;
 
@@ -42,30 +44,22 @@ public class BoolEncoderBenchmarks {
     @Benchmark
     @Group("boolEncoding")
     public boolean[] ewahBoolEncoderOnRandomInputs() throws IOException {
-        EWAHBoolEncoder EWAHBoolEncoder = ewahBoolEncoders.get();
-        EWAHBoolDecoder EWAHBoolDecoder = ewahBoolDecoders.get();
-
-        EWAHBoolEncoder.reset();
-        EWAHBoolEncoder.writeBools(booleans);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        EWAHBoolEncoder.writeToStream(baos);
-
-        EWAHBoolDecoder.readFromStream(Bytes.wrap(baos.toByteArray()));
-        return EWAHBoolDecoder.nextBools(num);
+        return run(ewahBoolEncoders.get(), ewahBoolDecoders.get());
     }
 
     @Benchmark
     @Group("boolEncoding")
     public boolean[] bitpackingEncoderOnRandomInputs() throws IOException {
-        BitPackingBoolEncoder packingBoolEncoder = packingBoolEncoders.get();
-        BitPackingBoolDecoder packingBoolDecoder = packingBoolDecoders.get();
+        return run(packingBoolEncoders.get(), packingBoolDecoders.get());
+    }
 
-        packingBoolEncoder.reset();
-        packingBoolEncoder.writeBools(booleans);
+    private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
+        encoder.reset();
+        encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        packingBoolEncoder.writeToStream(baos);
+        encoder.writeToStream(baos);
 
-        packingBoolDecoder.readFromStream(Bytes.wrap(baos.toByteArray()));
-        return packingBoolDecoder.nextBools(num);
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
+        return decoder.nextBools(num);
     }
 }

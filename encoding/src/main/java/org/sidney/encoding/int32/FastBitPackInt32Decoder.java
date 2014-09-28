@@ -15,7 +15,7 @@ import java.io.InputStream;
 /**
  * Decoder for FastPfor encoded ints, generally much faster on medium size to larger data
  */
-public class FastPFORInt32Decoder implements Int32Decoder {
+public class FastBitPackInt32Decoder implements Int32Decoder {
     private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
@@ -24,7 +24,7 @@ public class FastPFORInt32Decoder implements Int32Decoder {
     private byte[] sourceByteBuffer;
     private int index = 0;
 
-    public FastPFORInt32Decoder() {
+    public FastBitPackInt32Decoder() {
         sourceBuffer = new int[256];
         destinationBuffer = new int[2048];
         sourceByteBuffer = new byte[sourceBuffer.length * 4];

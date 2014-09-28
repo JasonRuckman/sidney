@@ -1,12 +1,12 @@
 package org.sidney.encoding.int16;
 
-import org.sidney.encoding.int32.FastPFORInt32Encoder;
+import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class FastPFORInt16Encoder implements Int16Encoder {
-    private final FastPFORInt32Encoder delegateEncoder = new FastPFORInt32Encoder();
+    private final FastBitPackInt32Encoder delegateEncoder = new FastBitPackInt32Encoder();
 
     @Override
     public void writeShort(short value) {

@@ -11,7 +11,7 @@ import java.util.Random;
 public class KryoInt32EncoderTest {
     @Test
     public void testReadWrite() throws IOException {
-        int nums = 10000;
+        int nums = 65536;
         KryoInt32Encoder encoder = new KryoInt32Encoder();
 
         Random random = new Random(11L);
