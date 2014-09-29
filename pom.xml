@@ -13,6 +13,7 @@
         <module>core</module>
         <module>encoding</module>
         <module>annotations</module>
+        <module>tools</module>
     </modules>
 
     <properties>
