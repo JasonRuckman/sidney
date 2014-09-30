@@ -23,7 +23,7 @@ import java.util.Random;
 @State(Scope.Group)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
-public class IntEncoderBenchmarks {
+public class Int32EncoderBenchmarks {
     private final int[] ints;
     private int num = 65536;
     private ThreadLocal<FastBitPackInt32Encoder> bitpackingEncoders = ThreadLocal.withInitial(FastBitPackInt32Encoder::new);
@@ -33,7 +33,7 @@ public class IntEncoderBenchmarks {
     private ThreadLocal<DeltaInt32Encoder> deltaEncoders = ThreadLocal.withInitial(DeltaInt32Encoder::new);
     private ThreadLocal<DeltaInt32Decoder> deltaDecoders = ThreadLocal.withInitial(DeltaInt32Decoder::new);
 
-    public IntEncoderBenchmarks() {
+    public Int32EncoderBenchmarks() {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {

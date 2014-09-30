@@ -22,7 +22,7 @@ public class KryoInt32Encoder implements Int32Encoder {
 
     @Override
     public void reset() {
-        output = new Output(256, 1024000);
+        output.setPosition(0);
     }
 
     @Override

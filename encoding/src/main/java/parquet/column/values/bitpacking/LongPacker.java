@@ -1,5 +1,8 @@
 package parquet.column.values.bitpacking;
 
+/**
+ * Creates long packers, is a copy of parquet's bytepackers, adjusted to work with longs.
+ */
 public enum LongPacker {
     BIG_ENDIAN {
         @Override

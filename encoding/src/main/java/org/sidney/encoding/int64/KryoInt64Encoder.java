@@ -1,21 +1,21 @@
-package org.sidney.encoding.float64;
+package org.sidney.encoding.int64;
 
 import com.esotericsoftware.kryo.io.Output;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class KryoFloat64Encoder implements Float64Encoder {
+public class KryoInt64Encoder implements Int64Encoder {
     private final Output output = new Output(256, 1024000);
 
     @Override
-    public void writeDouble(double value) {
-        output.writeDouble(value);
+    public void writeLong(long value) {
+        output.writeLong(value);
     }
 
     @Override
-    public void writeDoubles(double[] values) {
-        output.writeDoubles(values);
+    public void writeLongs(long[] values) {
+        output.writeLongs(values);
     }
 
     @Override

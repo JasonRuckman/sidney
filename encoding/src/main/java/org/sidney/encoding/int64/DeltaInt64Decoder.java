@@ -1,10 +1,8 @@
 package org.sidney.encoding.int64;
 
 import parquet.bytes.LittleEndianDataInputStream;
-import parquet.column.values.bitpacking.BytePacker;
 import parquet.column.values.bitpacking.LongBytePacker;
 import parquet.column.values.bitpacking.LongPacker;
-import parquet.column.values.bitpacking.Packer;
 
 import java.io.IOException;
 import java.io.InputStream;

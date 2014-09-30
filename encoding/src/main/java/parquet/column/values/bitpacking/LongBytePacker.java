@@ -26,6 +26,7 @@ package parquet.column.values.bitpacking;
  * @author Julien Le Dem
  *
  */
+//adjusted by Jason Ruckman to work with longs.
 public abstract class LongBytePacker {
 
     private final int bitWidth;
