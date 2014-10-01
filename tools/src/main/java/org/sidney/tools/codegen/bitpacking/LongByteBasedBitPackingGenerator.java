@@ -34,7 +34,7 @@ import parquet.bytes.BytesUtils;
  */
 public class LongByteBasedBitPackingGenerator {
 
-    private static final String CLASS_NAME_PREFIX = "ByteBitPacking";
+    private static final String CLASS_NAME_PREFIX = "LongByteBitPacking";
     private static final int PACKER_COUNT = 64;
 
     public static void main(String[] args) throws Exception {
@@ -64,15 +64,15 @@ public class LongByteBasedBitPackingGenerator {
         fw.append(" */\n");
         fw.append("public abstract class " + className + " {\n");
         fw.append("\n");
-        fw.append("  private static final BytePacker[] packers = new BytePacker[64];\n");
+        fw.append("  private static final LongBytePacker[] packers = new LongBytePacker[64];\n");
         fw.append("  static {\n");
         for (int i = 0; i <= PACKER_COUNT; i++) {
             fw.append("    packers[" + i + "] = new Packer" + i + "();\n");
         }
         fw.append("  }\n");
         fw.append("\n");
-        fw.append("  public static final BytePackerFactory factory = new BytePackerFactory() {\n");
-        fw.append("    public BytePacker newBytePacker(int bitWidth) {\n");
+        fw.append("  public static final LongBytePackerFactory factory = new LongBytePackerFactory() {\n");
+        fw.append("    public LongBytePacker newBytePacker(int bitWidth) {\n");
         fw.append("      return packers[bitWidth];\n");
         fw.append("    }\n");
         fw.append("  };\n");
@@ -86,7 +86,7 @@ public class LongByteBasedBitPackingGenerator {
     }
 
     private static void generateClass(FileWriter fw, int bitWidth, boolean msbFirst) throws IOException {
-        fw.append("  private static final class Packer" + bitWidth + " extends BytePacker {\n");
+        fw.append("  private static final class Packer" + bitWidth + " extends LongBytePacker {\n");
         fw.append("\n");
         fw.append("    private Packer" + bitWidth + "() {\n");
         fw.append("      super("+bitWidth+");\n");
@@ -228,7 +228,7 @@ public class LongByteBasedBitPackingGenerator {
                     } else if (shift > 0){
                         shiftString = "<<  " + shift;
                     }
-                    fw.append(" (((((int)in[" + align(byteIndex, 2) + " + inPos]) & 255) " + shiftString + ") & " + mask + ")");
+                    fw.append(" (((((long)in[" + align(byteIndex, 2) + " + inPos]) & 255) " + shiftString + ") & " + mask + ")");
                 }
                 fw.append(";\n");
             }

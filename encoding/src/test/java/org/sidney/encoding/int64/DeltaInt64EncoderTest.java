@@ -13,7 +13,7 @@ public class DeltaInt64EncoderTest {
     @Test
     public void readWriteSmallTest() throws IOException, RunnerException {
         int nums = 5;
-        DeltaInt64Encoder encoder = new DeltaInt64Encoder();
+        Int64Encoder encoder = encoder();
         Random random = new Random(11L);
         long[] arr = new long[nums];
         for (int i = 0; i < nums; i++) {
@@ -22,7 +22,7 @@ public class DeltaInt64EncoderTest {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        DeltaInt64Decoder decoder = new DeltaInt64Decoder();
+        Int64Decoder decoder = decoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         long[] ints = decoder.nextLongs(nums);
         Assert.assertArrayEquals(arr, ints);
@@ -31,7 +31,7 @@ public class DeltaInt64EncoderTest {
     @Test
     public void readWriteMediumTest() throws IOException, RunnerException {
         int nums = 129;
-        DeltaInt64Encoder encoder = new DeltaInt64Encoder();
+        Int64Encoder encoder = encoder();
         Random random = new Random(11L);
         long[] arr = new long[nums];
         for (int i = 0; i < nums; i++) {
@@ -40,7 +40,7 @@ public class DeltaInt64EncoderTest {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        DeltaInt64Decoder decoder = new DeltaInt64Decoder();
+        Int64Decoder decoder = decoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         long[] ints = decoder.nextLongs(nums);
         Assert.assertArrayEquals(arr, ints);
@@ -49,7 +49,7 @@ public class DeltaInt64EncoderTest {
     @Test
     public void readWriteLargeTest() throws IOException, RunnerException {
         int nums = 1023;
-        DeltaInt64Encoder encoder = new DeltaInt64Encoder();
+        Int64Encoder encoder = encoder();
         Random random = new Random(11L);
         long[] arr = new long[nums];
         for (int i = 0; i < nums; i++) {
@@ -58,7 +58,7 @@ public class DeltaInt64EncoderTest {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        DeltaInt64Decoder decoder = new DeltaInt64Decoder();
+        Int64Decoder decoder = decoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         long[] ints = decoder.nextLongs(nums);
         Assert.assertArrayEquals(arr, ints);
@@ -68,7 +68,7 @@ public class DeltaInt64EncoderTest {
     @Test
     public void readWriteVeryLargeTest() throws IOException, RunnerException {
         int nums = 65536;
-        DeltaInt64Encoder encoder = new DeltaInt64Encoder();
+        Int64Encoder encoder = encoder();
         Random random = new Random(11L);
         long[] arr = new long[nums];
         for (int i = 0; i < nums; i++) {
@@ -77,9 +77,17 @@ public class DeltaInt64EncoderTest {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        DeltaInt64Decoder decoder = new DeltaInt64Decoder();
+        Int64Decoder decoder = decoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         long[] ints = decoder.nextLongs(nums);
         Assert.assertArrayEquals(arr, ints);
+    }
+
+    private Int64Encoder encoder() {
+        return new DeltaInt64Encoder();
+    }
+
+    private Int64Decoder decoder() {
+        return new DeltaInt64Decoder();
     }
 }
