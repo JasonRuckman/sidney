@@ -64,7 +64,7 @@ public class LongByteBasedBitPackingGenerator {
         fw.append(" */\n");
         fw.append("public abstract class " + className + " {\n");
         fw.append("\n");
-        fw.append("  private static final LongBytePacker[] packers = new LongBytePacker[64];\n");
+        fw.append("  private static final LongBytePacker[] packers = new LongBytePacker[65];\n");
         fw.append("  static {\n");
         for (int i = 0; i <= PACKER_COUNT; i++) {
             fw.append("    packers[" + i + "] = new Packer" + i + "();\n");
