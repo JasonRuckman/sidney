@@ -1,12 +1,12 @@
 package org.sidney.encoding.int16;
 
-import org.sidney.encoding.int32.DeltaInt32Encoder;
+import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class DeltaInt16Encoder implements Int16Encoder {
-    private final DeltaInt32Encoder delegateEncoder = new DeltaInt32Encoder();
+    private final DeltaBitPackingInt32Encoder delegateEncoder = new DeltaBitPackingInt32Encoder();
 
     @Override
     public void writeShort(short value) {

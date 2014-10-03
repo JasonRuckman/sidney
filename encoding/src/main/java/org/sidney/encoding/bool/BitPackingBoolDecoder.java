@@ -1,6 +1,5 @@
 package org.sidney.encoding.bool;
 
-import com.esotericsoftware.kryo.io.Input;
 import org.sidney.core.Bytes;
 
 import java.io.DataInputStream;

@@ -1,7 +1,5 @@
 package org.sidney.encoding.bool;
 
-import com.esotericsoftware.kryo.io.Output;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

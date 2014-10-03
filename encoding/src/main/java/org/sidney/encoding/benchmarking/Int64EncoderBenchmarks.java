@@ -8,11 +8,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.float64.KryoFloat64Encoder;
-import org.sidney.encoding.int32.Int32Decoder;
-import org.sidney.encoding.int32.Int32Encoder;
-import org.sidney.encoding.int64.BitPackingInt64Decoder;
-import org.sidney.encoding.int64.BitPackingInt64Encoder;
 import org.sidney.encoding.int64.DeltaInt64Decoder;
 import org.sidney.encoding.int64.DeltaInt64Encoder;
 import org.sidney.encoding.int64.Int64Decoder;
@@ -33,14 +28,12 @@ public class Int64EncoderBenchmarks {
     private final ThreadLocal<Int64Decoder> deltaInt64Decoders = ThreadLocal.withInitial(DeltaInt64Decoder::new);
     private final ThreadLocal<Int64Encoder> kryoInt64Encoders = ThreadLocal.withInitial(KryoInt64Encoder::new);
     private final ThreadLocal<Int64Decoder> kryoInt64Decoders = ThreadLocal.withInitial(KryoInt64Decoder::new);
-    private final ThreadLocal<Int64Encoder> bitpackingInt64Encoders = ThreadLocal.withInitial(BitPackingInt64Encoder::new);
-    private final ThreadLocal<Int64Decoder> bitpackingInt64Decoders = ThreadLocal.withInitial(BitPackingInt64Decoder::new);
 
     public Int64EncoderBenchmarks() {
         longs = new long[num];
         Random random = new Random(11L);
         for (int i = 0; i < longs.length; i++) {
-            longs[i] = random.nextLong();
+            longs[i] = random.nextInt(500);
         }
     }
 
@@ -48,12 +41,6 @@ public class Int64EncoderBenchmarks {
     @Group("int64Encoders")
     public long[] deltaInt64Encoder() throws IOException {
         return run(deltaInt64Encoders.get(), deltaInt64Decoders.get());
-    }
-
-    @Benchmark
-    @Group("int64Encoders")
-    public long[] bitpacking64Encoder() throws IOException {
-        return run(bitpackingInt64Encoders.get(), bitpackingInt64Decoders.get());
     }
 
     @Benchmark

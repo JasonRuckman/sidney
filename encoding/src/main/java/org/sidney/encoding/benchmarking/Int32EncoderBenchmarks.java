@@ -8,8 +8,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.int32.DeltaInt32Decoder;
-import org.sidney.encoding.int32.DeltaInt32Encoder;
+import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
+import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.FastBitPackInt32Decoder;
 import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 import org.sidney.encoding.int32.Int32Decoder;
@@ -30,8 +30,10 @@ public class Int32EncoderBenchmarks {
     private ThreadLocal<FastBitPackInt32Decoder> bitpackingDecoders = ThreadLocal.withInitial(FastBitPackInt32Decoder::new);
     private ThreadLocal<KryoInt32Encoder> kryoEncoders = ThreadLocal.withInitial(KryoInt32Encoder::new);
     private ThreadLocal<KryoInt32Decoder> kryoDecoders = ThreadLocal.withInitial(KryoInt32Decoder::new);
-    private ThreadLocal<DeltaInt32Encoder> deltaEncoders = ThreadLocal.withInitial(DeltaInt32Encoder::new);
-    private ThreadLocal<DeltaInt32Decoder> deltaDecoders = ThreadLocal.withInitial(DeltaInt32Decoder::new);
+    private ThreadLocal<DeltaBitPackingInt32Encoder> deltaEncoders = ThreadLocal.withInitial(
+        DeltaBitPackingInt32Encoder::new);
+    private ThreadLocal<DeltaBitPackingInt32Decoder> deltaDecoders = ThreadLocal.withInitial(
+        DeltaBitPackingInt32Decoder::new);
 
     public Int32EncoderBenchmarks() {
         ints = new int[num];

@@ -1,6 +1,8 @@
 package org.sidney.encoding.float64;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.sidney.core.Bytes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,12 +23,14 @@ public class KryoFloat64EncoderTest {
 
     @Test
     public void readWrite() throws IOException {
-        KryoFloat64Encoder fpcFloat64Encoder = new KryoFloat64Encoder();
-        fpcFloat64Encoder.writeDoubles(doubles);
+        KryoFloat64Encoder kryoEncoder = new KryoFloat64Encoder();
+        kryoEncoder.writeDoubles(doubles);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        fpcFloat64Encoder.writeToStream(baos);
+        kryoEncoder.writeToStream(baos);
 
-        int i = 0;
+        KryoFloat64Decoder decoder = new KryoFloat64Decoder();
+        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
+        Assert.assertArrayEquals(decoder.nextDoubles(num), doubles, 0);
     }
 }

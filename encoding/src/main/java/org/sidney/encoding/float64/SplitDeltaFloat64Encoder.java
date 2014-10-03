@@ -1,32 +1,32 @@
 package org.sidney.encoding.float64;
 
-import org.sidney.encoding.bool.BoolDecoder;
-import org.sidney.encoding.bool.BoolEncoder;
-import org.sidney.encoding.bool.EWAHBoolEncoder;
-import org.sidney.encoding.int32.DeltaInt32Encoder;
+import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int64.DeltaInt64Encoder;
 import org.sidney.encoding.int64.Int64Encoder;
+import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Splits a double precision float into exponent and mantissa.  Delta codes the exponent as a 16bit integer, Delta codes the
+ * Splits a double precision float into exponent and mantissa.  Delta codes the exponent as a 32bit integer, Delta codes the
  * mantissa as a long
  */
 public class SplitDeltaFloat64Encoder implements Float64Encoder  {
-    private final Int32Encoder exponentEncoder = new DeltaInt32Encoder();
+    private final Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
     private final Int64Encoder mantissaEncoder = new DeltaInt64Encoder();
+    private int count = 0;
 
     @Override
     public void writeDouble(double value) {
         long bits = Double.doubleToLongBits(value);
-        int exponent = (int) (bits >>> 52);
+        long exp = bits >>> 52;
         long mantissa = bits & ((1L << 52) - 1);
 
-        exponentEncoder.writeInt(exponent);
+        exponentEncoder.writeInt((int) exp);
         mantissaEncoder.writeLong(mantissa);
+        count++;
     }
 
     @Override
@@ -38,12 +38,16 @@ public class SplitDeltaFloat64Encoder implements Float64Encoder  {
 
     @Override
     public void reset() {
+        count = 0;
+
         exponentEncoder.reset();
         mantissaEncoder.reset();
     }
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
+        new LittleEndianDataOutputStream(outputStream).writeInt(count);
+
         exponentEncoder.writeToStream(outputStream);
         mantissaEncoder.writeToStream(outputStream);
     }

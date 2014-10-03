@@ -1,14 +1,12 @@
 package org.sidney.encoding.int64;
 
+import org.sidney.core.unsafe.UnsafeLongs;
 import parquet.bytes.LittleEndianDataInputStream;
-import parquet.column.values.bitpacking.LongBytePacker;
-import parquet.column.values.bitpacking.LongPacker;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class DeltaInt64Decoder implements Int64Decoder {
-    private static final int PACK_SIZE = 8;
     private long[] intBuffer = new long[2048];
     private int currentIndex = 0;
     private int currentReadIndex = 0;
@@ -39,7 +37,6 @@ public class DeltaInt64Decoder implements Int64Decoder {
         long firstValue = dis.readLong();
 
         long[] minDeltas = new long[numMiniBlocks];
-        int[] bitwidths = new int[numMiniBlocks];
 
         intBuffer[currentReadIndex++] = firstValue;
 
@@ -47,56 +44,31 @@ public class DeltaInt64Decoder implements Int64Decoder {
             minDeltas[i] = dis.readLong();
         }
 
-        for (int i = 0; i < minDeltas.length; i++) {
-            bitwidths[i] = dis.readInt();
-        }
-
         totalValueCount--;
 
         for (int i = 0; i < numMiniBlocks; i++) {
             totalValueCount = unpackMiniBlock(
-                minDeltas[i], firstValue, bitwidths[i], totalValueCount, dis
+                minDeltas[i], totalValueCount, firstValue, dis
             );
         }
     }
 
-    //optimize this, its very slow
     private int unpackMiniBlock(
-        long minDelta, long firstValue, int bitWidth, int numValuesLeft,
+        long minDelta, int numValuesLeft, long firstValue,
         LittleEndianDataInputStream dis
     ) throws IOException {
-        int numToUnpack = Math.min(numValuesLeft, 128);
-        int numCounter = numToUnpack;
+        int numCounter = 128;
 
-        ensureCapacity(currentReadIndex + 128);
+        ensureCapacity(currentReadIndex + numCounter);
 
-        LongBytePacker packer = LongPacker.LITTLE_ENDIAN.newPacker(bitWidth);
-
-        byte[] buf = new byte[bitWidth];
-
-        int miniBlockStartIndex = currentReadIndex;
-        while (numToUnpack > 0) {
-            dis.read(buf);
-            packer.unpack8Values(buf, 0, intBuffer, miniBlockStartIndex);
-            numToUnpack -= PACK_SIZE;
-            miniBlockStartIndex += PACK_SIZE;
-        }
+        byte[] buf = new byte[numCounter * 8];
+        dis.read(buf);
+        UnsafeLongs.copyBytesToLongs(buf, 0, intBuffer, currentReadIndex, numCounter * 8);
 
         //go adjust min-deltas
-        //TODO: try and see if I can use yeppp and SIMD ops to speed the min delta calculations up
         for (int i = 0; i < numCounter; i++) {
             int idx = i + currentReadIndex;
-            intBuffer[idx] = intBuffer[idx] + minDelta;
-        }
-
-        for (int i = 0; i < numCounter; i++) {
-            int idx = i + currentReadIndex;
-            if (i == 0) {
-                intBuffer[idx] += firstValue;
-                continue;
-            }
-
-            intBuffer[idx] += intBuffer[idx - 1];
+            intBuffer[idx] = intBuffer[idx] + minDelta + ((i == 0) ? firstValue :  intBuffer[idx - 1]);
         }
 
         currentReadIndex += numCounter;
@@ -104,7 +76,7 @@ public class DeltaInt64Decoder implements Int64Decoder {
     }
 
     private void ensureCapacity(int size) {
-        if(size >= intBuffer.length) {
+        if (size >= intBuffer.length) {
             long[] buf = new long[size * 2];
             System.arraycopy(intBuffer, 0, buf, 0, intBuffer.length);
             intBuffer = buf;

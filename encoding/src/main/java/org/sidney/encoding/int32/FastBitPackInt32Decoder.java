@@ -5,10 +5,11 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
+import me.lemire.integercompression.differential.IntegratedBinaryPacking;
+import me.lemire.integercompression.differential.IntegratedVariableByte;
 import org.sidney.core.unsafe.UnsafeBytes;
 import parquet.bytes.LittleEndianDataInputStream;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -16,7 +17,7 @@ import java.io.InputStream;
  * Decoder for FastPfor encoded ints, generally much faster on medium size to larger data
  */
 public class FastBitPackInt32Decoder implements Int32Decoder {
-    private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
+    private final IntegerCODEC codec = new Composition(new IntegratedBinaryPacking(), new IntegratedVariableByte());
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
     private int[] sourceBuffer;
