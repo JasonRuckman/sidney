@@ -22,7 +22,7 @@ import java.io.OutputStream;
 public class FastBitPackInt32Encoder implements Int32Encoder {
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
-    private final IntegerCODEC codec = new Composition(new IntegratedBinaryPacking(), new IntegratedVariableByte());
+    private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
     private int[] uncompressedInts;
     private int[] compressedInts;
     private byte[] compressedBytes;

@@ -1,10 +1,9 @@
 package org.sidney.encoding.bool;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.KryoDataInput;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,17 +36,8 @@ public class EWAHBoolDecoder implements BoolDecoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        Input input = new Input(inputStream);
-        readBitmap(input);
-    }
-
-    private void readBitmap(Input input) throws IOException {
         bitmap = new EWAHCompressedBitmap();
-        bitmap.deserialize(
-            new KryoDataInput(
-                input
-            )
-        );
+        bitmap.deserialize(new DataInputStream(inputStream));
         intIterator = bitmap.intIterator();
         nextTrueBit = intIterator.next();
     }

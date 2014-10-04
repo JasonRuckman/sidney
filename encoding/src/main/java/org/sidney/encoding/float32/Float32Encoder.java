@@ -5,7 +5,6 @@ import org.sidney.encoding.Encoder;
 import java.nio.ByteBuffer;
 
 public interface Float32Encoder extends Encoder {
-    void writeFloat(float value, ByteBuffer buffer, int offset);
-
-    void writeFloats(float[] values, ByteBuffer buffer, int offset);
+    void writeFloat(float value);
+    void writeFloats(float[] floats);
 }

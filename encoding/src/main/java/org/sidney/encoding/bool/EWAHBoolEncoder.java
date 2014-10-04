@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.io.KryoDataOutput;
 import com.esotericsoftware.kryo.io.Output;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -42,15 +43,6 @@ public class EWAHBoolEncoder implements BoolEncoder {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        writeBitmapToOutput(new Output(outputStream));
-    }
-
-    private void writeBitmapToOutput(Output output) {
-        try {
-            this.currentBitmap.serialize(new KryoDataOutput(output));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        output.flush();
+        this.currentBitmap.serialize(new DataOutputStream(outputStream));
     }
 }

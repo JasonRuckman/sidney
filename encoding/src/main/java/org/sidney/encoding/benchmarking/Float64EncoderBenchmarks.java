@@ -30,10 +30,10 @@ import java.util.Random;
 public class Float64EncoderBenchmarks {
     private final int num = 65536;
     private final double[] doubles;
-    private final ThreadLocal<Float64Encoder> deltaFloatEncoders = ThreadLocal.withInitial(KryoFloat64Encoder::new);
-    private final ThreadLocal<Float64Decoder> deltaFloatDecoders = ThreadLocal.withInitial(KryoFloat64Decoder::new);
-    private final ThreadLocal<Float64Encoder> kryoFloatEncoders = ThreadLocal.withInitial(SplitDeltaFloat64Encoder::new);
-    private final ThreadLocal<Float64Decoder> kryoFloatDecoders = ThreadLocal.withInitial(SplitDeltaFloat64Decoder::new);
+    private final ThreadLocal<Float64Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat64Encoder::new);
+    private final ThreadLocal<Float64Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat64Decoder::new);
+    private final ThreadLocal<Float64Encoder> deltaFloatEncoders = ThreadLocal.withInitial(SplitDeltaFloat64Encoder::new);
+    private final ThreadLocal<Float64Decoder> deltaFloatDecoders = ThreadLocal.withInitial(SplitDeltaFloat64Decoder::new);
 
     public Float64EncoderBenchmarks() {
         doubles = new double[num];
