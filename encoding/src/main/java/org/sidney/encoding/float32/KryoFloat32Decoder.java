@@ -1,4 +1,4 @@
-package org.sidney.encoding.int64;
+package org.sidney.encoding.float32;
 
 import com.esotericsoftware.kryo.io.Input;
 import org.sidney.encoding.Encoding;
@@ -6,17 +6,17 @@ import org.sidney.encoding.Encoding;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class KryoInt64Decoder implements Int64Decoder {
+public class KryoFloat32Decoder implements Float32Decoder {
     private Input input;
 
     @Override
-    public long nextLong() {
-        return input.readLong();
+    public float nextFloat() {
+        return input.readFloat();
     }
 
     @Override
-    public long[] nextLongs(int num) {
-        return input.readLongs(num);
+    public float[] nextFloats(int num) {
+        return input.readFloats(num);
     }
 
     @Override

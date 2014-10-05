@@ -5,4 +5,5 @@ import java.io.InputStream;
 
 public interface Decoder {
     void readFromStream(InputStream inputStream) throws IOException;
+    Encoding supportedEncoding();
 }

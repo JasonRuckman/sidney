@@ -6,4 +6,5 @@ import java.io.OutputStream;
 public interface Encoder {
     void reset();
     void writeToStream(OutputStream outputStream) throws IOException;
+    Encoding supportedEncoding();
 }

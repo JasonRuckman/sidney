@@ -1,5 +1,6 @@
 package org.sidney.encoding.float64;
 
+import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.encoding.int32.Int32Decoder;
 import org.sidney.encoding.int64.DeltaInt64Decoder;
@@ -44,6 +45,11 @@ public class SplitDeltaFloat64Decoder implements Float64Decoder {
             long mantissa = mantissaDecoder.nextLong();
             doubles[i] = Double.longBitsToDouble((exp << 52) | mantissa);
         }
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.SPLIT;
     }
 
     private void ensureCapacity(int size) {

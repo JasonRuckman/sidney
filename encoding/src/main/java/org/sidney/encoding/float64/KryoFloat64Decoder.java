@@ -1,6 +1,7 @@
 package org.sidney.encoding.float64;
 
 import com.esotericsoftware.kryo.io.Input;
+import org.sidney.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,5 +22,10 @@ public class KryoFloat64Decoder implements Float64Decoder {
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         input = new Input(inputStream);
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.KRYO;
     }
 }

@@ -1,6 +1,7 @@
 package org.sidney.encoding.bool;
 
 import org.sidney.core.Bytes;
+import org.sidney.encoding.Encoding;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -42,6 +43,11 @@ public class BitPackingBoolDecoder implements BoolDecoder {
     public void readFromStream(InputStream inputStream) {
         dis = new DataInputStream(inputStream);
         init();
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.BITPACKED;
     }
 
     private void init() {

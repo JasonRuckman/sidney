@@ -1,5 +1,6 @@
 package org.sidney.encoding.float64;
 
+import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int64.DeltaInt64Encoder;
@@ -50,5 +51,10 @@ public class SplitDeltaFloat64Encoder implements Float64Encoder  {
 
         exponentEncoder.writeToStream(outputStream);
         mantissaEncoder.writeToStream(outputStream);
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.SPLIT;
     }
 }

@@ -1,6 +1,8 @@
 package org.sidney.encoding.float32;
 
+import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
+import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
 import parquet.bytes.LittleEndianDataOutputStream;
 
@@ -9,7 +11,7 @@ import java.io.OutputStream;
 
 public class SplitDeltaFloat32Encoder implements Float32Encoder {
     private Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
-    private Int32Encoder mantissaEncoder = new DeltaBitPackingInt32Encoder();
+    private Int32Encoder mantissaEncoder = new FastBitPackInt32Encoder();
     private int count = 0;
 
     @Override
@@ -42,5 +44,10 @@ public class SplitDeltaFloat32Encoder implements Float32Encoder {
         new LittleEndianDataOutputStream(outputStream).writeInt(count);
         exponentEncoder.writeToStream(outputStream);
         mantissaEncoder.writeToStream(outputStream);
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.SPLIT;
     }
 }

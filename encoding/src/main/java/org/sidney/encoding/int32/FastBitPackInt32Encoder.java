@@ -8,6 +8,7 @@ import me.lemire.integercompression.VariableByte;
 import me.lemire.integercompression.differential.IntegratedBinaryPacking;
 import me.lemire.integercompression.differential.IntegratedVariableByte;
 import org.sidney.core.unsafe.UnsafeInts;
+import org.sidney.encoding.Encoding;
 import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
@@ -58,6 +59,11 @@ public class FastBitPackInt32Encoder implements Int32Encoder {
         UnsafeInts.copyIntsToBytes(compressedInts, 0, compressedBytes, 0, sizeInBytes);
 
         dos.write(compressedBytes, 0, sizeInBytes);
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.BITPACKED;
     }
 
     @Override

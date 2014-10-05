@@ -3,6 +3,7 @@ package org.sidney.encoding.bool;
 import com.esotericsoftware.kryo.io.KryoDataOutput;
 import com.esotericsoftware.kryo.io.Output;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
+import org.sidney.encoding.Encoding;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -44,5 +45,10 @@ public class EWAHBoolEncoder implements BoolEncoder {
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         this.currentBitmap.serialize(new DataOutputStream(outputStream));
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.EWAH;
     }
 }

@@ -8,6 +8,7 @@ import me.lemire.integercompression.VariableByte;
 import me.lemire.integercompression.differential.IntegratedBinaryPacking;
 import me.lemire.integercompression.differential.IntegratedVariableByte;
 import org.sidney.core.unsafe.UnsafeBytes;
+import org.sidney.encoding.Encoding;
 import parquet.bytes.LittleEndianDataInputStream;
 
 import java.io.IOException;
@@ -58,6 +59,11 @@ public class FastBitPackInt32Decoder implements Int32Decoder {
         dis.read(sourceByteBuffer, 0, compressedSize * 4);
 
         unpack(numInts, compressedSize);
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.BITPACKED;
     }
 
     private void unpack(int numInts, int compressedSize) {

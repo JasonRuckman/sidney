@@ -1,6 +1,7 @@
 package org.sidney.encoding.int64;
 
 import org.sidney.core.unsafe.UnsafeLongs;
+import org.sidney.encoding.Encoding;
 import parquet.bytes.LittleEndianDataInputStream;
 
 import java.io.IOException;
@@ -51,6 +52,11 @@ public class DeltaInt64Decoder implements Int64Decoder {
                 minDeltas[i], totalValueCount, firstValue, dis
             );
         }
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.DELTA;
     }
 
     private int unpackMiniBlock(

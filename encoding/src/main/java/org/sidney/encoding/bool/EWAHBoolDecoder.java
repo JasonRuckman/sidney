@@ -2,6 +2,7 @@ package org.sidney.encoding.bool;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
+import org.sidney.encoding.Encoding;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -40,5 +41,10 @@ public class EWAHBoolDecoder implements BoolDecoder {
         bitmap.deserialize(new DataInputStream(inputStream));
         intIterator = bitmap.intIterator();
         nextTrueBit = intIterator.next();
+    }
+
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.EWAH;
     }
 }

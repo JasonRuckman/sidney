@@ -10,6 +10,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
 import org.sidney.encoding.float32.Float32Decoder;
 import org.sidney.encoding.float32.Float32Encoder;
+import org.sidney.encoding.float32.KryoFloat32Decoder;
+import org.sidney.encoding.float32.KryoFloat32Encoder;
 import org.sidney.encoding.float32.SplitDeltaFloat32Decoder;
 import org.sidney.encoding.float32.SplitDeltaFloat32Encoder;
 
@@ -24,6 +26,8 @@ public class Float32EncoderBenchmarks {
     private final float[] floats;
     private final ThreadLocal<Float32Encoder> deltaFloatEncoders = ThreadLocal.withInitial(SplitDeltaFloat32Encoder::new);
     private final ThreadLocal<Float32Decoder> deltaFloatDecoders = ThreadLocal.withInitial(SplitDeltaFloat32Decoder::new);
+    private final ThreadLocal<Float32Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat32Encoder::new);
+    private final ThreadLocal<Float32Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat32Decoder::new);
 
     public Float32EncoderBenchmarks() {
         floats = new float[num];
@@ -34,15 +38,15 @@ public class Float32EncoderBenchmarks {
     }
 
     @Benchmark
-    @Group("Float32Encoders")
-    public float[] runSplitDeltaFloatEncoder() throws IOException {
+    @Group("float32Encoders")
+    public float[] runDeltaFloat32Encoder() throws IOException {
         return run(deltaFloatEncoders.get(), deltaFloatDecoders.get());
     }
 
     @Benchmark
-    @Group("Float32Encoders")
-    public float[] runKryoFloatEncoder() throws IOException {
-        return run(deltaFloatEncoders.get(), deltaFloatDecoders.get());
+    @Group("float32Encoders")
+    public float[] runKryoFloat32Encoder() throws IOException {
+        return run(kryoFloatEncoders.get(), kryoFloatDecoders.get());
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

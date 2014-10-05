@@ -1,5 +1,6 @@
 package org.sidney.encoding.int32;
 
+import org.sidney.encoding.Encoding;
 import parquet.bytes.LittleEndianDataOutputStream;
 import parquet.column.values.bitpacking.BytePacker;
 import parquet.column.values.bitpacking.Packer;
@@ -103,8 +104,11 @@ public class DeltaBitPackingInt32Encoder implements Int32Encoder {
         for(int i = 0; i < minDeltas.length; i++) {
             packAndWriteMiniBlock(i, bitwidths[i], dos);
         }
+    }
 
-        dos.flush();
+    @Override
+    public Encoding supportedEncoding() {
+        return Encoding.DELTABITPACKINGHYBRID;
     }
 
     private void packAndWriteMiniBlock(int index, int bitWidth, LittleEndianDataOutputStream dos) throws IOException {
