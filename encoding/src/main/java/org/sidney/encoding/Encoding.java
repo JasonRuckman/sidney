@@ -6,7 +6,7 @@ public enum Encoding {
     DELTABITPACKINGHYBRID,
     DELTA,
     EWAH,
-    SPLIT,
+    EXPMANTISSABITPACK,
     VARLENGTH,
     KRYO
 }

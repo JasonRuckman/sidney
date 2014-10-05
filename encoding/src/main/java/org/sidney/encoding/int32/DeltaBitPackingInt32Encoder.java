@@ -107,8 +107,8 @@ public class DeltaBitPackingInt32Encoder implements Int32Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.DELTABITPACKINGHYBRID;
+    public String supportedEncoding() {
+        return Encoding.DELTABITPACKINGHYBRID.name();
     }
 
     private void packAndWriteMiniBlock(int index, int bitWidth, LittleEndianDataOutputStream dos) throws IOException {

@@ -105,8 +105,8 @@ public class DeltaInt64Encoder implements Int64Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.DELTA;
+    public String supportedEncoding() {
+        return Encoding.DELTA.name();
     }
 
     private void writeMiniBlock(int index, LittleEndianDataOutputStream dos) throws IOException {

@@ -62,8 +62,8 @@ public class FastBitPackInt32Decoder implements Int32Decoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.BITPACKED;
+    public String supportedEncoding() {
+        return Encoding.BITPACKED.name();
     }
 
     private void unpack(int numInts, int compressedSize) {

@@ -62,8 +62,8 @@ public class DeltaBitPackingInt32Decoder implements Int32Decoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.DELTABITPACKINGHYBRID;
+    public String supportedEncoding() {
+        return Encoding.DELTABITPACKINGHYBRID.name();
     }
 
     private int unpackMiniBlock(

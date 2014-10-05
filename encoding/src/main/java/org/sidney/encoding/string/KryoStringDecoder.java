@@ -1,4 +1,4 @@
-package org.sidney.encoding.int32;
+package org.sidney.encoding.string;
 
 import com.esotericsoftware.kryo.io.Input;
 import org.sidney.encoding.Encoding;
@@ -6,17 +6,21 @@ import org.sidney.encoding.Encoding;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class KryoInt32Decoder implements Int32Decoder {
+public class KryoStringDecoder implements StringDecoder {
     private Input input;
 
     @Override
-    public int nextInt() {
-        return input.readInt();
+    public String readString() {
+        return input.readString();
     }
 
     @Override
-    public int[] nextInts(int num) {
-        return input.readInts(num);
+    public String[] readStrings(int num) {
+        String[] strings = new String[num];
+        for(int i = 0; i < num; i++) {
+            strings[i] = readString();
+        }
+        return strings;
     }
 
     @Override

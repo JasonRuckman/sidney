@@ -1,7 +1,5 @@
 package org.sidney.encoding.bool;
 
-import com.esotericsoftware.kryo.io.KryoDataOutput;
-import com.esotericsoftware.kryo.io.Output;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import org.sidney.encoding.Encoding;
 
@@ -48,7 +46,7 @@ public class EWAHBoolEncoder implements BoolEncoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.EWAH;
+    public String supportedEncoding() {
+        return Encoding.EWAH.name();
     }
 }

@@ -22,13 +22,13 @@ public class SplitDeltaFloat64EncoderTest {
 
     @Test
     public void readWrite() throws IOException {
-        SplitDeltaFloat64Encoder kryoEncoder = new SplitDeltaFloat64Encoder();
+        ExpPackingMantissaDeltaFloat64Encoder kryoEncoder = new ExpPackingMantissaDeltaFloat64Encoder();
         kryoEncoder.writeDoubles(doubles);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         kryoEncoder.writeToStream(baos);
 
-        Float64Decoder decoder = new SplitDeltaFloat64Decoder();
+        Float64Decoder decoder = new ExpPackingMantissaDeltaFloat64Decoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         double[] results = decoder.nextDoubles(doubles.length);
 

@@ -44,7 +44,7 @@ public class EWAHBoolDecoder implements BoolDecoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.EWAH;
+    public String supportedEncoding() {
+        return Encoding.EWAH.name();
     }
 }

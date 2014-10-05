@@ -8,18 +8,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.float64.Float64Decoder;
-import org.sidney.encoding.float64.Float64Encoder;
-import org.sidney.encoding.float64.KryoFloat64Decoder;
-import org.sidney.encoding.float64.KryoFloat64Encoder;
-import org.sidney.encoding.float64.SplitDeltaFloat64Decoder;
-import org.sidney.encoding.float64.SplitDeltaFloat64Encoder;
-import org.sidney.encoding.int64.DeltaInt64Decoder;
-import org.sidney.encoding.int64.DeltaInt64Encoder;
-import org.sidney.encoding.int64.Int64Decoder;
-import org.sidney.encoding.int64.Int64Encoder;
-import org.sidney.encoding.int64.KryoInt64Decoder;
-import org.sidney.encoding.int64.KryoInt64Encoder;
+import org.sidney.encoding.float64.*;
 
 import java.io.IOException;
 import java.util.Random;
@@ -32,8 +21,8 @@ public class Float64EncoderBenchmarks {
     private final double[] doubles;
     private final ThreadLocal<Float64Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat64Encoder::new);
     private final ThreadLocal<Float64Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat64Decoder::new);
-    private final ThreadLocal<Float64Encoder> deltaFloatEncoders = ThreadLocal.withInitial(SplitDeltaFloat64Encoder::new);
-    private final ThreadLocal<Float64Decoder> deltaFloatDecoders = ThreadLocal.withInitial(SplitDeltaFloat64Decoder::new);
+    private final ThreadLocal<Float64Encoder> deltaFloatEncoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Encoder::new);
+    private final ThreadLocal<Float64Decoder> deltaFloatDecoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Decoder::new);
 
     public Float64EncoderBenchmarks() {
         doubles = new double[num];

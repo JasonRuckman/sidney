@@ -25,7 +25,7 @@ public class KryoInt64Decoder implements Int64Decoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.KRYO;
+    public String supportedEncoding() {
+        return Encoding.KRYO.name();
     }
 }

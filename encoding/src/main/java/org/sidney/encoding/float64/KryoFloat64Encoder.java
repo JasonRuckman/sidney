@@ -30,7 +30,7 @@ public class KryoFloat64Encoder implements Float64Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.KRYO;
+    public String supportedEncoding() {
+        return Encoding.KRYO.name();
     }
 }

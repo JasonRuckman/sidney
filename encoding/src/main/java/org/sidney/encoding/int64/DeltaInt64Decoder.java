@@ -55,8 +55,8 @@ public class DeltaInt64Decoder implements Int64Decoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.DELTA;
+    public String supportedEncoding() {
+        return Encoding.DELTA.name();
     }
 
     private int unpackMiniBlock(

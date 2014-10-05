@@ -1,4 +1,4 @@
-package org.sidney.encoding.float32;
+package org.sidney.encoding.string;
 
 import com.esotericsoftware.kryo.io.Output;
 import org.sidney.encoding.Encoding;
@@ -6,17 +6,19 @@ import org.sidney.encoding.Encoding;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class KryoFloat32Encoder implements Float32Encoder {
-    private final Output output = new Output(256, 1024000);
+public class KryoStringEncoder implements StringEncoder {
+    private final Output output = new Output();
 
     @Override
-    public void writeFloat(float value) {
-        output.writeFloat(value);
+    public void writeString(String s) {
+        output.writeString(s);
     }
 
     @Override
-    public void writeFloats(float[] floats) {
-        output.writeFloats(floats);
+    public void writeStrings(String[] values) {
+        for(String s : values) {
+            writeString(s);
+        }
     }
 
     @Override

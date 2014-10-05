@@ -3,9 +3,6 @@ package org.sidney.encoding.float32;
 import org.junit.Assert;
 import org.junit.Test;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.float64.Float64Decoder;
-import org.sidney.encoding.float64.SplitDeltaFloat64Decoder;
-import org.sidney.encoding.float64.SplitDeltaFloat64Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,13 +22,13 @@ public class SplitDeltaFloat32EncoderTest {
 
     @Test
     public void readWrite() throws IOException {
-        SplitDeltaFloat32Encoder kryoEncoder = new SplitDeltaFloat32Encoder();
+        ExponentMantissaPackingFloat32Decoder kryoEncoder = new ExponentMantissaPackingFloat32Decoder();
         kryoEncoder.writeFloats(floats);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         kryoEncoder.writeToStream(baos);
 
-        Float32Decoder decoder = new SplitDeltaFloat32Decoder();
+        Float32Decoder decoder = new ExponentMantissaPackingFloat32Encoder();
         decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
         float[] results = decoder.nextFloats(floats.length);
 

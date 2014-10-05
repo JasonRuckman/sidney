@@ -30,7 +30,7 @@ public class KryoInt64Encoder implements Int64Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.KRYO;
+    public String supportedEncoding() {
+        return Encoding.KRYO.name();
     }
 }

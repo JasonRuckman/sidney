@@ -46,8 +46,8 @@ public class BitPackingBoolDecoder implements BoolDecoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.BITPACKED;
+    public String supportedEncoding() {
+        return Encoding.BITPACKED.name();
     }
 
     private void init() {

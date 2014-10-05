@@ -9,7 +9,7 @@ import parquet.bytes.LittleEndianDataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class SplitDeltaFloat32Encoder implements Float32Encoder {
+public class ExponentMantissaPackingFloat32Decoder implements Float32Encoder {
     private Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
     private Int32Encoder mantissaEncoder = new FastBitPackInt32Encoder();
     private int count = 0;
@@ -47,7 +47,7 @@ public class SplitDeltaFloat32Encoder implements Float32Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.SPLIT;
+    public String supportedEncoding() {
+        return Encoding.EXPMANTISSABITPACK.name();
     }
 }

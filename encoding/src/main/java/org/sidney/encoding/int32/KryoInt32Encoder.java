@@ -32,7 +32,7 @@ public class KryoInt32Encoder implements Int32Encoder {
     }
 
     @Override
-    public Encoding supportedEncoding() {
-        return Encoding.KRYO;
+    public String supportedEncoding() {
+        return Encoding.KRYO.name();
     }
 }
