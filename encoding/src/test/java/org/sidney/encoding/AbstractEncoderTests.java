@@ -15,7 +15,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     protected abstract BiConsumer<E, T> encodingFunction();
     protected abstract IntFunction<T> dataSupplier();
-    protected abstract TriConsumer<D, T, byte[]> dataConsumerAndAsserter();
+    protected abstract BiConsumer<D, T> dataConsumerAndAsserter();
     protected abstract List<EncoderDecoderPair<E, D>> pairs();
     protected abstract Class getRunningClass();
 
@@ -44,12 +44,11 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     private void logAndRun(EncoderDecoderPair<E, D> pair, int size) throws IOException {
         pair.getEncoder().reset();
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         T t = dataSupplier().apply(size);
         encodingFunction().accept(pair.getEncoder(), t);
         pair.getEncoder().writeToStream(baos);
         pair.getDecoder().readFromStream(Bytes.wrap(baos.toByteArray()));
-        dataConsumerAndAsserter().consume(pair.getDecoder(), t, baos.toByteArray());
+        dataConsumerAndAsserter().accept(pair.getDecoder(), t);
     }
 }

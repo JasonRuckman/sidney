@@ -1,53 +1,64 @@
 package org.sidney.encoding.float32;
 
 import org.sidney.encoding.Encoding;
-import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
-import org.sidney.encoding.int32.FastBitPackInt32Encoder;
-import org.sidney.encoding.int32.Int32Encoder;
-import parquet.bytes.LittleEndianDataOutputStream;
+import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
+import org.sidney.encoding.int32.FastBitPackInt32Decoder;
+import org.sidney.encoding.int32.Int32Decoder;
+import parquet.bytes.LittleEndianDataInputStream;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 
-public class ExponentMantissaPackingFloat32Decoder implements Float32Encoder {
-    private Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
-    private Int32Encoder mantissaEncoder = new FastBitPackInt32Encoder();
-    private int count = 0;
+public class ExponentMantissaPackingFloat32Decoder implements Float32Decoder {
+    private float[] buffer = new float[256];
+    private int index = 0;
+    private final Int32Decoder exponentDecoder = new DeltaBitPackingInt32Decoder();
+    private final Int32Decoder mantissaDecoder = new FastBitPackInt32Decoder();
 
     @Override
-    public void writeFloat(float value) {
-        int bits = Float.floatToIntBits(value);
-        int exp = bits >>> 23;
-        int mantissa = bits & ((1 << 23) - 1);
-
-        exponentEncoder.writeInt(exp);
-        mantissaEncoder.writeInt(mantissa);
-        count++;
+    public float nextFloat() {
+        return buffer[index++];
     }
 
     @Override
-    public void writeFloats(float[] floats) {
-        for(float value : floats) {
-            writeFloat(value);
+    public float[] nextFloats(int num) {
+        float[] result = new float[num];
+        for (int i = 0; i < num; i++) {
+            result[i] = nextFloat();
         }
+        return result;
     }
 
     @Override
-    public void reset() {
-        exponentEncoder.reset();
-        mantissaEncoder.reset();
-        count = 0;
-    }
+    public void readFromStream(InputStream inputStream) throws IOException {
+        index = 0;
 
-    @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-        new LittleEndianDataOutputStream(outputStream).writeInt(count);
-        exponentEncoder.writeToStream(outputStream);
-        mantissaEncoder.writeToStream(outputStream);
+        int count = new LittleEndianDataInputStream(inputStream).readInt();
+
+        exponentDecoder.readFromStream(inputStream);
+        mantissaDecoder.readFromStream(inputStream);
+
+        for(int i = 0; i < count; i++) {
+            ensureCapacity(i + 1);
+
+            int exp = exponentDecoder.nextInt();
+            int mantissa = mantissaDecoder.nextInt();
+
+            buffer[i] = Float.intBitsToFloat(exp << 23 | mantissa);
+        }
     }
 
     @Override
     public String supportedEncoding() {
         return Encoding.EXPMANTISSABITPACK.name();
+    }
+
+    private void ensureCapacity(int size) {
+        if (size >= buffer.length) {
+            float[] newBuf = new float[size * 2];
+            System.arraycopy(buffer, 0, newBuf, 0, buffer.length);
+            buffer = newBuf;
+            ensureCapacity(size);
+        }
     }
 }

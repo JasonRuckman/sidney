@@ -41,6 +41,10 @@ public abstract class AbstractEncoder implements Encoder {
         position += 4;
     }
 
+    protected void writeIntLE(int value, int pos) {
+        Bytes.writeIntOn4Bytes(value, buffer, pos);
+    }
+
     protected void writeLongLE(long value) {
         require(8);
         Bytes.writeLongOn8Bytes(value, buffer, position);

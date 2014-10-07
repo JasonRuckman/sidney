@@ -61,8 +61,8 @@ public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder,
     }
 
     @Override
-    protected TriConsumer<Int32Decoder, int[], byte[]> dataConsumerAndAsserter() {
-        return (decoder, nums, bytes) -> {
+    protected BiConsumer<Int32Decoder, int[]> dataConsumerAndAsserter() {
+        return (decoder, nums) -> {
             int[] ints = decoder.nextInts(nums.length);
             Assert.assertArrayEquals(nums, ints);
         };

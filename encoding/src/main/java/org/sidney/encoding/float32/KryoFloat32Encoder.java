@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class KryoFloat32Encoder implements Float32Encoder {
-    private final Output output = new Output(256, 1024000);
+    private final Output output;
+
+    public KryoFloat32Encoder() {
+        this(4096000);
+    }
+
+    public KryoFloat32Encoder(int maxBufferSizeInBytes) {
+        output = new Output(256, maxBufferSizeInBytes);
+    }
 
     @Override
     public void writeFloat(float value) {

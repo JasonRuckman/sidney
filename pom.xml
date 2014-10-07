@@ -17,7 +17,7 @@
     </modules>
 
     <properties>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12-SNAPSHOT</junit.version>
     </properties>
 
     <dependencyManagement>

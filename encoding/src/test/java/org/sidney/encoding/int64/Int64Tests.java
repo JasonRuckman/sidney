@@ -47,8 +47,8 @@ public class Int64Tests extends AbstractEncoderTests<Int64Encoder, Int64Decoder,
     }
 
     @Override
-    protected TriConsumer<Int64Decoder, long[], byte[]> dataConsumerAndAsserter() {
-        return (decoder, nums, bytes) -> {
+    protected BiConsumer<Int64Decoder, long[]> dataConsumerAndAsserter() {
+        return (decoder, nums) -> {
             long[] ints = decoder.nextLongs(nums.length);
             Assert.assertArrayEquals(nums, ints);
         };

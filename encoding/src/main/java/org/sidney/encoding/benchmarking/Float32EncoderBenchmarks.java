@@ -8,12 +8,12 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
+import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Decoder;
+import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Encoder;
 import org.sidney.encoding.float32.Float32Decoder;
 import org.sidney.encoding.float32.Float32Encoder;
 import org.sidney.encoding.float32.KryoFloat32Decoder;
 import org.sidney.encoding.float32.KryoFloat32Encoder;
-import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Encoder;
-import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Decoder;
 
 import java.io.IOException;
 import java.util.Random;
@@ -24,8 +24,10 @@ import java.util.Random;
 public class Float32EncoderBenchmarks {
     private final int num = 65536;
     private final float[] floats;
-    private final ThreadLocal<Float32Encoder> deltaFloatEncoders = ThreadLocal.withInitial(ExponentMantissaPackingFloat32Decoder::new);
-    private final ThreadLocal<Float32Decoder> deltaFloatDecoders = ThreadLocal.withInitial(ExponentMantissaPackingFloat32Encoder::new);
+    private final ThreadLocal<Float32Encoder> deltaFloatEncoders = ThreadLocal.withInitial(
+        ExponentMantissaPackingFloat32Encoder::new);
+    private final ThreadLocal<Float32Decoder> deltaFloatDecoders = ThreadLocal.withInitial(
+        ExponentMantissaPackingFloat32Decoder::new);
     private final ThreadLocal<Float32Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat32Encoder::new);
     private final ThreadLocal<Float32Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat32Decoder::new);
 

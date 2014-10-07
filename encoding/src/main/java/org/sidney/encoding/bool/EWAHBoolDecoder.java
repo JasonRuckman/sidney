@@ -37,6 +37,7 @@ public class EWAHBoolDecoder implements BoolDecoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
+        index = 0;
         bitmap = new EWAHCompressedBitmap();
         bitmap.deserialize(new DataInputStream(inputStream));
         intIterator = bitmap.intIterator();

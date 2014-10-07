@@ -49,8 +49,8 @@ public class Float64Tests extends AbstractEncoderTests<Float64Encoder, Float64De
     }
 
     @Override
-    protected TriConsumer<Float64Decoder, double[], byte[]> dataConsumerAndAsserter() {
-        return (decoder, doubles, bytes) -> {
+    protected BiConsumer<Float64Decoder, double[]> dataConsumerAndAsserter() {
+        return (decoder, doubles) -> {
             double[] ints = decoder.nextDoubles(doubles.length);
             Assert.assertArrayEquals(doubles, ints, 0);
         };

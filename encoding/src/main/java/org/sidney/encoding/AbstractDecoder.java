@@ -9,6 +9,11 @@ import java.nio.BufferUnderflowException;
 public abstract class AbstractDecoder implements Decoder {
     private byte[] buffer;
     private int position = 0;
+    private int numValues = 0;
+
+    public int getNumValues() {
+        return numValues;
+    }
 
     public byte[] getBuffer() {
         return buffer;
@@ -22,11 +27,21 @@ public abstract class AbstractDecoder implements Decoder {
     public void readFromStream(InputStream inputStream) throws IOException {
         position = 0;
         LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
-        int numValues = dis.readInt();
+        numValues = dis.readInt();
         int bufferSize = dis.readInt();
 
         buffer = new byte[bufferSize];
         inputStream.read(buffer);
+    }
+
+    protected byte readByte() {
+        require(1);
+        return buffer[position++];
+    }
+
+    protected boolean readBoolean() {
+        require(1);
+        return buffer[position++] > 0;
     }
 
     protected int readIntLE() {

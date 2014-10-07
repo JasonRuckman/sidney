@@ -8,12 +8,12 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.bool.BitPackingBoolDecoder;
-import org.sidney.encoding.bool.BitPackingBoolEncoder;
 import org.sidney.encoding.bool.BoolDecoder;
 import org.sidney.encoding.bool.BoolEncoder;
 import org.sidney.encoding.bool.EWAHBoolDecoder;
 import org.sidney.encoding.bool.EWAHBoolEncoder;
+import org.sidney.encoding.bool.PlainBoolDecoder;
+import org.sidney.encoding.bool.PlainBoolEncoder;
 
 import java.io.IOException;
 import java.util.Random;
@@ -26,11 +26,11 @@ public class BoolEncoderBenchmarks {
     private final Random random = new Random(11L);
     private final ThreadLocal<EWAHBoolEncoder> ewahBoolEncoders = ThreadLocal.withInitial(EWAHBoolEncoder::new);
     private final ThreadLocal<EWAHBoolDecoder> ewahBoolDecoders = ThreadLocal.withInitial(EWAHBoolDecoder::new);
-    private final ThreadLocal<BitPackingBoolEncoder> packingBoolEncoders = ThreadLocal.withInitial(
-        BitPackingBoolEncoder::new
+    private final ThreadLocal<PlainBoolEncoder> packingBoolEncoders = ThreadLocal.withInitial(
+        PlainBoolEncoder::new
     );
-    private final ThreadLocal<BitPackingBoolDecoder> packingBoolDecoders = ThreadLocal.withInitial(
-        BitPackingBoolDecoder::new
+    private final ThreadLocal<PlainBoolDecoder> packingBoolDecoders = ThreadLocal.withInitial(
+        PlainBoolDecoder::new
     );
     private int num = 65536;
 
@@ -49,7 +49,7 @@ public class BoolEncoderBenchmarks {
 
     @Benchmark
     @Group("boolEncoding")
-    public boolean[] bitpackingEncoderOnRandomInputs() throws IOException {
+    public boolean[] plainEncoderOnRandomInputs() throws IOException {
         return run(packingBoolEncoders.get(), packingBoolDecoders.get());
     }
 
