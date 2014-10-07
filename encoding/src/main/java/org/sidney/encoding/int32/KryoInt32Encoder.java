@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class KryoInt32Encoder implements Int32Encoder {
-    private Output output = new Output(256, 1024000);
+    private Output output;
+
+    public KryoInt32Encoder() {
+        this(4096000);
+    }
+
+    public KryoInt32Encoder(int maxBufferSizeInBytes) {
+        output = new Output(256, maxBufferSizeInBytes);
+    }
 
     @Override
     public void writeInt(int value) {

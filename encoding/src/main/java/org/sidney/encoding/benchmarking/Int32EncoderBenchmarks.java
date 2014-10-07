@@ -16,6 +16,8 @@ import org.sidney.encoding.int32.Int32Decoder;
 import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int32.KryoInt32Decoder;
 import org.sidney.encoding.int32.KryoInt32Encoder;
+import org.sidney.encoding.int32.PlainInt32Decoder;
+import org.sidney.encoding.int32.PlainInt32Encoder;
 
 import java.io.IOException;
 import java.util.Random;
@@ -34,6 +36,8 @@ public class Int32EncoderBenchmarks {
         DeltaBitPackingInt32Encoder::new);
     private ThreadLocal<DeltaBitPackingInt32Decoder> deltaDecoders = ThreadLocal.withInitial(
         DeltaBitPackingInt32Decoder::new);
+    private ThreadLocal<PlainInt32Encoder> plainEncoders = ThreadLocal.withInitial(PlainInt32Encoder::new);
+    private final ThreadLocal<PlainInt32Decoder> plainDecoders = ThreadLocal.withInitial(PlainInt32Decoder::new);
 
     public Int32EncoderBenchmarks() {
         ints = new int[num];
@@ -59,6 +63,12 @@ public class Int32EncoderBenchmarks {
     @Group("intEncoders")
     public int[] deltaInt32Encoder() throws IOException {
         return run(deltaEncoders.get(), deltaDecoders.get());
+    }
+
+    @Benchmark
+    @Group("intEncoders")
+    public int[] plainInt32Encoder() throws IOException {
+        return run(plainEncoders.get(), plainDecoders.get());
     }
 
     private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {

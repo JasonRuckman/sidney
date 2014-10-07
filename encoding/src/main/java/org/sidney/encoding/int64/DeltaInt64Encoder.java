@@ -130,6 +130,10 @@ public class DeltaInt64Encoder implements Int64Encoder {
     }
 
     private long[] calculateMinDeltas() {
+        if(numMiniBlocks == 0) {
+            return new long[0];
+        }
+
         long[] minDeltas = new long[numMiniBlocks];
 
         for (int i = 0; i <= currentMiniBlockIndex; i++) {

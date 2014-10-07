@@ -141,6 +141,9 @@ public class DeltaBitPackingInt32Encoder implements Int32Encoder {
     }
 
     private int[] calculateMinDeltas() {
+        if(numMiniBlocks == 0) {
+            return new int[0];
+        }
         int[] minDeltas = new int[numMiniBlocks];
 
         for(int i = 0; i <= currentMiniBlockIndex; i++) {

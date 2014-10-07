@@ -3,8 +3,17 @@ package org.sidney.encoding;
 import org.sidney.core.Bytes;
 
 public abstract class AbstractEncoder implements Encoder {
-    protected byte[] buffer = new byte[256];
+    private byte[] buffer = new byte[256];
     private int position = 0;
+    protected int numValues = 0;
+
+    public byte[] getBuffer() {
+        return buffer;
+    }
+
+    public int getPosition() {
+        return position;
+    }
 
     @Override
     public void reset() {
@@ -23,16 +32,16 @@ public abstract class AbstractEncoder implements Encoder {
 
     protected void writeBoolean(boolean value) {
         require(1);
-        buffer[position++] = (byte) ((value) ? 0x1 : 0x0);
+        buffer[position++] = (byte) ((value) ? 1 : 0);
     }
 
-    protected void writeInt(int value) {
+    protected void writeIntLE(int value) {
         require(4);
         Bytes.writeIntOn4Bytes(value, buffer, position);
         position += 4;
     }
 
-    protected void writeLong(long value) {
+    protected void writeLongLE(long value) {
         require(8);
         Bytes.writeLongOn8Bytes(value, buffer, position);
         position += 8;

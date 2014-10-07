@@ -7,7 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class KryoInt64Encoder implements Int64Encoder {
-    private final Output output = new Output(256, 1024000);
+    private final Output output;
+
+    public KryoInt64Encoder() {
+        this(4096000);
+    }
+
+    public KryoInt64Encoder(int maxBufferSizeInBytes) {
+        output = new Output(256, maxBufferSizeInBytes);
+    }
 
     @Override
     public void writeLong(long value) {
