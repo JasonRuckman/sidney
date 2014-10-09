@@ -54,7 +54,7 @@ public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder,
             Random random = new Random(11L);
             int[] nums = new int[size];
             for (int i = 0; i < size; i++) {
-                nums[i] = random.nextInt();
+                nums[i] = random.nextInt(500);
             }
             return nums;
         };

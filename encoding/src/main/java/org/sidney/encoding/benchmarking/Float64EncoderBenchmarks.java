@@ -13,7 +13,7 @@ import org.sidney.encoding.float64.*;
 import java.io.IOException;
 import java.util.Random;
 
-@State(Scope.Group)
+@State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
 public class Float64EncoderBenchmarks {
@@ -21,8 +21,8 @@ public class Float64EncoderBenchmarks {
     private final double[] doubles;
     private final ThreadLocal<Float64Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat64Encoder::new);
     private final ThreadLocal<Float64Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat64Decoder::new);
-    private final ThreadLocal<Float64Encoder> deltaFloatEncoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Encoder::new);
-    private final ThreadLocal<Float64Decoder> deltaFloatDecoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Decoder::new);
+    private final ThreadLocal<Float64Encoder> expPackingMantissaDeltaEncoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Encoder::new);
+    private final ThreadLocal<Float64Decoder> expPackingMantissaDeltaDecoders = ThreadLocal.withInitial(ExpPackingMantissaDeltaFloat64Decoder::new);
 
     public Float64EncoderBenchmarks() {
         doubles = new double[num];
@@ -35,7 +35,7 @@ public class Float64EncoderBenchmarks {
     @Benchmark
     @Group("float64Encoders")
     public double[] runSplitDeltaFloatEncoder() throws IOException {
-        return run(deltaFloatEncoders.get(), deltaFloatDecoders.get());
+        return run(expPackingMantissaDeltaEncoders.get(), expPackingMantissaDeltaDecoders.get());
     }
 
     @Benchmark

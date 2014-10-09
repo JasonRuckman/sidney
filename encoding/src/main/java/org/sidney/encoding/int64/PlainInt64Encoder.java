@@ -1,4 +1,4 @@
-package org.sidney.encoding.bool;
+package org.sidney.encoding.int64;
 
 import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.encoding.AbstractEncoder;
@@ -7,26 +7,26 @@ import org.sidney.encoding.Encoding;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class PlainBoolEncoder extends AbstractEncoder implements BoolEncoder {
+public class PlainInt64Encoder extends AbstractEncoder implements Int64Encoder {
     @Override
-    public void writeBool(boolean value) {
-        writeBoolean(value);
+    public void writeLong(long value) {
+        writeLongLE(value);
     }
 
     @Override
-    public void writeBools(boolean[] values) {
-        for(boolean value : values) {
-            writeBool(value);
+    public void writeLongs(long[] values) {
+        for(long l : values) {
+            writeLongLE(l);
         }
     }
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         LittleEndianDataOutputStream los = new LittleEndianDataOutputStream(outputStream);
+
         los.writeInt(numValues);
         los.writeInt(getPosition());
-        outputStream.write(getBuffer(), 0, getPosition());
-        reset();
+        los.write(getBuffer(), 0, getPosition());
     }
 
     @Override

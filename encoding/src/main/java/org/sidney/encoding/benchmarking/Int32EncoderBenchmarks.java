@@ -22,7 +22,7 @@ import org.sidney.encoding.int32.PlainInt32Encoder;
 import java.io.IOException;
 import java.util.Random;
 
-@State(Scope.Group)
+@State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
 public class Int32EncoderBenchmarks {
@@ -43,7 +43,7 @@ public class Int32EncoderBenchmarks {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = random.nextInt(500);
+            ints[i] = random.nextInt();
         }
     }
 

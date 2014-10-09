@@ -1,8 +1,8 @@
 package org.sidney.encoding.int32;
 
+import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.encoding.AbstractEncoder;
 import org.sidney.encoding.Encoding;
-import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;

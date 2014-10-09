@@ -1,5 +1,6 @@
 package org.sidney.encoding.int32;
 
+import com.google.common.io.LittleEndianDataOutputStream;
 import me.lemire.integercompression.Composition;
 import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
@@ -9,7 +10,6 @@ import me.lemire.integercompression.differential.IntegratedBinaryPacking;
 import me.lemire.integercompression.differential.IntegratedVariableByte;
 import org.sidney.core.unsafe.UnsafeInts;
 import org.sidney.encoding.Encoding;
-import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;

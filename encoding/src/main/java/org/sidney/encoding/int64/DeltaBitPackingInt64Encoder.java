@@ -1,14 +1,14 @@
 package org.sidney.encoding.int64;
 
-import org.sidney.core.unsafe.UnsafeLongs;
+import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.encoding.Encoding;
-import parquet.bytes.LittleEndianDataOutputStream;
+import org.sidney.encoding.IntPacker;
+import org.sidney.encoding.IntPackerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-//does delta coding, does not bitpack, to reduce binary size, use with an lz4 encoder, or use secondary compression on the entire stream
-public class DeltaInt64Encoder implements Int64Encoder {
+public class DeltaBitPackingInt64Encoder implements Int64Encoder {
     public static final int DEFAULT_BLOCK_SIZE = 128;
     private long[][] miniBlocks;
     private long firstValue = 0;
@@ -20,11 +20,11 @@ public class DeltaInt64Encoder implements Int64Encoder {
     private int totalValueCount = 0;
     private int numMiniBlocks = 0;
 
-    public DeltaInt64Encoder() {
+    public DeltaBitPackingInt64Encoder() {
         this(DEFAULT_BLOCK_SIZE);
     }
 
-    public DeltaInt64Encoder(int miniBlockSize) {
+    public DeltaBitPackingInt64Encoder(int miniBlockSize) {
         this.miniBlockSize = miniBlockSize;
         this.miniBlocks = new long[256][];
 
@@ -92,29 +92,39 @@ public class DeltaInt64Encoder implements Int64Encoder {
         dos.writeInt(numMiniBlocks);
         dos.writeLong(firstValue);
 
+        if(totalValueCount == 0) {
+            return;
+        }
+
         long[] minDeltas = calculateMinDeltas();
         for (long minDelta : minDeltas) {
             dos.writeLong(minDelta);
         }
 
-        writeDeltas(minDeltas);
+        int[] bitwidths = calculateBitwidths(minDeltas);
+        for (int bitwidth : bitwidths) {
+            dos.writeInt(bitwidth);
+        }
 
         for (int i = 0; i < minDeltas.length; i++) {
-            writeMiniBlock(i, dos);
+            packAndWriteMiniBlock(i, bitwidths[i], dos);
         }
+
+        dos.flush();
     }
 
     @Override
     public String supportedEncoding() {
-        return Encoding.DELTA.name();
+        return Encoding.DELTABITPACKINGHYBRID.name();
     }
 
-    private void writeMiniBlock(int index, LittleEndianDataOutputStream dos) throws IOException {
+    private void packAndWriteMiniBlock(int index, int bitWidth, LittleEndianDataOutputStream dos) throws IOException {
         long[] miniBlock = miniBlocks[index];
-        byte[] buf = new byte[miniBlockSize * 8];
+        int length = (index == currentMiniBlockIndex) ? numDeltasInMiniBlock : miniBlock.length;
 
-        UnsafeLongs.copyLongsToBytes(miniBlock, 0, buf, 0, 128 * 8);
-
+        byte[] buf = new byte[bitWidth * length];
+        IntPacker packer = IntPackerFactory.packer(bitWidth);
+        packer.encode(miniBlock, 0, buf, 0, length);
         dos.write(buf);
     }
 
@@ -129,11 +139,11 @@ public class DeltaInt64Encoder implements Int64Encoder {
         }
     }
 
-    private long[] calculateMinDeltas() {
-        if(numMiniBlocks == 0) {
-            return new long[0];
-        }
+    private int getBitWidth(long value) {
+        return 64 - Long.numberOfLeadingZeros(value);
+    }
 
+    private long[] calculateMinDeltas() {
         long[] minDeltas = new long[numMiniBlocks];
 
         for (int i = 0; i <= currentMiniBlockIndex; i++) {
@@ -146,17 +156,24 @@ public class DeltaInt64Encoder implements Int64Encoder {
         return minDeltas;
     }
 
-    //todo take alot of the branching out of these calls
-    private void writeDeltas(long[] minDeltas) {
+    private int[] calculateBitwidths(long[] minDeltas) {
+        int[] bitwidths = new int[minDeltas.length];
+
         for (int i = 0; i < minDeltas.length; i++) {
+            int bitwidth = Integer.MIN_VALUE;
             long[] miniBlock = miniBlocks[i];
             long minDelta = minDeltas[i];
             int length = (i == currentMiniBlockIndex) ? numDeltasInMiniBlock : miniBlock.length;
 
             for (int j = 0; j < length; j++) {
                 miniBlock[j] = miniBlock[j] - minDelta;
+                bitwidth = Math.max(bitwidth, getBitWidth(miniBlock[j]));
             }
+
+            bitwidths[i] = bitwidth;
         }
+
+        return bitwidths;
     }
 
     private long minDeltaForBlock(long[] miniBlock, int length) {

@@ -1,10 +1,10 @@
 package org.sidney.encoding.float32;
 
+import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
-import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;

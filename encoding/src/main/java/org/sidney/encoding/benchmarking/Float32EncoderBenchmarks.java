@@ -18,15 +18,15 @@ import org.sidney.encoding.float32.KryoFloat32Encoder;
 import java.io.IOException;
 import java.util.Random;
 
-@State(Scope.Group)
+@State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
 public class Float32EncoderBenchmarks {
     private final int num = 65536;
     private final float[] floats;
-    private final ThreadLocal<Float32Encoder> deltaFloatEncoders = ThreadLocal.withInitial(
+    private final ThreadLocal<Float32Encoder> expMantissaPackingFloatEncoders = ThreadLocal.withInitial(
         ExponentMantissaPackingFloat32Encoder::new);
-    private final ThreadLocal<Float32Decoder> deltaFloatDecoders = ThreadLocal.withInitial(
+    private final ThreadLocal<Float32Decoder> expMantissaPackingFloatDecoders = ThreadLocal.withInitial(
         ExponentMantissaPackingFloat32Decoder::new);
     private final ThreadLocal<Float32Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat32Encoder::new);
     private final ThreadLocal<Float32Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat32Decoder::new);
@@ -41,8 +41,8 @@ public class Float32EncoderBenchmarks {
 
     @Benchmark
     @Group("float32Encoders")
-    public float[] runDeltaFloat32Encoder() throws IOException {
-        return run(deltaFloatEncoders.get(), deltaFloatDecoders.get());
+    public float[] runExpMantissaPackingFloatEncoders() throws IOException {
+        return run(expMantissaPackingFloatEncoders.get(), expMantissaPackingFloatDecoders.get());
     }
 
     @Benchmark

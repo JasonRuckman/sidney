@@ -18,7 +18,7 @@ import org.sidney.encoding.bool.PlainBoolEncoder;
 import java.io.IOException;
 import java.util.Random;
 
-@State(Scope.Group)
+@State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
 public class BoolEncoderBenchmarks {

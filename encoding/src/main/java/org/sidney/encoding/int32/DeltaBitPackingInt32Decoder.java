@@ -1,15 +1,14 @@
 package org.sidney.encoding.int32;
 
+import com.google.common.io.LittleEndianDataInputStream;
 import org.sidney.encoding.Encoding;
-import parquet.bytes.LittleEndianDataInputStream;
-import parquet.column.values.bitpacking.BytePacker;
-import parquet.column.values.bitpacking.Packer;
+import org.sidney.encoding.IntPacker;
+import org.sidney.encoding.IntPackerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class DeltaBitPackingInt32Decoder implements Int32Decoder {
-    private static final int PACK_SIZE = 8;
     private int[] intBuffer = new int[2048];
     private int currentIndex = 0;
     private int currentReadIndex = 0;
@@ -73,19 +72,12 @@ public class DeltaBitPackingInt32Decoder implements Int32Decoder {
         int numToUnpack = Math.min(numValuesLeft, 128);
         int numCounter = numToUnpack;
 
-        ensureCapacity(currentReadIndex + 128);
+        ensureCapacity(currentReadIndex + numToUnpack);
 
-        BytePacker packer = Packer.LITTLE_ENDIAN.newBytePacker(bitWidth);
-
-        byte[] buf = new byte[bitWidth];
-
-        int miniBlockStartIndex = currentReadIndex;
-        while (numToUnpack > 0) {
-            dis.read(buf);
-            packer.unpack8Values(buf, 0, intBuffer, miniBlockStartIndex);
-            numToUnpack -= PACK_SIZE;
-            miniBlockStartIndex += PACK_SIZE;
-        }
+        byte[] buf = new byte[bitWidth * numToUnpack];
+        dis.read(buf);
+        IntPacker packer = IntPackerFactory.packer(bitWidth);
+        packer.decode(buf, 0, intBuffer, currentReadIndex, numToUnpack);
 
         //go adjust min-deltas
         for (int i = 0; i < numCounter; i++) {

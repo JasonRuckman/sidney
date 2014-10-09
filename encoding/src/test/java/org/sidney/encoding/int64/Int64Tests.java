@@ -2,12 +2,9 @@ package org.sidney.encoding.int64;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.Bytes;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
-import org.sidney.encoding.TriConsumer;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -16,8 +13,10 @@ import java.util.function.IntFunction;
 
 public class Int64Tests extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
     private final List<EncoderDecoderPair<Int64Encoder, Int64Decoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new DeltaInt64Encoder(), new DeltaInt64Decoder()),
-        new EncoderDecoderPair<>(new KryoInt64Encoder(1024000 * 8), new KryoInt64Decoder())
+        new EncoderDecoderPair<>(new DeltaBitPackingInt64Encoder(), new DeltaBitPackingInt64Decoder()),
+        new EncoderDecoderPair<>(new KryoInt64Encoder(1024000 * 8), new KryoInt64Decoder()),
+        new EncoderDecoderPair<>(new PlainInt64Encoder(), new PlainInt64Decoder()),
+        new EncoderDecoderPair<>(new BitPackingInt64Encoder(), new BitPackingInt64Decoder())
     );
 
     @Test
@@ -34,6 +33,7 @@ public class Int64Tests extends AbstractEncoderTests<Int64Encoder, Int64Decoder,
         };
     }
 
+    //TODO: make this generate blocks of different bitwidths
     @Override
     protected IntFunction<long[]> dataSupplier() {
         return (size) -> {

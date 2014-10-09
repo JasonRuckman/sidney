@@ -48,7 +48,9 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         T t = dataSupplier().apply(size);
         encodingFunction().accept(pair.getEncoder(), t);
         pair.getEncoder().writeToStream(baos);
-        pair.getDecoder().readFromStream(Bytes.wrap(baos.toByteArray()));
+        byte[] bytes = baos.toByteArray();
+        logger.info(String.format("Size in bytes: %s", bytes.length));
+        pair.getDecoder().readFromStream(Bytes.wrap(bytes));
         dataConsumerAndAsserter().accept(pair.getDecoder(), t);
     }
 }

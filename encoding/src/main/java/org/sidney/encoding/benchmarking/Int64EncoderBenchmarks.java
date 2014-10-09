@@ -8,8 +8,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.int64.DeltaInt64Decoder;
-import org.sidney.encoding.int64.DeltaInt64Encoder;
+import org.sidney.encoding.int64.BitPackingInt64Decoder;
+import org.sidney.encoding.int64.BitPackingInt64Encoder;
+import org.sidney.encoding.int64.DeltaBitPackingInt64Decoder;
+import org.sidney.encoding.int64.DeltaBitPackingInt64Encoder;
 import org.sidney.encoding.int64.Int64Decoder;
 import org.sidney.encoding.int64.Int64Encoder;
 import org.sidney.encoding.int64.KryoInt64Decoder;
@@ -18,16 +20,18 @@ import org.sidney.encoding.int64.KryoInt64Encoder;
 import java.io.IOException;
 import java.util.Random;
 
-@State(Scope.Group)
+@State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
 public class Int64EncoderBenchmarks {
     private final int num = 65536;
     private final long[] longs;
-    private final ThreadLocal<Int64Encoder> deltaInt64Encoders = ThreadLocal.withInitial(DeltaInt64Encoder::new);
-    private final ThreadLocal<Int64Decoder> deltaInt64Decoders = ThreadLocal.withInitial(DeltaInt64Decoder::new);
+    private final ThreadLocal<Int64Encoder> deltaInt64Encoders = ThreadLocal.withInitial(DeltaBitPackingInt64Encoder::new);
+    private final ThreadLocal<Int64Decoder> deltaInt64Decoders = ThreadLocal.withInitial(DeltaBitPackingInt64Decoder::new);
     private final ThreadLocal<Int64Encoder> kryoInt64Encoders = ThreadLocal.withInitial(KryoInt64Encoder::new);
     private final ThreadLocal<Int64Decoder> kryoInt64Decoders = ThreadLocal.withInitial(KryoInt64Decoder::new);
+    private final ThreadLocal<Int64Encoder> bitpackingInt64Encoders = ThreadLocal.withInitial(BitPackingInt64Encoder::new);
+    private final ThreadLocal<Int64Decoder> bitpackingInt64Decoders = ThreadLocal.withInitial(BitPackingInt64Decoder::new);
 
     public Int64EncoderBenchmarks() {
         longs = new long[num];
@@ -47,6 +51,12 @@ public class Int64EncoderBenchmarks {
     @Group("int64Encoders")
     public long[] kryoInt64Encoder() throws IOException {
         return run(kryoInt64Encoders.get(), kryoInt64Decoders.get());
+    }
+
+    @Benchmark
+    @Group("int64Encoders")
+    public long[] bitpackingInt64Encoder() throws IOException {
+        return run(bitpackingInt64Encoders.get(), bitpackingInt64Decoders.get());
     }
 
     private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {

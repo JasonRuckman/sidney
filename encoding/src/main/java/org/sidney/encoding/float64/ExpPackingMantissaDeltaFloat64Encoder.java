@@ -1,11 +1,12 @@
 package org.sidney.encoding.float64;
 
+import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
-import org.sidney.encoding.int64.DeltaInt64Encoder;
+import org.sidney.encoding.int64.BitPackingInt64Encoder;
+import org.sidney.encoding.int64.DeltaBitPackingInt64Encoder;
 import org.sidney.encoding.int64.Int64Encoder;
-import parquet.bytes.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +17,7 @@ import java.io.OutputStream;
  */
 public class ExpPackingMantissaDeltaFloat64Encoder implements Float64Encoder  {
     private final Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
-    private final Int64Encoder mantissaEncoder = new DeltaInt64Encoder();
+    private final Int64Encoder mantissaEncoder = new BitPackingInt64Encoder();
     private int count = 0;
 
     @Override
