@@ -10,7 +10,6 @@ import org.sidney.core.unsafe.UnsafeBytes;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -48,9 +47,7 @@ public class FastBitPackInt32Decoder extends AbstractDecoder implements Int32Dec
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        inputStream = wrapStreamIfNecessary(inputStream);
-
-        LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
+        LittleEndianDataInputStream dis = dataInputStreamWrapIfNecessary(inputStream);
 
         int numInts = dis.readInt();
         int compressedSize = dis.readInt();

@@ -1,10 +1,8 @@
 package org.sidney.encoding.bool;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
-import org.sidney.encoding.TriConsumer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +37,7 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
     }
 
     @Override
-    protected BiConsumer<BoolDecoder, boolean[]> dataConsumerAndAsserter() {
+    protected BiConsumer<BoolDecoder, boolean[]> consumeAndAssert() {
         return (decoder, bools) -> {
             boolean[] results = decoder.nextBools(bools.length);
 

@@ -25,50 +25,40 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
-public class Int32EncoderBenchmarks {
+public class Int32EncoderBenchmarks extends BenchmarkingBase {
     private final int[] ints;
     private int num = 65536;
-    private ThreadLocal<FastBitPackInt32Encoder> bitpackingEncoders = ThreadLocal.withInitial(FastBitPackInt32Encoder::new);
-    private ThreadLocal<FastBitPackInt32Decoder> bitpackingDecoders = ThreadLocal.withInitial(FastBitPackInt32Decoder::new);
-    private ThreadLocal<KryoInt32Encoder> kryoEncoders = ThreadLocal.withInitial(KryoInt32Encoder::new);
-    private ThreadLocal<KryoInt32Decoder> kryoDecoders = ThreadLocal.withInitial(KryoInt32Decoder::new);
-    private ThreadLocal<DeltaBitPackingInt32Encoder> deltaEncoders = ThreadLocal.withInitial(
-        DeltaBitPackingInt32Encoder::new);
-    private ThreadLocal<DeltaBitPackingInt32Decoder> deltaDecoders = ThreadLocal.withInitial(
-        DeltaBitPackingInt32Decoder::new);
-    private ThreadLocal<PlainInt32Encoder> plainEncoders = ThreadLocal.withInitial(PlainInt32Encoder::new);
-    private final ThreadLocal<PlainInt32Decoder> plainDecoders = ThreadLocal.withInitial(PlainInt32Decoder::new);
 
     public Int32EncoderBenchmarks() {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = i;
+            ints[i] = random.nextInt();
         }
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] fastPforInt32Encoder() throws IOException {
-        return run(bitpackingEncoders.get(), bitpackingDecoders.get());
+        return run(getEncoder(FastBitPackInt32Encoder.class), getDecoder(FastBitPackInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] kryoInt32Encoder() throws IOException {
-        return run(kryoEncoders.get(), kryoDecoders.get());
+        return run(getEncoder(KryoInt32Encoder.class), getDecoder(KryoInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] deltaInt32Encoder() throws IOException {
-        return run(deltaEncoders.get(), deltaDecoders.get());
+        return run(getEncoder(DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPackingInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] plainInt32Encoder() throws IOException {
-        return run(plainEncoders.get(), plainDecoders.get());
+        return run(getEncoder(PlainInt32Encoder.class), getDecoder(PlainInt32Decoder.class));
     }
 
     private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {

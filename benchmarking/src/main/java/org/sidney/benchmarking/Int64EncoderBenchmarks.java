@@ -12,6 +12,8 @@ import org.sidney.encoding.int64.Int64Decoder;
 import org.sidney.encoding.int64.Int64Encoder;
 import org.sidney.encoding.int64.KryoInt64Decoder;
 import org.sidney.encoding.int64.KryoInt64Encoder;
+import org.sidney.encoding.int64.PlainInt64Decoder;
+import org.sidney.encoding.int64.PlainInt64Encoder;
 
 import java.io.IOException;
 import java.util.Random;
@@ -19,11 +21,9 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
-public class Int64EncoderBenchmarks {
+public class Int64EncoderBenchmarks extends BenchmarkingBase {
     private final int num = 65536;
     private final long[] longs;
-    private final ThreadLocal<Int64Encoder> kryoInt64Encoders = ThreadLocal.withInitial(KryoInt64Encoder::new);
-    private final ThreadLocal<Int64Decoder> kryoInt64Decoders = ThreadLocal.withInitial(KryoInt64Decoder::new);
 
     public Int64EncoderBenchmarks() {
         longs = new long[num];
@@ -35,8 +35,14 @@ public class Int64EncoderBenchmarks {
 
     @Benchmark
     @Group("int64Encoders")
-    public long[] kryoInt64Encoder() throws IOException {
-        return run(kryoInt64Encoders.get(), kryoInt64Decoders.get());
+    public long[] runKryoInt64Encoder() throws IOException {
+        return run(getEncoder(KryoInt64Encoder.class), getDecoder(KryoInt64Decoder.class));
+    }
+
+    @Benchmark
+    @Group("int64Encoders")
+    public long[] runPlainInt64Encoder() throws IOException {
+        return run(getEncoder(PlainInt64Encoder.class), getDecoder(PlainInt64Decoder.class));
     }
 
     private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {

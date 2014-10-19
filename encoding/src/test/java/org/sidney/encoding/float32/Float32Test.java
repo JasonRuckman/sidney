@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
-import org.sidney.encoding.TriConsumer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +38,7 @@ public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Dec
     }
 
     @Override
-    protected BiConsumer<Float32Decoder, float[]> dataConsumerAndAsserter() {
+    protected BiConsumer<Float32Decoder, float[]> consumeAndAssert() {
         return (decoder, floats) -> {
             float[] results = decoder.nextFloats(floats.length);
             Assert.assertArrayEquals(floats, results, 0);
@@ -56,11 +55,13 @@ public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Dec
         return this.getClass();
     }
 
+    @Test
     @Override
     public void runCompressionTests() {
         runAllWithCompression();
     }
 
+    @Test
     @Override
     public void runTests() {
         runAll();

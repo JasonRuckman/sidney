@@ -1,7 +1,6 @@
 package org.sidney.encoding.int64;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
 
@@ -40,7 +39,7 @@ public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, 
     }
 
     @Override
-    protected BiConsumer<Int64Decoder, long[]> dataConsumerAndAsserter() {
+    protected BiConsumer<Int64Decoder, long[]> consumeAndAssert() {
         return (decoder, nums) -> {
             long[] ints = decoder.nextLongs(nums.length);
             Assert.assertArrayEquals(nums, ints);

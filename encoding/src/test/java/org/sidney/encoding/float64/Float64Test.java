@@ -2,12 +2,9 @@ package org.sidney.encoding.float64;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.Bytes;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
-import org.sidney.encoding.TriConsumer;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -44,7 +41,7 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
     }
 
     @Override
-    protected BiConsumer<Float64Decoder, double[]> dataConsumerAndAsserter() {
+    protected BiConsumer<Float64Decoder, double[]> consumeAndAssert() {
         return (decoder, doubles) -> {
             double[] ints = decoder.nextDoubles(doubles.length);
             Assert.assertArrayEquals(doubles, ints, 0);

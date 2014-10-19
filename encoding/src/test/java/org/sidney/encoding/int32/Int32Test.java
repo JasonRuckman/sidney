@@ -1,14 +1,10 @@
 package org.sidney.encoding.int32;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.sidney.core.Bytes;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
-import org.sidney.encoding.TriConsumer;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +53,7 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
     }
 
     @Override
-    protected BiConsumer<Int32Decoder, int[]> dataConsumerAndAsserter() {
+    protected BiConsumer<Int32Decoder, int[]> consumeAndAssert() {
         return (decoder, nums) -> {
             int[] ints = decoder.nextInts(nums.length);
             Assert.assertArrayEquals(nums, ints);

@@ -6,7 +6,6 @@ import org.sidney.bitpacking.Packers;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -52,9 +51,7 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         reset();
-        inputStream = wrapStreamIfNecessary(inputStream);
-
-        LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
+        LittleEndianDataInputStream dis = dataInputStreamWrapIfNecessary(inputStream);
 
         totalValueCount = dis.readInt();
         firstValue = dis.readInt();

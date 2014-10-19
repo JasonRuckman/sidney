@@ -21,17 +21,9 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
-public class BoolEncoderBenchmarks {
+public class BoolEncoderBenchmarks extends BenchmarkingBase {
     private final boolean[] booleans;
     private final Random random = new Random(11L);
-    private final ThreadLocal<EWAHBoolEncoder> ewahBoolEncoders = ThreadLocal.withInitial(EWAHBoolEncoder::new);
-    private final ThreadLocal<EWAHBoolDecoder> ewahBoolDecoders = ThreadLocal.withInitial(EWAHBoolDecoder::new);
-    private final ThreadLocal<PlainBoolEncoder> packingBoolEncoders = ThreadLocal.withInitial(
-        PlainBoolEncoder::new
-    );
-    private final ThreadLocal<PlainBoolDecoder> packingBoolDecoders = ThreadLocal.withInitial(
-        PlainBoolDecoder::new
-    );
     private int num = 65536;
 
     public BoolEncoderBenchmarks() {
@@ -44,13 +36,13 @@ public class BoolEncoderBenchmarks {
     @Benchmark
     @Group("boolEncoding")
     public boolean[] ewahBoolEncoderOnRandomInputs() throws IOException {
-        return run(ewahBoolEncoders.get(), ewahBoolDecoders.get());
+        return run(getEncoder(EWAHBoolEncoder.class), getDecoder(EWAHBoolDecoder.class));
     }
 
     @Benchmark
     @Group("boolEncoding")
     public boolean[] plainEncoderOnRandomInputs() throws IOException {
-        return run(packingBoolEncoders.get(), packingBoolDecoders.get());
+        return run(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
     }
 
     private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {

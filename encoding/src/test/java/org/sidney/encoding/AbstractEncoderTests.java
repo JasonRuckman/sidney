@@ -20,7 +20,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     protected abstract IntFunction<T> dataSupplier();
 
-    protected abstract BiConsumer<D, T> dataConsumerAndAsserter();
+    protected abstract BiConsumer<D, T> consumeAndAssert();
 
     protected abstract List<EncoderDecoderPair<E, D>> pairs();
 
@@ -95,7 +95,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
         pair.getDecoder().readFromStream(new SnappyInputStream(Bytes.wrap(bytes)));
-        dataConsumerAndAsserter().accept(pair.getDecoder(), t);
+        consumeAndAssert().accept(pair.getDecoder(), t);
     }
 
     private void logAndRun(EncoderDecoderPair<E, D> pair, int size) throws IOException {
@@ -110,6 +110,6 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
         pair.getDecoder().readFromStream(Bytes.wrap(bytes));
-        dataConsumerAndAsserter().accept(pair.getDecoder(), t);
+        consumeAndAssert().accept(pair.getDecoder(), t);
     }
 }

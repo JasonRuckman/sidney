@@ -3,11 +3,8 @@ package org.sidney.encoding;
 import com.google.common.io.LittleEndianDataInputStream;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.BufferUnderflowException;
 
 public abstract class AbstractDecoder implements Decoder {
@@ -41,20 +38,23 @@ public abstract class AbstractDecoder implements Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        inputStream = wrapStreamIfNecessary(inputStream);
+        LittleEndianDataInputStream dis = dataInputStreamWrapIfNecessary(inputStream);
 
-        LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
+        setPosition(0);
 
-        position = 0;
         numValues = dis.readInt();
-        int bufferSize = dis.readInt();
+        buffer = new byte[dis.readInt()];
 
-        buffer = new byte[bufferSize];
         dis.read(buffer);
     }
 
-    protected InputStream wrapStreamIfNecessary(InputStream inputStream) {
+    protected InputStream inputStreamWrapIfNecessary(InputStream inputStream) {
         return (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
+    }
+
+    protected LittleEndianDataInputStream dataInputStreamWrapIfNecessary(InputStream inputStream) {
+        return (inputStream instanceof BufferedInputStream) ? new LittleEndianDataInputStream(inputStream) :
+            new LittleEndianDataInputStream(new BufferedInputStream(inputStream));
     }
 
     protected byte readByte() {
@@ -82,20 +82,20 @@ public abstract class AbstractDecoder implements Decoder {
     protected long readLongLE() {
         require(8);
         long res =
-            ((long)(buffer[position + 7] & 0xff) << 56) |
-            ((long)(buffer[position + 6] & 0xff) << 48) |
-            ((long)(buffer[position + 5] & 0xff) << 40) |
-            ((long)(buffer[position + 4] & 0xff) << 32) |
-            ((long)(buffer[position + 3] & 0xff) << 24) |
-            ((long)(buffer[position + 2] & 0xff) << 16) |
-            ((long)(buffer[position + 1] & 0xff) << 8) |
-            (long)(buffer[position] & 0xff);
+            ((long) (buffer[position + 7] & 0xff) << 56) |
+                ((long) (buffer[position + 6] & 0xff) << 48) |
+                ((long) (buffer[position + 5] & 0xff) << 40) |
+                ((long) (buffer[position + 4] & 0xff) << 32) |
+                ((long) (buffer[position + 3] & 0xff) << 24) |
+                ((long) (buffer[position + 2] & 0xff) << 16) |
+                ((long) (buffer[position + 1] & 0xff) << 8) |
+                (long) (buffer[position] & 0xff);
         position += 8;
         return res;
     }
 
     protected void ensureSize(int size) {
-        if(buffer == null || buffer.length < size) {
+        if (buffer == null || buffer.length < size) {
             buffer = new byte[size];
         }
     }

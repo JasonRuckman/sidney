@@ -21,15 +21,9 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 5)
 @Fork(value = 1, warmups = 1)
-public class Float32EncoderBenchmarks {
+public class Float32EncoderBenchmarks extends BenchmarkingBase {
     private final int num = 65536;
     private final float[] floats;
-    private final ThreadLocal<Float32Encoder> expMantissaPackingFloatEncoders = ThreadLocal.withInitial(
-        ExponentMantissaPackingFloat32Encoder::new);
-    private final ThreadLocal<Float32Decoder> expMantissaPackingFloatDecoders = ThreadLocal.withInitial(
-        ExponentMantissaPackingFloat32Decoder::new);
-    private final ThreadLocal<Float32Encoder> kryoFloatEncoders = ThreadLocal.withInitial(KryoFloat32Encoder::new);
-    private final ThreadLocal<Float32Decoder> kryoFloatDecoders = ThreadLocal.withInitial(KryoFloat32Decoder::new);
 
     public Float32EncoderBenchmarks() {
         floats = new float[num];
@@ -42,13 +36,13 @@ public class Float32EncoderBenchmarks {
     @Benchmark
     @Group("float32Encoders")
     public float[] runExpMantissaPackingFloatEncoders() throws IOException {
-        return run(expMantissaPackingFloatEncoders.get(), expMantissaPackingFloatDecoders.get());
+        return run(getEncoder(ExponentMantissaPackingFloat32Encoder.class), getDecoder(ExponentMantissaPackingFloat32Decoder.class));
     }
 
     @Benchmark
     @Group("float32Encoders")
     public float[] runKryoFloat32Encoder() throws IOException {
-        return run(kryoFloatEncoders.get(), kryoFloatDecoders.get());
+        return run(getEncoder(KryoFloat32Encoder.class), getDecoder(KryoFloat32Decoder.class));
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

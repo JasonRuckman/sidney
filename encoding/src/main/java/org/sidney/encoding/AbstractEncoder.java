@@ -1,6 +1,10 @@
 package org.sidney.encoding;
 
+import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.core.Bytes;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class AbstractEncoder implements Encoder {
     protected int numValues = 0;
@@ -28,6 +32,17 @@ public abstract class AbstractEncoder implements Encoder {
         position = 0;
         buffer = new byte[256];
         numValues = 0;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+        LittleEndianDataOutputStream los = new LittleEndianDataOutputStream(outputStream);
+
+        los.writeInt(numValues);
+        los.writeInt(getPosition());
+        los.write(getBuffer(), 0, getPosition());
+
+        los.flush();
     }
 
     protected void ensureCapacity(int bytes) {

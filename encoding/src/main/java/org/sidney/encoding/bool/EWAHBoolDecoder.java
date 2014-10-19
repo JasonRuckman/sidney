@@ -5,7 +5,6 @@ import com.googlecode.javaewah.IntIterator;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +38,7 @@ public class EWAHBoolDecoder extends AbstractDecoder implements BoolDecoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        inputStream = wrapStreamIfNecessary(inputStream);
+        inputStream = dataInputStreamWrapIfNecessary(inputStream);
 
         index = 0;
         bitmap = new EWAHCompressedBitmap();
