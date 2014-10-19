@@ -1,7 +1,6 @@
 package org.sidney.encoding.int32;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
 
@@ -68,17 +67,5 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
     @Override
     protected Class getRunningClass() {
         return this.getClass();
-    }
-
-    @Test
-    @Override
-    public void runCompressionTests() {
-        runAllWithCompression();
-    }
-
-    @Test
-    @Override
-    public void runTests() {
-        runAllWithCompression();
     }
 }

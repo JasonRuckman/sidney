@@ -1,7 +1,6 @@
 package org.sidney.encoding.string;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
 
@@ -50,17 +49,5 @@ public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecode
     @Override
     protected Class getRunningClass() {
         return StringTest.class;
-    }
-
-    @Override
-    @Test
-    public void runCompressionTests() {
-        runAllWithCompression();
-    }
-
-    @Override
-    @Test
-    public void runTests() {
-        runAll();
     }
 }

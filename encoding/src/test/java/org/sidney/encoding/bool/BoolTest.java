@@ -54,14 +54,4 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
     protected Class getRunningClass() {
         return this.getClass();
     }
-
-    @Override
-    public void runCompressionTests() {
-        runAllWithCompression();
-    }
-
-    @Override
-    public void runTests() {
-        runAll();
-    }
 }

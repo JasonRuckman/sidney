@@ -1,5 +1,6 @@
 package org.sidney.encoding;
 
+import org.junit.Test;
 import org.sidney.core.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,8 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     protected abstract Class getRunningClass();
 
-    public abstract void runCompressionTests();
-    public abstract void runTests();
-
-    protected void runAll() {
+    @Test
+    public void runAll() {
         List<EncoderDecoderPair<E, D>> pairs = pairs();
         pairs.forEach(
             (pair) -> {
@@ -45,7 +44,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
                         logAndRun(pair, i);
                     }
 
-                    for (int i = 8; i < 1024000; i += 65536) {
+                    for (int i = 8; i < 500000; i += 65536) {
                         logAndRun(pair, i);
                     }
                 } catch (IOException e) {
@@ -55,7 +54,8 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         );
     }
 
-    protected void runAllWithCompression() {
+    @Test
+    public void runAllWithCompression() {
         List<EncoderDecoderPair<E, D>> pairs = pairs();
         pairs.forEach(
             (pair) -> {
@@ -71,7 +71,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
                         logAndRunWithCompression(pair, i);
                     }
 
-                    for (int i = 8; i < 1024000; i += 65536) {
+                    for (int i = 8; i < 500000; i += 65536) {
                         logAndRunWithCompression(pair, i);
                     }
                 } catch (IOException e) {

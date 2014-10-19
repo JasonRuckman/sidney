@@ -55,14 +55,4 @@ public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, 
     protected Class getRunningClass() {
         return this.getClass();
     }
-
-    @Override
-    public void runCompressionTests() {
-
-    }
-
-    @Override
-    public void runTests() {
-
-    }
 }

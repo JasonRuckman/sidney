@@ -67,7 +67,7 @@ public abstract class AbstractDecoder implements Decoder {
         return buffer[position++] > 0;
     }
 
-    protected byte[] readBytes(int num) {
+    protected byte[] readBytesInternal(int num) {
         require(num);
         byte[] buf = new byte[num];
         System.arraycopy(getBuffer(), getPosition(), buf, 0, num);

@@ -1,7 +1,6 @@
 package org.sidney.encoding.float64;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
 
@@ -56,17 +55,5 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
     @Override
     protected Class getRunningClass() {
         return this.getClass();
-    }
-
-    @Test
-    @Override
-    public void runCompressionTests() {
-        runAllWithCompression();
-    }
-
-    @Test
-    @Override
-    public void runTests() {
-        runAll();
     }
 }

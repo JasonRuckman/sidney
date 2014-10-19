@@ -12,7 +12,7 @@ public class PlainStringDecoder extends AbstractDecoder implements StringDecoder
 
     public String readString() {
         int length = readIntLE();
-        byte[] bytes = readBytes(length);
+        byte[] bytes = readBytesInternal(length);
         return charset.decode(ByteBuffer.wrap(bytes)).toString();
     }
 
