@@ -6,7 +6,7 @@ import org.sidney.encoding.Encoding;
 public class RawBytesEncoder extends AbstractEncoder implements BytesEncoder {
     @Override
     public void writeByte(byte b) {
-        writeByte(b);
+        writeByteInternal(b);
     }
 
     @Override
