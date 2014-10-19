@@ -19,8 +19,16 @@ public abstract class AbstractDecoder implements Decoder {
         return buffer;
     }
 
+    public void setBuffer(byte[] buffer) {
+        this.buffer = buffer;
+    }
+
     public int getPosition() {
         return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public void incrementPosition(int size) {
@@ -73,8 +81,10 @@ public abstract class AbstractDecoder implements Decoder {
         return res;
     }
 
-    protected void trashBuffer() {
-        buffer = null;
+    protected void ensureSize(int size) {
+        if(buffer == null || buffer.length < size) {
+            buffer = new byte[size];
+        }
     }
 
     private void require(int size) {

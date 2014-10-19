@@ -15,6 +15,10 @@ public abstract class AbstractEncoder implements Encoder {
         return position;
     }
 
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
     public void incrementPosition(int size) {
         position += size;
     }

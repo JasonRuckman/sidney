@@ -43,7 +43,7 @@ public class Int32EncoderBenchmarks {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = random.nextInt();
+            ints[i] = i;
         }
     }
 

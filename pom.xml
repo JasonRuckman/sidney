@@ -14,6 +14,7 @@
         <module>encoding</module>
         <module>annotations</module>
         <module>tools</module>
+        <module>bitpacking</module>
     </modules>
 
     <properties>

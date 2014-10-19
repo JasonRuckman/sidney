@@ -1,6 +1,7 @@
 package org.sidney.encoding.int32;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sidney.core.Bytes;
 import org.sidney.encoding.AbstractEncoderTests;
@@ -54,7 +55,7 @@ public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder,
             Random random = new Random(11L);
             int[] nums = new int[size];
             for (int i = 0; i < size; i++) {
-                nums[i] = random.nextInt(500);
+                nums[i] = random.nextInt();
             }
             return nums;
         };

@@ -25,6 +25,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.sidney</groupId>
+            <artifactId>sidney-bitpacking</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>me.lemire.integercompression</groupId>
             <artifactId>JavaFastPFOR</artifactId>
             <version>${pfor.version}</version>

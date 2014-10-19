@@ -14,9 +14,13 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     private Logger logger = LoggerFactory.getLogger(getRunningClass());
 
     protected abstract BiConsumer<E, T> encodingFunction();
+
     protected abstract IntFunction<T> dataSupplier();
+
     protected abstract BiConsumer<D, T> dataConsumerAndAsserter();
+
     protected abstract List<EncoderDecoderPair<E, D>> pairs();
+
     protected abstract Class getRunningClass();
 
     protected void runAll() {
@@ -30,13 +34,16 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
                         pair.getDecoder().getClass()
                     )
                 );
-
-                for (int i = 0; i < 1024000; i += 65536) {
-                    try {
+                try {
+                    for (int i = 0; i < 8; i++) {
                         logAndRun(pair, i);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
                     }
+
+                    for (int i = 8; i < 1024000; i += 65536) {
+                        logAndRun(pair, i);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         );
