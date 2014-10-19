@@ -10,7 +10,7 @@ import org.sidney.encoding.int64.PlainInt64Decoder;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ExpPackingMantissaDeltaFloat64Decoder extends AbstractDecoder implements Float64Decoder {
+public class ExpPackingFloat64Decoder extends AbstractDecoder implements Float64Decoder {
     private final Int32Decoder exponentDecoder = new DeltaBitPackingInt32Decoder();
     private final Int64Decoder mantissaDecoder = new PlainInt64Decoder();
 

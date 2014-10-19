@@ -13,7 +13,7 @@ import java.io.OutputStream;
  * Splits a double precision float into exponent and mantissa.  Delta codes the exponent as a 32bit integer, Delta codes the
  * mantissa as a long
  */
-public class ExpPackingMantissaDeltaFloat64Encoder implements Float64Encoder  {
+public class ExpPackingFloat64Encoder implements Float64Encoder  {
     private final Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
     private final Int64Encoder mantissaEncoder = new PlainInt64Encoder();
 

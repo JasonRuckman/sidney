@@ -8,8 +8,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.core.Bytes;
-import org.sidney.encoding.float64.ExpPackingMantissaDeltaFloat64Decoder;
-import org.sidney.encoding.float64.ExpPackingMantissaDeltaFloat64Encoder;
+import org.sidney.encoding.float64.ExpPackingFloat64Decoder;
+import org.sidney.encoding.float64.ExpPackingFloat64Encoder;
 import org.sidney.encoding.float64.Float64Decoder;
 import org.sidney.encoding.float64.Float64Encoder;
 import org.sidney.encoding.float64.KryoFloat64Decoder;
@@ -36,7 +36,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("float64Encoders")
     public double[] runExpPackingFloat64Encoder() throws IOException {
-        return run(getEncoder(ExpPackingMantissaDeltaFloat64Encoder.class), getDecoder(ExpPackingMantissaDeltaFloat64Decoder.class));
+        return run(getEncoder(ExpPackingFloat64Encoder.class), getDecoder(ExpPackingFloat64Decoder.class));
     }
 
     @Benchmark
