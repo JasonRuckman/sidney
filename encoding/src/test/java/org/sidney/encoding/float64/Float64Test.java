@@ -14,18 +14,13 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
-public class Float64Tests extends AbstractEncoderTests<Float64Encoder, Float64Decoder, double[]> {
+public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Decoder, double[]> {
     private final List<EncoderDecoderPair<Float64Encoder, Float64Decoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(
             new ExpPackingMantissaDeltaFloat64Encoder(), new ExpPackingMantissaDeltaFloat64Decoder()
         ),
         new EncoderDecoderPair<>(new KryoFloat64Encoder(1024000 * 8), new KryoFloat64Decoder())
     );
-
-    @Test
-    public void runOnRandomInputs() {
-        runAll();
-    }
 
     @Override
     protected BiConsumer<Float64Encoder, double[]> encodingFunction() {
@@ -64,5 +59,17 @@ public class Float64Tests extends AbstractEncoderTests<Float64Encoder, Float64De
     @Override
     protected Class getRunningClass() {
         return this.getClass();
+    }
+
+    @Test
+    @Override
+    public void runCompressionTests() {
+        runAllWithCompression();
+    }
+
+    @Test
+    @Override
+    public void runTests() {
+        runAll();
     }
 }

@@ -7,6 +7,7 @@ import org.sidney.encoding.int32.Int32Decoder;
 import org.sidney.encoding.int64.Int64Decoder;
 import org.sidney.encoding.int64.PlainInt64Decoder;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,6 +34,7 @@ public class ExpPackingMantissaDeltaFloat64Decoder implements Float64Decoder {
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         index = 0;
+        inputStream = new BufferedInputStream(inputStream);
         int count = new LittleEndianDataInputStream(inputStream).readInt();
 
         exponentDecoder.readFromStream(inputStream);

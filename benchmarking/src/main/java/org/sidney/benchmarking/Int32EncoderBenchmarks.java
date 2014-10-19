@@ -1,4 +1,4 @@
-package org.sidney.encoding.benchmarking;
+package org.sidney.benchmarking;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;

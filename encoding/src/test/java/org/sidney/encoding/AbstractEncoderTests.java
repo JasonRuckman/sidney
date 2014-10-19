@@ -26,6 +26,9 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     protected abstract Class getRunningClass();
 
+    public abstract void runCompressionTests();
+    public abstract void runTests();
+
     protected void runAll() {
         List<EncoderDecoderPair<E, D>> pairs = pairs();
         pairs.forEach(
@@ -40,11 +43,35 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
                 try {
                     for (int i = 0; i < 8; i++) {
                         logAndRun(pair, i);
-                        logAndRunWithCompression(pair, i);
                     }
 
                     for (int i = 8; i < 1024000; i += 65536) {
                         logAndRun(pair, i);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+    }
+
+    protected void runAllWithCompression() {
+        List<EncoderDecoderPair<E, D>> pairs = pairs();
+        pairs.forEach(
+            (pair) -> {
+                logger.info(
+                    String.format(
+                        "Testing %s with %s.",
+                        pair.getEncoder().getClass(),
+                        pair.getDecoder().getClass()
+                    )
+                );
+                try {
+                    for (int i = 0; i < 8; i++) {
+                        logAndRunWithCompression(pair, i);
+                    }
+
+                    for (int i = 8; i < 1024000; i += 65536) {
                         logAndRunWithCompression(pair, i);
                     }
                 } catch (IOException e) {
@@ -66,7 +93,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         baos.close();
 
         byte[] bytes = baos.toByteArray();
-        logger.info(String.format("Size in bytes: %s", bytes.length));
+        logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
         pair.getDecoder().readFromStream(new SnappyInputStream(Bytes.wrap(bytes)));
         dataConsumerAndAsserter().accept(pair.getDecoder(), t);
     }
@@ -81,7 +108,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         baos.close();
 
         byte[] bytes = baos.toByteArray();
-        logger.info(String.format("Size in bytes: %s", bytes.length));
+        logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
         pair.getDecoder().readFromStream(Bytes.wrap(bytes));
         dataConsumerAndAsserter().accept(pair.getDecoder(), t);
     }

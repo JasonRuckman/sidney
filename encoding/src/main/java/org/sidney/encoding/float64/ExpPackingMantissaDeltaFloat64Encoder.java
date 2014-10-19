@@ -7,6 +7,7 @@ import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int64.Int64Encoder;
 import org.sidney.encoding.int64.PlainInt64Encoder;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -17,6 +18,7 @@ import java.io.OutputStream;
 public class ExpPackingMantissaDeltaFloat64Encoder implements Float64Encoder  {
     private final Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
     private final Int64Encoder mantissaEncoder = new PlainInt64Encoder();
+
     private int count = 0;
 
     @Override
@@ -47,7 +49,8 @@ public class ExpPackingMantissaDeltaFloat64Encoder implements Float64Encoder  {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        new LittleEndianDataOutputStream(outputStream).writeInt(count);
+        LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(outputStream);
+        dos.writeInt(count);
 
         exponentEncoder.writeToStream(outputStream);
         mantissaEncoder.writeToStream(outputStream);

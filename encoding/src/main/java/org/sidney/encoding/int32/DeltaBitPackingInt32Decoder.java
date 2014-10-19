@@ -5,8 +5,6 @@ import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
-import org.sidney.encoding.IntPacker;
-import org.sidney.encoding.IntPackerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -22,12 +20,12 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
 
     @Override
     public int nextInt() {
-        if(isFirstValue) {
+        if (isFirstValue) {
             isFirstValue = false;
             return firstValue;
         }
 
-        if(currentIndex == intBuffer.length) {
+        if (currentIndex == intBuffer.length) {
             loadNextMiniBlock();
         }
 
@@ -54,7 +52,8 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         reset();
-        inputStream = new BufferedInputStream(inputStream);
+        inputStream = wrapStreamIfNecessary(inputStream);
+
         LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
 
         totalValueCount = dis.readInt();
@@ -63,7 +62,7 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
 
         intBuffer = new int[blockSize];
 
-        if(totalValueCount <= 1) {
+        if (totalValueCount <= 1) {
             return;
         }
 
@@ -89,12 +88,12 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
 
         int strideSize = sizeInBytes(8, bitWidth);
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);
-        for(int i = 0; i < numValuesToRead; i += 8) {
+        for (int i = 0; i < numValuesToRead; i += 8) {
             packer.unpack8Values(getBuffer(), getPosition(), intBuffer, i);
             incrementPosition(strideSize);
         }
 
-        for(int i = 0; i < numValuesToRead; i++) {
+        for (int i = 0; i < numValuesToRead; i++) {
             intBuffer[i] += ((i == 0) ? firstValue : intBuffer[i - 1]) + minDelta;
         }
     }

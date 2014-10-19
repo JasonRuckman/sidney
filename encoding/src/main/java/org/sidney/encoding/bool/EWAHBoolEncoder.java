@@ -36,13 +36,15 @@ public class EWAHBoolEncoder implements BoolEncoder {
 
     @Override
     public void reset() {
-        this.currentBitmap = new EWAHCompressedBitmap();
-        this.currentIndex = 0;
+        currentBitmap = new EWAHCompressedBitmap();
+        currentIndex = 0;
     }
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        this.currentBitmap.serialize(new DataOutputStream(outputStream));
+        DataOutputStream dos = new DataOutputStream(outputStream);
+        currentBitmap.serialize(dos);
+        dos.flush();
     }
 
     @Override

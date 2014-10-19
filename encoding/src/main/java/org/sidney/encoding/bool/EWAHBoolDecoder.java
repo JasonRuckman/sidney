@@ -2,13 +2,15 @@ package org.sidney.encoding.bool;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
+import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EWAHBoolDecoder implements BoolDecoder {
+public class EWAHBoolDecoder extends AbstractDecoder implements BoolDecoder {
     private EWAHCompressedBitmap bitmap;
     private int index = 0;
     private int nextTrueBit;
@@ -37,6 +39,8 @@ public class EWAHBoolDecoder implements BoolDecoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
+        inputStream = wrapStreamIfNecessary(inputStream);
+
         index = 0;
         bitmap = new EWAHCompressedBitmap();
         bitmap.deserialize(new DataInputStream(inputStream));

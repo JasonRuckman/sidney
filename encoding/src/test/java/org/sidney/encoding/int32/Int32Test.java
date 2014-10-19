@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
-public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder, int[]> {
+public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, int[]> {
     private final List<EncoderDecoderPair<Int32Encoder, Int32Decoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(
             new PlainInt32Encoder(),
@@ -34,11 +34,6 @@ public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder,
             new KryoInt32Decoder()
         )
     );
-
-    @Test
-    public void runOnRandomInputs() {
-        runAll();
-    }
 
     @Override
     protected BiConsumer<Int32Encoder, int[]> encodingFunction() {
@@ -77,5 +72,17 @@ public class Int32Tests extends AbstractEncoderTests<Int32Encoder, Int32Decoder,
     @Override
     protected Class getRunningClass() {
         return this.getClass();
+    }
+
+    @Test
+    @Override
+    public void runCompressionTests() {
+        runAllWithCompression();
+    }
+
+    @Test
+    @Override
+    public void runTests() {
+        runAllWithCompression();
     }
 }

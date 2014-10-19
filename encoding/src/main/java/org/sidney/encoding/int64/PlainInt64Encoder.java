@@ -11,12 +11,13 @@ public class PlainInt64Encoder extends AbstractEncoder implements Int64Encoder {
     @Override
     public void writeLong(long value) {
         writeLongLE(value);
+        numValues++;
     }
 
     @Override
     public void writeLongs(long[] values) {
         for(long l : values) {
-            writeLongLE(l);
+            writeLong(l);
         }
     }
 
@@ -27,6 +28,8 @@ public class PlainInt64Encoder extends AbstractEncoder implements Int64Encoder {
         los.writeInt(numValues);
         los.writeInt(getPosition());
         los.write(getBuffer(), 0, getPosition());
+
+        los.flush();
     }
 
     @Override

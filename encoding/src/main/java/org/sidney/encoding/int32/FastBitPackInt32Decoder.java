@@ -7,6 +7,7 @@ import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
 import org.sidney.core.unsafe.UnsafeBytes;
+import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
 import java.io.BufferedInputStream;
@@ -16,7 +17,7 @@ import java.io.InputStream;
 /**
  * Decoder for FastPfor encoded ints, generally much faster on medium size to larger data
  */
-public class FastBitPackInt32Decoder implements Int32Decoder {
+public class FastBitPackInt32Decoder extends AbstractDecoder implements Int32Decoder {
     private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
@@ -47,7 +48,8 @@ public class FastBitPackInt32Decoder implements Int32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        inputStream = new BufferedInputStream(inputStream);
+        inputStream = wrapStreamIfNecessary(inputStream);
+
         LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
 
         int numInts = dis.readInt();

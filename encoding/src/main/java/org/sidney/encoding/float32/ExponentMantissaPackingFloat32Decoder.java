@@ -1,15 +1,17 @@
 package org.sidney.encoding.float32;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.encoding.int32.FastBitPackInt32Decoder;
 import org.sidney.encoding.int32.Int32Decoder;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ExponentMantissaPackingFloat32Decoder implements Float32Decoder {
+public class ExponentMantissaPackingFloat32Decoder extends AbstractDecoder implements Float32Decoder {
     private float[] buffer = new float[256];
     private int index = 0;
     private final Int32Decoder exponentDecoder = new DeltaBitPackingInt32Decoder();
@@ -31,6 +33,8 @@ public class ExponentMantissaPackingFloat32Decoder implements Float32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
+        inputStream = wrapStreamIfNecessary(inputStream);
+
         index = 0;
 
         int count = new LittleEndianDataInputStream(inputStream).readInt();

@@ -11,16 +11,11 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
-public class Int64Tests extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
+public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
     private final List<EncoderDecoderPair<Int64Encoder, Int64Decoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(new KryoInt64Encoder(1024000 * 8), new KryoInt64Decoder()),
         new EncoderDecoderPair<>(new PlainInt64Encoder(), new PlainInt64Decoder())
     );
-
-    @Test
-    public void runOnRandomInputs() {
-        runAll();
-    }
 
     @Override
     protected BiConsumer<Int64Encoder, long[]> encodingFunction() {
@@ -60,5 +55,15 @@ public class Int64Tests extends AbstractEncoderTests<Int64Encoder, Int64Decoder,
     @Override
     protected Class getRunningClass() {
         return this.getClass();
+    }
+
+    @Override
+    public void runCompressionTests() {
+
+    }
+
+    @Override
+    public void runTests() {
+
     }
 }

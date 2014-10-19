@@ -22,6 +22,7 @@ public class ExponentMantissaPackingFloat32Encoder implements Float32Encoder {
 
         exponentEncoder.writeInt(exp);
         mantissaEncoder.writeInt(mantissa);
+
         count++;
     }
 
@@ -42,6 +43,7 @@ public class ExponentMantissaPackingFloat32Encoder implements Float32Encoder {
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         new LittleEndianDataOutputStream(outputStream).writeInt(count);
+
         exponentEncoder.writeToStream(outputStream);
         mantissaEncoder.writeToStream(outputStream);
     }

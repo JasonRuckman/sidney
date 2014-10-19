@@ -5,8 +5,6 @@ import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.encoding.AbstractEncoder;
 import org.sidney.encoding.Encoding;
-import org.sidney.encoding.IntPacker;
-import org.sidney.encoding.IntPackerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +29,7 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
     }
 
     public void writeInt(int value) {
-        if(++totalValueCount == 1) {
+        if (++totalValueCount == 1) {
             firstValue = value;
             prevValue = value;
             return;
@@ -43,7 +41,7 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
         currentMiniBlock[currentIndex++] = delta;
         currentMinDelta = Math.min(delta, currentMinDelta);
 
-        if(currentIndex == miniBlockSize) {
+        if (currentIndex == miniBlockSize) {
             flushMiniBlock();
         }
     }
@@ -54,13 +52,13 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
     }
 
     private void flushMiniBlock() {
-        if(currentIndex == 0 || totalValueCount == 1) {
+        if (currentIndex == 0 || totalValueCount == 1) {
             return;
         }
 
         int currentMaxBitwidth = 1;
 
-        for(int i = 0; i < currentIndex; i++) {
+        for (int i = 0; i < currentIndex; i++) {
             int num = currentMiniBlock[i] - currentMinDelta;
             currentMiniBlock[i] = num;
             currentMaxBitwidth = Math.max(currentMaxBitwidth, (32 - Integer.numberOfLeadingZeros(num)));
@@ -75,7 +73,7 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
         int strideSize = sizeInBytes(8, currentMaxBitwidth);
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);
         ensureCapacity(sizeInBytes(numToWrite, currentMaxBitwidth));
-        for(int i = 0; i < numToWrite; i += 8) {
+        for (int i = 0; i < numToWrite; i += 8) {
             packer.pack8Values(currentMiniBlock, i, getBuffer(), getPosition());
             incrementPosition(strideSize);
         }
@@ -111,6 +109,11 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
         dos.writeInt(totalValueCount);
         dos.writeInt(firstValue);
         dos.writeInt(miniBlockSize);
+
+        if (totalValueCount <= 1) {
+            dos.flush();
+            return;
+        }
 
         dos.writeInt(getPosition());
         dos.write(getBuffer(), 0, getPosition());

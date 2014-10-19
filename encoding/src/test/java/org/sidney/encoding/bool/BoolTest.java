@@ -12,16 +12,11 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
-public class BoolTests extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
+public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
     private final List<EncoderDecoderPair<BoolEncoder, BoolDecoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(new EWAHBoolEncoder(), new EWAHBoolDecoder()),
         new EncoderDecoderPair<>(new PlainBoolEncoder(), new PlainBoolDecoder())
     );
-
-    @Test
-    public void runOnRandomInputs() {
-        runAll();
-    }
 
     protected BiConsumer<BoolEncoder, boolean[]> encodingFunction() {
         return (encoder, bools) -> {
@@ -47,7 +42,8 @@ public class BoolTests extends AbstractEncoderTests<BoolEncoder, BoolDecoder, bo
     protected BiConsumer<BoolDecoder, boolean[]> dataConsumerAndAsserter() {
         return (decoder, bools) -> {
             boolean[] results = decoder.nextBools(bools.length);
-            Assert.assertArrayEquals(bools, results);
+
+            Assert.assertTrue(Arrays.equals(bools, results));
         };
     }
 
@@ -59,5 +55,15 @@ public class BoolTests extends AbstractEncoderTests<BoolEncoder, BoolDecoder, bo
     @Override
     protected Class getRunningClass() {
         return this.getClass();
+    }
+
+    @Override
+    public void runCompressionTests() {
+        runAllWithCompression();
+    }
+
+    @Override
+    public void runTests() {
+        runAll();
     }
 }

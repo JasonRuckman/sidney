@@ -1,12 +1,13 @@
 package org.sidney.encoding.float64;
 
 import com.esotericsoftware.kryo.io.Input;
+import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class KryoFloat64Decoder implements Float64Decoder {
+public class KryoFloat64Decoder extends AbstractDecoder implements Float64Decoder {
     private Input input;
 
     @Override

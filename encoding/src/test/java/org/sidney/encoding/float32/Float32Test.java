@@ -12,16 +12,11 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.IntFunction;
 
-public class Float32Tests extends AbstractEncoderTests<Float32Encoder, Float32Decoder, float[]> {
+public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Decoder, float[]> {
     private final List<EncoderDecoderPair<Float32Encoder, Float32Decoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(new KryoFloat32Encoder(), new KryoFloat32Decoder()),
         new EncoderDecoderPair<>(new ExponentMantissaPackingFloat32Encoder(), new ExponentMantissaPackingFloat32Decoder())
     );
-
-    @Test
-    public void runOnRandomInputs() {
-        runAll();
-    }
 
     protected BiConsumer<Float32Encoder, float[]> encodingFunction() {
         return (encoder, floats) -> {
@@ -59,5 +54,15 @@ public class Float32Tests extends AbstractEncoderTests<Float32Encoder, Float32De
     @Override
     protected Class getRunningClass() {
         return this.getClass();
+    }
+
+    @Override
+    public void runCompressionTests() {
+        runAllWithCompression();
+    }
+
+    @Override
+    public void runTests() {
+        runAll();
     }
 }

@@ -41,6 +41,8 @@ public abstract class AbstractDecoder implements Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
+        inputStream = wrapStreamIfNecessary(inputStream);
+
         LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
 
         position = 0;
@@ -48,8 +50,11 @@ public abstract class AbstractDecoder implements Decoder {
         int bufferSize = dis.readInt();
 
         buffer = new byte[bufferSize];
-        BufferedInputStream bis = new BufferedInputStream(inputStream);
-        bis.read(buffer);
+        dis.read(buffer);
+    }
+
+    protected InputStream wrapStreamIfNecessary(InputStream inputStream) {
+        return (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
     }
 
     protected byte readByte() {
