@@ -10,20 +10,15 @@ import java.io.OutputStream;
 public class PlainInt32Encoder extends AbstractEncoder implements Int32Encoder {
     @Override
     public void writeInt(int value) {
-        super.writeIntLE(value);
+        writeIntLE(value);
         numValues++;
     }
 
     @Override
     public void writeInts(int[] values) {
         for(int value : values) {
-            writeIntLE(value);
+            writeInt(value);
         }
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
     }
 
     @Override
@@ -33,6 +28,8 @@ public class PlainInt32Encoder extends AbstractEncoder implements Int32Encoder {
         dos.writeInt(numValues);
         dos.writeInt(getPosition());
         dos.write(getBuffer(), 0, getPosition());
+
+        dos.flush();
     }
 
     @Override

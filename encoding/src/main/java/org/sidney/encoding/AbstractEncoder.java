@@ -27,6 +27,7 @@ public abstract class AbstractEncoder implements Encoder {
     public void reset() {
         position = 0;
         buffer = new byte[256];
+        numValues = 0;
     }
 
     protected void ensureCapacity(int bytes) {

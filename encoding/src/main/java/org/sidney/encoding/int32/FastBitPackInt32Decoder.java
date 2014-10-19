@@ -9,6 +9,7 @@ import me.lemire.integercompression.VariableByte;
 import org.sidney.core.unsafe.UnsafeBytes;
 import org.sidney.encoding.Encoding;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,6 +47,7 @@ public class FastBitPackInt32Decoder implements Int32Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
+        inputStream = new BufferedInputStream(inputStream);
         LittleEndianDataInputStream dis = new LittleEndianDataInputStream(inputStream);
 
         int numInts = dis.readInt();
