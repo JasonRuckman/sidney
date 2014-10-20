@@ -20,16 +20,12 @@ Encodings:
 
 Boolean: Bit Packed / Ewah DONE
 
-Int8: Bit Packed / Kryo / Delta IN PROGRESS
+Int32: Bit Packed / BitPacking-Delta / Plain DONE GroupVarInt PLANNED
 
-Int16: Bit Packed / Kryo / Delta  IN PROGRESS
+Int64: Plain / DONE
 
-Int32: Bit Packed / Kryo / Delta DONE
+Float32: Plain / ExpSplitting DONE
 
-Int64: Bit Packed / Kryo / Delta PLANNED
+Float64: Plain / ExpSplitting DONE
 
-Char: PLANNED
-
-Float32: PLANNED
-
-Float64: Kryo / FPC IN PROGRESS
+String: Delta Length DONE
