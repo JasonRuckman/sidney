@@ -1,7 +1,7 @@
 sidney
 ======
 
-Sidney is an experimental serializer using Dremel encoding, state of the art encoding techniques and code generation. 
+Sidney is an experimental serializer, state of the art encoding techniques and code generation. 
 
 It's named after my dog Sid.
 
@@ -11,6 +11,7 @@ Planned features:
 
 * Columnar storage of field values using state of the art encoding techniques
 * Code generation on hot paths to avoid megamorphic call sites (if benchmarking shows that it actually does anything)
+* Roaring bitmaps to encode null values
 
 Not intended for any sort of long term storage, its main use case is in something like Apache Spark for RDD serialization.
 
@@ -20,16 +21,12 @@ Encodings:
 
 Boolean: Bit Packed / Ewah DONE
 
-Int8: Bit Packed / Kryo / Delta IN PROGRESS
+Int32: Bit Packed / BitPacking-Delta / Plain DONE GroupVarInt PLANNED
 
-Int16: Bit Packed / Kryo / Delta  IN PROGRESS
+Int64: Plain / DONE
 
-Int32: Bit Packed / Kryo / Delta DONE
+Float32: Plain / ExpSplitting DONE
 
-Int64: Bit Packed / Kryo / Delta PLANNED
+Float64: Plain / ExpSplitting DONE
 
-Char: PLANNED
-
-Float32: PLANNED
-
-Float64: Kryo / FPC IN PROGRESS
+String: Delta Length DONE
