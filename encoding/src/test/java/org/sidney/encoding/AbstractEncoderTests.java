@@ -1,7 +1,6 @@
 package org.sidney.encoding;
 
 import org.junit.Test;
-import org.sidney.core.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xerial.snappy.SnappyInputStream;

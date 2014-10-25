@@ -1,13 +1,15 @@
-package org.sidney.benchmarking;
+package org.sidney.benchmarking.random;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
-import org.sidney.core.Bytes;
+import org.sidney.benchmarking.BenchmarkingBase;
+import org.sidney.encoding.Bytes;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.encoding.int32.FastBitPackInt32Decoder;
@@ -23,8 +25,9 @@ import java.io.IOException;
 import java.util.Random;
 
 @State(Scope.Benchmark)
-@Warmup(iterations = 5)
-@Fork(value = 1, warmups = 1)
+@Warmup(iterations = 10)
+@Measurement(iterations = 2)
+@Fork(1)
 public class Int32EncoderBenchmarks extends BenchmarkingBase {
     private final int[] ints;
     private int num = 65536;

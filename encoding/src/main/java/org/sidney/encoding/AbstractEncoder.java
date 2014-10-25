@@ -1,7 +1,6 @@
 package org.sidney.encoding;
 
 import com.google.common.io.LittleEndianDataOutputStream;
-import org.sidney.core.Bytes;
 
 import java.io.IOException;
 import java.io.OutputStream;

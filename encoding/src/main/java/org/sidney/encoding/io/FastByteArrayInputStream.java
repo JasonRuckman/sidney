@@ -1,4 +1,4 @@
-package org.sidney.core.io;
+package org.sidney.encoding.io;
 
 import java.io.InputStream;
 

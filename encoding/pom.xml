@@ -21,11 +21,6 @@
     <dependencies>
         <dependency>
             <groupId>org.sidney</groupId>
-            <artifactId>sidney-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.sidney</groupId>
             <artifactId>sidney-bitpacking</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -51,8 +46,13 @@
             <artifactId>snappy-java</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.roaringbitmap</groupId>
+            <artifactId>RoaringBitmap</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.javaewah</groupId>
             <artifactId>JavaEWAH</artifactId>
+            <version>0.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

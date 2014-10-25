@@ -1,6 +1,5 @@
 package org.sidney.encoding.bool;
 
-import org.junit.Assert;
 import org.sidney.encoding.AbstractEncoderTests;
 import org.sidney.encoding.EncoderDecoderPair;
 
@@ -12,13 +11,15 @@ import java.util.function.IntFunction;
 
 public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
     private final List<EncoderDecoderPair<BoolEncoder, BoolDecoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new EWAHBoolEncoder(), new EWAHBoolDecoder()),
-        new EncoderDecoderPair<>(new PlainBoolEncoder(), new PlainBoolDecoder())
+        new EncoderDecoderPair<>(new RoaringBitmapBoolEncoder(), new RoaringBitmapBoolDecoder()),
+        new EncoderDecoderPair<>(new PlainBoolEncoder(), new PlainBoolDecoder()),
+        new EncoderDecoderPair<>(new EWAHBitmapBoolEncoder(), new EWAHBitmapBoolDecoder()),
+        new EncoderDecoderPair<>(new BitPackingBoolEncoder(), new BitPackingBoolDecoder())
     );
 
     protected BiConsumer<BoolEncoder, boolean[]> encodingFunction() {
         return (encoder, bools) -> {
-            for(boolean b : bools) {
+            for (boolean b : bools) {
                 encoder.writeBool(b);
             }
         };
@@ -29,8 +30,8 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
         return (size) -> {
             Random random = new Random(11L);
             boolean[] booleans = new boolean[size];
-            for(int i = 0; i < size; i++) {
-                booleans[i] = random.nextBoolean();
+            for (int i = 0; i < size; i++) {
+                booleans[i] = random.nextInt() % 500 == 0;
             }
             return booleans;
         };
@@ -41,7 +42,16 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
         return (decoder, bools) -> {
             boolean[] results = decoder.nextBools(bools.length);
 
-            Assert.assertTrue(Arrays.equals(bools, results));
+            for (int i = 0; i < results.length; i++) {
+                boolean left = results[i];
+                boolean right = bools[i];
+
+                if (left != right) {
+                    throw new AssertionError(
+                        String.format("Differed at index %s, expected %s and actual %s", i, left, right)
+                    );
+                }
+            }
         };
     }
 

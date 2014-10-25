@@ -1,7 +1,7 @@
 package org.sidney.encoding.bool;
 
-import com.googlecode.javaewah.EWAHCompressedBitmap;
-import com.googlecode.javaewah.IntIterator;
+import org.roaringbitmap.IntIterator;
+import org.roaringbitmap.RoaringBitmap;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
@@ -9,8 +9,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EWAHBoolDecoder extends AbstractDecoder implements BoolDecoder {
-    private EWAHCompressedBitmap bitmap;
+public class RoaringBitmapBoolDecoder extends AbstractDecoder implements BoolDecoder {
+    private RoaringBitmap bitmap;
     private int index = 0;
     private int nextTrueBit;
     private IntIterator intIterator;
@@ -19,7 +19,9 @@ public class EWAHBoolDecoder extends AbstractDecoder implements BoolDecoder {
     public boolean nextBool() {
         if (index == nextTrueBit) {
             index++;
-            nextTrueBit = intIterator.next();
+            if(intIterator.hasNext()) {
+                nextTrueBit = intIterator.next();
+            }
             return true;
         }
 
@@ -41,10 +43,13 @@ public class EWAHBoolDecoder extends AbstractDecoder implements BoolDecoder {
         inputStream = inputStreamWrapIfNecessary(inputStream);
 
         index = 0;
-        bitmap = new EWAHCompressedBitmap();
+        nextTrueBit = -1;
+        bitmap = new RoaringBitmap();
         bitmap.deserialize(new DataInputStream(inputStream));
-        intIterator = bitmap.intIterator();
-        nextTrueBit = intIterator.next();
+        intIterator = bitmap.getIntIterator();
+        if(intIterator.hasNext()) {
+            nextTrueBit = intIterator.next();
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.sidney.core;
+package org.sidney.encoding;
 
 import java.io.ByteArrayInputStream;
 

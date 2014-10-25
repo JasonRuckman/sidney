@@ -1,4 +1,4 @@
-package org.sidney.core.unsafe;
+package org.sidney.encoding.unsafe;
 
 import com.esotericsoftware.kryo.util.UnsafeUtil;
 import sun.misc.Unsafe;

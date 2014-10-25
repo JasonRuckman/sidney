@@ -6,9 +6,9 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
-import org.sidney.core.unsafe.UnsafeBytes;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
+import org.sidney.encoding.unsafe.UnsafeBytes;
 
 import java.io.IOException;
 import java.io.InputStream;

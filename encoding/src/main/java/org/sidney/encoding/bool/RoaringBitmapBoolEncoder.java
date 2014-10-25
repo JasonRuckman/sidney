@@ -1,6 +1,6 @@
 package org.sidney.encoding.bool;
 
-import com.googlecode.javaewah.EWAHCompressedBitmap;
+import org.roaringbitmap.RoaringBitmap;
 import org.sidney.encoding.Encoding;
 
 import java.io.DataOutputStream;
@@ -10,18 +10,18 @@ import java.io.OutputStream;
 /**
  * Encodes booleans into a compressed bitmap.
  */
-public class EWAHBoolEncoder implements BoolEncoder {
-    private EWAHCompressedBitmap currentBitmap;
+public class RoaringBitmapBoolEncoder implements BoolEncoder {
+    private RoaringBitmap currentBitmap;
     private int currentIndex = 0;
 
-    public EWAHBoolEncoder() {
-        currentBitmap = new EWAHCompressedBitmap();
+    public RoaringBitmapBoolEncoder() {
+        currentBitmap = new RoaringBitmap();
     }
 
     @Override
     public void writeBool(boolean value) {
         if (value) {
-            currentBitmap.set(currentIndex);
+            currentBitmap.add(currentIndex);
         }
 
         currentIndex++;
@@ -36,13 +36,14 @@ public class EWAHBoolEncoder implements BoolEncoder {
 
     @Override
     public void reset() {
-        currentBitmap = new EWAHCompressedBitmap();
+        currentBitmap = new RoaringBitmap();
         currentIndex = 0;
     }
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         DataOutputStream dos = new DataOutputStream(outputStream);
+        currentBitmap.trim();
         currentBitmap.serialize(dos);
         dos.flush();
     }

@@ -12,7 +12,6 @@
     <modules>
         <module>core</module>
         <module>encoding</module>
-        <module>annotations</module>
         <module>tools</module>
         <module>bitpacking</module>
         <module>benchmarking</module>
@@ -36,9 +35,9 @@
                 <version>2.24.0</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.javaewah</groupId>
-                <artifactId>JavaEWAH</artifactId>
-                <version>0.9.0</version>
+                <groupId>org.roaringbitmap</groupId>
+                <artifactId>RoaringBitmap</artifactId>
+                <version>0.4.1</version>
             </dependency>
             <dependency>
                 <groupId>net.jpountz.lz4</groupId>

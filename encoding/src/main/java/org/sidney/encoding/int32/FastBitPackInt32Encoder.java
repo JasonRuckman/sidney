@@ -6,10 +6,8 @@ import me.lemire.integercompression.FastPFOR;
 import me.lemire.integercompression.IntWrapper;
 import me.lemire.integercompression.IntegerCODEC;
 import me.lemire.integercompression.VariableByte;
-import me.lemire.integercompression.differential.IntegratedBinaryPacking;
-import me.lemire.integercompression.differential.IntegratedVariableByte;
-import org.sidney.core.unsafe.UnsafeInts;
 import org.sidney.encoding.Encoding;
+import org.sidney.encoding.unsafe.UnsafeInts;
 
 import java.io.IOException;
 import java.io.OutputStream;
