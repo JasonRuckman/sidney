@@ -2,7 +2,7 @@ package org.sidney.encoding.float64;
 
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
-import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
+import org.sidney.encoding.int32.BitPackingInt32Decoder;
 import org.sidney.encoding.int32.Int32Decoder;
 import org.sidney.encoding.int64.Int64Decoder;
 import org.sidney.encoding.int64.PlainInt64Decoder;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ExpPackingFloat64Decoder extends AbstractDecoder implements Float64Decoder {
-    private final Int32Decoder exponentDecoder = new DeltaBitPackingInt32Decoder();
+    private final Int32Decoder exponentDecoder = new BitPackingInt32Decoder();
     private final Int64Decoder mantissaDecoder = new PlainInt64Decoder();
 
     @Override

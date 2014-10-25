@@ -2,15 +2,15 @@ package org.sidney.encoding.float32;
 
 import org.sidney.encoding.Encoding;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
-import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
+import org.sidney.encoding.int32.PlainInt32Encoder;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class ExponentMantissaPackingFloat32Encoder implements Float32Encoder {
     private Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
-    private Int32Encoder mantissaEncoder = new FastBitPackInt32Encoder();
+    private Int32Encoder mantissaEncoder = new PlainInt32Encoder();
 
     @Override
     public void writeFloat(float value) {

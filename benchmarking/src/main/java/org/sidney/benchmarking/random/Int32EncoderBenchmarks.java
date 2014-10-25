@@ -1,6 +1,5 @@
 package org.sidney.benchmarking.random;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -10,17 +9,16 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.encoding.Bytes;
+import org.sidney.encoding.int32.BitPackingInt32Decoder;
+import org.sidney.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
-import org.sidney.encoding.int32.FastBitPackInt32Decoder;
-import org.sidney.encoding.int32.FastBitPackInt32Encoder;
 import org.sidney.encoding.int32.Int32Decoder;
 import org.sidney.encoding.int32.Int32Encoder;
-import org.sidney.encoding.int32.KryoInt32Decoder;
-import org.sidney.encoding.int32.KryoInt32Encoder;
 import org.sidney.encoding.int32.PlainInt32Decoder;
 import org.sidney.encoding.int32.PlainInt32Encoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
@@ -36,20 +34,8 @@ public class Int32EncoderBenchmarks extends BenchmarkingBase {
         ints = new int[num];
         Random random = new Random(11L);
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = random.nextInt();
+            ints[i] = random.nextInt(65536);
         }
-    }
-
-    @Benchmark
-    @Group("intEncoders")
-    public int[] fastPforInt32Encoder() throws IOException {
-        return run(getEncoder(FastBitPackInt32Encoder.class), getDecoder(FastBitPackInt32Decoder.class));
-    }
-
-    @Benchmark
-    @Group("intEncoders")
-    public int[] kryoInt32Encoder() throws IOException {
-        return run(getEncoder(KryoInt32Encoder.class), getDecoder(KryoInt32Decoder.class));
     }
 
     @Benchmark
@@ -62,6 +48,12 @@ public class Int32EncoderBenchmarks extends BenchmarkingBase {
     @Group("intEncoders")
     public int[] plainInt32Encoder() throws IOException {
         return run(getEncoder(PlainInt32Encoder.class), getDecoder(PlainInt32Decoder.class));
+    }
+
+    @Benchmark
+    @Group("intEncoders")
+    public int[] bitpackingInt32Encoder() throws IOException {
+        return run(getEncoder(BitPackingInt32Encoder.class), getDecoder(BitPackingInt32Decoder.class));
     }
 
     private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {

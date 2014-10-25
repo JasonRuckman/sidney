@@ -1,7 +1,7 @@
 package org.sidney.encoding.float64;
 
 import org.sidney.encoding.Encoding;
-import org.sidney.encoding.int32.DeltaBitPackingInt32Encoder;
+import org.sidney.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.encoding.int32.Int32Encoder;
 import org.sidney.encoding.int64.Int64Encoder;
 import org.sidney.encoding.int64.PlainInt64Encoder;
@@ -14,7 +14,7 @@ import java.io.OutputStream;
  * mantissa as a long
  */
 public class ExpPackingFloat64Encoder implements Float64Encoder  {
-    private final Int32Encoder exponentEncoder = new DeltaBitPackingInt32Encoder();
+    private final Int32Encoder exponentEncoder = new BitPackingInt32Encoder();
     private final Int64Encoder mantissaEncoder = new PlainInt64Encoder();
 
     @Override

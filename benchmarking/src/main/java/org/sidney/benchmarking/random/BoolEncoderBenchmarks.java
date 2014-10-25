@@ -1,6 +1,5 @@
 package org.sidney.benchmarking.random;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -23,6 +22,7 @@ import org.sidney.encoding.bool.RoaringBitmapBoolEncoder;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;

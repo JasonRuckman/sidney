@@ -20,14 +20,7 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
             new DeltaBitPackingInt32Encoder(),
             new DeltaBitPackingInt32Decoder()
         ),
-        new EncoderDecoderPair<>(
-            new FastBitPackInt32Encoder(),
-            new FastBitPackInt32Decoder()
-        ),
-        new EncoderDecoderPair<>(
-            new KryoInt32Encoder(),
-            new KryoInt32Decoder()
-        )
+        new EncoderDecoderPair<>(new BitPackingInt32Encoder(), new BitPackingInt32Decoder())
     );
 
     @Override
@@ -45,7 +38,7 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
             Random random = new Random(11L);
             int[] nums = new int[size];
             for (int i = 0; i < size; i++) {
-                nums[i] = random.nextInt();
+                nums[i] = random.nextInt(65536);
             }
             return nums;
         };

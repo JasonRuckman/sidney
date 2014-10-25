@@ -1,3 +1,4 @@
+/*
 package org.sidney.encoding.int32;
 
 import com.google.common.io.LittleEndianDataInputStream;
@@ -13,9 +14,11 @@ import org.sidney.encoding.unsafe.UnsafeBytes;
 import java.io.IOException;
 import java.io.InputStream;
 
+*/
 /**
  * Decoder for FastPfor encoded ints, generally much faster on medium size to larger data
- */
+ *//*
+
 public class FastBitPackInt32Decoder extends AbstractDecoder implements Int32Decoder {
     private final IntegerCODEC codec = new Composition(new FastPFOR(), new VariableByte());
     private final IntWrapper sourceWrapper = new IntWrapper();
@@ -92,4 +95,4 @@ public class FastBitPackInt32Decoder extends AbstractDecoder implements Int32Dec
             destinationBuffer = new int[size * 2];
         }
     }
-}
+}*/

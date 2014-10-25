@@ -1,3 +1,4 @@
+/*
 package org.sidney.encoding.int32;
 
 import com.google.common.io.LittleEndianDataOutputStream;
@@ -14,10 +15,12 @@ import java.io.OutputStream;
 
 //TODO: Fix this to work with more than 65536 ints at a time, basically create pages that get compressed as we go, then flush them all together
 
+*/
 /**
  * Uses https://github.com/lemire/JavaFastPFOR to encode blocks of ints.
  * Slower than kryo for smaller data, faster for larger data (up to a point).  Generates a generally smaller binary footprint
- */
+ *//*
+
 public class FastBitPackInt32Encoder implements Int32Encoder {
     private final IntWrapper sourceWrapper = new IntWrapper();
     private final IntWrapper destinationWrapper = new IntWrapper();
@@ -72,9 +75,9 @@ public class FastBitPackInt32Encoder implements Int32Encoder {
 
     @Override
     public void writeInts(int[] values) {
-        ensureSourceCapacity(currentIndex + values.length);
-        System.arraycopy(values, 0, uncompressedInts, currentIndex, values.length);
-        currentIndex += values.length;
+        for(int value : values) {
+            writeInt(value);
+        }
     }
 
     private void compressIntoDestinationBuffer() {
@@ -104,4 +107,4 @@ public class FastBitPackInt32Encoder implements Int32Encoder {
             ensureDestinationByteBufferCapacity(size);
         }
     }
-}
+}*/

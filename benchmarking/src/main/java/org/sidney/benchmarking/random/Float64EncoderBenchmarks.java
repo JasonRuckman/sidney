@@ -1,6 +1,5 @@
 package org.sidney.benchmarking.random;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -17,6 +16,7 @@ import org.sidney.encoding.float64.Float64Encoder;
 import org.sidney.encoding.float64.KryoFloat64Decoder;
 import org.sidney.encoding.float64.KryoFloat64Encoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
