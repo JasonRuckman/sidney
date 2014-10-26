@@ -12,7 +12,6 @@ import java.util.function.IntFunction;
 
 public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
     private final List<EncoderDecoderPair<Int64Encoder, Int64Decoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new KryoInt64Encoder(1024000 * 8), new KryoInt64Decoder()),
         new EncoderDecoderPair<>(new PlainInt64Encoder(), new PlainInt64Decoder())
     );
 

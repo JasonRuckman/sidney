@@ -14,8 +14,7 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
     private final List<EncoderDecoderPair<Float64Encoder, Float64Decoder>> pairs = Arrays.asList(
         new EncoderDecoderPair<>(
             new ExpPackingFloat64Encoder(), new ExpPackingFloat64Decoder()
-        ),
-        new EncoderDecoderPair<>(new KryoFloat64Encoder(1024000 * 8), new KryoFloat64Decoder())
+        )
     );
 
     @Override

@@ -1,6 +1,5 @@
 package org.sidney.encoding.unsafe;
 
-import com.esotericsoftware.kryo.util.UnsafeUtil;
 import sun.misc.Unsafe;
 
 public class UnsafeInts {

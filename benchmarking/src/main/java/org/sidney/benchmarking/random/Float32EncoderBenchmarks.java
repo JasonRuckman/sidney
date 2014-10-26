@@ -13,8 +13,6 @@ import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Decoder;
 import org.sidney.encoding.float32.ExponentMantissaPackingFloat32Encoder;
 import org.sidney.encoding.float32.Float32Decoder;
 import org.sidney.encoding.float32.Float32Encoder;
-import org.sidney.encoding.float32.KryoFloat32Decoder;
-import org.sidney.encoding.float32.KryoFloat32Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,12 +38,6 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
     @Group("float32Encoders")
     public float[] runExpMantissaPackingFloatEncoders() throws IOException {
         return run(getEncoder(ExponentMantissaPackingFloat32Encoder.class), getDecoder(ExponentMantissaPackingFloat32Decoder.class));
-    }
-
-    @Benchmark
-    @Group("float32Encoders")
-    public float[] runKryoFloat32Encoder() throws IOException {
-        return run(getEncoder(KryoFloat32Encoder.class), getDecoder(KryoFloat32Decoder.class));
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

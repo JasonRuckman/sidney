@@ -8,5 +8,6 @@ public enum Encoding {
     EWAH,
     EXPMANTISSABITPACK,
     VARLENGTH,
-    KRYO
+    GROUPVARINT,
+    DELTALENGTH
 }

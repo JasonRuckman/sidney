@@ -12,7 +12,6 @@ import java.util.function.IntFunction;
 
 public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Decoder, float[]> {
     private final List<EncoderDecoderPair<Float32Encoder, Float32Decoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new KryoFloat32Encoder(), new KryoFloat32Decoder()),
         new EncoderDecoderPair<>(new ExponentMantissaPackingFloat32Encoder(), new ExponentMantissaPackingFloat32Decoder())
     );
 

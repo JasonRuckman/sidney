@@ -1,22 +1,21 @@
 package org.sidney.encoding.io;
 
+import org.sidney.encoding.Bytes;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class StreamUtils {
-    public static void writeUnchecked(int value, OutputStream outputStream) {
-        try {
-            outputStream.write(value);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static void writeIntToStream(int value, OutputStream outputStream) throws IOException {
+        byte[] arr = new byte[4];
+        Bytes.writeIntOn4Bytes(value, arr, 0);
+        outputStream.write(arr);
     }
 
-    public static void writeUnchecked(byte[] src, int off, int len, OutputStream outputStream) {
-        try {
-            outputStream.write(src, off, len);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static int readIntFromStream(InputStream inputStream) throws IOException {
+        byte[] arr = new byte[4];
+        inputStream.read(arr);
+        return Bytes.bytesToInt(arr, 0);
     }
 }

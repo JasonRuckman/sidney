@@ -1,10 +1,10 @@
 package org.sidney.encoding.int32;
 
-import com.google.common.io.LittleEndianDataOutputStream;
 import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.encoding.AbstractEncoder;
 import org.sidney.encoding.Encoding;
+import static org.sidney.encoding.io.StreamUtils.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,9 +66,9 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
 
         int numToWrite = Math.max(currentIndex, 8);
 
-        writeIntLE(currentMaxBitwidth);
-        writeIntLE(currentMinDelta);
-        writeIntLE(currentIndex);
+        writeIntInternal(currentMaxBitwidth);
+        writeIntInternal(currentMinDelta);
+        writeIntInternal(currentIndex);
 
         int strideSize = sizeInBytes(8, currentMaxBitwidth);
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);
@@ -103,22 +103,14 @@ public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int3
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         flushMiniBlock();
-
-        LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(outputStream);
-
-        dos.writeInt(totalValueCount);
-        dos.writeInt(firstValue);
-        dos.writeInt(miniBlockSize);
-
+        writeIntToStream(totalValueCount, outputStream);
+        writeIntToStream(firstValue, outputStream);
+        writeIntToStream(miniBlockSize, outputStream);
         if (totalValueCount <= 1) {
-            dos.flush();
             return;
         }
-
-        dos.writeInt(getPosition());
-        dos.write(getBuffer(), 0, getPosition());
-
-        dos.flush();
+        writeIntToStream(getPosition(), outputStream);
+        outputStream.write(getBuffer(), 0, getPosition());
     }
 
     @Override

@@ -11,8 +11,6 @@ import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.encoding.Bytes;
 import org.sidney.encoding.int64.Int64Decoder;
 import org.sidney.encoding.int64.Int64Encoder;
-import org.sidney.encoding.int64.KryoInt64Decoder;
-import org.sidney.encoding.int64.KryoInt64Encoder;
 import org.sidney.encoding.int64.PlainInt64Decoder;
 import org.sidney.encoding.int64.PlainInt64Encoder;
 
@@ -34,12 +32,6 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
         for (int i = 0; i < longs.length; i++) {
             longs[i] = random.nextInt(500);
         }
-    }
-
-    @Benchmark
-    @Group("int64Encoders")
-    public long[] runKryoInt64Encoder() throws IOException {
-        return run(getEncoder(KryoInt64Encoder.class), getDecoder(KryoInt64Decoder.class));
     }
 
     @Benchmark

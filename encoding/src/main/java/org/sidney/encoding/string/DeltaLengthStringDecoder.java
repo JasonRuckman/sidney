@@ -1,7 +1,7 @@
 package org.sidney.encoding.string;
 
-import com.google.common.base.Charsets;
 import org.sidney.encoding.AbstractDecoder;
+import org.sidney.encoding.Encoding;
 import org.sidney.encoding.bytes.RawBytesDecoder;
 import org.sidney.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.encoding.int32.Int32Decoder;
@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
 public class DeltaLengthStringDecoder extends AbstractDecoder implements StringDecoder {
     private final Int32Decoder lengthDecoder = new DeltaBitPackingInt32Decoder();
     private final RawBytesDecoder bytesDecoder = new RawBytesDecoder();
-    private final Charset charset = Charsets.UTF_8;
+    private final Charset charset = Charset.forName("UTF-8");
 
     public String readString() {
         int length = lengthDecoder.nextInt();
@@ -26,7 +26,7 @@ public class DeltaLengthStringDecoder extends AbstractDecoder implements StringD
     @Override
     public String[] readStrings(int num) {
         String[] strings = new String[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             strings[i] = readString();
         }
         return strings;
@@ -42,6 +42,6 @@ public class DeltaLengthStringDecoder extends AbstractDecoder implements StringD
 
     @Override
     public String supportedEncoding() {
-        return null;
+        return Encoding.DELTALENGTH.name();
     }
 }

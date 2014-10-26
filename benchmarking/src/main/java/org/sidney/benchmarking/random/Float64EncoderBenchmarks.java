@@ -13,8 +13,6 @@ import org.sidney.encoding.float64.ExpPackingFloat64Decoder;
 import org.sidney.encoding.float64.ExpPackingFloat64Encoder;
 import org.sidney.encoding.float64.Float64Decoder;
 import org.sidney.encoding.float64.Float64Encoder;
-import org.sidney.encoding.float64.KryoFloat64Decoder;
-import org.sidney.encoding.float64.KryoFloat64Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,12 +38,6 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
     @Group("float64Encoders")
     public double[] runExpPackingFloat64Encoder() throws IOException {
         return run(getEncoder(ExpPackingFloat64Encoder.class), getDecoder(ExpPackingFloat64Decoder.class));
-    }
-
-    @Benchmark
-    @Group("float64Encoders")
-    public double[] runKryoFloat64Encoder() throws IOException {
-        return run(getEncoder(KryoFloat64Encoder.class), getDecoder(KryoFloat64Decoder.class));
     }
 
     private double[] run(Float64Encoder encoder, Float64Decoder decoder) throws IOException {

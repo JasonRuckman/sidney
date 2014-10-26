@@ -6,7 +6,7 @@ import org.sidney.encoding.Encoding;
 public class PlainInt32Encoder extends AbstractEncoder implements Int32Encoder {
     @Override
     public void writeInt(int value) {
-        writeIntLE(value);
+        writeIntInternal(value);
         numValues++;
     }
 

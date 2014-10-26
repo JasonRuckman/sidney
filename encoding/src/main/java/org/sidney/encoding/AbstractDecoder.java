@@ -1,6 +1,6 @@
 package org.sidney.encoding;
 
-import com.google.common.io.LittleEndianDataInputStream;
+import org.sidney.encoding.io.StreamUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -38,23 +38,16 @@ public abstract class AbstractDecoder implements Decoder {
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
-        LittleEndianDataInputStream dis = dataInputStreamWrapIfNecessary(inputStream);
+        inputStream = inputStreamWrapIfNecessary(inputStream);
 
         setPosition(0);
-
-        numValues = dis.readInt();
-        buffer = new byte[dis.readInt()];
-
-        dis.read(buffer);
+        numValues = StreamUtils.readIntFromStream(inputStream);
+        buffer = new byte[StreamUtils.readIntFromStream(inputStream)];
+        inputStream.read(buffer);
     }
 
     protected InputStream inputStreamWrapIfNecessary(InputStream inputStream) {
         return (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
-    }
-
-    protected LittleEndianDataInputStream dataInputStreamWrapIfNecessary(InputStream inputStream) {
-        return (inputStream instanceof BufferedInputStream) ? new LittleEndianDataInputStream(inputStream) :
-            new LittleEndianDataInputStream(new BufferedInputStream(inputStream));
     }
 
     protected byte readByte() {

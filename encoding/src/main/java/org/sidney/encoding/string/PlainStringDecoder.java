@@ -1,6 +1,5 @@
 package org.sidney.encoding.string;
 
-import com.google.common.base.Charsets;
 import org.sidney.encoding.AbstractDecoder;
 import org.sidney.encoding.Encoding;
 
@@ -8,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 public class PlainStringDecoder extends AbstractDecoder implements StringDecoder {
-    private final Charset charset = Charsets.UTF_8;
+    private final Charset charset = Charset.forName("UTF-8");
 
     public String readString() {
         int length = readIntLE();

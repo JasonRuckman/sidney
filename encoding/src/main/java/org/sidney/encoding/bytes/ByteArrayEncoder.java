@@ -11,7 +11,7 @@ public class ByteArrayEncoder extends AbstractEncoder implements BytesEncoder {
 
     @Override
     public void writeBytes(byte[] bytes, int offset, int length) {
-        writeIntLE(length);
+        writeIntInternal(length);
         writeBytesInternal(bytes, offset, length);
         numValues++;
     }

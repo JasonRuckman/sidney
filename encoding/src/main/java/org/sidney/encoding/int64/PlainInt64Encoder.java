@@ -6,7 +6,7 @@ import org.sidney.encoding.Encoding;
 public class PlainInt64Encoder extends AbstractEncoder implements Int64Encoder {
     @Override
     public void writeLong(long value) {
-        writeLongLE(value);
+        writeLongInternal(value);
         numValues++;
     }
 

@@ -1,6 +1,6 @@
 package org.sidney.core.field;
 
-import com.esotericsoftware.kryo.util.UnsafeUtil;
+import org.sidney.encoding.unsafe.UnsafeUtil;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;

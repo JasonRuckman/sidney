@@ -48,8 +48,8 @@ public class BitPackingInt32Encoder extends AbstractEncoder implements Int32Enco
 
     private void flushMiniBlock() {
         int numToWrite = Math.max(currentIndex, 8);
-        writeIntLE(currentIndex);
-        writeIntLE(currentMaxBitwidth);
+        writeIntInternal(currentIndex);
+        writeIntInternal(currentMaxBitwidth);
 
         if (currentIndex > 0) {
             int strideSize = sizeInBytes(8, currentMaxBitwidth);
