@@ -1,6 +1,6 @@
 package org.sidney.core.annotations;
 
-import org.sidney.encoding.Encoding;
+import org.sidney.core.encoding.Encoding;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

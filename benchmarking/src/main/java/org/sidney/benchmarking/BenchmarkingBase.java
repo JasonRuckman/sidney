@@ -1,7 +1,7 @@
 package org.sidney.benchmarking;
 
-import org.sidney.encoding.Decoder;
-import org.sidney.encoding.Encoder;
+import org.sidney.core.encoding.Decoder;
+import org.sidney.core.encoding.Encoder;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -8,11 +8,11 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
-import org.sidney.encoding.Bytes;
-import org.sidney.encoding.float64.ExpPackingFloat64Decoder;
-import org.sidney.encoding.float64.ExpPackingFloat64Encoder;
-import org.sidney.encoding.float64.Float64Decoder;
-import org.sidney.encoding.float64.Float64Encoder;
+import org.sidney.core.Bytes;
+import org.sidney.core.encoding.float64.ExpPackingFloat64Decoder;
+import org.sidney.core.encoding.float64.ExpPackingFloat64Encoder;
+import org.sidney.core.encoding.float64.Float64Decoder;
+import org.sidney.core.encoding.float64.Float64Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

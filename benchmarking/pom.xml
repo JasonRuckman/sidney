@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>org.sidney</groupId>
-            <artifactId>sidney-encoding</artifactId>
+            <artifactId>sidney-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
