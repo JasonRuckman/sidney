@@ -9,6 +9,7 @@ public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecode
     @Override
     public boolean nextBool() {
         boolean result = false;
+
         if((getBuffer()[getPosition()] & 1 << currentBitIndex) > 0) {
             result = true;
         }

@@ -23,7 +23,6 @@ public class RoaringBitmapBoolEncoder implements BoolEncoder {
         if (value) {
             currentBitmap.add(currentIndex);
         }
-
         currentIndex++;
     }
 

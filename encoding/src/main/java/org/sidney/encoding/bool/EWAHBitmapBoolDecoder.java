@@ -18,13 +18,12 @@ public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecode
     @Override
     public boolean nextBool() {
         if (index == nextTrueBit) {
-            if(intIterator.hasNext()) {
+            if (intIterator.hasNext()) {
                 nextTrueBit = intIterator.next();
             }
             index++;
             return true;
         }
-
         index++;
         return false;
     }
@@ -41,13 +40,12 @@ public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecode
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
-
         index = 0;
         nextTrueBit = -1;
         bitmap = new EWAHCompressedBitmap();
         bitmap.deserialize(new DataInputStream(inputStream));
         intIterator = bitmap.intIterator();
-        if(intIterator.hasNext()) {
+        if (intIterator.hasNext()) {
             nextTrueBit = intIterator.next();
         }
     }
