@@ -26,7 +26,10 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
             new DeltaBitPackingInt32Encoder(),
             new DeltaBitPackingInt32Decoder()
         ),
-        new EncoderDecoderPair<>(new BitPackingInt32Encoder(), new BitPackingInt32Decoder())
+        new EncoderDecoderPair<>(
+            new BitPackingInt32Encoder(),
+            new BitPackingInt32Decoder()
+        )
     );
 
     @Override

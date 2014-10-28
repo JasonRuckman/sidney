@@ -1,6 +1,8 @@
 package org.sidney.core.encoding;
 
 import org.junit.Assert;
+import org.sidney.core.encoding.int64.GroupVarInt64Decoder;
+import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
 import org.sidney.core.encoding.int64.Int64Decoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
 import org.sidney.core.encoding.int64.PlainInt64Decoder;
@@ -14,7 +16,8 @@ import java.util.function.IntFunction;
 
 public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
     private final List<EncoderDecoderPair<Int64Encoder, Int64Decoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new PlainInt64Encoder(), new PlainInt64Decoder())
+        new EncoderDecoderPair<>(new PlainInt64Encoder(), new PlainInt64Decoder()),
+        new EncoderDecoderPair<>(new GroupVarInt64Encoder(), new GroupVarInt64Decoder())
     );
 
     @Override

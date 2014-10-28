@@ -14,15 +14,6 @@ public class Bytes {
         bytes[offset] = (byte) value;
     }
 
-    public static int zigZagEncodeInt(int value) {
-        return (value << 1) ^ (value >> 31);
-    }
-
-    public static int zigZagDecodeInt(int value) {
-        int temp = (((value << 31) >> 31) ^ value) >> 1;
-        return temp ^ (value & (1 << 31));
-    }
-
     public static void writeLongOn8Bytes(long value, byte[] bytes, int offset) {
         bytes[offset + 7] = (byte) (value >>> 56);
         bytes[offset + 6] = (byte) (value >>> 48);
