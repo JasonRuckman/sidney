@@ -36,9 +36,9 @@ public abstract class AbstractEncoder implements Encoder {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        StreamUtils.writeIntToStream(numValues, outputStream);
         StreamUtils.writeIntToStream(getPosition(), outputStream);
         outputStream.write(getBuffer(), 0, getPosition());
+        reset();
     }
 
     protected void ensureCapacity(int bytes) {

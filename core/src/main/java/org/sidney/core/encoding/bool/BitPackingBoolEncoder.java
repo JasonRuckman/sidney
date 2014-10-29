@@ -11,7 +11,6 @@ public class BitPackingBoolEncoder extends AbstractEncoder implements BoolEncode
 
     @Override
     public void writeBool(boolean value) {
-        numValues++;
         ensureCapacity(1);
         if(value) {
             getBuffer()[getPosition()] |= 1 << currentBitIndex;

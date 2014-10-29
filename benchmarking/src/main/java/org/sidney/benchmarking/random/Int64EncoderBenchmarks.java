@@ -9,6 +9,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
+import org.sidney.core.encoding.int64.GroupVarInt64Decoder;
+import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
 import org.sidney.core.encoding.int64.Int64Decoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
 import org.sidney.core.encoding.int64.PlainInt64Decoder;
@@ -38,6 +40,12 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
     @Group("int64Encoders")
     public long[] runPlainInt64Encoder() throws IOException {
         return run(getEncoder(PlainInt64Encoder.class), getDecoder(PlainInt64Decoder.class));
+    }
+
+    @Benchmark
+    @Group("int64Encoders")
+    public long[] runVarInt64Encoder() throws IOException {
+        return run(getEncoder(GroupVarInt64Encoder.class), getDecoder(GroupVarInt64Decoder.class));
     }
 
     private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {

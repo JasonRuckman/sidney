@@ -41,7 +41,6 @@ public abstract class AbstractDecoder implements Decoder {
         inputStream = inputStreamWrapIfNecessary(inputStream);
 
         setPosition(0);
-        numValues = StreamUtils.readIntFromStream(inputStream);
         buffer = new byte[StreamUtils.readIntFromStream(inputStream)];
         inputStream.read(buffer);
     }

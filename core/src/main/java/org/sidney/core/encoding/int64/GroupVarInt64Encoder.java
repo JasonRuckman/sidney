@@ -13,13 +13,16 @@ import java.io.OutputStream;
 public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encoder {
     private int currentIndex = 0;
     private final long[] block = new long[4];
+    private int num = 0;
 
     @Override
     public void writeLong(long value) {
         //each int, var encode, write bits into prefix, on flush write the prefix and bump the position past the last byte
         block[currentIndex++] = value;
+        num++;
         if (currentIndex == 4) {
             flushBlock();
+            num = 0;
         }
     }
 
@@ -32,7 +35,9 @@ public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encode
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        flushBlock();
+        if(num > 0) {
+            flushBlock();
+        }
         super.writeToStream(outputStream);
     }
 
@@ -107,7 +112,8 @@ public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encode
         int offset = 2;
         for (int i = 0; i < block.length; i++) {
             long value = Longs.zigzagEncode(block[i]);
-            int bytes = (64 - Long.numberOfLeadingZeros(value)) / 8;
+            int bytes = (int) Math.ceil((64D - Long.numberOfLeadingZeros(value)) / 8D);
+            bytes = (bytes == 0) ? 1 : bytes;
             switch (i) {
                 case 0: {
                     buffer[0] = (byte) (bytes & 15);

@@ -101,6 +101,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     private void logAndRun(EncoderDecoderPair<E, D> pair, int size) throws IOException {
         pair.getEncoder().reset();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        logger.debug(String.format("Testing size %s", size));
         T t = dataSupplier().apply(size);
         encodingFunction().accept(pair.getEncoder(), t);
         pair.getEncoder().writeToStream(baos);

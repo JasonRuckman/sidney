@@ -3,8 +3,8 @@ package org.sidney.core.encoding.float64;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
+import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
-import org.sidney.core.encoding.int64.PlainInt64Encoder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
  */
 public class ExpPackingFloat64Encoder implements Float64Encoder  {
     private final Int32Encoder exponentEncoder = new BitPackingInt32Encoder();
-    private final Int64Encoder mantissaEncoder = new PlainInt64Encoder();
+    private final Int64Encoder mantissaEncoder = new GroupVarInt64Encoder();
 
     @Override
     public void writeDouble(double value) {
