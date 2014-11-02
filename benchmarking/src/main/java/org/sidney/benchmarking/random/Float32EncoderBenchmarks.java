@@ -9,10 +9,10 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.float32.ExponentMantissaPackingFloat32Decoder;
-import org.sidney.core.encoding.float32.ExponentMantissaPackingFloat32Encoder;
 import org.sidney.core.encoding.float32.Float32Decoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
+import org.sidney.core.encoding.float32.PlainFloat32Decoder;
+import org.sidney.core.encoding.float32.PlainFloat32Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("float32Encoders")
     public float[] runExpMantissaPackingFloatEncoders() throws IOException {
-        return run(getEncoder(ExponentMantissaPackingFloat32Encoder.class), getDecoder(ExponentMantissaPackingFloat32Decoder.class));
+        return run(getEncoder(PlainFloat32Encoder.class), getDecoder(PlainFloat32Decoder.class));
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

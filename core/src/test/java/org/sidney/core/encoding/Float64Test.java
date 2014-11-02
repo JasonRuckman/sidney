@@ -1,10 +1,10 @@
 package org.sidney.core.encoding;
 
 import org.junit.Assert;
-import org.sidney.core.encoding.float64.ExpPackingFloat64Decoder;
-import org.sidney.core.encoding.float64.ExpPackingFloat64Encoder;
 import org.sidney.core.encoding.float64.Float64Decoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
+import org.sidney.core.encoding.float64.PlainFloat64Decoder;
+import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,9 +14,7 @@ import java.util.function.IntFunction;
 
 public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Decoder, double[]> {
     private final List<EncoderDecoderPair<Float64Encoder, Float64Decoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(
-            new ExpPackingFloat64Encoder(), new ExpPackingFloat64Decoder()
-        )
+        new EncoderDecoderPair<>(new PlainFloat64Encoder(), new PlainFloat64Decoder())
     );
 
     @Override
@@ -34,7 +32,7 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
             double[] doubles = new double[size];
             Random random = new Random(11L);
             for (int i = 0; i < size; i++) {
-                doubles[i] = random.nextDouble();
+                doubles[i] = random.nextGaussian();
             }
             return doubles;
         };

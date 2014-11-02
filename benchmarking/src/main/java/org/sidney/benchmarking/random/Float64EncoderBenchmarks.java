@@ -9,10 +9,10 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.float64.ExpPackingFloat64Decoder;
-import org.sidney.core.encoding.float64.ExpPackingFloat64Encoder;
 import org.sidney.core.encoding.float64.Float64Decoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
+import org.sidney.core.encoding.float64.PlainFloat64Decoder;
+import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,8 +36,8 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("float64Encoders")
-    public double[] runExpPackingFloat64Encoder() throws IOException {
-        return run(getEncoder(ExpPackingFloat64Encoder.class), getDecoder(ExpPackingFloat64Decoder.class));
+    public double[] runPlainFloat64Encoder() throws IOException {
+        return run(getEncoder(PlainFloat64Encoder.class), getDecoder(PlainFloat64Decoder.class));
     }
 
     private double[] run(Float64Encoder encoder, Float64Decoder decoder) throws IOException {

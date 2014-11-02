@@ -9,6 +9,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
+import org.sidney.core.encoding.string.CharAsIntStringDecoder;
+import org.sidney.core.encoding.string.CharAsIntStringEncoder;
 import org.sidney.core.encoding.string.DeltaLengthStringDecoder;
 import org.sidney.core.encoding.string.DeltaLengthStringEncoder;
 import org.sidney.core.encoding.string.PlainStringDecoder;
@@ -18,7 +20,6 @@ import org.sidney.core.encoding.string.StringEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Random;
 
 @State(Scope.Benchmark)
@@ -33,19 +34,30 @@ public class StringEncoderBenchmarks extends BenchmarkingBase {
         strings = new String[num];
         Random random = new Random(11L);
         for (int i = 0; i < num; i++) {
-            strings[i] = new BigInteger(random.nextInt(500), random).toString();
+            char[] chars = new char[124];
+            for (int j = 0; j < chars.length; j++) {
+                chars[j] = (char) random.nextInt(32767);
+            }
+            strings[i] = new String(chars);
         }
     }
+
     @Benchmark
-    @Group("stringEncoders")
+    @Group("stringEncodersRandom")
     public String[] runPlainStringEncoder() throws IOException {
         return run(getEncoder(PlainStringEncoder.class), getDecoder(PlainStringDecoder.class));
     }
 
     @Benchmark
-    @Group("stringEncoders")
+    @Group("stringEncodersRandom")
     public String[] runDeltaLengthEncoder() throws IOException {
         return run(getEncoder(DeltaLengthStringEncoder.class), getDecoder(DeltaLengthStringDecoder.class));
+    }
+
+    @Benchmark
+    @Group("stringEncodersRandom")
+    public String[] runCharAsIntEncoder() throws IOException {
+        return run(getEncoder(CharAsIntStringEncoder.class), getDecoder(CharAsIntStringDecoder.class));
     }
 
     private String[] run(StringEncoder encoder, StringDecoder decoder) throws IOException {

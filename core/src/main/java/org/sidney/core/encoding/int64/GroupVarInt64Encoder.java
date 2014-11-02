@@ -17,7 +17,6 @@ public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encode
 
     @Override
     public void writeLong(long value) {
-        //each int, var encode, write bits into prefix, on flush write the prefix and bump the position past the last byte
         block[currentIndex++] = value;
         num++;
         if (currentIndex == 4) {

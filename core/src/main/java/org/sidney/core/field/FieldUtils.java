@@ -63,6 +63,25 @@ public class FieldUtils {
         return fields;
     }
 
+    public static List<Field> getAllFieldsNoPrimitiveFilter(Class type) {
+        List<Field> fields = new ArrayList<>();
+
+        Field[] declaredFields = type.getDeclaredFields();
+
+        if (type.getSuperclass() != null) {
+            fields.addAll(getAllFields(type.getSuperclass()));
+        }
+
+        for (Field f : declaredFields) {
+            if (Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
+                continue;
+            }
+            fields.add(f);
+        }
+
+        return fields;
+    }
+
     /**
      * Tests if a class fits a definition of primitive, defined as it is either a java primitive or its reference variant, a {@link String} a byte[] or an {@link Enum}
      *
