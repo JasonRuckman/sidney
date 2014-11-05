@@ -1,30 +1,19 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.field.FieldUtils;
+import org.sidney.core.field.Writer;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Resolver<T> {
-    private final Class<T> type;
+public abstract class Resolver {
+    private final Class<?> type;
     private final Field field;
-    private final List<Resolver<?>> childResolvers = new ArrayList<>();
-    public Resolver(Class<T> type) {
-        this(type, null);
-    }
+    private final List<Resolver> childResolvers;
 
-    public Resolver(Class<T> type, Field field) {
+    public Resolver(Class<?> type, Field field) {
         this.type = type;
         this.field = field;
-
-        List<Field> childFields = FieldUtils.getAllFields(type);
-
-        if(childFields.size() > 0) {
-            for(Field f : childFields) {
-                childResolvers.add(new Resolver<>(f.getType(), f));
-            }
-        }
+        this.childResolvers = children();
     }
 
     @Override
@@ -35,7 +24,7 @@ public class Resolver<T> {
             '}';
     }
 
-    public Class<T> getType() {
+    public Class<?> getType() {
         return type;
     }
 
@@ -43,17 +32,6 @@ public class Resolver<T> {
         return field;
     }
 
-    private boolean isPrimitive() {
-        return FieldUtils.isConsideredPrimitive(type);
-    }
-
-    public void findLeaves(List<Resolver<?>> resolvers) {
-        for(Resolver<?> resolver : childResolvers) {
-            resolver.findLeaves(resolvers);
-        }
-
-        if(isPrimitive()) {
-            resolvers.add(this);
-        }
-    }
+    protected abstract List<Resolver> children();
+    public abstract Writer consumer();
 }

@@ -39,7 +39,7 @@ public class RoaringBitmapBoolDecoder extends AbstractDecoder implements BoolDec
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
 
         index = 0;

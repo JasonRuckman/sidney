@@ -31,7 +31,7 @@ public class PlainFloat64Decoder extends AbstractDecoder implements Float64Decod
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-        decoder.readFromStream(inputStream);
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+        decoder.populateBufferFromStream(inputStream);
     }
 }

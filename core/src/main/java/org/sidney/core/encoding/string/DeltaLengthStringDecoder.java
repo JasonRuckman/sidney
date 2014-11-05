@@ -33,11 +33,11 @@ public class DeltaLengthStringDecoder extends AbstractDecoder implements StringD
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
 
-        lengthDecoder.readFromStream(inputStream);
-        bytesDecoder.readFromStream(inputStream);
+        lengthDecoder.populateBufferFromStream(inputStream);
+        bytesDecoder.populateBufferFromStream(inputStream);
     }
 
     @Override

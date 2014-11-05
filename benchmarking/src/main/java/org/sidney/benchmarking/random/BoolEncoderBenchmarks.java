@@ -123,7 +123,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
+        decoder.populateBufferFromStream(Bytes.wrap(baos.toByteArray()));
         return decoder.nextBools(num);
     }
 
@@ -134,7 +134,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         SnappyOutputStream sos = new SnappyOutputStream(baos);
         encoder.writeToStream(sos);
         sos.close();
-        decoder.readFromStream(new SnappyInputStream(Bytes.wrap(baos.toByteArray())));
+        decoder.populateBufferFromStream(new SnappyInputStream(Bytes.wrap(baos.toByteArray())));
         return decoder.nextBools(num);
     }
 
@@ -145,7 +145,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         GZIPOutputStream gos = new GZIPOutputStream(baos);
         encoder.writeToStream(gos);
         gos.close();
-        decoder.readFromStream(new GZIPInputStream(Bytes.wrap(baos.toByteArray())));
+        decoder.populateBufferFromStream(new GZIPInputStream(Bytes.wrap(baos.toByteArray())));
         return decoder.nextBools(num);
     }
 }

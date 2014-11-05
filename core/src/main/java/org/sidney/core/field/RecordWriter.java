@@ -1,4 +1,4 @@
-package org.sidney.core.field.writer;
+package org.sidney.core.field;
 
 public interface RecordWriter {
     void writeNull();
@@ -9,4 +9,6 @@ public interface RecordWriter {
     void writeDouble(double value);
     void writeBytes(byte[] value);
     void writeString(String value);
+    void startField();
+    void endField();
 }

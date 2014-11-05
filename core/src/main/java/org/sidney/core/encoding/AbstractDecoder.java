@@ -37,7 +37,7 @@ public abstract class AbstractDecoder implements Decoder {
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
 
         setPosition(0);

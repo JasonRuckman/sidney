@@ -47,7 +47,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.readFromStream(Bytes.wrap(baos.toByteArray()));
+        decoder.populateBufferFromStream(Bytes.wrap(baos.toByteArray()));
         return decoder.nextDoubles(num);
     }
 }

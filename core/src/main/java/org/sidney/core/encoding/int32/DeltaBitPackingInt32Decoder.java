@@ -51,7 +51,7 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
         reset();
         totalValueCount = readIntFromStream(inputStream);

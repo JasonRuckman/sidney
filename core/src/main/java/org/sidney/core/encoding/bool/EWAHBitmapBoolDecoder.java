@@ -38,7 +38,7 @@ public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecode
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
         index = 0;
         nextTrueBit = -1;

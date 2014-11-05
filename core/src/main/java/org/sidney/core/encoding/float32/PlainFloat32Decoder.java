@@ -31,7 +31,7 @@ public class PlainFloat32Decoder extends AbstractDecoder implements Float32Decod
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-        int32Decoder.readFromStream(inputStream);
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+        int32Decoder.populateBufferFromStream(inputStream);
     }
 }

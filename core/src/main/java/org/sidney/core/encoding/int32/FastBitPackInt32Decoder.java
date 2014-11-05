@@ -49,7 +49,7 @@ public class FastBitPackInt32Decoder extends AbstractDecoder implements Int32Dec
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
         LittleEndianDataInputStream dis = dataInputStreamWrapIfNecessary(inputStream);
 
         int numInts = dis.readInt();
