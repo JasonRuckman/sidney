@@ -1,6 +1,7 @@
 package org.sidney.core.resolver;
 
 import org.sidney.core.field.Writer;
+import org.sidney.core.schema.Definition;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -8,12 +9,10 @@ import java.util.List;
 public abstract class Resolver {
     private final Class<?> type;
     private final Field field;
-    private final List<Resolver> childResolvers;
 
     public Resolver(Class<?> type, Field field) {
         this.type = type;
         this.field = field;
-        this.childResolvers = children();
     }
 
     @Override
@@ -32,6 +31,13 @@ public abstract class Resolver {
         return field;
     }
 
-    protected abstract List<Resolver> children();
+    public abstract List<Resolver> children();
+
     public abstract Writer consumer();
+
+    public abstract Definition definition();
+
+    public String name() {
+        return  (getField() == null) ? getType().getName() : getField().getName();
+    }
 }

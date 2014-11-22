@@ -16,7 +16,7 @@ public class ResolverFactory {
     }
 
     private static Resolver resolver(Class<?> type, Field field) {
-        if(FieldUtils.isConsideredPrimitive(type)) {
+        if(PrimitiveResolver.isPrimitive(type)) {
             return new PrimitiveResolver(type, field);
         }
 
@@ -36,6 +36,6 @@ public class ResolverFactory {
             return new EmptyClassResolver(type, field);
         }
 
-        return new FieldResolver(type, field);
+        return new BeanResolver(type, field);
     }
 }
