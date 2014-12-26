@@ -14,7 +14,7 @@ public class CharAsIntStringDecoder extends AbstractDecoder implements StringDec
     @Override
     public String readString() {
         char[] arr = new char[lengthDecoder.nextInt()];
-        for(int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.length; i++) {
             arr[i] = (char) characterDecoder.nextInt();
         }
         return new String(arr);
@@ -23,7 +23,7 @@ public class CharAsIntStringDecoder extends AbstractDecoder implements StringDec
     @Override
     public String[] readStrings(int num) {
         String[] strings = new String[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             strings[i] = readString();
         }
         return strings;
@@ -37,7 +37,7 @@ public class CharAsIntStringDecoder extends AbstractDecoder implements StringDec
     @Override
     public void populateBufferFromStream(InputStream inputStream) throws IOException {
         inputStream = inputStreamWrapIfNecessary(inputStream);
-        
+
         lengthDecoder.populateBufferFromStream(inputStream);
         characterDecoder.populateBufferFromStream(inputStream);
     }

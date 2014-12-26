@@ -42,7 +42,7 @@ public abstract class AbstractEncoder implements Encoder {
     }
 
     protected void ensureCapacity(int bytes) {
-        if(position + bytes >= buffer.length) {
+        if (position + bytes >= buffer.length) {
             int newSize = Math.max(buffer.length * 2, (position + bytes) * 2);
             byte[] newBuffer = new byte[newSize];
             System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);

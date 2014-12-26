@@ -17,14 +17,12 @@ public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecode
 
     @Override
     public boolean nextBool() {
-        if (index == nextTrueBit) {
+        if (index++ == nextTrueBit) {
             if (intIterator.hasNext()) {
                 nextTrueBit = intIterator.next();
             }
-            index++;
             return true;
         }
-        index++;
         return false;
     }
 

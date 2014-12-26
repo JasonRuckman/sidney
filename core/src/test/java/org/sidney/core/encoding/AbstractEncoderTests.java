@@ -11,8 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.IntFunction;
 
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
     private Logger logger = LoggerFactory.getLogger(getRunningClass());
@@ -29,56 +27,50 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
     @Test
     public void runAll() {
-        List<EncoderDecoderPair<E, D>> pairs = pairs();
-        pairs.forEach(
-            (pair) -> {
-                logger.info(
+        for (EncoderDecoderPair<E, D> pair : pairs()) {
+            logger.info(
                     String.format(
-                        "Testing %s with %s.",
-                        pair.getEncoder().getClass(),
-                        pair.getDecoder().getClass()
+                            "Testing %s with %s.",
+                            pair.getEncoder().getClass(),
+                            pair.getDecoder().getClass()
                     )
-                );
-                try {
-                    for (int i = 0; i < 8; i++) {
-                        logAndRun(pair, i);
-                    }
-
-                    for (int i = 8; i < 500000; i += 65536) {
-                        logAndRun(pair, i);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            );
+            try {
+                for (int i = 0; i < 8; i++) {
+                    logAndRun(pair, i);
                 }
+
+                for (int i = 8; i < 500000; i += 65536) {
+                    logAndRun(pair, i);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        );
+        }
     }
 
     @Test
     public void runAllWithCompression() {
-        List<EncoderDecoderPair<E, D>> pairs = pairs();
-        pairs.forEach(
-            (pair) -> {
-                logger.info(
+        for (EncoderDecoderPair<E, D> pair : pairs()) {
+            logger.info(
                     String.format(
-                        "Testing %s with %s.",
-                        pair.getEncoder().getClass(),
-                        pair.getDecoder().getClass()
+                            "Testing %s with %s.",
+                            pair.getEncoder().getClass(),
+                            pair.getDecoder().getClass()
                     )
-                );
-                try {
-                    for (int i = 0; i < 8; i++) {
-                        logAndRunWithCompression(pair, i);
-                    }
-
-                    for (int i = 8; i < 500000; i += 65536) {
-                        logAndRunWithCompression(pair, i);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            );
+            try {
+                for (int i = 0; i < 8; i++) {
+                    logAndRunWithCompression(pair, i);
                 }
+
+                for (int i = 8; i < 500000; i += 65536) {
+                    logAndRunWithCompression(pair, i);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        );
+        }
     }
 
     private void logAndRunWithCompression(EncoderDecoderPair<E, D> pair, int size) throws IOException {

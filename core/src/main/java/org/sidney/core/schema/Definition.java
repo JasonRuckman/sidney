@@ -1,8 +1,6 @@
 package org.sidney.core.schema;
 
-import org.sidney.core.schema.Repetition;
-
-public class Definition {
+public abstract class Definition {
     private String name;
     private Repetition repetition;
 
@@ -10,6 +8,8 @@ public class Definition {
         this.name = name;
         this.repetition = repetition;
     }
+
+    public abstract boolean isPrimitive();
 
     public String getName() {
         return name;

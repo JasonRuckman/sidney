@@ -17,7 +17,7 @@ public class PlainStringEncoder extends AbstractEncoder implements StringEncoder
 
     @Override
     public void writeStrings(String[] strings) {
-        for(String s : strings) {
+        for (String s : strings) {
             writeString(s);
         }
     }

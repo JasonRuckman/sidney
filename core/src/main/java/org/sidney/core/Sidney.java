@@ -15,7 +15,7 @@ public class Sidney<T> {
     }
 
     public void write(List<T> items) {
-        for(T item : items) {
+        for (T item : items) {
             write(item);
         }
     }

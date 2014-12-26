@@ -1,20 +1,9 @@
 package org.sidney.benchmarking.random;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Group;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.int64.GroupVarInt64Decoder;
-import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
-import org.sidney.core.encoding.int64.Int64Decoder;
-import org.sidney.core.encoding.int64.Int64Encoder;
-import org.sidney.core.encoding.int64.PlainInt64Decoder;
-import org.sidney.core.encoding.int64.PlainInt64Encoder;
+import org.sidney.core.encoding.int64.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +12,7 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
+@Threads(1)
 @Fork(1)
 public class Int64EncoderBenchmarks extends BenchmarkingBase {
     private final int num = 65536;
@@ -32,7 +22,7 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
         longs = new long[num];
         Random random = new Random(11L);
         for (int i = 0; i < longs.length; i++) {
-            longs[i] = random.nextInt(500);
+            longs[i] = random.nextInt();
         }
     }
 

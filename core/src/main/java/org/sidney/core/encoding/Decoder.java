@@ -5,5 +5,6 @@ import java.io.InputStream;
 
 public interface Decoder {
     void populateBufferFromStream(InputStream inputStream) throws IOException;
+
     String supportedEncoding();
 }

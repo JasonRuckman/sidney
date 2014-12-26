@@ -3,9 +3,7 @@ package org.sidney.core.field;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Utility methods for resolving classes and fields

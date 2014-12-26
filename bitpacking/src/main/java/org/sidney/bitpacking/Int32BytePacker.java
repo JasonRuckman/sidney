@@ -18,13 +18,12 @@ package org.sidney.bitpacking;
 
 /**
  * Packs and unpacks into bytes
- *
+ * <p/>
  * packing unpacking treats:
- *  - n values at a time (with n % 8 == 0)
- *  - bitWidth * (n/8) bytes at a time.
+ * - n values at a time (with n % 8 == 0)
+ * - bitWidth * (n/8) bytes at a time.
  *
  * @author Julien Le Dem
- *
  */
 public abstract class Int32BytePacker {
 
@@ -44,8 +43,9 @@ public abstract class Int32BytePacker {
     /**
      * pack 8 values from input at inPos into bitWidth bytes in output at outPos.
      * nextPosition: inPos += 8; outPos += getBitWidth()
-     * @param input the input values
-     * @param inPos where to read from in input
+     *
+     * @param input  the input values
+     * @param inPos  where to read from in input
      * @param output the output bytes
      * @param outPos where to write to in output
      */
@@ -54,8 +54,9 @@ public abstract class Int32BytePacker {
     /**
      * pack 32 values from input at inPos into bitWidth * 4 bytes in output at outPos.
      * nextPosition: inPos += 32; outPos += getBitWidth() * 4
-     * @param input the input values
-     * @param inPos where to read from in input
+     *
+     * @param input  the input values
+     * @param inPos  where to read from in input
      * @param output the output bytes
      * @param outPos where to write to in output
      */
@@ -64,8 +65,9 @@ public abstract class Int32BytePacker {
     /**
      * unpack bitWidth bytes from input at inPos into 8 values in output at outPos.
      * nextPosition: inPos += getBitWidth(); outPos += 8
-     * @param input the input bytes
-     * @param inPos where to read from in input
+     *
+     * @param input  the input bytes
+     * @param inPos  where to read from in input
      * @param output the output values
      * @param outPos where to write to in output
      */
@@ -74,8 +76,9 @@ public abstract class Int32BytePacker {
     /**
      * unpack bitWidth * 4 bytes from input at inPos into 32 values in output at outPos.
      * nextPosition: inPos += getBitWidth() * 4; outPos += 32
-     * @param input the input bytes
-     * @param inPos where to read from in input
+     *
+     * @param input  the input bytes
+     * @param inPos  where to read from in input
      * @param output the output values
      * @param outPos where to write to in output
      */

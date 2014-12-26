@@ -23,7 +23,7 @@ public class EWAHBitmapBoolEncoder implements BoolEncoder {
         if (value) {
             currentBitmap.set(currentIndex);
         }
-        currentIndex++;
+        ++currentIndex;
     }
 
     @Override

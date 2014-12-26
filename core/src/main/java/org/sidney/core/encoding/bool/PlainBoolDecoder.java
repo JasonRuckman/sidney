@@ -12,7 +12,7 @@ public class PlainBoolDecoder extends AbstractDecoder implements BoolDecoder {
     @Override
     public boolean[] nextBools(int num) {
         boolean[] booleans = new boolean[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             booleans[i] = readBoolean();
         }
         return booleans;

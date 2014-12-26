@@ -14,17 +14,25 @@ public class Schema<T> {
         this.source = source;
     }
 
-    public List<Definition> getFields() {
-        return fields;
-    }
-
     public static <T> Schema<T> schema(Class<T> type) {
         Schema<T> schema = new Schema<>(type);
         //get the resolver, but then lift its children
-        for(Resolver resolver : ResolverFactory.resolver(type).children()) {
+        for (Resolver resolver : ResolverFactory.resolver(type).children()) {
             schema.fields.add(resolver.definition());
         }
 
         return schema;
+    }
+
+    public List<Definition> getFields() {
+        return fields;
+    }
+
+    @Override
+    public String toString() {
+        return "Schema{" +
+                "fields=" + fields +
+                ", source=" + source +
+                '}';
     }
 }

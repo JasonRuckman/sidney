@@ -10,7 +10,19 @@ public class GroupDefinition extends Definition {
         super(name, repetition);
     }
 
+    @Override
+    public boolean isPrimitive() {
+        return false;
+    }
+
     public List<Definition> getChildren() {
         return children;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupDefinition{" + "name=" + getName() + " , " +
+                "children=" + children +
+                '}';
     }
 }

@@ -8,31 +8,41 @@ import org.sidney.core.encoding.bytes.BytesEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.IntFunction;
 
 public class BytesTest extends AbstractEncoderTests<BytesEncoder, BytesDecoder, byte[]> {
     private final List<EncoderDecoderPair<BytesEncoder, BytesDecoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new ByteArrayEncoder(), new ByteArrayDecoder())
+            new EncoderDecoderPair<BytesEncoder, BytesDecoder>(new ByteArrayEncoder(), new ByteArrayDecoder())
     );
+
     protected BiConsumer<BytesEncoder, byte[]> encodingFunction() {
-        return (encoder, bytes) -> encoder.writeBytes(bytes);
+        return new BiConsumer<BytesEncoder, byte[]>() {
+            @Override
+            public void accept(BytesEncoder encoder, byte[] bytes) {
+                encoder.writeBytes(bytes);
+            }
+        };
     }
 
     @Override
     protected IntFunction<byte[]> dataSupplier() {
-        return (size) -> {
-            Random random = new Random(11L);
-            byte[] bytes = new byte[size];
-            random.nextBytes(bytes);
-            return bytes;
+        return new IntFunction<byte[]>() {
+            @Override
+            public byte[] apply(int size) {
+                Random random = new Random(11L);
+                byte[] bytes = new byte[size];
+                random.nextBytes(bytes);
+                return bytes;
+            }
         };
     }
 
     @Override
     protected BiConsumer<BytesDecoder, byte[]> consumeAndAssert() {
-        return (decoder, bytes) -> {
-            decoder.readBytes(bytes.length);
+        return new BiConsumer<BytesDecoder, byte[]>() {
+            @Override
+            public void accept(BytesDecoder decoder, byte[] bytes) {
+                decoder.readBytes(bytes.length);
+            }
         };
     }
 

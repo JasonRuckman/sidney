@@ -12,10 +12,10 @@ public class BitPackingBoolEncoder extends AbstractEncoder implements BoolEncode
     @Override
     public void writeBool(boolean value) {
         ensureCapacity(1);
-        if(value) {
+        if (value) {
             getBuffer()[getPosition()] |= 1 << currentBitIndex;
         }
-        if(++currentBitIndex == 8) {
+        if (++currentBitIndex == 8) {
             incrementPosition(1);
             currentBitIndex = 0;
         }
@@ -24,7 +24,7 @@ public class BitPackingBoolEncoder extends AbstractEncoder implements BoolEncode
     @Override
     public void writeBools(boolean[] values) {
         //TODO: Optimize for packing 8 at a time
-        for(boolean b : values) {
+        for (boolean b : values) {
             writeBool(b);
         }
     }

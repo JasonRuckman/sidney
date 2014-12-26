@@ -19,7 +19,7 @@ public class PlainFloat32Decoder extends AbstractDecoder implements Float32Decod
     @Override
     public float[] nextFloats(int num) {
         float[] floats = new float[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             floats[i] = nextFloat();
         }
         return floats;

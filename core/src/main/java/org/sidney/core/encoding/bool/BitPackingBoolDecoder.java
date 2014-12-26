@@ -10,11 +10,11 @@ public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecode
     public boolean nextBool() {
         boolean result = false;
 
-        if((getBuffer()[getPosition()] & 1 << currentBitIndex) > 0) {
+        if ((getBuffer()[getPosition()] & 1 << currentBitIndex) > 0) {
             result = true;
         }
 
-        if(++currentBitIndex == 8) {
+        if (++currentBitIndex == 8) {
             incrementPosition(1);
             currentBitIndex = 0;
         }

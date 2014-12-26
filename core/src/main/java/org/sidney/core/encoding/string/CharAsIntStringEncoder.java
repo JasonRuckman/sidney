@@ -18,8 +18,8 @@ public class CharAsIntStringEncoder extends AbstractEncoder implements StringEnc
     private Int32Encoder charEncoder = new DeltaBitPackingInt32Encoder();
 
     public CharAsIntStringEncoder() {
-        for(Field field : FieldUtils.getAllFieldsNoPrimitiveFilter(String.class)) {
-            if(field.getName().equals("value")) {
+        for (Field field : FieldUtils.getAllFieldsNoPrimitiveFilter(String.class)) {
+            if (field.getName().equals("value")) {
                 charArrayField = new UnsafeFieldAccessor(field);
                 break;
             }
@@ -29,14 +29,14 @@ public class CharAsIntStringEncoder extends AbstractEncoder implements StringEnc
     public void writeString(String s) {
         char[] arr = (char[]) charArrayField.get(s);
         lengthEncoder.writeInt(s.length());
-        for(char c : arr) {
+        for (char c : arr) {
             charEncoder.writeInt(c);
         }
     }
 
     @Override
     public void writeStrings(String[] s) {
-        for(String str : s) {
+        for (String str : s) {
             writeString(str);
         }
     }

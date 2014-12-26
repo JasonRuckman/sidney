@@ -17,15 +17,13 @@ public class RoaringBitmapBoolDecoder extends AbstractDecoder implements BoolDec
 
     @Override
     public boolean nextBool() {
-        if (index == nextTrueBit) {
-            index++;
-            if(intIterator.hasNext()) {
+        if (index++ == nextTrueBit) {
+            if (intIterator.hasNext()) {
                 nextTrueBit = intIterator.next();
             }
             return true;
         }
 
-        index++;
         return false;
     }
 
@@ -47,7 +45,7 @@ public class RoaringBitmapBoolDecoder extends AbstractDecoder implements BoolDec
         bitmap = new RoaringBitmap();
         bitmap.deserialize(new DataInputStream(inputStream));
         intIterator = bitmap.getIntIterator();
-        if(intIterator.hasNext()) {
+        if (intIterator.hasNext()) {
             nextTrueBit = intIterator.next();
         }
     }

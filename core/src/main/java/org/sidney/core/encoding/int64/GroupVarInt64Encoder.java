@@ -11,8 +11,8 @@ import java.io.OutputStream;
  * Zigzag encodes integers, then variable length encodes them
  */
 public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encoder {
-    private int currentIndex = 0;
     private final long[] block = new long[4];
+    private int currentIndex = 0;
     private int num = 0;
 
     @Override
@@ -34,7 +34,7 @@ public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encode
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        if(num > 0) {
+        if (num > 0) {
             flushBlock();
         }
         super.writeToStream(outputStream);

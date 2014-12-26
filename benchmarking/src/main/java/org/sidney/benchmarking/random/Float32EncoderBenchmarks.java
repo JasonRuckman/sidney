@@ -1,12 +1,6 @@
 package org.sidney.benchmarking.random;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Group;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
 import org.sidney.core.encoding.float32.Float32Decoder;
@@ -21,6 +15,7 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
+@Threads(1)
 @Fork(1)
 public class Float32EncoderBenchmarks extends BenchmarkingBase {
     private final int num = 65536;

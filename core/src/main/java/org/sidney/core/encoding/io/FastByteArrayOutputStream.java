@@ -35,7 +35,7 @@ public class FastByteArrayOutputStream extends OutputStream {
     private void verifyBufferSize(int sz) {
         if (sz > buf.length) {
             byte[] old = buf;
-            buf = new byte[Math.max(sz, 2 * buf.length )];
+            buf = new byte[Math.max(sz, 2 * buf.length)];
             System.arraycopy(old, 0, buf, 0, old.length);
             old = null;
         }

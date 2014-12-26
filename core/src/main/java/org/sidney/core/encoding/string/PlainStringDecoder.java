@@ -18,7 +18,7 @@ public class PlainStringDecoder extends AbstractDecoder implements StringDecoder
     @Override
     public String[] readStrings(int num) {
         String[] strings = new String[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             strings[i] = readString();
         }
         return strings;

@@ -1,6 +1,5 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.field.Writer;
 import org.sidney.core.schema.Definition;
 import org.sidney.core.schema.GroupDefinition;
 import org.sidney.core.schema.Repetition;
@@ -27,18 +26,13 @@ public class MapResolver extends GenericResolver {
     }
 
     @Override
-    public Writer consumer() {
-        return null;
-    }
-
-    @Override
     public Definition definition() {
         //this is wrong but leave it for now
         GroupDefinition definition = new GroupDefinition(
                 name(), Repetition.OPTIONAL
         );
 
-        for(Resolver child : children()) {
+        for (Resolver child : children()) {
             definition.getChildren().add(child.definition());
         }
 

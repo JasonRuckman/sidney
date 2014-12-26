@@ -11,7 +11,7 @@ public class PlainBoolEncoder extends AbstractEncoder implements BoolEncoder {
 
     @Override
     public void writeBools(boolean[] values) {
-        for(boolean value : values) {
+        for (boolean value : values) {
             writeBool(value);
         }
     }

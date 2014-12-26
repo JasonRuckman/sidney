@@ -7,11 +7,11 @@ public enum Repetition {
 
     private final int value;
 
-    public int getValue() {
-        return value;
-    }
-
     Repetition(int value) {
         this.value = value;
+    }
+
+    public int getValue() {
+        return value;
     }
 }

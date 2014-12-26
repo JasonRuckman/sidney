@@ -41,7 +41,7 @@ public class Int32ByteBasedBitPackingGenerator {
 
     private static void generateScheme(String className, boolean msbFirst, String basePath) throws IOException {
         final File file = new File(
-            basePath + className + ".java"
+                basePath + className + ".java"
         ).getAbsoluteFile();
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -88,8 +88,8 @@ public class Int32ByteBasedBitPackingGenerator {
 
             String classFile = generateClass(sb, i, msbFirst);
             File f = new File(fileName);
-            if(!f.exists()) {
-                if(!f.getParentFile().exists()) {
+            if (!f.exists()) {
+                if (!f.getParentFile().exists()) {
                     f.getParentFile().mkdirs();
                 }
                 f.createNewFile();
@@ -120,8 +120,8 @@ public class Int32ByteBasedBitPackingGenerator {
     }
 
     private static int getShift(
-        StringBuilder fw, int bitWidth, boolean msbFirst,
-        int byteIndex, int valueIndex
+            StringBuilder fw, int bitWidth, boolean msbFirst,
+            int byteIndex, int valueIndex
     ) throws IOException {
         // relative positions of the start and end of the value to the start and end of the byte
         int valueStartBitIndex = (valueIndex * bitWidth) - (8 * (byteIndex));
@@ -151,18 +151,18 @@ public class Int32ByteBasedBitPackingGenerator {
         }
 
         visualizeAlignment(
-            fw, bitWidth, valueEndBitIndex,
-            valueStartBitWanted, valueEndBitWanted,
-            byteStartBitWanted, byteEndBitWanted,
-            shift
+                fw, bitWidth, valueEndBitIndex,
+                valueStartBitWanted, valueEndBitWanted,
+                byteStartBitWanted, byteEndBitWanted,
+                shift
         );
         return shift;
     }
 
     private static void visualizeAlignment(
-        StringBuilder fw, int bitWidth,
-        int valueEndBitIndex, int valueStartBitWanted, int valueEndBitWanted,
-        int byteStartBitWanted, int byteEndBitWanted, int shift
+            StringBuilder fw, int bitWidth,
+            int valueEndBitIndex, int valueStartBitWanted, int valueEndBitWanted,
+            int byteStartBitWanted, int byteEndBitWanted, int shift
     ) throws IOException {
         // ASCII art to visualize what is happening
         fw.append("//");
@@ -197,7 +197,7 @@ public class Int32ByteBasedBitPackingGenerator {
     private static void generatePack(StringBuilder fw, int bitWidth, int batch, boolean msbFirst) throws IOException {
         int mask = genMask(bitWidth);
         fw.append(
-            "    public final void pack" + (batch * 8) + "Values(final int[] in, final int inPos, final byte[] out, final int outPos) {\n"
+                "    public final void pack" + (batch * 8) + "Values(final int[] in, final int inPos, final byte[] out, final int outPos) {\n"
         );
         for (int byteIndex = 0; byteIndex < bitWidth * batch; ++byteIndex) {
             fw.append("      out[" + align(byteIndex, 2) + " + outPos] = (byte)((\n");
@@ -226,9 +226,9 @@ public class Int32ByteBasedBitPackingGenerator {
     }
 
     private static void generateUnpack(StringBuilder fw, int bitWidth, int batch, boolean msbFirst)
-        throws IOException {
+            throws IOException {
         fw.append(
-            "    public final void unpack" + (batch * 8) + "Values(final byte[] in, final int inPos, final int[] out, final int outPos) {\n"
+                "    public final void unpack" + (batch * 8) + "Values(final byte[] in, final int inPos, final int[] out, final int outPos) {\n"
         );
         if (bitWidth > 0) {
             int mask = genMask(bitWidth);
@@ -253,7 +253,7 @@ public class Int32ByteBasedBitPackingGenerator {
                         shiftString = "<<  " + shift;
                     }
                     fw.append(
-                        " (((((int)in[" + align(byteIndex, 2) + " + inPos]) & 255) " + shiftString + ") & " + mask + ")"
+                            " (((((int)in[" + align(byteIndex, 2) + " + inPos]) & 255) " + shiftString + ") & " + mask + ")"
                     );
                 }
                 fw.append(";\n");

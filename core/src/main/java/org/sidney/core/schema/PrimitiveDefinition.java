@@ -15,4 +15,16 @@ public class PrimitiveDefinition extends Definition {
     public void setType(Type type) {
         this.type = type;
     }
+
+    @Override
+    public boolean isPrimitive() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "PrimitiveDefinition{" + "name=" + getName() + " , " +
+                "type=" + type +
+                '}';
+    }
 }

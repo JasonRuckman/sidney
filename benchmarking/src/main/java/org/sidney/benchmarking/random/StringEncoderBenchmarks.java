@@ -1,22 +1,9 @@
 package org.sidney.benchmarking.random;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Group;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.string.CharAsIntStringDecoder;
-import org.sidney.core.encoding.string.CharAsIntStringEncoder;
-import org.sidney.core.encoding.string.DeltaLengthStringDecoder;
-import org.sidney.core.encoding.string.DeltaLengthStringEncoder;
-import org.sidney.core.encoding.string.PlainStringDecoder;
-import org.sidney.core.encoding.string.PlainStringEncoder;
-import org.sidney.core.encoding.string.StringDecoder;
-import org.sidney.core.encoding.string.StringEncoder;
+import org.sidney.core.encoding.string.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,10 +12,11 @@ import java.util.Random;
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
+@Threads(1)
 @Fork(1)
 public class StringEncoderBenchmarks extends BenchmarkingBase {
-    private int num = 65536;
     private final String[] strings;
+    private int num = 65536;
 
     public StringEncoderBenchmarks() {
         strings = new String[num];

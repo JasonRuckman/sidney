@@ -1,6 +1,5 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.field.Writer;
 import org.sidney.core.schema.Definition;
 
 import java.lang.reflect.Field;
@@ -18,11 +17,6 @@ public class EmptyClassResolver extends Resolver {
     @Override
     public List<Resolver> children() {
         return new ArrayList<>();
-    }
-
-    @Override
-    public Writer consumer() {
-        return null;
     }
 
     @Override

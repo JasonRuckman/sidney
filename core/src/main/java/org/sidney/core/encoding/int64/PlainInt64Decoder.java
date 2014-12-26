@@ -12,7 +12,7 @@ public class PlainInt64Decoder extends AbstractDecoder implements Int64Decoder {
     @Override
     public long[] nextLongs(int num) {
         long[] longs = new long[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             longs[i] = readLongLE();
         }
         return longs;

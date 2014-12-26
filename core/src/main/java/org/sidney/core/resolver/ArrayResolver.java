@@ -1,6 +1,5 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.field.Writer;
 import org.sidney.core.schema.Definition;
 import org.sidney.core.schema.GroupDefinition;
 import org.sidney.core.schema.Repetition;
@@ -16,7 +15,7 @@ public class ArrayResolver extends Resolver {
     public ArrayResolver(Class type, Field field) {
         super(type, field);
 
-        Class componentType = getType().getComponentType();
+        Class componentType = getJdkType().getComponentType();
         lengthResolver = ResolverFactory.resolver(int.class);
         componentResolver = ResolverFactory.resolver(componentType);
     }
@@ -27,16 +26,23 @@ public class ArrayResolver extends Resolver {
     }
 
     @Override
-    public Writer consumer() {
-        return null;
-    }
-
-    @Override
     public Definition definition() {
-        //this is wrong, change it so that we re-write the component to repeated
-        GroupDefinition definition = new GroupDefinition(name(), Repetition.OPTIONAL);
-        definition.getChildren().add(lengthResolver.definition());
-        definition.getChildren().add(componentResolver.definition());
-        return definition;
+        GroupDefinition arrayDefinition = new GroupDefinition(name(), Repetition.OPTIONAL);
+        arrayDefinition.getChildren().add(lengthResolver.definition());
+        Definition componentDefinition = componentResolver.definition();
+
+        if (componentDefinition.isPrimitive()) {
+            componentDefinition.setRepetition(Repetition.REPEATED);
+        } else {
+            GroupDefinition componentGroupDefinition = new GroupDefinition(
+                    String.format("%s_array_value", componentDefinition.getName()),
+                    Repetition.REPEATED
+            );
+            componentGroupDefinition.getChildren().add(componentDefinition);
+            componentDefinition = componentGroupDefinition;
+        }
+        arrayDefinition.getChildren().add(componentDefinition);
+
+        return arrayDefinition;
     }
 }

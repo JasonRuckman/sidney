@@ -71,9 +71,9 @@ public abstract class AbstractDecoder implements Decoder {
         require(4);
 
         int res = ((buffer[position + 3] & 0xff) << 24)
-            | ((buffer[position + 2] & 0xff) << 16)
-            | ((buffer[position + 1] & 0xff) << 8)
-            | (buffer[position] & 0xff);
+                | ((buffer[position + 2] & 0xff) << 16)
+                | ((buffer[position + 1] & 0xff) << 8)
+                | (buffer[position] & 0xff);
 
         position += 4;
         return res;
@@ -82,14 +82,14 @@ public abstract class AbstractDecoder implements Decoder {
     protected long readLongLE() {
         require(8);
         long res =
-            ((long) (buffer[position + 7] & 0xff) << 56) |
-                ((long) (buffer[position + 6] & 0xff) << 48) |
-                ((long) (buffer[position + 5] & 0xff) << 40) |
-                ((long) (buffer[position + 4] & 0xff) << 32) |
-                ((long) (buffer[position + 3] & 0xff) << 24) |
-                ((long) (buffer[position + 2] & 0xff) << 16) |
-                ((long) (buffer[position + 1] & 0xff) << 8) |
-                (long) (buffer[position] & 0xff);
+                ((long) (buffer[position + 7] & 0xff) << 56) |
+                        ((long) (buffer[position + 6] & 0xff) << 48) |
+                        ((long) (buffer[position + 5] & 0xff) << 40) |
+                        ((long) (buffer[position + 4] & 0xff) << 32) |
+                        ((long) (buffer[position + 3] & 0xff) << 24) |
+                        ((long) (buffer[position + 2] & 0xff) << 16) |
+                        ((long) (buffer[position + 1] & 0xff) << 8) |
+                        (long) (buffer[position] & 0xff);
         position += 8;
         return res;
     }

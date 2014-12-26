@@ -16,23 +16,23 @@ public class ResolverFactory {
     }
 
     private static Resolver resolver(Class<?> type, Field field) {
-        if(PrimitiveResolver.isPrimitive(type)) {
+        if (PrimitiveResolver.isPrimitive(type)) {
             return new PrimitiveResolver(type, field);
         }
 
-        if(type.isArray()) {
+        if (type.isArray()) {
             return new ArrayResolver(type, field);
         }
 
-        if(type.isAssignableFrom(Map.class)) {
+        if (type.isAssignableFrom(Map.class)) {
             return new MapResolver(type, field);
         }
 
-        if(type.isAssignableFrom(Collection.class)) {
+        if (type.isAssignableFrom(Collection.class)) {
             return new CollectionResolver(type, field);
         }
 
-        if(FieldUtils.getAllFields(type).size() == 0) {
+        if (FieldUtils.getAllFields(type).size() == 0) {
             return new EmptyClassResolver(type, field);
         }
 

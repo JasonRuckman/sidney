@@ -1,63 +1,61 @@
 package org.sidney.core.encoding;
 
-import org.sidney.core.encoding.bool.BitPackingBoolDecoder;
-import org.sidney.core.encoding.bool.BitPackingBoolEncoder;
-import org.sidney.core.encoding.bool.BoolDecoder;
-import org.sidney.core.encoding.bool.BoolEncoder;
-import org.sidney.core.encoding.bool.EWAHBitmapBoolDecoder;
-import org.sidney.core.encoding.bool.EWAHBitmapBoolEncoder;
-import org.sidney.core.encoding.bool.PlainBoolDecoder;
-import org.sidney.core.encoding.bool.PlainBoolEncoder;
-import org.sidney.core.encoding.bool.RoaringBitmapBoolDecoder;
-import org.sidney.core.encoding.bool.RoaringBitmapBoolEncoder;
+import org.sidney.core.encoding.bool.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.IntFunction;
 
 public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
     private final List<EncoderDecoderPair<BoolEncoder, BoolDecoder>> pairs = Arrays.asList(
-        new EncoderDecoderPair<>(new RoaringBitmapBoolEncoder(), new RoaringBitmapBoolDecoder()),
-        new EncoderDecoderPair<>(new PlainBoolEncoder(), new PlainBoolDecoder()),
-        new EncoderDecoderPair<>(new EWAHBitmapBoolEncoder(), new EWAHBitmapBoolDecoder()),
-        new EncoderDecoderPair<>(new BitPackingBoolEncoder(), new BitPackingBoolDecoder())
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new RoaringBitmapBoolEncoder(), new RoaringBitmapBoolDecoder()),
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new PlainBoolEncoder(), new PlainBoolDecoder()),
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new EWAHBitmapBoolEncoder(), new EWAHBitmapBoolDecoder()),
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new BitPackingBoolEncoder(), new BitPackingBoolDecoder())
     );
 
     protected BiConsumer<BoolEncoder, boolean[]> encodingFunction() {
-        return (encoder, bools) -> {
-            for (boolean b : bools) {
-                encoder.writeBool(b);
+        return new BiConsumer<BoolEncoder, boolean[]>() {
+            @Override
+            public void accept(BoolEncoder encoder, boolean[] bools) {
+                for (boolean b : bools) {
+                    encoder.writeBool(b);
+                }
             }
         };
     }
 
     @Override
     protected IntFunction<boolean[]> dataSupplier() {
-        return (size) -> {
-            Random random = new Random(11L);
-            boolean[] booleans = new boolean[size];
-            for (int i = 0; i < size; i++) {
-                booleans[i] = random.nextInt() % 500 == 0;
+        return new IntFunction<boolean[]>() {
+            @Override
+            public boolean[] apply(int size) {
+                Random random = new Random(11L);
+                boolean[] booleans = new boolean[size];
+                for (int i = 0; i < size; i++) {
+                    booleans[i] = random.nextInt() % 50 == 0;
+                }
+                return booleans;
             }
-            return booleans;
         };
     }
 
     @Override
     protected BiConsumer<BoolDecoder, boolean[]> consumeAndAssert() {
-        return (decoder, bools) -> {
-            boolean[] results = decoder.nextBools(bools.length);
+        return new BiConsumer<BoolDecoder, boolean[]>() {
+            @Override
+            public void accept(BoolDecoder decoder, boolean[] bools) {
+                boolean[] results = decoder.nextBools(bools.length);
 
-            for (int i = 0; i < results.length; i++) {
-                boolean left = results[i];
-                boolean right = bools[i];
+                for (int i = 0; i < results.length; i++) {
+                    boolean left = results[i];
+                    boolean right = bools[i];
 
-                if (left != right) {
-                    throw new AssertionError(
-                        String.format("Differed at index %s, expected %s and actual %s", i, left, right)
-                    );
+                    if (left != right) {
+                        throw new AssertionError(
+                                String.format("Differed at index %s, expected %s and actual %s", i, left, right)
+                        );
+                    }
                 }
             }
         };

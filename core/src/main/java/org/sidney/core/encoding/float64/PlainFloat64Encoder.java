@@ -18,7 +18,7 @@ public class PlainFloat64Encoder extends AbstractEncoder implements Float64Encod
 
     @Override
     public void writeDoubles(double[] values) {
-        for(double value : values) {
+        for (double value : values) {
             writeDouble(value);
         }
     }

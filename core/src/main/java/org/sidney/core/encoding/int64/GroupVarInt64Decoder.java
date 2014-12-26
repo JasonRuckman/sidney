@@ -92,58 +92,58 @@ public class GroupVarInt64Decoder extends AbstractDecoder implements Int64Decode
 
     private long readOnTwoBytes(byte[] buf, int offset) {
         return (((buf[offset + 1] & 255L) << 8)
-            | ((buf[offset] & 255L)));
+                | ((buf[offset] & 255L)));
     }
 
     private long readOnThreeBytes(byte[] buf, int offset) {
         return (((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     private long readOnFourBytes(byte[] buf, int offset) {
         return (((buf[offset + 3] & 255L) << 24)
-            | ((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 2] & 255L) << 16)
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     private long readOnFiveBytes(byte[] buf, int offset) {
         return (((buf[offset + 4] & 255L) << 32)
-            | ((buf[offset + 3] & 255L) << 24)
-            | ((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 3] & 255L) << 24)
+                | ((buf[offset + 2] & 255L) << 16)
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     private long readOnSixBytes(byte[] buf, int offset) {
         return (((buf[offset + 5] & 255L) << 40)
-            | ((buf[offset + 4] & 255L) << 32)
-            | ((buf[offset + 3] & 255L) << 24)
-            | ((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 4] & 255L) << 32)
+                | ((buf[offset + 3] & 255L) << 24)
+                | ((buf[offset + 2] & 255L) << 16)
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     private long readOnSevenBytes(byte[] buf, int offset) {
         return (((buf[offset + 6] & 255L) << 48)
-            | ((buf[offset + 5] & 255L) << 40)
-            | ((buf[offset + 4] & 255L) << 32)
-            | ((buf[offset + 3] & 255L) << 24)
-            | ((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 5] & 255L) << 40)
+                | ((buf[offset + 4] & 255L) << 32)
+                | ((buf[offset + 3] & 255L) << 24)
+                | ((buf[offset + 2] & 255L) << 16)
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     private long readOnEightBytes(byte[] buf, int offset) {
         return (((buf[offset + 7] & 255L) << 56)
-            | ((buf[offset + 6] & 255L) << 48)
-            | ((buf[offset + 5] & 255L) << 40)
-            | ((buf[offset + 4] & 255L) << 32)
-            | ((buf[offset + 3] & 255L) << 24)
-            | ((buf[offset + 2] & 255L) << 16)
-            | ((buf[offset + 1] & 255L) << 8)
-            | (buf[offset] & 255L));
+                | ((buf[offset + 6] & 255L) << 48)
+                | ((buf[offset + 5] & 255L) << 40)
+                | ((buf[offset + 4] & 255L) << 32)
+                | ((buf[offset + 3] & 255L) << 24)
+                | ((buf[offset + 2] & 255L) << 16)
+                | ((buf[offset + 1] & 255L) << 8)
+                | (buf[offset] & 255L));
     }
 
     @Override

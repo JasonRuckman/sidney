@@ -1,6 +1,7 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.field.Writer;
+import org.sidney.core.annotations.Encode;
+import org.sidney.core.encoding.Encoding;
 import org.sidney.core.schema.Definition;
 import org.sidney.core.schema.PrimitiveDefinition;
 import org.sidney.core.schema.Repetition;
@@ -52,12 +53,12 @@ public class PrimitiveResolver extends Resolver {
         primitivesRequired.put(String.class, Repetition.OPTIONAL);
     }
 
-    public static <T> boolean isPrimitive(Class<T> clazz) {
-        return primitiveDefinitions.containsKey(clazz);
-    }
-
     public PrimitiveResolver(Class type, Field field) {
         super(type, field);
+    }
+
+    public static <T> boolean isPrimitive(Class<T> clazz) {
+        return primitiveDefinitions.containsKey(clazz);
     }
 
     @Override
@@ -66,15 +67,18 @@ public class PrimitiveResolver extends Resolver {
     }
 
     @Override
-    public Writer consumer() {
-        return null;
-    }
-
-    @Override
     public Definition definition() {
         return new PrimitiveDefinition(name(),
-                primitivesRequired.get(getType()),
-                primitiveDefinitions.get(getType())
+                primitivesRequired.get(getJdkType()),
+                primitiveDefinitions.get(getJdkType())
         );
+    }
+
+    public Encoding getEncoding() {
+        if (getField().getAnnotation(Encode.class) != null) {
+            return getField().getAnnotation(Encode.class).encoding();
+        }
+
+        return Encoding.PLAIN;
     }
 }

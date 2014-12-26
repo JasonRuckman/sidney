@@ -26,6 +26,6 @@ public abstract class GenericResolver extends Resolver {
 
     private void resolveGenericsFromField(Field field) {
         Type type = field.getGenericType();
-        generics = TypeResolver.resolveRawArguments(type, getType());
+        generics = TypeResolver.resolveRawArguments(type, getJdkType());
     }
 }

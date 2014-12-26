@@ -1,24 +1,9 @@
 package org.sidney.benchmarking.mostly;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Group;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.bool.BitPackingBoolDecoder;
-import org.sidney.core.encoding.bool.BitPackingBoolEncoder;
-import org.sidney.core.encoding.bool.BoolDecoder;
-import org.sidney.core.encoding.bool.BoolEncoder;
-import org.sidney.core.encoding.bool.EWAHBitmapBoolDecoder;
-import org.sidney.core.encoding.bool.EWAHBitmapBoolEncoder;
-import org.sidney.core.encoding.bool.PlainBoolDecoder;
-import org.sidney.core.encoding.bool.PlainBoolEncoder;
-import org.sidney.core.encoding.bool.RoaringBitmapBoolDecoder;
-import org.sidney.core.encoding.bool.RoaringBitmapBoolEncoder;
+import org.sidney.core.encoding.bool.*;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
@@ -31,7 +16,7 @@ import java.util.zip.GZIPOutputStream;
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
-@Fork(1)
+@Threads(1)
 public class BoolEncoderBenchmarks extends BenchmarkingBase {
     private final boolean[] booleans;
     private final Random random = new Random(11L);
@@ -96,7 +81,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
     @Group("boolEncodingSnappyMostly")
     public boolean[] roaringBoolEncoderSnappy() throws IOException {
         return runSnappyCompressed(
-            getEncoder(RoaringBitmapBoolEncoder.class), getDecoder(RoaringBitmapBoolDecoder.class)
+                getEncoder(RoaringBitmapBoolEncoder.class), getDecoder(RoaringBitmapBoolDecoder.class)
         );
     }
 

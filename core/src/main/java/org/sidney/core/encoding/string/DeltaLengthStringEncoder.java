@@ -22,8 +22,8 @@ public class DeltaLengthStringEncoder implements StringEncoder {
     private FieldAccessor charArrayField;
 
     public DeltaLengthStringEncoder() {
-        for(Field field : FieldUtils.getAllFieldsNoPrimitiveFilter(String.class)) {
-            if(field.getName().equals("value")) {
+        for (Field field : FieldUtils.getAllFieldsNoPrimitiveFilter(String.class)) {
+            if (field.getName().equals("value")) {
                 charArrayField = new UnsafeFieldAccessor(field);
                 break;
             }
@@ -33,7 +33,7 @@ public class DeltaLengthStringEncoder implements StringEncoder {
     public void writeString(String s) {
         char[] arr = (char[]) charArrayField.get(s);
         ByteBuffer bb = charset.encode(
-            CharBuffer.wrap(arr)
+                CharBuffer.wrap(arr)
         );
 
         lengthEncoder.writeInt(bb.limit());

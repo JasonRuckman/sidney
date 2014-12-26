@@ -18,7 +18,7 @@ public class PlainFloat32Encoder extends AbstractEncoder implements Float32Encod
 
     @Override
     public void writeFloats(float[] floats) {
-        for(float v : floats) {
+        for (float v : floats) {
             writeFloat(v);
         }
     }

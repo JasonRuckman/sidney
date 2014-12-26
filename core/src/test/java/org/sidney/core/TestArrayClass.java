@@ -1,5 +1,7 @@
 package org.sidney.core;
 
+import java.util.Arrays;
+
 public class TestArrayClass {
     private int first;
     private int[] second;
@@ -24,5 +26,13 @@ public class TestArrayClass {
 
     public void setSecond(int[] second) {
         this.second = second;
+    }
+
+    @Override
+    public String toString() {
+        return "TestArrayClass{" +
+                "first=" + first +
+                ", second=" + Arrays.toString(second) +
+                '}';
     }
 }
