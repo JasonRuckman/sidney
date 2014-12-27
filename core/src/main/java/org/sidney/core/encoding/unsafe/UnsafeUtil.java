@@ -11,6 +11,7 @@ public class UnsafeUtil {
     public static final long shortArrayBaseOffset;
     public static final long charArrayBaseOffset;
     private static final Unsafe unsafe;
+
     static {
         java.lang.reflect.Field field = null;
         try {

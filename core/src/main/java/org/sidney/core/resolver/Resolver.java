@@ -1,15 +1,13 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.schema.Definition;
+import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.field.FieldAccessor;
 import org.sidney.core.schema.Type;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Resolver {
-    private static final Map<Class<?>, Type> TYPES = new HashMap<>();
     private final Class<?> type;
     private final Field field;
 
@@ -31,7 +29,7 @@ public abstract class Resolver {
     }
 
     public Type getType() {
-        return TYPES.get(getJdkType());
+        return Type.GROUP;
     }
 
     public Field getField() {
@@ -40,7 +38,9 @@ public abstract class Resolver {
 
     public abstract List<Resolver> children();
 
-    public abstract Definition definition();
+    public abstract void writeRecord(MessageConsumer consumer, Object value, int index);
+
+    public abstract void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor);
 
     public String name() {
         return (getField() == null) ? getJdkType().getName() : getField().getName();

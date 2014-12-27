@@ -1,8 +1,7 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.schema.Definition;
-import org.sidney.core.schema.GroupDefinition;
-import org.sidney.core.schema.Repetition;
+import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.field.FieldAccessor;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -16,6 +15,7 @@ public class ArrayResolver extends Resolver {
         super(type, field);
 
         Class componentType = getJdkType().getComponentType();
+
         lengthResolver = ResolverFactory.resolver(int.class);
         componentResolver = ResolverFactory.resolver(componentType);
     }
@@ -26,23 +26,12 @@ public class ArrayResolver extends Resolver {
     }
 
     @Override
-    public Definition definition() {
-        GroupDefinition arrayDefinition = new GroupDefinition(name(), Repetition.OPTIONAL);
-        arrayDefinition.getChildren().add(lengthResolver.definition());
-        Definition componentDefinition = componentResolver.definition();
+    public void writeRecord(MessageConsumer consumer, Object value, int index) {
 
-        if (componentDefinition.isPrimitive()) {
-            componentDefinition.setRepetition(Repetition.REPEATED);
-        } else {
-            GroupDefinition componentGroupDefinition = new GroupDefinition(
-                    String.format("%s_array_value", componentDefinition.getName()),
-                    Repetition.REPEATED
-            );
-            componentGroupDefinition.getChildren().add(componentDefinition);
-            componentDefinition = componentGroupDefinition;
-        }
-        arrayDefinition.getChildren().add(componentDefinition);
+    }
 
-        return arrayDefinition;
+    @Override
+    public void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor) {
+
     }
 }

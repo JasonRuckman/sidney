@@ -1,9 +1,9 @@
 package org.sidney.core.resolver;
 
 import org.sidney.core.annotations.Encode;
+import org.sidney.core.column.MessageConsumer;
 import org.sidney.core.encoding.Encoding;
-import org.sidney.core.schema.Definition;
-import org.sidney.core.schema.PrimitiveDefinition;
+import org.sidney.core.field.FieldAccessor;
 import org.sidney.core.schema.Repetition;
 import org.sidney.core.schema.Type;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 public class PrimitiveResolver extends Resolver {
     static final Map<Class, Type> primitiveDefinitions = new HashMap<>();
     static final Map<Class, Repetition> primitivesRequired = new HashMap<>();
+    static final Map<Class, LeafWriter> writers = new HashMap<>();
 
     static {
         primitiveDefinitions.put(boolean.class, Type.BOOLEAN);
@@ -51,14 +52,31 @@ public class PrimitiveResolver extends Resolver {
         primitivesRequired.put(Double.class, Repetition.OPTIONAL);
         primitivesRequired.put(byte[].class, Repetition.OPTIONAL);
         primitivesRequired.put(String.class, Repetition.OPTIONAL);
+
+        writers.put(boolean.class, new BoolLeafWriter());
+        writers.put(int.class, new IntLeafWriter());
+        writers.put(float.class, new FloatLeafWriter());
+        writers.put(long.class, new LongLeafWriter());
+        writers.put(double.class, new DoubleLeafWriter());
+        writers.put(String.class, new StringLeafWriter());
+        writers.put(byte[].class, new BytesLeafWriter());
     }
+
+    private final LeafWriter writer;
 
     public PrimitiveResolver(Class type, Field field) {
         super(type, field);
+
+        writer = writers.get(type);
     }
 
     public static <T> boolean isPrimitive(Class<T> clazz) {
         return primitiveDefinitions.containsKey(clazz);
+    }
+
+    @Override
+    public Type getType() {
+        return primitiveDefinitions.get(getJdkType());
     }
 
     @Override
@@ -67,11 +85,13 @@ public class PrimitiveResolver extends Resolver {
     }
 
     @Override
-    public Definition definition() {
-        return new PrimitiveDefinition(name(),
-                primitivesRequired.get(getJdkType()),
-                primitiveDefinitions.get(getJdkType())
-        );
+    public void writeRecord(MessageConsumer consumer, Object value, int index) {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor) {
+        writer.writeRecordFromField(consumer, parent, index, accessor);
     }
 
     public Encoding getEncoding() {
@@ -81,4 +101,5 @@ public class PrimitiveResolver extends Resolver {
 
         return Encoding.PLAIN;
     }
+
 }

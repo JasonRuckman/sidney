@@ -1,6 +1,7 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.schema.Definition;
+import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.field.FieldAccessor;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -16,8 +17,13 @@ public class CollectionResolver extends Resolver {
     }
 
     @Override
-    public Definition definition() {
-        //call child, wrap it in a repeated group
-        return null;
+    public void writeRecord(MessageConsumer consumer, Object value, int index) {
+
     }
+
+    @Override
+    public void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor) {
+
+    }
+
 }

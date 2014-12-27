@@ -1,150 +1,106 @@
 package org.sidney.core.encoding;
 
 import org.sidney.core.encoding.bool.BoolEncoder;
+import org.sidney.core.encoding.bool.EWAHBitmapBoolEncoder;
+import org.sidney.core.encoding.bool.PlainBoolEncoder;
+import org.sidney.core.encoding.bytes.ByteArrayEncoder;
+import org.sidney.core.encoding.bytes.BytesEncoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
+import org.sidney.core.encoding.float32.PlainFloat32Encoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
+import org.sidney.core.encoding.float64.PlainFloat64Encoder;
+import org.sidney.core.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
+import org.sidney.core.encoding.int32.PlainInt32Encoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
+import org.sidney.core.encoding.int64.PlainInt64Encoder;
+import org.sidney.core.encoding.string.DeltaLengthStringEncoder;
+import org.sidney.core.encoding.string.PlainStringEncoder;
+import org.sidney.core.encoding.string.StringEncoder;
 
 public enum Encoding {
     PLAIN {
         @Override
         public BoolEncoder newBoolEncoder() {
-            return null;
+            return new PlainBoolEncoder();
         }
 
         @Override
         public Int32Encoder newInt32Encoder() {
-            return null;
+            return new PlainInt32Encoder();
         }
 
         @Override
         public Int64Encoder newInt64Encoder() {
-            return null;
+            return new PlainInt64Encoder();
         }
 
         @Override
         public Float32Encoder newFloat32Encoder() {
-            return null;
+            return new PlainFloat32Encoder();
         }
 
         @Override
         public Float64Encoder newFloat64Encoder() {
-            return null;
+            return new PlainFloat64Encoder();
+        }
+
+        @Override
+        public StringEncoder newStringEncoder() {
+            return new PlainStringEncoder();
+        }
+
+        @Override
+        public BytesEncoder newBytesEncoder() {
+            return new ByteArrayEncoder();
         }
     },
     BITPACKED {
         @Override
-        public BoolEncoder newBoolEncoder() {
-            return null;
-        }
-
-        @Override
         public Int32Encoder newInt32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return null;
+            return new BitPackingInt32Encoder();
         }
     },
-    DELTABITPACKINGHYBRID {
-        @Override
-        public BoolEncoder newBoolEncoder() {
-            return null;
-        }
-
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return null;
-        }
-    },
+    DELTABITPACKINGHYBRID,
     EWAH {
         @Override
         public BoolEncoder newBoolEncoder() {
-            return null;
-        }
-
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return null;
+            return new EWAHBitmapBoolEncoder();
         }
     },
-    GROUPVARINT {
+    GROUPVARINT,
+    DELTALENGTH {
         @Override
-        public BoolEncoder newBoolEncoder() {
-            return null;
-        }
-
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return null;
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return null;
+        public StringEncoder newStringEncoder() {
+            return new DeltaLengthStringEncoder();
         }
     };
 
-    public abstract BoolEncoder newBoolEncoder();
+    public BoolEncoder newBoolEncoder() {
+        throw new IllegalStateException();
+    }
 
-    public abstract Int32Encoder newInt32Encoder();
+    public Int32Encoder newInt32Encoder() {
+        throw new IllegalStateException();
+    }
 
-    public abstract Int64Encoder newInt64Encoder();
+    public Int64Encoder newInt64Encoder() {
+        throw new IllegalStateException();
+    }
 
-    public abstract Float32Encoder newFloat32Encoder();
+    public Float32Encoder newFloat32Encoder() {
+        throw new IllegalStateException();
+    }
 
-    public abstract Float64Encoder newFloat64Encoder();
+    public Float64Encoder newFloat64Encoder() {
+        throw new IllegalStateException();
+    }
+
+    public BytesEncoder newBytesEncoder() {
+        throw new IllegalStateException();
+    }
+
+    public StringEncoder newStringEncoder() {
+        throw new IllegalStateException();
+    }
 }

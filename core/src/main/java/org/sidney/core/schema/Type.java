@@ -7,5 +7,6 @@ public enum Type {
     FLOAT32,
     FLOAT64,
     STRING,
-    BINARY
+    BINARY,
+    GROUP
 }
