@@ -1,6 +1,6 @@
 package org.sidney.core.field;
 
-import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.MessageConsumer;
 import org.sidney.core.resolver.Resolver;
 import org.sidney.core.resolver.ResolverFactory;
 

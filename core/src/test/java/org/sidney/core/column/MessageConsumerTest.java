@@ -1,6 +1,7 @@
 package org.sidney.core.column;
 
 import org.junit.Test;
+import org.sidney.core.MessageConsumer;
 import org.sidney.core.TestClass;
 import org.sidney.core.resolver.ResolverFactory;
 

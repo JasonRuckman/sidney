@@ -1,10 +1,11 @@
 package org.sidney.core.resolver;
 
 import org.sidney.core.annotations.Encode;
-import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.MessageConsumer;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.field.FieldAccessor;
-import org.sidney.core.schema.Repetition;
+import org.sidney.core.reader.*;
+import org.sidney.core.writer.*;
 import org.sidney.core.schema.Type;
 
 import java.lang.reflect.Field;
@@ -15,8 +16,8 @@ import java.util.Map;
 
 public class PrimitiveResolver extends Resolver {
     static final Map<Class, Type> primitiveDefinitions = new HashMap<>();
-    static final Map<Class, Repetition> primitivesRequired = new HashMap<>();
     static final Map<Class, LeafWriter> writers = new HashMap<>();
+    static final Map<Class, LeafReader> readers = new HashMap<>();
 
     static {
         primitiveDefinitions.put(boolean.class, Type.BOOLEAN);
@@ -36,23 +37,6 @@ public class PrimitiveResolver extends Resolver {
         primitiveDefinitions.put(byte[].class, Type.BINARY);
         primitiveDefinitions.put(String.class, Type.STRING);
 
-        primitivesRequired.put(boolean.class, Repetition.REQUIRED);
-        primitivesRequired.put(Boolean.class, Repetition.OPTIONAL);
-        primitivesRequired.put(byte.class, Repetition.REQUIRED);
-        primitivesRequired.put(Byte.class, Repetition.OPTIONAL);
-        primitivesRequired.put(char.class, Repetition.REQUIRED);
-        primitivesRequired.put(Character.class, Repetition.OPTIONAL);
-        primitivesRequired.put(int.class, Repetition.REQUIRED);
-        primitivesRequired.put(Integer.class, Repetition.OPTIONAL);
-        primitivesRequired.put(long.class, Repetition.REQUIRED);
-        primitivesRequired.put(Long.class, Repetition.OPTIONAL);
-        primitivesRequired.put(float.class, Repetition.REQUIRED);
-        primitivesRequired.put(Float.class, Repetition.OPTIONAL);
-        primitivesRequired.put(double.class, Repetition.REQUIRED);
-        primitivesRequired.put(Double.class, Repetition.OPTIONAL);
-        primitivesRequired.put(byte[].class, Repetition.OPTIONAL);
-        primitivesRequired.put(String.class, Repetition.OPTIONAL);
-
         writers.put(boolean.class, new BoolLeafWriter());
         writers.put(int.class, new IntLeafWriter());
         writers.put(float.class, new FloatLeafWriter());
@@ -60,14 +44,24 @@ public class PrimitiveResolver extends Resolver {
         writers.put(double.class, new DoubleLeafWriter());
         writers.put(String.class, new StringLeafWriter());
         writers.put(byte[].class, new BytesLeafWriter());
+
+        readers.put(boolean.class, new BoolLeafReader());
+        readers.put(int.class, new IntLeafReader());
+        readers.put(float.class, new FloatLeafReader());
+        readers.put(long.class, new LongLeafReader());
+        readers.put(double.class, new DoubleLeafReader());
+        readers.put(String.class, new StringLeafReader());
+        readers.put(byte[].class, new BytesLeafReader());
     }
 
     private final LeafWriter writer;
+    private final LeafReader reader;
 
     public PrimitiveResolver(Class type, Field field) {
         super(type, field);
 
         writer = writers.get(type);
+        reader = readers.get(type);
     }
 
     public static <T> boolean isPrimitive(Class<T> clazz) {
@@ -92,6 +86,16 @@ public class PrimitiveResolver extends Resolver {
     @Override
     public void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor) {
         writer.writeRecordFromField(consumer, parent, index, accessor);
+    }
+
+    @Override
+    public Object nextRecord(Reader reader, int index) {
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public void readRecordIntoField(Reader reader, Object parent, int index, FieldAccessor accessor) {
+        this.reader.readRecordIntoField(reader, parent, index, accessor);
     }
 
     public Encoding getEncoding() {

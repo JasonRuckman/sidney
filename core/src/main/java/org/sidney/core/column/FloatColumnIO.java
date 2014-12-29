@@ -1,13 +1,17 @@
 package org.sidney.core.column;
 
+import org.sidney.core.encoding.Decoder;
 import org.sidney.core.encoding.Encoder;
+import org.sidney.core.encoding.float32.Float32Decoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
 
 public class FloatColumnIO extends ColumnIO {
     private final Float32Encoder encoder;
+    private final Float32Decoder decoder;
 
-    public FloatColumnIO(Float32Encoder encoder) {
+    public FloatColumnIO(Float32Encoder encoder, Float32Decoder decoder) {
         this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     @Override
@@ -16,7 +20,17 @@ public class FloatColumnIO extends ColumnIO {
     }
 
     @Override
+    public float readFloat() {
+        return decoder.nextFloat();
+    }
+
+    @Override
     public Encoder getEncoder() {
         return encoder;
+    }
+
+    @Override
+    public Decoder getDecoder() {
+        return decoder;
     }
 }

@@ -1,7 +1,8 @@
-package org.sidney.core.resolver;
+package org.sidney.core.writer;
 
-import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.MessageConsumer;
 import org.sidney.core.field.FieldAccessor;
+import org.sidney.core.resolver.LeafWriter;
 
 public class DoubleLeafWriter implements LeafWriter {
     @Override

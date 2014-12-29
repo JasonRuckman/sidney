@@ -20,7 +20,7 @@ public class ResolverFactory {
             return new PrimitiveResolver(type, field);
         }
 
-        if (type.isArray()) {
+        /*if (type.isArray()) {
             return new ArrayResolver(type, field);
         }
 
@@ -34,7 +34,7 @@ public class ResolverFactory {
 
         if (FieldUtils.getAllFields(type).size() == 0) {
             return new EmptyClassResolver(type, field);
-        }
+        }*/
 
         return new BeanResolver(type, field);
     }

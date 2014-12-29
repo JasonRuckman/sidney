@@ -1,12 +1,16 @@
-package org.sidney.core.column;
+package org.sidney.core;
 
+import org.sidney.core.column.*;
 import org.sidney.core.encoding.Encoding;
+import org.sidney.core.encoding.bool.BoolDecoder;
 import org.sidney.core.encoding.bool.BoolEncoder;
+import org.sidney.core.encoding.int32.Int32Decoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
 import org.sidney.core.resolver.PrimitiveResolver;
 import org.sidney.core.resolver.Resolver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +19,8 @@ public class MessageConsumer {
     private final List<ColumnIO> columnIOs;
     private final BoolEncoder definitionEncoder = Encoding.EWAH.newBoolEncoder();
     private final Int32Encoder repetitionEncoder = Encoding.BITPACKED.newInt32Encoder();
+    private final BoolDecoder definitionDecoder = Encoding.EWAH.newBoolDecoder();
+    private final Int32Decoder repetitionDecoder = Encoding.BITPACKED.newInt32Decoder();
 
     public MessageConsumer(Resolver resolver) {
         columnIOs = extractColumns(resolver);
@@ -64,6 +70,10 @@ public class MessageConsumer {
         columnIOs.get(index).writeNull();
     }
 
+    public boolean readNullMarker(int index) {
+        return columnIOs.get(index).readNullMarker();
+    }
+
     private List<ColumnIO> extractColumns(Resolver resolver) {
         List<ColumnIO> columns = new ArrayList<>();
         columns.addAll(columnsFor(resolver));
@@ -76,33 +86,55 @@ public class MessageConsumer {
     private List<ColumnIO> columnsFor(Resolver resolver) {
         List<ColumnIO> columns = new ArrayList<>();
         if (resolver instanceof PrimitiveResolver) {
+            PrimitiveResolver primitiveResolver = (PrimitiveResolver) resolver;
             switch (resolver.getType()) {
                 case BOOLEAN: {
-                    columns.add(new BoolColumnIO(((PrimitiveResolver) resolver).getEncoding().newBoolEncoder()));
+                    columns.add(new BoolColumnIO(
+                            primitiveResolver.getEncoding().newBoolEncoder(),
+                            primitiveResolver.getEncoding().newBoolDecoder()
+                    ));
                     break;
                 }
                 case INT32: {
-                    columns.add(new IntColumnIO(((PrimitiveResolver) resolver).getEncoding().newInt32Encoder()));
+                    columns.add(new IntColumnIO(
+                            primitiveResolver.getEncoding().newInt32Encoder(),
+                            primitiveResolver.getEncoding().newInt32Decoder()
+                    ));
                     break;
                 }
                 case INT64: {
-                    columns.add(new LongColumnIO(((PrimitiveResolver) resolver).getEncoding().newInt64Encoder()));
+                    columns.add(new LongColumnIO(
+                            primitiveResolver.getEncoding().newInt64Encoder(),
+                            primitiveResolver.getEncoding().newInt64Decoder()
+                    ));
                     break;
                 }
                 case FLOAT32: {
-                    columns.add(new FloatColumnIO(((PrimitiveResolver) resolver).getEncoding().newFloat32Encoder()));
+                    columns.add(new FloatColumnIO(
+                            primitiveResolver.getEncoding().newFloat32Encoder(),
+                            primitiveResolver.getEncoding().newFloat32Decoder()
+                    ));
                     break;
                 }
                 case FLOAT64: {
-                    columns.add(new DoubleColumnIO(((PrimitiveResolver) resolver).getEncoding().newFloat64Encoder()));
+                    columns.add(new DoubleColumnIO(
+                            primitiveResolver.getEncoding().newFloat64Encoder(),
+                            primitiveResolver.getEncoding().newFloat64Decoder()
+                    ));
                     break;
                 }
                 case BINARY: {
-                    columns.add(new BytesColumnIO(((PrimitiveResolver) resolver).getEncoding().newBytesEncoder()));
+                    columns.add(new BytesColumnIO(
+                            primitiveResolver.getEncoding().newBytesEncoder(),
+                            primitiveResolver.getEncoding().newBytesDecoder()
+                    ));
                     break;
                 }
                 case STRING: {
-                    columns.add(new StringColumnIO(((PrimitiveResolver) resolver).getEncoding().newStringEncoder()));
+                    columns.add(new StringColumnIO(
+                            primitiveResolver.getEncoding().newStringEncoder(),
+                            primitiveResolver.getEncoding().newStringDecoder()
+                    ));
                     break;
                 }
             }
@@ -125,6 +157,17 @@ public class MessageConsumer {
         for (ColumnIO columnIO : columnIOs) {
             if (columnIO.getEncoder() != null) {
                 columnIO.getEncoder().writeToStream(outputStream);
+            }
+        }
+    }
+
+    public void readFromInputStream(InputStream inputStream) throws IOException {
+        definitionDecoder.populateBufferFromStream(inputStream);
+        repetitionDecoder.populateBufferFromStream(inputStream);
+
+        for (ColumnIO columnIO : columnIOs) {
+            if (columnIO.getEncoder() != null) {
+                columnIO.getDecoder().populateBufferFromStream(inputStream);
             }
         }
     }

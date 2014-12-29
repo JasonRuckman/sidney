@@ -1,6 +1,6 @@
 package org.sidney.core.resolver;
 
-import org.sidney.core.column.MessageConsumer;
+import org.sidney.core.MessageConsumer;
 import org.sidney.core.field.FieldAccessor;
 
 public interface LeafWriter {

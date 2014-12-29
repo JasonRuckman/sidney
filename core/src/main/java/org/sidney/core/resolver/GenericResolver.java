@@ -1,3 +1,4 @@
+/*
 package org.sidney.core.resolver;
 
 import net.jodah.typetools.TypeResolver;
@@ -29,3 +30,4 @@ public abstract class GenericResolver extends Resolver {
         generics = TypeResolver.resolveRawArguments(type, getJdkType());
     }
 }
+*/
