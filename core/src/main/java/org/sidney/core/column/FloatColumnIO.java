@@ -1,5 +1,6 @@
 package org.sidney.core.column;
 
+import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
 
 public class FloatColumnIO extends ColumnIO {
@@ -12,5 +13,10 @@ public class FloatColumnIO extends ColumnIO {
     @Override
     public void writeFloat(float value) {
         encoder.writeFloat(value);
+    }
+
+    @Override
+    public Encoder getEncoder() {
+        return encoder;
     }
 }

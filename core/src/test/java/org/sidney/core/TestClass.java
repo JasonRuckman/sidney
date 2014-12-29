@@ -1,7 +1,12 @@
 package org.sidney.core;
 
+import org.sidney.core.annotations.Encode;
+import org.sidney.core.encoding.Encoding;
+
 public class TestClass {
+    @Encode(Encoding.BITPACKED)
     private int first;
+    @Encode(Encoding.GROUPVARINT)
     private long second;
 
     public TestClass(int first, long second) {

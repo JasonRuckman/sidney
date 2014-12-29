@@ -96,7 +96,7 @@ public class PrimitiveResolver extends Resolver {
 
     public Encoding getEncoding() {
         if (getField().getAnnotation(Encode.class) != null) {
-            return getField().getAnnotation(Encode.class).encoding();
+            return getField().getAnnotation(Encode.class).value();
         }
 
         return Encoding.PLAIN;

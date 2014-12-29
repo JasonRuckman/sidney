@@ -6,11 +6,15 @@ import org.sidney.core.encoding.int32.Int32Encoder;
 import org.sidney.core.resolver.PrimitiveResolver;
 import org.sidney.core.resolver.Resolver;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageConsumer {
     private final List<ColumnIO> columnIOs;
+    private final BoolEncoder definitionEncoder = Encoding.EWAH.newBoolEncoder();
+    private final Int32Encoder repetitionEncoder = Encoding.BITPACKED.newInt32Encoder();
 
     public MessageConsumer(Resolver resolver) {
         columnIOs = extractColumns(resolver);
@@ -62,14 +66,14 @@ public class MessageConsumer {
 
     private List<ColumnIO> extractColumns(Resolver resolver) {
         List<ColumnIO> columns = new ArrayList<>();
-        columns.addAll(columnsFor(resolver, Encoding.EWAH.newBoolEncoder(), Encoding.BITPACKED.newInt32Encoder()));
+        columns.addAll(columnsFor(resolver));
         for (Resolver r : resolver.children()) {
             columns.addAll(extractColumns(r));
         }
         return columns;
     }
 
-    private List<ColumnIO> columnsFor(Resolver resolver, BoolEncoder definitionEncoder, Int32Encoder repetitionEncoder) {
+    private List<ColumnIO> columnsFor(Resolver resolver) {
         List<ColumnIO> columns = new ArrayList<>();
         if (resolver instanceof PrimitiveResolver) {
             switch (resolver.getType()) {
@@ -112,5 +116,27 @@ public class MessageConsumer {
         }
 
         return columns;
+    }
+
+    public void flushToOutputStream(OutputStream outputStream) throws IOException {
+        definitionEncoder.writeToStream(outputStream);
+        repetitionEncoder.writeToStream(outputStream);
+
+        for (ColumnIO columnIO : columnIOs) {
+            if (columnIO.getEncoder() != null) {
+                columnIO.getEncoder().writeToStream(outputStream);
+            }
+        }
+    }
+
+    public void prepare() {
+        definitionEncoder.reset();
+        repetitionEncoder.reset();
+
+        for (ColumnIO columnIO : columnIOs) {
+            if (columnIO.getEncoder() != null) {
+                columnIO.getEncoder().reset();
+            }
+        }
     }
 }

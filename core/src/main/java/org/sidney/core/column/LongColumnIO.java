@@ -1,5 +1,6 @@
 package org.sidney.core.column;
 
+import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
 
 public class LongColumnIO extends ColumnIO {
@@ -12,5 +13,10 @@ public class LongColumnIO extends ColumnIO {
     @Override
     public void writeLong(long value) {
         encoder.writeLong(value);
+    }
+
+    @Override
+    public Encoder getEncoder() {
+        return encoder;
     }
 }

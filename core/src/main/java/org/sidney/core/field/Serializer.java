@@ -4,6 +4,7 @@ import org.sidney.core.column.MessageConsumer;
 import org.sidney.core.resolver.Resolver;
 import org.sidney.core.resolver.ResolverFactory;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 public class Serializer<T> {
@@ -22,7 +23,8 @@ public class Serializer<T> {
         resolver.writeRecord(messageConsumer, value, 0);
     }
 
-    public void flush(OutputStream outputStream) {
-
+    public void flush(OutputStream outputStream) throws IOException {
+        messageConsumer.flushToOutputStream(outputStream);
+        messageConsumer.prepare();
     }
 }

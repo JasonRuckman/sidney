@@ -7,15 +7,19 @@ import org.sidney.core.encoding.bytes.ByteArrayEncoder;
 import org.sidney.core.encoding.bytes.BytesEncoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
 import org.sidney.core.encoding.float32.PlainFloat32Encoder;
+import org.sidney.core.encoding.float32.RLEFloat32Encoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
 import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 import org.sidney.core.encoding.int32.BitPackingInt32Encoder;
+import org.sidney.core.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
 import org.sidney.core.encoding.int32.PlainInt32Encoder;
+import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
 import org.sidney.core.encoding.int64.PlainInt64Encoder;
 import org.sidney.core.encoding.string.DeltaLengthStringEncoder;
 import org.sidney.core.encoding.string.PlainStringEncoder;
+import org.sidney.core.encoding.string.RLEStringEncoder;
 import org.sidney.core.encoding.string.StringEncoder;
 
 public enum Encoding {
@@ -61,18 +65,39 @@ public enum Encoding {
             return new BitPackingInt32Encoder();
         }
     },
-    DELTABITPACKINGHYBRID,
+    DELTABITPACKINGHYBRID {
+        @Override
+        public Int32Encoder newInt32Encoder() {
+            return new DeltaBitPackingInt32Encoder();
+        }
+    },
     EWAH {
         @Override
         public BoolEncoder newBoolEncoder() {
             return new EWAHBitmapBoolEncoder();
         }
     },
-    GROUPVARINT,
+    GROUPVARINT {
+        @Override
+        public Int64Encoder newInt64Encoder() {
+            return new GroupVarInt64Encoder();
+        }
+    },
     DELTALENGTH {
         @Override
         public StringEncoder newStringEncoder() {
             return new DeltaLengthStringEncoder();
+        }
+    },
+    RLE {
+        @Override
+        public Float32Encoder newFloat32Encoder() {
+            return new RLEFloat32Encoder();
+        }
+
+        @Override
+        public StringEncoder newStringEncoder() {
+            return new RLEStringEncoder();
         }
     };
 

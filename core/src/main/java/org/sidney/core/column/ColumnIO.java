@@ -1,5 +1,6 @@
 package org.sidney.core.column;
 
+import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.bool.BoolEncoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
 
@@ -62,5 +63,9 @@ public class ColumnIO {
 
     public void endRepetition() {
         repetitionEncoder.writeInt(currentNum);
+    }
+
+    public Encoder getEncoder() {
+        return null;
     }
 }

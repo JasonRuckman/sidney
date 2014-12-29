@@ -1,5 +1,6 @@
 package org.sidney.core.column;
 
+import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.bytes.BytesEncoder;
 
 public class BytesColumnIO extends ColumnIO {
@@ -12,5 +13,10 @@ public class BytesColumnIO extends ColumnIO {
     @Override
     public void writeBytes(byte[] bytes) {
         this.encoder.writeBytes(bytes);
+    }
+
+    @Override
+    public Encoder getEncoder() {
+        return encoder;
     }
 }
