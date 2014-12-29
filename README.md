@@ -21,12 +21,12 @@ Encodings:
 
 Boolean: Bit Packed / Ewah DONE
 
-Int32: Bit Packed / BitPacking-Delta / Plain DONE GroupVarInt PLANNED
+Int32: Bit Packed / BitPacking-Delta / Plain DONE / RLE PLANNED
 
-Int64: Plain / DONE
+Int64: Plain / GroupVarInt : DONE
 
-Float32: Plain / ExpSplitting DONE
+Float32: Plain: DONE / RLE: PLANNED
 
-Float64: Plain / ExpSplitting DONE
+Float64: Plain: DONE / RLE: PLANNED
 
-String: Delta Length DONE
+String: Plain / Delta Length / CharAsInt : DONE
