@@ -1,7 +1,7 @@
-package org.sidney.core.resolver;
+package org.sidney.core.serializer;
 
 import org.sidney.core.annotations.Encode;
-import org.sidney.core.MessageConsumer;
+import org.sidney.core.writer.ColumnWriter;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.field.FieldAccessor;
 import org.sidney.core.reader.*;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PrimitiveResolver extends Resolver {
+public class PrimitiveSerializer extends Serializer {
     static final Map<Class, Type> primitiveDefinitions = new HashMap<>();
     static final Map<Class, LeafWriter> writers = new HashMap<>();
     static final Map<Class, LeafReader> readers = new HashMap<>();
@@ -57,7 +57,7 @@ public class PrimitiveResolver extends Resolver {
     private final LeafWriter writer;
     private final LeafReader reader;
 
-    public PrimitiveResolver(Class type, Field field) {
+    public PrimitiveSerializer(Class type, Field field) {
         super(type, field);
 
         writer = writers.get(type);
@@ -74,28 +74,35 @@ public class PrimitiveResolver extends Resolver {
     }
 
     @Override
-    public List<Resolver> children() {
+    public List<Serializer> children() {
         return new ArrayList<>();
     }
 
     @Override
-    public void writeRecord(MessageConsumer consumer, Object value, int index) {
+    public int writeRecord(ColumnWriter consumer, Object value, int index) {
         throw new IllegalStateException();
     }
 
     @Override
-    public void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor) {
+    public int writeRecordFromField(ColumnWriter consumer, Object parent, int index, FieldAccessor accessor) {
         writer.writeRecordFromField(consumer, parent, index, accessor);
+        return 1;
     }
 
     @Override
-    public Object nextRecord(Reader reader, int index) {
+    public Object nextRecord(ColumnReader columnReader, int index) {
         throw new IllegalStateException();
     }
 
     @Override
-    public void readRecordIntoField(Reader reader, Object parent, int index, FieldAccessor accessor) {
-        this.reader.readRecordIntoField(reader, parent, index, accessor);
+    public int readRecordIntoField(ColumnReader columnReader, Object parent, int index, FieldAccessor accessor) {
+        this.reader.readRecordIntoField(columnReader, parent, index, accessor);
+        return 1;
+    }
+
+    @Override
+    public int numFields() {
+        return 1;
     }
 
     public Encoding getEncoding() {

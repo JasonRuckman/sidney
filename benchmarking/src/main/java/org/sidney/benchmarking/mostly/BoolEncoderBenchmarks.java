@@ -7,6 +7,7 @@ import org.sidney.core.encoding.bool.*;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
@@ -17,6 +18,7 @@ import java.util.zip.GZIPOutputStream;
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
 @Threads(1)
+@Fork(1)
 public class BoolEncoderBenchmarks extends BenchmarkingBase {
     private final boolean[] booleans;
     private final Random random = new Random(11L);
@@ -108,7 +110,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        decoder.populateBufferFromStream(Bytes.wrap(baos.toByteArray()));
+        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextBools(num);
     }
 
@@ -119,7 +121,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         SnappyOutputStream sos = new SnappyOutputStream(baos);
         encoder.writeToStream(sos);
         sos.close();
-        decoder.populateBufferFromStream(new SnappyInputStream(Bytes.wrap(baos.toByteArray())));
+        decoder.populateBufferFromStream(new SnappyInputStream(Bytes.wrapInStream(baos.toByteArray())));
         return decoder.nextBools(num);
     }
 
@@ -130,7 +132,11 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         GZIPOutputStream gos = new GZIPOutputStream(baos);
         encoder.writeToStream(gos);
         gos.close();
-        decoder.populateBufferFromStream(new GZIPInputStream(Bytes.wrap(baos.toByteArray())));
+        decoder.populateBufferFromStream(
+                new BufferedInputStream(new GZIPInputStream(
+                        Bytes.wrapInStream(baos.toByteArray()))
+                )
+        );
         return decoder.nextBools(num);
     }
 }

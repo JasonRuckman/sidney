@@ -55,7 +55,7 @@ public class Bytes {
         return (byte) (b >> position & 1);
     }
 
-    public static ByteArrayInputStream wrap(byte[] bytes) {
+    public static ByteArrayInputStream wrapInStream(byte[] bytes) {
         return new ByteArrayInputStream(bytes);
     }
 }

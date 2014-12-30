@@ -14,7 +14,7 @@ public class BitPackingInt32Encoder extends AbstractEncoder implements Int32Enco
     private final int miniBlockSize;
     private int[] currentMiniBlock;
     private int currentIndex = 0;
-    private int currentMaxBitwidth = Integer.MIN_VALUE;
+    private int currentMaxBitwidth = 0;
 
     public BitPackingInt32Encoder() {
         this(DEFAULT_BLOCK_SIZE);
@@ -68,7 +68,7 @@ public class BitPackingInt32Encoder extends AbstractEncoder implements Int32Enco
             }
         }
         currentMiniBlock = new int[miniBlockSize];
-        currentMaxBitwidth = Integer.MIN_VALUE;
+        currentMaxBitwidth = 0;
         currentIndex = 0;
     }
 }

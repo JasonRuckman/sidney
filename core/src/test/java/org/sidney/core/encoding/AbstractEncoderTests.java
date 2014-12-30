@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
     private Logger logger = LoggerFactory.getLogger(getRunningClass());
@@ -86,7 +87,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-        pair.getDecoder().populateBufferFromStream(new SnappyInputStream(Bytes.wrap(bytes)));
+        pair.getDecoder().populateBufferFromStream(new SnappyInputStream(Bytes.wrapInStream(bytes)));
         consumeAndAssert().accept(pair.getDecoder(), t);
     }
 
@@ -102,7 +103,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
-        pair.getDecoder().populateBufferFromStream(Bytes.wrap(bytes));
+        pair.getDecoder().populateBufferFromStream(Bytes.wrapInStream(bytes));
         consumeAndAssert().accept(pair.getDecoder(), t);
     }
 }

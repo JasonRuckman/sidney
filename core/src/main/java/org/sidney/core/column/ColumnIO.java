@@ -14,6 +14,7 @@ public class ColumnIO {
     private Int32Decoder repetitionDecoder;
 
     private int currentNum = 0;
+    private String path;
 
     public void setRepetitionEncoder(Int32Encoder repetitionEncoder) {
         this.repetitionEncoder = repetitionEncoder;
@@ -121,5 +122,16 @@ public class ColumnIO {
 
     public Decoder getDecoder() {
         return null;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    @Override
+    public String toString() {
+        return "ColumnIO{" +
+                "path='" + path + '\'' +
+                '}';
     }
 }

@@ -12,15 +12,15 @@ import java.io.OutputStream;
 public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder {
     private float currentRun = 0;
     private int runSize = 0;
-    private boolean isFirstValue = true;
-    private Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
-    private Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
+    private boolean isNewRun = true;
+    private final Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
+    private final Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
 
     @Override
     public void writeFloat(float value) {
-        if (isFirstValue) {
+        if (isNewRun) {
             currentRun = value;
-            isFirstValue = false;
+            isNewRun = false;
         } else if (value != currentRun) {
             flush();
             currentRun = value;
@@ -47,7 +47,6 @@ public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder
         runSizeEncoder.writeInt(runSize);
 
         currentRun = 0;
-        isFirstValue = true;
         runSize = 0;
     }
 
@@ -55,6 +54,9 @@ public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder
     public void reset() {
         valueEncoder.reset();
         runSizeEncoder.reset();
+        isNewRun = true;
+        currentRun = 0;
+        runSize = 0;
     }
 
     @Override

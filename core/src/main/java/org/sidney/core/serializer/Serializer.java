@@ -1,18 +1,18 @@
-package org.sidney.core.resolver;
+package org.sidney.core.serializer;
 
-import org.sidney.core.MessageConsumer;
+import org.sidney.core.writer.ColumnWriter;
 import org.sidney.core.field.FieldAccessor;
-import org.sidney.core.reader.Reader;
+import org.sidney.core.reader.ColumnReader;
 import org.sidney.core.schema.Type;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-public abstract class Resolver {
+public abstract class Serializer {
     private final Class type;
     private final Field field;
 
-    public Resolver(Class type, Field field) {
+    public Serializer(Class type, Field field) {
         this.type = type;
         this.field = field;
     }
@@ -37,17 +37,19 @@ public abstract class Resolver {
         return field;
     }
 
-    public abstract List<Resolver> children();
+    public abstract List<Serializer> children();
 
-    public abstract void writeRecord(MessageConsumer consumer, Object value, int index);
+    public abstract int writeRecord(ColumnWriter consumer, Object value, int index);
 
-    public abstract void writeRecordFromField(MessageConsumer consumer, Object parent, int index, FieldAccessor accessor);
+    public abstract int writeRecordFromField(ColumnWriter consumer, Object parent, int index, FieldAccessor accessor);
 
-    public abstract Object nextRecord(Reader reader, int index);
+    public abstract Object nextRecord(ColumnReader columnReader, int index);
 
-    public abstract void readRecordIntoField(Reader reader, Object parent, int index, FieldAccessor accessor);
+    public abstract int readRecordIntoField(ColumnReader columnReader, Object parent, int index, FieldAccessor accessor);
 
     public String name() {
         return (getField() == null) ? getJdkType().getName() : getField().getName();
     }
+
+    public abstract int numFields();
 }

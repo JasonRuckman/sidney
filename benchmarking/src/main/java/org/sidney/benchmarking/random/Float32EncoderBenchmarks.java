@@ -31,7 +31,7 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("float32Encoders")
-    public float[] runExpMantissaPackingFloatEncoders() throws IOException {
+    public float[] plain() throws IOException {
         return run(getEncoder(PlainFloat32Encoder.class), getDecoder(PlainFloat32Decoder.class));
     }
 
@@ -42,7 +42,7 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrap(baos.toByteArray()));
+        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextFloats(num);
     }
 }

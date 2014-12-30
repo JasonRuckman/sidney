@@ -4,18 +4,12 @@ import org.sidney.core.encoding.bool.*;
 import org.sidney.core.encoding.bytes.ByteArrayEncoder;
 import org.sidney.core.encoding.bytes.BytesDecoder;
 import org.sidney.core.encoding.bytes.BytesEncoder;
-import org.sidney.core.encoding.float32.Float32Decoder;
-import org.sidney.core.encoding.float32.Float32Encoder;
-import org.sidney.core.encoding.float32.PlainFloat32Encoder;
-import org.sidney.core.encoding.float32.RLEFloat32Encoder;
+import org.sidney.core.encoding.float32.*;
 import org.sidney.core.encoding.float64.Float64Decoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
 import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 import org.sidney.core.encoding.int32.*;
-import org.sidney.core.encoding.int64.GroupVarInt64Encoder;
-import org.sidney.core.encoding.int64.Int64Decoder;
-import org.sidney.core.encoding.int64.Int64Encoder;
-import org.sidney.core.encoding.int64.PlainInt64Encoder;
+import org.sidney.core.encoding.int64.*;
 import org.sidney.core.encoding.string.*;
 
 public enum Encoding {
@@ -41,8 +35,18 @@ public enum Encoding {
         }
 
         @Override
+        public Int64Decoder newInt64Decoder() {
+            return new PlainInt64Decoder();
+        }
+
+        @Override
         public Float32Encoder newFloat32Encoder() {
             return new PlainFloat32Encoder();
+        }
+
+        @Override
+        public Float32Decoder newFloat32Decoder() {
+            return new PlainFloat32Decoder();
         }
 
         @Override
@@ -56,6 +60,11 @@ public enum Encoding {
         }
 
         @Override
+        public StringDecoder newStringDecoder() {
+            return new PlainStringDecoder();
+        }
+
+        @Override
         public BytesEncoder newBytesEncoder() {
             return new ByteArrayEncoder();
         }
@@ -65,11 +74,21 @@ public enum Encoding {
         public Int32Encoder newInt32Encoder() {
             return new BitPackingInt32Encoder();
         }
+
+        @Override
+        public Int32Decoder newInt32Decoder() {
+            return new BitPackingInt32Decoder();
+        }
     },
     DELTABITPACKINGHYBRID {
         @Override
         public Int32Encoder newInt32Encoder() {
             return new DeltaBitPackingInt32Encoder();
+        }
+
+        @Override
+        public Int32Decoder newInt32Decoder() {
+            return new DeltaBitPackingInt32Decoder();
         }
     },
     EWAH {
@@ -77,11 +96,21 @@ public enum Encoding {
         public BoolEncoder newBoolEncoder() {
             return new EWAHBitmapBoolEncoder();
         }
+
+        @Override
+        public BoolDecoder newBoolDecoder() {
+            return new EWAHBitmapBoolDecoder();
+        }
     },
     GROUPVARINT {
         @Override
         public Int64Encoder newInt64Encoder() {
             return new GroupVarInt64Encoder();
+        }
+
+        @Override
+        public Int64Decoder newInt64Decoder() {
+            return new GroupVarInt64Decoder();
         }
     },
     DELTALENGTH {
@@ -97,8 +126,18 @@ public enum Encoding {
         }
 
         @Override
+        public Float32Decoder newFloat32Decoder() {
+            return new RLEFloat32Decoder();
+        }
+
+        @Override
         public StringEncoder newStringEncoder() {
             return new RLEStringEncoder();
+        }
+
+        @Override
+        public StringDecoder newStringDecoder() {
+            return new RLEStringDecoder();
         }
     };
 

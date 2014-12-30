@@ -8,14 +8,11 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openjdk.jmh.annotations.*;
-import org.sidney.core.field.Serializer;
+import org.sidney.core.Writer;
 import org.springframework.core.io.ClassPathResource;
 import org.xerial.snappy.SnappyOutputStream;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 @State(Scope.Benchmark)
@@ -23,10 +20,10 @@ import java.util.List;
 @Measurement(iterations = 2)
 @Threads(1)
 @Fork(1)
-public class FlaInsuranceRecordBench {
+public class FlaInsuranceRecordBenchmarks {
     private List<FlaInsuranceRecord> records;
 
-    public FlaInsuranceRecordBench() {
+    public FlaInsuranceRecordBenchmarks() {
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
 
         CsvParserSettings parserSettings = new CsvParserSettings();
@@ -49,14 +46,14 @@ public class FlaInsuranceRecordBench {
     @Benchmark
     @Group("data")
     public byte[] sidney() throws IOException {
-        Serializer<FlaInsuranceRecord> recordSerializer = new Serializer<>(FlaInsuranceRecord.class);
-        for (FlaInsuranceRecord record : records) {
-            recordSerializer.serialize(record);
-        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gzos = new SnappyOutputStream(baos);
-        recordSerializer.flush(gzos);
-        gzos.close();
+        OutputStream os = new SnappyOutputStream(new ByteArrayOutputStream());
+        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = new Writer<>(FlaInsuranceRecord.class, os);
+        for (FlaInsuranceRecord record : records) {
+            recordSerializer.write(record);
+        }
+        os.close();
+
         return baos.toByteArray();
     }
 
@@ -64,7 +61,7 @@ public class FlaInsuranceRecordBench {
     @Group("data")
     public byte[] kryo() throws IOException {
         ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new SnappyOutputStream(kryoBaos);
+        OutputStream kryoGzos = new SnappyOutputStream(new BufferedOutputStream(kryoBaos));
         Output output = new Output(kryoGzos);
         new Kryo().writeObject(output, records);
         output.close();
@@ -76,7 +73,7 @@ public class FlaInsuranceRecordBench {
     @Group("data")
     public byte[] jackson() throws IOException {
         ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new SnappyOutputStream(kryoBaos);
+        OutputStream kryoGzos = new SnappyOutputStream(new BufferedOutputStream(kryoBaos));
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(kryoGzos, records);
         kryoGzos.close();

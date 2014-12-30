@@ -9,17 +9,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class RLEStringEncoder extends AbstractEncoder implements StringEncoder {
-    private String currentRun = null;
+    private String currentRun = "";
     private int runSize;
-    private boolean isFirstValue = true;
+    private boolean isNewRun = true;
     private Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
     private StringEncoder valueEncoder = new PlainStringEncoder();
 
     @Override
     public void writeString(String s) {
-        if (isFirstValue) {
+        if (isNewRun) {
             currentRun = s;
-            isFirstValue = false;
+            isNewRun = false;
         } else if (!s.equals(currentRun)) {
             flush();
             currentRun = s;
@@ -43,9 +43,17 @@ public class RLEStringEncoder extends AbstractEncoder implements StringEncoder {
         valueEncoder.writeString(currentRun);
         runSizeEncoder.writeInt(runSize);
 
-        currentRun = null;
-        isFirstValue = true;
+        currentRun = "";
         runSize = 0;
+    }
+
+    @Override
+    public void reset() {
+        valueEncoder.reset();
+        runSizeEncoder.reset();
+        currentRun = "";
+        runSize = 0;
+        isNewRun = true;
     }
 
     @Override

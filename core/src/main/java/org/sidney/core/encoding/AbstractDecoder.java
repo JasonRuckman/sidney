@@ -5,6 +5,7 @@ import org.sidney.core.encoding.io.StreamUtils;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.BufferUnderflowException;
 
 public abstract class AbstractDecoder implements Decoder {
@@ -38,15 +39,9 @@ public abstract class AbstractDecoder implements Decoder {
 
     @Override
     public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        inputStream = inputStreamWrapIfNecessary(inputStream);
-
         setPosition(0);
         buffer = new byte[StreamUtils.readIntFromStream(inputStream)];
         inputStream.read(buffer);
-    }
-
-    protected InputStream inputStreamWrapIfNecessary(InputStream inputStream) {
-        return (inputStream instanceof BufferedInputStream) ? inputStream : new BufferedInputStream(inputStream);
     }
 
     protected byte readByte() {

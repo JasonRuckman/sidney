@@ -1,23 +1,19 @@
-package org.sidney.core.resolver;
-
-import org.sidney.core.field.FieldUtils;
+package org.sidney.core.serializer;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
 
-public class ResolverFactory {
-    public static Resolver resolver(Class<?> type) {
+public class SerializerFactory {
+    public static Serializer serializer(Class<?> type) {
         return resolver(type, null);
     }
 
-    public static Resolver resolver(Field field) {
+    public static Serializer resolver(Field field) {
         return resolver(field.getType(), field);
     }
 
-    private static Resolver resolver(Class<?> type, Field field) {
-        if (PrimitiveResolver.isPrimitive(type)) {
-            return new PrimitiveResolver(type, field);
+    private static Serializer resolver(Class<?> type, Field field) {
+        if (PrimitiveSerializer.isPrimitive(type)) {
+            return new PrimitiveSerializer(type, field);
         }
 
         /*if (type.isArray()) {
@@ -36,6 +32,6 @@ public class ResolverFactory {
             return new EmptyClassResolver(type, field);
         }*/
 
-        return new BeanResolver(type, field);
+        return new BeanSerializer(type, field);
     }
 }

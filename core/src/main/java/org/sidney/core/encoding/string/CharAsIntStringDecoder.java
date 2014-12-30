@@ -36,8 +36,6 @@ public class CharAsIntStringDecoder extends AbstractDecoder implements StringDec
 
     @Override
     public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        inputStream = inputStreamWrapIfNecessary(inputStream);
-
         lengthDecoder.populateBufferFromStream(inputStream);
         characterDecoder.populateBufferFromStream(inputStream);
     }

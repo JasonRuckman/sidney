@@ -11,7 +11,8 @@ public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecode
     private List<EncoderDecoderPair<StringEncoder, StringDecoder>> pairs = Arrays.asList(
             new EncoderDecoderPair<StringEncoder, StringDecoder>(new PlainStringEncoder(), new PlainStringDecoder()),
             new EncoderDecoderPair<StringEncoder, StringDecoder>(new DeltaLengthStringEncoder(), new DeltaLengthStringDecoder()),
-            new EncoderDecoderPair<StringEncoder, StringDecoder>(new CharAsIntStringEncoder(), new CharAsIntStringDecoder())
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new CharAsIntStringEncoder(), new CharAsIntStringDecoder()),
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new RLEStringEncoder(), new RLEStringDecoder())
     );
 
     protected BiConsumer<StringEncoder, String[]> encodingFunction() {
