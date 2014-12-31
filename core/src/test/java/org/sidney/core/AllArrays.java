@@ -2,11 +2,11 @@ package org.sidney.core;
 
 import java.util.Arrays;
 
-public class TestArrayClass {
+public class AllArrays {
     private int first;
     private int[] second;
 
-    public TestArrayClass(int first, int[] second) {
+    public AllArrays(int first, int[] second) {
         this.first = first;
         this.second = second;
     }

@@ -7,6 +7,8 @@ import org.sidney.core.encoding.bool.BoolEncoder;
 import org.sidney.core.encoding.int32.Int32Decoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
 
+import java.util.List;
+
 public class ColumnIO {
     private BoolEncoder definitionEncoder;
     private Int32Encoder repetitionEncoder;
@@ -64,6 +66,10 @@ public class ColumnIO {
         definitionEncoder.writeBool(true);
     }
 
+    public void writeConcreteType(Class<?> type) {
+        throw new IllegalStateException();
+    }
+
     public ColumnIO getChild(int index) {
         throw new IllegalStateException();
     }
@@ -116,11 +122,15 @@ public class ColumnIO {
         return repetitionDecoder.nextInt();
     }
 
-    public Encoder getEncoder() {
+    public Class readConcreteType() {
+        throw new IllegalStateException();
+    }
+
+    public List<Encoder> getEncoders() {
         return null;
     }
 
-    public Decoder getDecoder() {
+    public List<Decoder> getDecoders() {
         return null;
     }
 

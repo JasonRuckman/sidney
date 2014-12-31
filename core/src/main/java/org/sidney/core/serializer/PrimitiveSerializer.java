@@ -115,8 +115,13 @@ public class PrimitiveSerializer extends Serializer {
         return 1;
     }
 
+    @Override
+    public boolean requiresMetaColumn() {
+        return false;
+    }
+
     public Encoding getEncoding() {
-        if (getField().getAnnotation(Encode.class) != null) {
+        if (getField() != null && getField().getAnnotation(Encode.class) != null) {
             return getField().getAnnotation(Encode.class).value();
         }
 

@@ -1,15 +1,18 @@
 package org.sidney.core.reader;
 
 import org.sidney.core.AbstractColumnOperations;
+import org.sidney.core.Container;
+import org.sidney.core.Header;
 import org.sidney.core.column.ColumnIO;
+import org.sidney.core.encoding.Decoder;
 import org.sidney.core.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ColumnReader extends AbstractColumnOperations {
-    public ColumnReader(Serializer serializer) {
-        super(serializer);
+    public ColumnReader(Serializer serializer, Container<Header> header) {
+        super(serializer, header);
     }
 
     public int readRepetitionCount() {
@@ -18,6 +21,10 @@ public class ColumnReader extends AbstractColumnOperations {
 
     public boolean readNullMarker(int index) {
         return columnIOs.get(index).readNullMarker();
+    }
+
+    public Class readType(int index) {
+        return columnIOs.get(index).readConcreteType();
     }
 
     public boolean nextBoolean(int index) {
@@ -53,8 +60,10 @@ public class ColumnReader extends AbstractColumnOperations {
         repetitionDecoder.populateBufferFromStream(inputStream);
 
         for (ColumnIO columnIO : columnIOs) {
-            if (columnIO.getEncoder() != null) {
-                columnIO.getDecoder().populateBufferFromStream(inputStream);
+            if (columnIO.getDecoders() != null) {
+                for(Decoder decoder : columnIO.getDecoders()) {
+                    decoder.populateBufferFromStream(inputStream);
+                }
             }
         }
     }

@@ -5,6 +5,9 @@ import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.int64.Int64Decoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class LongColumnIO extends ColumnIO {
     private final Int64Encoder encoder;
     private final Int64Decoder decoder;
@@ -25,12 +28,12 @@ public class LongColumnIO extends ColumnIO {
     }
 
     @Override
-    public Encoder getEncoder() {
-        return encoder;
+    public List<Encoder> getEncoders() {
+        return Arrays.asList((Encoder) encoder);
     }
 
     @Override
-    public Decoder getDecoder() {
-        return decoder;
+    public List<Decoder> getDecoders() {
+        return Arrays.asList((Decoder) decoder);
     }
 }

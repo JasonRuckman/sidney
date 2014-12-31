@@ -52,4 +52,6 @@ public abstract class Serializer {
     }
 
     public abstract int numFields();
+
+    public abstract boolean requiresMetaColumn();
 }

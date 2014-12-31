@@ -19,20 +19,20 @@ public abstract class AbstractColumnOperations {
     protected final BoolDecoder definitionDecoder = Encoding.EWAH.newBoolDecoder();
     protected final Int32Decoder repetitionDecoder = Encoding.BITPACKED.newInt32Decoder();
 
-    public AbstractColumnOperations(Serializer serializer) {
-        columnIOs = extractColumns(serializer);
+    public AbstractColumnOperations(Serializer serializer, Container<Header> header) {
+        columnIOs = extractColumns(serializer, header);
     }
 
-    private List<ColumnIO> extractColumns(Serializer serializer) {
+    private List<ColumnIO> extractColumns(Serializer serializer, Container<Header> header) {
         List<ColumnIO> columns = new ArrayList<>();
-        columns.addAll(columnsFor(serializer));
+        columns.addAll(columnsFor(serializer, header));
         for (Serializer r : serializer.children()) {
-            columns.addAll(extractColumns(r));
+            columns.addAll(extractColumns(r, header));
         }
         return columns;
     }
 
-    private List<ColumnIO> columnsFor(Serializer serializer) {
+    private List<ColumnIO> columnsFor(Serializer serializer, Container<Header> header) {
         List<ColumnIO> columns = new ArrayList<>();
         ColumnIO columnIO = null;
         if (serializer instanceof PrimitiveSerializer) {
@@ -90,7 +90,11 @@ public abstract class AbstractColumnOperations {
             }
             columnIO.setPath(serializer.name());
         } else {
-            columnIO = new ColumnIO();
+            if(serializer.requiresMetaColumn()) {
+                columnIO = new MetaColumnIO(header, Encoding.BITPACKED.newInt32Encoder(), Encoding.BITPACKED.newInt32Decoder());
+            } else {
+                columnIO = new ColumnIO();
+            }
             columnIO.setPath(String.format("%s_METADATA", serializer.name()));
         }
         columns.add(columnIO);

@@ -5,32 +5,35 @@ import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.bool.BoolDecoder;
 import org.sidney.core.encoding.bool.BoolEncoder;
 
-public class BoolColumnIO extends ColumnIO {
-    private final BoolEncoder boolEncoder;
-    private final BoolDecoder boolDecoder;
+import java.util.Arrays;
+import java.util.List;
 
-    public BoolColumnIO(BoolEncoder boolEncoder, BoolDecoder boolDecoder) {
-        this.boolEncoder = boolEncoder;
-        this.boolDecoder = boolDecoder;
+public class BoolColumnIO extends ColumnIO {
+    private final BoolEncoder encoder;
+    private final BoolDecoder decoder;
+
+    public BoolColumnIO(BoolEncoder encoder, BoolDecoder decoder) {
+        this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     @Override
     public void writeBoolean(boolean value) {
-        this.boolEncoder.writeBool(value);
+        this.encoder.writeBool(value);
     }
 
     @Override
     public boolean readBoolean() {
-        return boolDecoder.nextBool();
+        return decoder.nextBool();
     }
 
     @Override
-    public Encoder getEncoder() {
-        return boolEncoder;
+    public List<Encoder> getEncoders() {
+        return Arrays.asList((Encoder) encoder);
     }
 
     @Override
-    public Decoder getDecoder() {
-        return boolDecoder;
+    public List<Decoder> getDecoders() {
+        return Arrays.asList((Decoder) decoder);
     }
 }

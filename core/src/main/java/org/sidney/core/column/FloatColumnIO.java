@@ -5,6 +5,9 @@ import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.float32.Float32Decoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class FloatColumnIO extends ColumnIO {
     private final Float32Encoder encoder;
     private final Float32Decoder decoder;
@@ -25,12 +28,12 @@ public class FloatColumnIO extends ColumnIO {
     }
 
     @Override
-    public Encoder getEncoder() {
-        return encoder;
+    public List<Encoder> getEncoders() {
+        return Arrays.asList((Encoder) encoder);
     }
 
     @Override
-    public Decoder getDecoder() {
-        return decoder;
+    public List<Decoder> getDecoders() {
+        return Arrays.asList((Decoder) decoder);
     }
 }

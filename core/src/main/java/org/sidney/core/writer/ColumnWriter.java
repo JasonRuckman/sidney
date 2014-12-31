@@ -1,15 +1,19 @@
 package org.sidney.core.writer;
 
 import org.sidney.core.AbstractColumnOperations;
+import org.sidney.core.Container;
+import org.sidney.core.Header;
 import org.sidney.core.column.*;
+import org.sidney.core.encoding.Decoder;
+import org.sidney.core.encoding.Encoder;
 import org.sidney.core.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class ColumnWriter extends AbstractColumnOperations {
-    public ColumnWriter(Serializer serializer) {
-        super(serializer);
+    public ColumnWriter(Serializer serializer, Container<Header> header) {
+        super(serializer, header);
     }
 
     public void writeBoolean(int index, boolean value) {
@@ -56,13 +60,27 @@ public class ColumnWriter extends AbstractColumnOperations {
         columnIOs.get(index).writeNull();
     }
 
+    public void startRepetition(int index) {
+        columnIOs.get(index).startRepetition();
+    }
+
+    public void endRepetition(int index) {
+        columnIOs.get(index).endRepetition();
+    }
+
+    public void writeConcreteType(Class<?> type, int index) {
+        columnIOs.get(index).writeConcreteType(type);
+    }
+
     public void flushToOutputStream(OutputStream outputStream) throws IOException {
         definitionEncoder.writeToStream(outputStream);
         repetitionEncoder.writeToStream(outputStream);
 
         for (ColumnIO columnIO : columnIOs) {
-            if (columnIO.getEncoder() != null) {
-                columnIO.getEncoder().writeToStream(outputStream);
+            if (columnIO.getEncoders() != null) {
+                for(Encoder encoder : columnIO.getEncoders()) {
+                    encoder.writeToStream(outputStream);
+                }
             }
         }
     }
@@ -72,8 +90,8 @@ public class ColumnWriter extends AbstractColumnOperations {
         repetitionEncoder.reset();
 
         for (ColumnIO columnIO : columnIOs) {
-            if (columnIO.getEncoder() != null) {
-                columnIO.getEncoder().reset();
+            for(Encoder encoder : columnIO.getEncoders()) {
+                encoder.reset();
             }
         }
     }

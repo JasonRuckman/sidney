@@ -29,7 +29,7 @@ public class BeanSerializer<T> extends Serializer {
 
         children = new ArrayList<>();
         for (Field f : FieldUtils.getAllFields(getJdkType())) {
-            children.add(SerializerFactory.resolver(f));
+            children.add(SerializerFactory.serializer(f));
         }
 
         try {
@@ -53,6 +53,10 @@ public class BeanSerializer<T> extends Serializer {
         if(value == null) {
             consumer.writeNull(index);
             return numFields;
+        }
+
+        if(requiresMetaColumn()) {
+
         }
 
         consumer.writeNotNull(index++);
@@ -98,6 +102,11 @@ public class BeanSerializer<T> extends Serializer {
     @Override
     public int numFields() {
         return fields.length;
+    }
+
+    @Override
+    public boolean requiresMetaColumn() {
+        return getJdkType().isInterface();
     }
 
     private T newInstance() {

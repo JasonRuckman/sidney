@@ -5,7 +5,7 @@ import org.sidney.core.encoding.Encoding;
 
 import java.util.Arrays;
 
-public class TestClass {
+public class AllPrimitives {
     @Encode(Encoding.EWAH)
     private boolean first;
     @Encode(Encoding.BITPACKED)
@@ -21,11 +21,11 @@ public class TestClass {
     @Encode(Encoding.PLAIN)
     private String seventh;
 
-    public TestClass() {
+    public AllPrimitives() {
 
     }
 
-    public TestClass(boolean first, int second, long third, float fourth, double fifth, byte[] sixth, String seventh) {
+    public AllPrimitives(boolean first, int second, long third, float fourth, double fifth, byte[] sixth, String seventh) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -96,15 +96,15 @@ public class TestClass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TestClass testClass = (TestClass) o;
+        AllPrimitives allPrimitives = (AllPrimitives) o;
 
-        if (Double.compare(testClass.fifth, fifth) != 0) return false;
-        if (first != testClass.first) return false;
-        if (Float.compare(testClass.fourth, fourth) != 0) return false;
-        if (second != testClass.second) return false;
-        if (third != testClass.third) return false;
-        if (seventh != null ? !seventh.equals(testClass.seventh) : testClass.seventh != null) return false;
-        if (!Arrays.equals(sixth, testClass.sixth)) return false;
+        if (Double.compare(allPrimitives.fifth, fifth) != 0) return false;
+        if (first != allPrimitives.first) return false;
+        if (Float.compare(allPrimitives.fourth, fourth) != 0) return false;
+        if (second != allPrimitives.second) return false;
+        if (third != allPrimitives.third) return false;
+        if (seventh != null ? !seventh.equals(allPrimitives.seventh) : allPrimitives.seventh != null) return false;
+        if (!Arrays.equals(sixth, allPrimitives.sixth)) return false;
 
         return true;
     }

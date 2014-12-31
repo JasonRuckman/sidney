@@ -1,17 +1,17 @@
 package org.sidney.core;
 
-public class TestRefClass {
+public class Refs {
     private Boolean first;
     private Integer second;
     private Long third;
     private Float fourth;
     private Double fifth;
 
-    public TestRefClass() {
+    public Refs() {
 
     }
 
-    public TestRefClass(Boolean first, Integer second, Long third, Float fourth, Double fifth) {
+    public Refs(Boolean first, Integer second, Long third, Float fourth, Double fifth) {
         this.first = first;
         this.second = second;
         this.third = third;
@@ -64,7 +64,7 @@ public class TestRefClass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TestRefClass that = (TestRefClass) o;
+        Refs that = (Refs) o;
 
         if (fifth != null ? !fifth.equals(that.fifth) : that.fifth != null) return false;
         if (first != null ? !first.equals(that.first) : that.first != null) return false;

@@ -5,6 +5,9 @@ import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.bytes.BytesDecoder;
 import org.sidney.core.encoding.bytes.BytesEncoder;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class BytesColumnIO extends ColumnIO {
     private final BytesEncoder encoder;
     private final BytesDecoder decoder;
@@ -26,12 +29,12 @@ public class BytesColumnIO extends ColumnIO {
     }
 
     @Override
-    public Encoder getEncoder() {
-        return encoder;
+    public List<Encoder> getEncoders() {
+        return Arrays.asList((Encoder) encoder);
     }
 
     @Override
-    public Decoder getDecoder() {
-        return decoder;
+    public List<Decoder> getDecoders() {
+        return Arrays.asList((Decoder) decoder);
     }
 }

@@ -1,31 +1,31 @@
 package org.sidney.core;
 
-public class TestNestedClass {
-    private TestClass first;
-    private TestClass second;
+public class NestedRefs {
+    private AllPrimitives first;
+    private AllPrimitives second;
 
-    public TestNestedClass() {
+    public NestedRefs() {
 
     }
 
-    public TestNestedClass(TestClass first, TestClass second) {
+    public NestedRefs(AllPrimitives first, AllPrimitives second) {
         this.first = first;
         this.second = second;
     }
 
-    public TestClass getFirst() {
+    public AllPrimitives getFirst() {
         return first;
     }
 
-    public void setFirst(TestClass first) {
+    public void setFirst(AllPrimitives first) {
         this.first = first;
     }
 
-    public TestClass getSecond() {
+    public AllPrimitives getSecond() {
         return second;
     }
 
-    public void setSecond(TestClass second) {
+    public void setSecond(AllPrimitives second) {
         this.second = second;
     }
 
@@ -34,7 +34,7 @@ public class TestNestedClass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TestNestedClass that = (TestNestedClass) o;
+        NestedRefs that = (NestedRefs) o;
 
         if (first != null ? !first.equals(that.first) : that.first != null) return false;
         if (second != null ? !second.equals(that.second) : that.second != null) return false;
