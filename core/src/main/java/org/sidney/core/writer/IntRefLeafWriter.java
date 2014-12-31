@@ -1,8 +1,8 @@
 package org.sidney.core.writer;
 
-public class StringLeafWriter extends NullableLeafWriter {
+public class IntRefLeafWriter extends NullableLeafWriter {
     @Override
     protected void writeIfNotNull(Object value, int index, ColumnWriter consumer) {
-        consumer.writeString(index, (String) value);
+        consumer.writeInt(index, (Integer) value);
     }
 }

@@ -8,10 +8,9 @@ import org.sidney.core.serializer.SerializerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.BufferOverflowException;
-import java.nio.charset.Charset;
 
 public class Reader<T> {
-    private Class<T> type;
+    private final Class<T> type;
     private final InputStream inputStream;
     private final Serializer serializer;
     private final ColumnReader columnReader;
@@ -19,7 +18,8 @@ public class Reader<T> {
 
     private int recordCount = 0;
 
-    public Reader(InputStream inputStream) {
+    public Reader(Class<T> type, InputStream inputStream) {
+        this.type = type;
         this.inputStream = inputStream;
         this.serializer = SerializerFactory.serializer(type);
         this.columnReader = new ColumnReader(serializer);
@@ -45,10 +45,6 @@ public class Reader<T> {
     private void initialize() {
         if(!initialized) {
             try {
-                int size = StreamUtils.readIntFromStream(inputStream);
-                byte[] bytes = new byte[size];
-                inputStream.read(bytes);
-                String className = new String(bytes, Charset.forName("UTF-8"));
                 recordCount = StreamUtils.readIntFromStream(inputStream);
                 columnReader.readFromInputStream(inputStream);
             } catch (IOException e) {

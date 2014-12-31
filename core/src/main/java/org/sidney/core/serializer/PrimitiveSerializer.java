@@ -15,43 +15,53 @@ import java.util.List;
 import java.util.Map;
 
 public class PrimitiveSerializer extends Serializer {
-    static final Map<Class, Type> primitiveDefinitions = new HashMap<>();
-    static final Map<Class, LeafWriter> writers = new HashMap<>();
-    static final Map<Class, LeafReader> readers = new HashMap<>();
+    static final Map<Class, Type> DEFINITIONS = new HashMap<>();
+    static final Map<Class, LeafWriter> WRITERS = new HashMap<>();
+    static final Map<Class, LeafReader> READERS = new HashMap<>();
 
     static {
-        primitiveDefinitions.put(boolean.class, Type.BOOLEAN);
-        primitiveDefinitions.put(Boolean.class, Type.BOOLEAN);
-        primitiveDefinitions.put(byte.class, Type.INT32);
-        primitiveDefinitions.put(Byte.class, Type.INT32);
-        primitiveDefinitions.put(char.class, Type.INT32);
-        primitiveDefinitions.put(Character.class, Type.INT32);
-        primitiveDefinitions.put(int.class, Type.INT32);
-        primitiveDefinitions.put(Integer.class, Type.INT32);
-        primitiveDefinitions.put(long.class, Type.INT64);
-        primitiveDefinitions.put(Long.class, Type.INT64);
-        primitiveDefinitions.put(float.class, Type.FLOAT32);
-        primitiveDefinitions.put(Float.class, Type.FLOAT32);
-        primitiveDefinitions.put(double.class, Type.FLOAT64);
-        primitiveDefinitions.put(Double.class, Type.FLOAT64);
-        primitiveDefinitions.put(byte[].class, Type.BINARY);
-        primitiveDefinitions.put(String.class, Type.STRING);
+        DEFINITIONS.put(boolean.class, Type.BOOLEAN);
+        DEFINITIONS.put(Boolean.class, Type.BOOLEAN);
+        DEFINITIONS.put(byte.class, Type.INT32);
+        DEFINITIONS.put(Byte.class, Type.INT32);
+        DEFINITIONS.put(char.class, Type.INT32);
+        DEFINITIONS.put(Character.class, Type.INT32);
+        DEFINITIONS.put(int.class, Type.INT32);
+        DEFINITIONS.put(Integer.class, Type.INT32);
+        DEFINITIONS.put(long.class, Type.INT64);
+        DEFINITIONS.put(Long.class, Type.INT64);
+        DEFINITIONS.put(float.class, Type.FLOAT32);
+        DEFINITIONS.put(Float.class, Type.FLOAT32);
+        DEFINITIONS.put(double.class, Type.FLOAT64);
+        DEFINITIONS.put(Double.class, Type.FLOAT64);
+        DEFINITIONS.put(byte[].class, Type.BINARY);
+        DEFINITIONS.put(String.class, Type.STRING);
 
-        writers.put(boolean.class, new BoolLeafWriter());
-        writers.put(int.class, new IntLeafWriter());
-        writers.put(float.class, new FloatLeafWriter());
-        writers.put(long.class, new LongLeafWriter());
-        writers.put(double.class, new DoubleLeafWriter());
-        writers.put(String.class, new StringLeafWriter());
-        writers.put(byte[].class, new BytesLeafWriter());
+        WRITERS.put(boolean.class, new BoolLeafWriter());
+        WRITERS.put(Boolean.class, new BoolRefLeafWriter());
+        WRITERS.put(int.class, new IntLeafWriter());
+        WRITERS.put(Integer.class, new IntRefLeafWriter());
+        WRITERS.put(float.class, new FloatLeafWriter());
+        WRITERS.put(Float.class, new FloatRefLeafWriter());
+        WRITERS.put(long.class, new LongLeafWriter());
+        WRITERS.put(Long.class, new LongRefLeafWriter());
+        WRITERS.put(double.class, new DoubleLeafWriter());
+        WRITERS.put(Double.class, new DoubleRefLeafWriter());
+        WRITERS.put(String.class, new StringLeafWriter());
+        WRITERS.put(byte[].class, new BytesLeafWriter());
 
-        readers.put(boolean.class, new BoolLeafReader());
-        readers.put(int.class, new IntLeafReader());
-        readers.put(float.class, new FloatLeafReader());
-        readers.put(long.class, new LongLeafReader());
-        readers.put(double.class, new DoubleLeafReader());
-        readers.put(String.class, new StringLeafReader());
-        readers.put(byte[].class, new BytesLeafReader());
+        READERS.put(boolean.class, new BoolLeafReader());
+        READERS.put(Boolean.class, new BoolRefLeafReader());
+        READERS.put(int.class, new IntLeafReader());
+        READERS.put(Integer.class, new IntRefLeafReader());
+        READERS.put(float.class, new FloatLeafReader());
+        READERS.put(Float.class, new FloatRefLeafReader());
+        READERS.put(long.class, new LongLeafReader());
+        READERS.put(Long.class, new LongRefLeafReader());
+        READERS.put(double.class, new DoubleLeafReader());
+        READERS.put(Double.class, new DoubleRefLeafReader());
+        READERS.put(String.class, new StringLeafReader());
+        READERS.put(byte[].class, new BytesLeafReader());
     }
 
     private final LeafWriter writer;
@@ -60,17 +70,17 @@ public class PrimitiveSerializer extends Serializer {
     public PrimitiveSerializer(Class type, Field field) {
         super(type, field);
 
-        writer = writers.get(type);
-        reader = readers.get(type);
+        writer = WRITERS.get(type);
+        reader = READERS.get(type);
     }
 
     public static <T> boolean isPrimitive(Class<T> clazz) {
-        return primitiveDefinitions.containsKey(clazz);
+        return DEFINITIONS.containsKey(clazz);
     }
 
     @Override
     public Type getType() {
-        return primitiveDefinitions.get(getJdkType());
+        return DEFINITIONS.get(getJdkType());
     }
 
     @Override

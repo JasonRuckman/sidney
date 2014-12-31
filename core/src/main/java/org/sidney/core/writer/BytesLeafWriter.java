@@ -5,6 +5,12 @@ import org.sidney.core.field.FieldAccessor;
 public class BytesLeafWriter implements LeafWriter {
     @Override
     public void writeRecordFromField(ColumnWriter consumer, Object parent, int index, FieldAccessor accessor) {
-        consumer.writeBytes(index, (byte[]) accessor.get(parent));
+        byte[] bytes = (byte[]) accessor.get(parent);
+        if(bytes == null) {
+            consumer.writeNull(index - 1);
+            return;
+        }
+        consumer.writeNotNull(index - 1);
+        consumer.writeBytes(index, bytes);
     }
 }

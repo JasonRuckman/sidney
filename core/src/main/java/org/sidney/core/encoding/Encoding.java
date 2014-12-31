@@ -1,12 +1,14 @@
 package org.sidney.core.encoding;
 
 import org.sidney.core.encoding.bool.*;
+import org.sidney.core.encoding.bytes.ByteArrayDecoder;
 import org.sidney.core.encoding.bytes.ByteArrayEncoder;
 import org.sidney.core.encoding.bytes.BytesDecoder;
 import org.sidney.core.encoding.bytes.BytesEncoder;
 import org.sidney.core.encoding.float32.*;
 import org.sidney.core.encoding.float64.Float64Decoder;
 import org.sidney.core.encoding.float64.Float64Encoder;
+import org.sidney.core.encoding.float64.PlainFloat64Decoder;
 import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 import org.sidney.core.encoding.int32.*;
 import org.sidney.core.encoding.int64.*;
@@ -27,6 +29,11 @@ public enum Encoding {
         @Override
         public Int32Encoder newInt32Encoder() {
             return new PlainInt32Encoder();
+        }
+
+        @Override
+        public Int32Decoder newInt32Decoder() {
+            return new PlainInt32Decoder();
         }
 
         @Override
@@ -55,6 +62,11 @@ public enum Encoding {
         }
 
         @Override
+        public Float64Decoder newFloat64Decoder() {
+            return new PlainFloat64Decoder();
+        }
+
+        @Override
         public StringEncoder newStringEncoder() {
             return new PlainStringEncoder();
         }
@@ -67,6 +79,11 @@ public enum Encoding {
         @Override
         public BytesEncoder newBytesEncoder() {
             return new ByteArrayEncoder();
+        }
+
+        @Override
+        public BytesDecoder newBytesDecoder() {
+            return new ByteArrayDecoder();
         }
     },
     BITPACKED {
