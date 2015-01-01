@@ -60,12 +60,8 @@ public class ColumnWriter extends AbstractColumnOperations {
         columnIOs.get(index).writeNull();
     }
 
-    public void startRepetition(int index) {
-        columnIOs.get(index).startRepetition();
-    }
-
-    public void endRepetition(int index) {
-        columnIOs.get(index).endRepetition();
+    public void writeRepetitionCount(int index, int value) {
+        columnIOs.get(index).writeRepetitionCount(value);
     }
 
     public void writeConcreteType(Class<?> type, int index) {

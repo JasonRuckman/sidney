@@ -1,5 +1,7 @@
 package org.sidney.core.serializer;
 
+import org.sidney.core.Container;
+import org.sidney.core.Header;
 import org.sidney.core.writer.ColumnWriter;
 import org.sidney.core.field.FieldAccessor;
 import org.sidney.core.field.FieldUtils;
@@ -18,7 +20,7 @@ public class BeanSerializer<T> extends Serializer {
     private final Constructor<T> constructor;
     private int numFields;
 
-    public BeanSerializer(Class<T> type, Field field) {
+    public BeanSerializer(Class<T> type, Field field, Container<Header> header) {
         super(type, field);
 
         List<Field> jdkFields = FieldUtils.getAllFields(type);
@@ -29,7 +31,7 @@ public class BeanSerializer<T> extends Serializer {
 
         children = new ArrayList<>();
         for (Field f : FieldUtils.getAllFields(getJdkType())) {
-            children.add(SerializerFactory.serializer(f));
+            children.add(SerializerFactory.serializer(f, header));
         }
 
         try {
@@ -56,7 +58,7 @@ public class BeanSerializer<T> extends Serializer {
         }
 
         if(requiresMetaColumn()) {
-
+            consumer.writeConcreteType(value.getClass(), index);
         }
 
         consumer.writeNotNull(index++);

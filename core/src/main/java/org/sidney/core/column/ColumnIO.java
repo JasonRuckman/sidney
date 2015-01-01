@@ -78,14 +78,6 @@ public class ColumnIO {
         definitionEncoder.writeBool(false);
     }
 
-    public void startRepetition() {
-        currentNum = 0;
-    }
-
-    public void endRepetition() {
-        repetitionEncoder.writeInt(currentNum);
-    }
-
     public boolean readBoolean() {
         throw new IllegalStateException();
     }
@@ -118,8 +110,8 @@ public class ColumnIO {
         return definitionDecoder.nextBool();
     }
 
-    public int readRepetitionCount() {
-        return repetitionDecoder.nextInt();
+    public void writeRepetitionCount(int value) {
+        repetitionEncoder.writeInt(value);
     }
 
     public Class readConcreteType() {

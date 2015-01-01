@@ -5,29 +5,30 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class Header {
-    private Class topLevelType;
-    private Map<Class, Integer> classToValueMap = new IdentityHashMap<>();
+    private Map<String, Integer> classNameToValue = new HashMap<>();
+    private Class[] generics;
 
+    private transient Map<Class, Integer> classToValueMap = new IdentityHashMap<>();
     private transient Map<Integer, Class> valueToClassMap = new HashMap<>();
     private transient int counter = 0;
 
-    public Class getTopLevelType() {
-        return topLevelType;
+    public Class[] getGenerics() {
+        return generics;
     }
 
-    public void setTopLevelType(Class topLevelType) {
-        this.topLevelType = topLevelType;
+    public void setGenerics(Class[] generics) {
+        this.generics = generics;
     }
 
-    public Map<Class, Integer> getClassToValueMap() {
-        return classToValueMap;
+    public Map<String, Integer> getClassNameToValue() {
+        return classNameToValue;
     }
 
-    public void setClassToValueMap(HashMap<Class, Integer> classToValueMap) {
-        this.classToValueMap = classToValueMap;
+    public void setClassNameToValue(Map<String, Integer> classNameToValue) {
+        this.classNameToValue = classNameToValue;
     }
 
-    public int concreteType(Class clazz) {
+    public int valueForType(Class clazz) {
         Integer value = classToValueMap.get(clazz);
         if(value == null) {
             value = counter++;
@@ -36,14 +37,24 @@ public class Header {
         return value;
     }
 
+    public Class classForValue(int value) {
+        return valueToClassMap.get(value);
+    }
+
     public Class readConcreteType(int value) {
         return valueToClassMap.get(value);
     }
 
-    public void prepareForRead() {
-        valueToClassMap = new HashMap<>();
+    public void prepareForStorage() {
         for(Map.Entry<Class, Integer> entry : classToValueMap.entrySet()) {
-            valueToClassMap.put(entry.getValue(), entry.getKey());
+            classNameToValue.put(entry.getKey().getName(), entry.getValue());
+        }
+    }
+
+    public void prepareForRead() throws ClassNotFoundException {
+        valueToClassMap = new HashMap<>();
+        for(Map.Entry<String, Integer> entry : classNameToValue.entrySet()) {
+            valueToClassMap.put(entry.getValue(), Class.forName(entry.getKey()));
         }
     }
 }

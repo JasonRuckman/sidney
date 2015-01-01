@@ -46,13 +46,21 @@ public class Reader<T> {
     private void initialize() {
         if(!initialized) {
             try {
-                this.header.set(json.readValue(inputStream, Header.class));
-                this.serializer = SerializerFactory.serializer(type);
+                int size = StreamUtils.readIntFromStream(inputStream);
+                byte[] bytes = new byte[size];
+                inputStream.read(bytes);
+                this.header.set(json.readValue(bytes, Header.class));
+                this.header.get().prepareForRead();
+                if(header.get().getGenerics() == null) {
+                    this.serializer = SerializerFactory.serializerWithoutField(type, header);
+                } else {
+                    this.serializer = SerializerFactory.serializer(type, header, header.get().getGenerics());
+                }
                 this.columnReader = new ColumnReader(this.serializer, header);
 
                 recordCount = StreamUtils.readIntFromStream(inputStream);
                 columnReader.readFromInputStream(inputStream);
-            } catch (IOException e) {
+            } catch (IOException|ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }

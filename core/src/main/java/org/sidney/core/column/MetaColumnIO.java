@@ -23,7 +23,7 @@ public class MetaColumnIO extends ColumnIO {
 
     @Override
     public void writeConcreteType(Class<?> type) {
-        concreteTypeEncoder.writeInt(header.get().concreteType(type));
+        concreteTypeEncoder.writeInt(header.get().valueForType(type));
     }
 
     @Override

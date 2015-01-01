@@ -17,18 +17,20 @@ public class Writer<T> {
     private final ObjectMapper json = new ObjectMapper();
     private int recordCount = 0;
     private Container<Header> headerContainer = new Container<>(new Header());
+    private Class[] generics = null;
 
     public Writer(Class<T> type, OutputStream outputStream) {
         this.type = type;
         this.outputStream = outputStream;
-        this.serializer = SerializerFactory.serializer(type);
+        this.serializer = SerializerFactory.serializerWithoutField(type, headerContainer);
         this.columnWriter = new ColumnWriter(serializer, headerContainer);
     }
 
     public Writer(Class<T> type, OutputStream outputStream, Class... generics) {
         this.type = type;
         this.outputStream = outputStream;
-        this.serializer = SerializerFactory.serializer(type, generics);
+        this.serializer = SerializerFactory.serializer(type, headerContainer, generics);
+        this.generics = generics;
         this.columnWriter = new ColumnWriter(serializer, headerContainer);
     }
 
@@ -49,7 +51,12 @@ public class Writer<T> {
 
     public void flush() {
         try {
+            if(generics != null) {
+                headerContainer.get().setGenerics(generics);
+            }
+            headerContainer.get().prepareForStorage();
             byte[] bytes = json.writeValueAsBytes(headerContainer.get());
+            StreamUtils.writeIntToStream(bytes.length, outputStream);
             outputStream.write(bytes);
             StreamUtils.writeIntToStream(recordCount, outputStream);
             columnWriter.flushToOutputStream(outputStream);
