@@ -1,37 +1,49 @@
 package org.sidney.core;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sidney.core.encoding.io.StreamUtils;
-import org.sidney.core.serializer.Serializer;
-import org.sidney.core.serializer.SerializerFactory;
-import org.sidney.core.writer.ColumnWriter;
+import org.sidney.core.serde.TypeWriter;
+import org.sidney.core.serde.WriteContext;
+import org.sidney.core.serde.TypeHandler;
+import org.sidney.core.serde.TypeHandlerFactory;
+import org.sidney.core.serde.TypeUtil;
+import org.sidney.core.serde.ColumnWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class Writer<T> {
     private final Class<T> type;
-    private final OutputStream outputStream;
-    private final ColumnWriter columnWriter;
-    private final Serializer serializer;
+    private final TypeHandler handler;
     private final ObjectMapper json = new ObjectMapper();
+    private final TypeWriter typeWriter;
+    private OutputStream outputStream;
     private int recordCount = 0;
-    private Container<Header> headerContainer = new Container<>(new Header());
     private Class[] generics = null;
+    private WriteContext context;
 
-    public Writer(Class<T> type, OutputStream outputStream) {
+    Writer(Class<T> type, OutputStream outputStream) {
         this.type = type;
         this.outputStream = outputStream;
-        this.serializer = SerializerFactory.serializerWithoutField(type, headerContainer);
-        this.columnWriter = new ColumnWriter(serializer, headerContainer);
+        this.handler = TypeHandlerFactory.instance().handler(type, type, null, TypeUtil.binding(type));
+        this.context = new WriteContext(new ColumnWriter(handler), new Header());
+        this.typeWriter = new TypeWriter();
+    }
+    Writer(Class<T> type, OutputStream outputStream, Class... generics) {
+        this.type = type;
+        this.outputStream = outputStream;
+        this.generics = generics;
+        this.handler = TypeHandlerFactory.instance().handler(type, type, null, TypeUtil.binding(type), generics);
+        this.context = new WriteContext(new ColumnWriter(handler), new Header());
+        this.typeWriter = new TypeWriter();
     }
 
-    public Writer(Class<T> type, OutputStream outputStream, Class... generics) {
-        this.type = type;
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public void setOutputStream(OutputStream outputStream) {
         this.outputStream = outputStream;
-        this.serializer = SerializerFactory.serializer(type, headerContainer, generics);
-        this.generics = generics;
-        this.columnWriter = new ColumnWriter(serializer, headerContainer);
     }
 
     public Class<T> getType() {
@@ -39,30 +51,40 @@ public class Writer<T> {
     }
 
     public void write(T value) {
-        serializer.writeRecord(columnWriter, value, 0);
+        context.setIndex(0);
+        handler.writeValue(value, typeWriter, context);
         ++recordCount;
     }
 
     public void write(Iterable<T> values) {
-        for(T value : values) {
+        for (T value : values) {
             write(value);
         }
     }
 
     public void flush() {
         try {
-            if(generics != null) {
-                headerContainer.get().setGenerics(generics);
-            }
-            headerContainer.get().prepareForStorage();
-            byte[] bytes = json.writeValueAsBytes(headerContainer.get());
-            StreamUtils.writeIntToStream(bytes.length, outputStream);
-            outputStream.write(bytes);
-            StreamUtils.writeIntToStream(recordCount, outputStream);
-            columnWriter.flushToOutputStream(outputStream);
-            headerContainer.set(new Header());
+            writeHeader();
+            writeColumns();
+            context.setHeader(new Header());
+            context.getColumnWriter().reset();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void writeHeader() throws IOException {
+        if (generics != null) {
+            context.getHeader().setGenerics(generics);
+        }
+        context.getHeader().prepareForStorage();
+        byte[] bytes = json.writeValueAsBytes(context.getHeader());
+        StreamUtils.writeIntToStream(bytes.length, outputStream);
+        outputStream.write(bytes);
+    }
+
+    private void writeColumns() throws IOException {
+        StreamUtils.writeIntToStream(recordCount, outputStream);
+        context.getColumnWriter().flushToOutputStream(outputStream);
     }
 }

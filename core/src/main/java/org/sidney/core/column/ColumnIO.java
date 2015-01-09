@@ -6,16 +6,18 @@ import org.sidney.core.encoding.bool.BoolDecoder;
 import org.sidney.core.encoding.bool.BoolEncoder;
 import org.sidney.core.encoding.int32.Int32Decoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.WriteContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ColumnIO {
+    private static final List EMPTY = new ArrayList<>();
     private BoolEncoder definitionEncoder;
     private Int32Encoder repetitionEncoder;
     private BoolDecoder definitionDecoder;
     private Int32Decoder repetitionDecoder;
-
-    private int currentNum = 0;
     private String path;
 
     public void setRepetitionEncoder(Int32Encoder repetitionEncoder) {
@@ -66,7 +68,7 @@ public class ColumnIO {
         definitionEncoder.writeBool(true);
     }
 
-    public void writeConcreteType(Class<?> type) {
+    public void writeConcreteType(Class<?> type, WriteContext context) {
         throw new IllegalStateException();
     }
 
@@ -76,6 +78,10 @@ public class ColumnIO {
 
     public void writeNull() {
         definitionEncoder.writeBool(false);
+    }
+
+    public void writeRepetitionCount(int value) {
+        repetitionEncoder.writeInt(value);
     }
 
     public boolean readBoolean() {
@@ -110,20 +116,20 @@ public class ColumnIO {
         return definitionDecoder.nextBool();
     }
 
-    public void writeRepetitionCount(int value) {
-        repetitionEncoder.writeInt(value);
+    public int readRepetitionCount() {
+        return repetitionDecoder.nextInt();
     }
 
-    public Class readConcreteType() {
+    public Class readConcreteType(ReadContext context) {
         throw new IllegalStateException();
     }
 
     public List<Encoder> getEncoders() {
-        return null;
+        return EMPTY;
     }
 
     public List<Decoder> getDecoders() {
-        return null;
+        return EMPTY;
     }
 
     public void setPath(String path) {

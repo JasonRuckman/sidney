@@ -2,10 +2,8 @@ package org.sidney.core.encoding;
 
 import org.sidney.core.encoding.io.StreamUtils;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.BufferUnderflowException;
 
 public abstract class AbstractDecoder implements Decoder {

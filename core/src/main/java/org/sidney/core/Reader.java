@@ -1,68 +1,76 @@
 package org.sidney.core;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sidney.core.encoding.io.StreamUtils;
-import org.sidney.core.reader.ColumnReader;
-import org.sidney.core.serializer.Serializer;
-import org.sidney.core.serializer.SerializerFactory;
+import org.sidney.core.serde.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.BufferOverflowException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reader<T> {
-    private final Class<T> type;
-    private final InputStream inputStream;
-    private Serializer serializer;
-    private ColumnReader columnReader;
-    private Container<Header> header = new Container<>();
-    private boolean initialized = false;
-    private final ObjectMapper json = new ObjectMapper();
-
+    private Class<T> type;
+    private InputStream inputStream;
+    private ReadContext context;
+    private ObjectMapper json = new ObjectMapper();
+    private TypeHandler typeHandler;
+    private TypeReader typeReader = new TypeReader();
     private int recordCount = 0;
 
-    public Reader(Class<T> type, InputStream inputStream) {
+    Reader(Class<T> type, InputStream inputStream) {
         this.type = type;
+        this.inputStream = inputStream;
+        this.typeHandler = TypeHandlerFactory.instance().handler(
+                type, type, null, TypeUtil.binding(type)
+        );
+        try {
+            loadHeader();
+            loadColumns();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
-    public Class<T> getType() {
-        return type;
-    }
-
-    public boolean hasNext() {
-        initialize();
-        return recordCount > 0;
-    }
-
-    public T next() {
-        initialize();
-        if(recordCount-- <= 0) {
-            throw new BufferOverflowException();
+    public T read() {
+        if(recordCount-- == 0) {
+            throw new IllegalStateException();
         }
-        return (T) serializer.nextRecord(columnReader, 0);
+        context.setIndex(0);
+        return (T) typeHandler.readValue(typeReader, context);
     }
 
-    private void initialize() {
-        if(!initialized) {
-            try {
-                int size = StreamUtils.readIntFromStream(inputStream);
-                byte[] bytes = new byte[size];
-                inputStream.read(bytes);
-                this.header.set(json.readValue(bytes, Header.class));
-                this.header.get().prepareForRead();
-                if(header.get().getGenerics() == null) {
-                    this.serializer = SerializerFactory.serializerWithoutField(type, header);
-                } else {
-                    this.serializer = SerializerFactory.serializer(type, header, header.get().getGenerics());
-                }
-                this.columnReader = new ColumnReader(this.serializer, header);
-
-                recordCount = StreamUtils.readIntFromStream(inputStream);
-                columnReader.readFromInputStream(inputStream);
-            } catch (IOException|ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+    public List<T> readAll() {
+        List<T> records = new ArrayList<>();
+        for(int i = 0; i < recordCount; i++) {
+            records.add(read());
         }
+        return records;
+    }
+
+    private void loadHeader() throws IOException {
+        int size = StreamUtils.readIntFromStream(inputStream);
+        byte[] bytes = new byte[size];
+        inputStream.read(bytes);
+        Header header = json.readValue(bytes, Header.class);
+        context = new ReadContext(
+                new ColumnReader(
+                        typeHandler
+                )
+        );
+        context.setHeader(header);
+    }
+
+    private void loadColumns() throws IOException {
+        recordCount = StreamUtils.readIntFromStream(inputStream);
+        context.getColumnReader().loadFromInputStream(inputStream);
     }
 }

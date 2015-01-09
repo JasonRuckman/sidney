@@ -14,7 +14,7 @@ public class RLEFloat32Decoder extends AbstractDecoder implements Float32Decoder
     private float currentRun = 0;
 
     public float nextFloat() {
-        if(runSize-- == 0) {
+        if (runSize-- == 0) {
             loadNextRun();
             runSize--;
         }
@@ -25,7 +25,7 @@ public class RLEFloat32Decoder extends AbstractDecoder implements Float32Decoder
     @Override
     public float[] nextFloats(int num) {
         float[] floats = new float[num];
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             floats[i] = nextFloat();
         }
         return floats;

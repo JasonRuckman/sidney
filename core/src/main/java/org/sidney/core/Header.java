@@ -30,7 +30,7 @@ public class Header {
 
     public int valueForType(Class clazz) {
         Integer value = classToValueMap.get(clazz);
-        if(value == null) {
+        if (value == null) {
             value = counter++;
             classToValueMap.put(clazz, value);
         }
@@ -46,14 +46,14 @@ public class Header {
     }
 
     public void prepareForStorage() {
-        for(Map.Entry<Class, Integer> entry : classToValueMap.entrySet()) {
+        for (Map.Entry<Class, Integer> entry : classToValueMap.entrySet()) {
             classNameToValue.put(entry.getKey().getName(), entry.getValue());
         }
     }
 
     public void prepareForRead() throws ClassNotFoundException {
         valueToClassMap = new HashMap<>();
-        for(Map.Entry<String, Integer> entry : classNameToValue.entrySet()) {
+        for (Map.Entry<String, Integer> entry : classNameToValue.entrySet()) {
             valueToClassMap.put(entry.getValue(), Class.forName(entry.getKey()));
         }
     }

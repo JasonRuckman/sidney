@@ -52,4 +52,12 @@ public class FieldUtils {
 
         return fields;
     }
+
+    public static Field getFieldByName(Class containingType, String fieldName) {
+        try {
+            return containingType.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

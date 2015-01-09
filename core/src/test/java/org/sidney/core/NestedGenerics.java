@@ -1,18 +1,15 @@
 package org.sidney.core;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.util.HashMap;
 import java.util.Map;
 
 public class NestedGenerics {
-    private Map<VeryGeneric<Integer, Float, Double>, VeryGeneric<byte[], String, Bool>> map = new HashMap<>();
+    private VeryNested<Integer, Double, Map<Integer, Double>> nested;
 
-    public Map<VeryGeneric<Integer, Float, Double>, VeryGeneric<byte[], String, Bool>> getMap() {
-        return map;
+    public VeryNested<Integer, Double, Map<Integer, Double>> getNested() {
+        return nested;
     }
 
-    public void setMap(Map<VeryGeneric<Integer, Float, Double>, VeryGeneric<byte[], String, Bool>> map) {
-        this.map = map;
+    public void setNested(VeryNested<Integer, Double, Map<Integer, Double>> nested) {
+        this.nested = nested;
     }
 }

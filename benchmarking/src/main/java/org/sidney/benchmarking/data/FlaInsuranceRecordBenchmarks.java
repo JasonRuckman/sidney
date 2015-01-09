@@ -2,12 +2,13 @@ package org.sidney.benchmarking.data;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.common.processor.BeanListProcessor;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openjdk.jmh.annotations.*;
+import org.sidney.core.Sid;
 import org.sidney.core.Writer;
 import org.springframework.core.io.ClassPathResource;
 import org.xerial.snappy.SnappyOutputStream;
@@ -15,13 +16,15 @@ import org.xerial.snappy.SnappyOutputStream;
 import java.io.*;
 import java.util.List;
 
-@State(Scope.Benchmark)
+@State(Scope.Thread)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
 @Threads(1)
 @Fork(1)
 public class FlaInsuranceRecordBenchmarks {
     private List<FlaInsuranceRecord> records;
+    private Sid sid = new Sid();
+    private byte[] sidneyBytes;
 
     public FlaInsuranceRecordBenchmarks() {
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
@@ -37,21 +40,27 @@ public class FlaInsuranceRecordBenchmarks {
         CsvParser parser = new CsvParser(parserSettings);
         try {
             parser.parse(new InputStreamReader(pathResource.getInputStream()));
+            records = processor.getBeans();
+            sidneyBytes = writeSidney();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        records = processor.getBeans();
     }
 
     @Benchmark
     @Group("data")
     public byte[] sidney() throws IOException {
+        return writeSidney();
+    }
+
+    private byte[] writeSidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream os = new SnappyOutputStream(new ByteArrayOutputStream());
-        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = new Writer<>(FlaInsuranceRecord.class, os);
+        OutputStream os = new SnappyOutputStream(new BufferedOutputStream(baos));
+        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = sid.newCachedWriter(FlaInsuranceRecord.class, os);
         for (FlaInsuranceRecord record : records) {
             recordSerializer.write(record);
         }
+        recordSerializer.flush();
         os.close();
 
         return baos.toByteArray();

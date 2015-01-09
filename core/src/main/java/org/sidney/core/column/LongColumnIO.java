@@ -4,6 +4,7 @@ import org.sidney.core.encoding.Decoder;
 import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.int64.Int64Decoder;
 import org.sidney.core.encoding.int64.Int64Encoder;
+import org.sidney.core.serde.WriteContext;
 
 import java.util.Arrays;
 import java.util.List;

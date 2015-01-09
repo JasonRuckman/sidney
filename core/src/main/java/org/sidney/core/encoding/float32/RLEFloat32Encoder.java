@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder {
+    private final Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
+    private final Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
     private float currentRun = 0;
     private int runSize = 0;
     private boolean isNewRun = true;
-    private final Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
-    private final Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
 
     @Override
     public void writeFloat(float value) {

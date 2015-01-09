@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
     private Logger logger = LoggerFactory.getLogger(getRunningClass());
