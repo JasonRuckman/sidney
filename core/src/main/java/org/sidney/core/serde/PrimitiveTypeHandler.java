@@ -17,6 +17,12 @@ public class PrimitiveTypeHandler extends TypeHandler {
     static {
         WRITERS.put(boolean.class, new PrimitiveWriters.BoolWriter());
         WRITERS.put(Boolean.class, new PrimitiveWriters.BoolRefWriter());
+        WRITERS.put(byte.class, new PrimitiveWriters.ByteWriter());
+        WRITERS.put(Byte.class, new PrimitiveWriters.ByteRefWriter());
+        WRITERS.put(char.class, new PrimitiveWriters.CharWriter());
+        WRITERS.put(Character.class, new PrimitiveWriters.CharRefWriter());
+        WRITERS.put(short.class, new PrimitiveWriters.ShortWriter());
+        WRITERS.put(Short.class, new PrimitiveWriters.ShortRefWriter());
         WRITERS.put(int.class, new PrimitiveWriters.IntWriter());
         WRITERS.put(Integer.class, new PrimitiveWriters.IntRefWriter());
         WRITERS.put(long.class, new PrimitiveWriters.LongWriter());
@@ -29,17 +35,34 @@ public class PrimitiveTypeHandler extends TypeHandler {
         WRITERS.put(String.class, new PrimitiveWriters.StringWriter());
 
         READERS.put(boolean.class, new PrimitiveReaders.BoolPrimitiveReader());
+        READERS.put(Boolean.class, new PrimitiveReaders.BoolRefPrimitiveReader());
+        READERS.put(byte.class, new PrimitiveReaders.BytePrimitiveReader());
+        READERS.put(Byte.class, new PrimitiveReaders.ByteRefPrimitiveReader());
+        READERS.put(short.class, new PrimitiveReaders.ShortPrimitiveReader());
+        READERS.put(Short.class, new PrimitiveReaders.ShortRefPrimitiveReader());
+        READERS.put(char.class, new PrimitiveReaders.CharPrimitiveReader());
+        READERS.put(Character.class, new PrimitiveReaders.CharRefPrimitiveReader());
         READERS.put(int.class, new PrimitiveReaders.IntPrimitiveReader());
+        READERS.put(Integer.class, new PrimitiveReaders.IntRefPrimitiveReader());
         READERS.put(long.class, new PrimitiveReaders.LongPrimitiveReader());
+        READERS.put(Long.class, new PrimitiveReaders.LongRefPrimitiveReader());
         READERS.put(float.class, new PrimitiveReaders.FloatPrimitiveReader());
+        READERS.put(Float.class, new PrimitiveReaders.FloatRefPrimitiveReader());
         READERS.put(double.class, new PrimitiveReaders.DoublePrimitiveReader());
+        READERS.put(Double.class, new PrimitiveReaders.DoubleRefPrimitiveReader());
         READERS.put(byte[].class, new PrimitiveReaders.BytesPrimitiveReader());
         READERS.put(String.class, new PrimitiveReaders.StringPrimitiveReader());
 
         TYPES.put(boolean.class, org.sidney.core.schema.Type.BOOLEAN);
         TYPES.put(Boolean.class, org.sidney.core.schema.Type.BOOLEAN);
+        TYPES.put(byte.class, org.sidney.core.schema.Type.INT32);
+        TYPES.put(Byte.class, org.sidney.core.schema.Type.INT32);
         TYPES.put(int.class, org.sidney.core.schema.Type.INT32);
         TYPES.put(Integer.class, org.sidney.core.schema.Type.INT32);
+        TYPES.put(short.class, org.sidney.core.schema.Type.INT32);
+        TYPES.put(Short.class, org.sidney.core.schema.Type.INT32);
+        TYPES.put(char.class, org.sidney.core.schema.Type.INT32);
+        TYPES.put(Character.class, org.sidney.core.schema.Type.INT32);
         TYPES.put(long.class, org.sidney.core.schema.Type.INT64);
         TYPES.put(Long.class, org.sidney.core.schema.Type.INT64);
         TYPES.put(float.class, org.sidney.core.schema.Type.FLOAT32);
@@ -102,7 +125,7 @@ public class PrimitiveTypeHandler extends TypeHandler {
     }
 
     public Encoding getEncoding() {
-        if(getField() != null) {
+        if(getField() != null && getField().getAnnotation(Encode.class) != null) {
             return getField().getAnnotation(Encode.class).value();
         }
         return Encoding.PLAIN;

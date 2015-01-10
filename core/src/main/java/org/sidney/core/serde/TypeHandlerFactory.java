@@ -22,6 +22,12 @@ public class TypeHandlerFactory {
     static {
         PRIMITIVES.add(boolean.class);
         PRIMITIVES.add(Boolean.class);
+        PRIMITIVES.add(byte.class);
+        PRIMITIVES.add(Byte.class);
+        PRIMITIVES.add(char.class);
+        PRIMITIVES.add(Character.class);
+        PRIMITIVES.add(short.class);
+        PRIMITIVES.add(Short.class);
         PRIMITIVES.add(int.class);
         PRIMITIVES.add(Integer.class);
         PRIMITIVES.add(long.class);
@@ -45,7 +51,7 @@ public class TypeHandlerFactory {
             clazz = javaType.getRawClass();
         }
 
-        if (PRIMITIVES.contains(clazz)) {
+        if (PRIMITIVES.contains(clazz) || clazz.isEnum()) {
             return new PrimitiveTypeHandler(clazz, field, typeBindings, instance());
         }
 

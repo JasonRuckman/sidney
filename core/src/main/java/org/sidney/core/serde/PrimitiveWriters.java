@@ -17,6 +17,27 @@ public class PrimitiveWriters {
         }
     }
 
+    static class ByteWriter extends PrimitiveWriter {
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            typeWriter.writeInt(accessor.getByte(parent), context);
+        }
+    }
+
+    static class ShortWriter extends PrimitiveWriter {
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            typeWriter.writeInt(accessor.getShort(parent), context);
+        }
+    }
+
+    static class CharWriter extends PrimitiveWriter {
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            typeWriter.writeInt(accessor.getChar(parent), context);
+        }
+    }
+
     static class IntWriter extends PrimitiveWriter {
         @Override
         public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
@@ -84,7 +105,60 @@ public class PrimitiveWriters {
             if(typeWriter.writeNullMarker(value, context)) {
                 typeWriter.writeBool(value, context);
             }
-            context.incrementIndex();
+        }
+    }
+
+    static class ByteRefWriter extends PrimitiveWriter {
+        @Override
+        public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+            writeByte((Byte) value, typeWriter, context);
+        }
+
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            writeByte((Byte)accessor.get(parent), typeWriter, context);
+        }
+
+        private void writeByte(Byte value, TypeWriter typeWriter, WriteContext context) {
+            if(typeWriter.writeNullMarker(value, context)) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+    }
+
+    static class ShortRefWriter extends PrimitiveWriter {
+        @Override
+        public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+            writeShort((Short) value, typeWriter, context);
+        }
+
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            writeShort((Short) accessor.get(parent), typeWriter, context);
+        }
+
+        private void writeShort(Short value, TypeWriter typeWriter, WriteContext context) {
+            if(typeWriter.writeNullMarker(value, context)) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+    }
+
+    static class CharRefWriter extends PrimitiveWriter {
+        @Override
+        public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+            writeChar((Character) value, typeWriter, context);
+        }
+
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, FieldAccessor accessor) {
+            writeChar((Character)accessor.get(parent), typeWriter, context);
+        }
+
+        private void writeChar(Character value, TypeWriter typeWriter, WriteContext context) {
+            if(typeWriter.writeNullMarker(value, context)) {
+                typeWriter.writeInt(value, context);
+            }
         }
     }
 
@@ -103,7 +177,6 @@ public class PrimitiveWriters {
             if(typeWriter.writeNullMarker(value, context)) {
                 typeWriter.writeInt(value, context);
             }
-            context.incrementIndex();
         }
     }
 
@@ -122,7 +195,6 @@ public class PrimitiveWriters {
             if(typeWriter.writeNullMarker(value, context)) {
                 typeWriter.writeLong(value, context);
             }
-            context.incrementIndex();
         }
     }
 
@@ -141,7 +213,6 @@ public class PrimitiveWriters {
             if(typeWriter.writeNullMarker(value, context)) {
                 typeWriter.writeFloat(value, context);
             }
-            context.incrementIndex();
         }
     }
 
@@ -160,7 +231,6 @@ public class PrimitiveWriters {
             if(typeWriter.writeNullMarker(value, context)) {
                 typeWriter.writeDouble(value, context);
             }
-            context.incrementIndex();
         }
     }
 }

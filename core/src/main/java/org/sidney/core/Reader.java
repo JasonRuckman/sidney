@@ -12,6 +12,7 @@ import java.util.List;
 public class Reader<T> {
     private Class<T> type;
     private InputStream inputStream;
+    private Class[] generics;
     private ReadContext context;
     private ObjectMapper json = new ObjectMapper();
     private TypeHandler typeHandler;
@@ -27,7 +28,22 @@ public class Reader<T> {
         try {
             loadHeader();
             loadColumns();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    Reader(Class<T> type, InputStream inputStream, Class... generics) {
+        this.type = type;
+        this.inputStream = inputStream;
+        this.generics = generics;
+        this.typeHandler = TypeHandlerFactory.instance().handler(
+                type, type, null, TypeUtil.binding(type), generics
+        );
+        try {
+            loadHeader();
+            loadColumns();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -56,11 +72,12 @@ public class Reader<T> {
         return records;
     }
 
-    private void loadHeader() throws IOException {
+    private void loadHeader() throws IOException, ClassNotFoundException {
         int size = StreamUtils.readIntFromStream(inputStream);
         byte[] bytes = new byte[size];
         inputStream.read(bytes);
         Header header = json.readValue(bytes, Header.class);
+        header.prepareForRead();
         context = new ReadContext(
                 new ColumnReader(
                         typeHandler

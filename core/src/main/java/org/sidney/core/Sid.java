@@ -21,6 +21,10 @@ public class Sid {
         return createReader(type, inputStream, true);
     }
 
+    public <T> Reader<T> newCachedReader(Class<T> type, InputStream inputStream, Class... generics) {
+        return createReader(type, inputStream, true, generics);
+    }
+
     private <T> Writer<T> createWriter(Class<T> type, OutputStream outputStream, boolean cache, Class... generics) {
         if(!cache) {
             return new Writer<>(type, outputStream, generics);
@@ -37,11 +41,11 @@ public class Sid {
 
     private <T> Reader<T> createReader(Class<T> type, InputStream inputStream, boolean cache, Class... generics) {
         if(!cache) {
-            return new Reader<>(type, inputStream);
+            return new Reader<>(type, inputStream, generics);
         }
         Reader<T> reader = (Reader<T>) readerCache.get(type);
         if(reader == null) {
-            reader = new Reader<>(type, inputStream);
+            reader = new Reader<>(type, inputStream, generics);
             readerCache.put(type, reader);
         } else {
             reader.setInputStream(inputStream);

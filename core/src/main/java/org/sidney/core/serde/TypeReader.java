@@ -5,6 +5,18 @@ public class TypeReader {
         return context.getColumnReader().readBool(context.getIndex());
     }
 
+    public byte readByte(ReadContext context) {
+        return (byte) context.getColumnReader().readInt(context.getIndex());
+    }
+
+    public short readShort(ReadContext context) {
+        return (short) context.getColumnReader().readInt(context.getIndex());
+    }
+
+    public char readChar(ReadContext context) {
+        return (char) context.getColumnReader().readInt(context.getIndex());
+    }
+
     public int readInt(ReadContext context) {
         return context.getColumnReader().readInt(context.getIndex());
     }

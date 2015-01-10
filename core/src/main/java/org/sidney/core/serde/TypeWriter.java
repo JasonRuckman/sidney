@@ -9,6 +9,10 @@ public class TypeWriter {
         writeIntLike(value, context);
     }
 
+    public void writeChar(char value, WriteContext context) {
+        writeIntLike(value, context);
+    }
+
     public void writeShort(short value, WriteContext context) {
         writeIntLike(value, context);
     }
@@ -51,8 +55,8 @@ public class TypeWriter {
             context.getColumnWriter().writeNull(context.getIndex());
             return false;
         }
-        context.getColumnWriter().writeConcreteType(value.getClass(), context.getIndex(), context);
         context.getColumnWriter().writeNotNull(context.getIndex());
+        context.getColumnWriter().writeConcreteType(value.getClass(), context.getIndex(), context);
         return true;
     }
 

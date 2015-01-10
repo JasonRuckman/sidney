@@ -21,7 +21,7 @@ public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder
         if (isNewRun) {
             currentRun = value;
             isNewRun = false;
-        } else if (value != currentRun) {
+        } else if (Float.compare(currentRun, value) != 0) {
             flush();
             currentRun = value;
         }

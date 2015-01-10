@@ -12,6 +12,7 @@ import java.util.Collection;
 public class CollectionTypeHandler<T extends Collection> extends GenericTypeHandler<CollectionType> {
     private TypeHandler contentTypeHandler;
     private Class rawClass;
+    private InstanceFactoryCache cache = new InstanceFactoryCache();
 
     public CollectionTypeHandler(Type jdkType,
                                  Field field,
@@ -36,12 +37,12 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
 
     @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
-        return null;
+        return readCollection(typeReader, context);
     }
 
     @Override
     public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
-
+        getAccessor().set(parent, readCollection(typeReader, context));
     }
 
     @Override
@@ -84,10 +85,26 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
         if (typeWriter.writeNullMarkerAndType(collection, context)) {
             context.incrementIndex();
             int index = context.getIndex();
+            typeWriter.writeRepetitionCount(context.getIndex(), collection.size(), context);
             for (Object value : collection) {
                 contentTypeHandler.writeValue(value, typeWriter, context);
                 context.setIndex(index); //rewind back to the start of the component type
             }
         }
+    }
+
+    private Object readCollection(TypeReader typeReader, ReadContext context) {
+        if(typeReader.readNullMarker(context)) {
+            Collection c = (Collection)cache.newInstance(typeReader.readConcreteType(context));
+            context.incrementIndex();
+            int count = typeReader.readRepetitionCount(context);
+            int valueIndex = context.getIndex();
+            for(int i = 0; i < count; i++) {
+                context.setIndex(valueIndex);
+                c.add(contentTypeHandler.readValue(typeReader, context));
+            }
+            return c;
+        }
+        return null;
     }
 }

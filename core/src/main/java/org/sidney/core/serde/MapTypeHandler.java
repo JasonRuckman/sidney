@@ -14,6 +14,7 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
     private TypeHandler keyTypeHandler;
     private TypeHandler valueTypeHandler;
     private Class rawClass;
+    private InstanceFactoryCache cache = new InstanceFactoryCache();
 
     public MapTypeHandler(Type jdkType,
                           Field field,
@@ -30,7 +31,9 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
 
     @Override
     protected void fromParameterizedClass(MapType javaType, Class<?> clazz, Class... types) {
-
+        rawClass = javaType.getRawClass();
+        keyTypeHandler = getTypeHandlerFactory().handler(types[0], types[0], null, getParentTypeBindings());
+        valueTypeHandler = getTypeHandlerFactory().handler(types[1], types[1], null, getParentTypeBindings());
     }
 
     @Override
@@ -63,12 +66,30 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
 
     @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
-        return null;
+        return readMap(typeReader, context);
     }
 
     @Override
     public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
+        getAccessor().set(parent, readMap(typeReader, context));
+    }
 
+    private Object readMap(TypeReader typeReader, ReadContext context) {
+        if(typeReader.readNullMarker(context)) {
+            Map map = (Map)cache.newInstance(typeReader.readConcreteType(context));
+            int size = typeReader.readRepetitionCount(context);
+            context.incrementIndex();
+            int idx = context.getIndex();
+            for(int i = 0; i < size; i++) {
+                context.setIndex(idx);
+                Object key = keyTypeHandler.readValue(typeReader, context);
+                context.incrementIndex();
+                Object value = valueTypeHandler.readValue(typeReader, context);
+                map.put(key, value);
+            }
+            return map;
+        }
+        return null;
     }
 
     @Override
@@ -91,6 +112,7 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
                 context.setIndex(valueIndex); //for each entry, make sure we are starting at the root
                 Map.Entry entry = (Map.Entry) e;
                 keyTypeHandler.writeValue(entry.getKey(), typeWriter, context);
+                context.incrementIndex();
                 valueTypeHandler.writeValue(entry.getValue(), typeWriter, context);
             }
         }

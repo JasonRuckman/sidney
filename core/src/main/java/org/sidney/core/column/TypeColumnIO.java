@@ -26,7 +26,7 @@ public class TypeColumnIO extends ColumnIO {
 
     @Override
     public Class readConcreteType(ReadContext context) {
-        return null;
+        return context.getHeader().readConcreteType(concreteTypeDecoder.nextInt());
     }
 
     @Override
