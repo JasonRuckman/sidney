@@ -6,6 +6,8 @@ import org.sidney.core.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BeanSerdeTest extends SerdeTestBase {
     @Test
@@ -19,7 +21,7 @@ public class BeanSerdeTest extends SerdeTestBase {
         Writer<AllPrimitives> writer = sid.newCachedWriter(AllPrimitives.class, baos);
         writer.write(one);
         writer.write(two);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class, bais);
@@ -40,7 +42,7 @@ public class BeanSerdeTest extends SerdeTestBase {
         Writer<AllPrimitiveRefs> writer = sid.newCachedWriter(AllPrimitiveRefs.class, baos);
         writer.write(one);
         writer.write(two);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveRefs> reader = sid.newCachedReader(AllPrimitiveRefs.class, bais);
@@ -62,7 +64,7 @@ public class BeanSerdeTest extends SerdeTestBase {
         Writer<InheritedAllPrimitives> writer = sid.newCachedWriter(InheritedAllPrimitives.class, baos);
         writer.write(one);
         writer.write(two);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<InheritedAllPrimitives> reader = sid.newCachedReader(InheritedAllPrimitives.class, bais);
@@ -80,14 +82,14 @@ public class BeanSerdeTest extends SerdeTestBase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<GenericsContainer<Integer, Double>> writer = (Writer) sid.newCachedWriter(
+        Writer<GenericsContainer<Integer, Double>> writer = sid.newCachedWriter(
                 GenericsContainer.class, baos, Integer.class, Double.class
         );
         writer.write(one);
         writer.write(two);
-        writer.flush();
+        writer.close();
 
-        Reader<GenericsContainer<Integer, Double>> reader = (Reader) sid.newCachedReader(
+        Reader<GenericsContainer<Integer, Double>> reader = sid.newCachedReader(
                 GenericsContainer.class, new ByteArrayInputStream(baos.toByteArray()), Integer.class, Double.class
         );
 
@@ -96,5 +98,38 @@ public class BeanSerdeTest extends SerdeTestBase {
 
         Assert.assertEquals(one, outOne);
         Assert.assertEquals(two, outTwo);
+    }
+
+    @Test
+    public void testManyPrimitives() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        int num = 65536;
+        Sid sid = new Sid();
+        Writer<AllPrimitives> writer = sid.newCachedWriter(AllPrimitives.class, baos);
+        List<AllPrimitives> list = new ArrayList<>();
+        List<AllPrimitives> out = new ArrayList<>();
+        for(int i = 0; i < num; i++) {
+            AllPrimitives record = getDataFactory().newPrimitives();
+            writer.write(
+                    record
+            );
+            list.add(record);
+        }
+        writer.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class, bais);
+        for(int i = 0; i < num; i++) {
+            if(reader.hasNext()) {
+                out.add(reader.read());
+            }
+        }
+
+        for(int i = 0; i < num; i++) {
+            AllPrimitives left = list.get(i);
+            AllPrimitives right = out.get(i);
+
+            Assert.assertEquals(left, right);
+        }
     }
 }

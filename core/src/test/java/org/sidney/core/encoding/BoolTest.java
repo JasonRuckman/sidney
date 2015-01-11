@@ -8,7 +8,6 @@ import java.util.Random;
 
 public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
     private final List<EncoderDecoderPair<BoolEncoder, BoolDecoder>> pairs = Arrays.asList(
-            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new RoaringBitmapBoolEncoder(), new RoaringBitmapBoolDecoder()),
             new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new PlainBoolEncoder(), new PlainBoolDecoder()),
             new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new EWAHBitmapBoolEncoder(), new EWAHBitmapBoolDecoder()),
             new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new BitPackingBoolEncoder(), new BitPackingBoolDecoder())

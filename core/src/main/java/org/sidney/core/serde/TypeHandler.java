@@ -20,6 +20,7 @@ public abstract class TypeHandler {
     private FieldAccessor accessor;
     private TypeHandlerFactory typeHandlerFactory;
     private TypeBindings typeBindings;
+
     public TypeHandler(Type jdkType,
                        Field field,
                        TypeBindings parentTypeBindings,

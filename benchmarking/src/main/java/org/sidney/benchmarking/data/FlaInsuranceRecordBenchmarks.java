@@ -9,14 +9,13 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.openjdk.jmh.annotations.*;
 import org.sidney.core.Sid;
-import org.sidney.core.Writer;
 import org.springframework.core.io.ClassPathResource;
 import org.xerial.snappy.SnappyOutputStream;
 
 import java.io.*;
 import java.util.List;
 
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 @Warmup(iterations = 10)
 @Measurement(iterations = 2)
 @Threads(1)
@@ -24,7 +23,6 @@ import java.util.List;
 public class FlaInsuranceRecordBenchmarks {
     private List<FlaInsuranceRecord> records;
     private Sid sid = new Sid();
-    private byte[] sidneyBytes;
 
     public FlaInsuranceRecordBenchmarks() {
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
@@ -41,7 +39,6 @@ public class FlaInsuranceRecordBenchmarks {
         try {
             parser.parse(new InputStreamReader(pathResource.getInputStream()));
             records = processor.getBeans();
-            sidneyBytes = writeSidney();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -60,7 +57,7 @@ public class FlaInsuranceRecordBenchmarks {
         for (FlaInsuranceRecord record : records) {
             recordSerializer.write(record);
         }
-        recordSerializer.flush();
+        recordSerializer.close();
         os.close();
 
         return baos.toByteArray();

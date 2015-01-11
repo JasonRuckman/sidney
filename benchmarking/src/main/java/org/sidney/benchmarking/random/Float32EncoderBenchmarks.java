@@ -3,10 +3,7 @@ package org.sidney.benchmarking.random;
 import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.float32.Float32Decoder;
-import org.sidney.core.encoding.float32.Float32Encoder;
-import org.sidney.core.encoding.float32.PlainFloat32Decoder;
-import org.sidney.core.encoding.float32.PlainFloat32Encoder;
+import org.sidney.core.encoding.float32.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +30,12 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
     @Group("float32Encoders")
     public float[] plain() throws IOException {
         return run(getEncoder(PlainFloat32Encoder.class), getDecoder(PlainFloat32Decoder.class));
+    }
+
+    @Benchmark
+    @Group("float32Encoders")
+    public float[] rle() throws IOException {
+        return run(getEncoder(RLEFloat32Encoder.class), getDecoder(RLEFloat32Decoder.class));
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

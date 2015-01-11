@@ -48,6 +48,6 @@ public class EWAHBitmapBoolEncoder implements BoolEncoder {
 
     @Override
     public String supportedEncoding() {
-        return Encoding.EWAH.name();
+        return Encoding.BITMAP.name();
     }
 }

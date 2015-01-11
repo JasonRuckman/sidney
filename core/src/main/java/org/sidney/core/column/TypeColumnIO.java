@@ -21,12 +21,12 @@ public class TypeColumnIO extends ColumnIO {
 
     @Override
     public void writeConcreteType(Class<?> type, WriteContext context) {
-        concreteTypeEncoder.writeInt(context.getHeader().valueForType(type));
+        concreteTypeEncoder.writeInt(context.getPageHeader().valueForType(type));
     }
 
     @Override
     public Class readConcreteType(ReadContext context) {
-        return context.getHeader().readConcreteType(concreteTypeDecoder.nextInt());
+        return context.getPageHeader().readConcreteType(concreteTypeDecoder.nextInt());
     }
 
     @Override

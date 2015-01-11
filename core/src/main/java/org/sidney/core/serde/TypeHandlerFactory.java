@@ -2,6 +2,7 @@ package org.sidney.core.serde;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
+import org.sidney.core.Registrations;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -13,10 +14,10 @@ import java.util.Set;
 
 public class TypeHandlerFactory {
     private static final Set<Class> PRIMITIVES = new HashSet<>();
-    private static final TypeHandlerFactory instance = new TypeHandlerFactory();
+    private Registrations registrations;
 
-    private TypeHandlerFactory() {
-
+    public TypeHandlerFactory(Registrations registrations) {
+        this.registrations = registrations;
     }
 
     static {
@@ -38,10 +39,6 @@ public class TypeHandlerFactory {
         PRIMITIVES.add(Double.class);
         PRIMITIVES.add(String.class);
         PRIMITIVES.add(byte[].class);
-    }
-
-    public static TypeHandlerFactory instance() {
-        return instance;
     }
 
     public TypeHandler handler(Type type, Field field, TypeBindings typeBindings, Class... generics) {

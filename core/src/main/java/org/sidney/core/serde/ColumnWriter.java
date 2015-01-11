@@ -77,6 +77,7 @@ public class ColumnWriter extends ColumnOperations {
         }
 
         outputStream.flush();
+        reset();
     }
 
     public void reset() {

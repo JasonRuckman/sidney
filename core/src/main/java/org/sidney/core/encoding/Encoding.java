@@ -1,5 +1,6 @@
 package org.sidney.core.encoding;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.sidney.core.encoding.bool.*;
 import org.sidney.core.encoding.bytes.ByteArrayDecoder;
 import org.sidney.core.encoding.bytes.ByteArrayEncoder;
@@ -13,6 +14,7 @@ import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 import org.sidney.core.encoding.int32.*;
 import org.sidney.core.encoding.int64.*;
 import org.sidney.core.encoding.string.*;
+import org.sidney.core.schema.Type;
 
 public enum Encoding {
     PLAIN {
@@ -96,6 +98,16 @@ public enum Encoding {
         public Int32Decoder newInt32Decoder() {
             return new BitPackingInt32Decoder();
         }
+
+        @Override
+        public BoolEncoder newBoolEncoder() {
+            return new BitPackingBoolEncoder();
+        }
+
+        @Override
+        public BoolDecoder newBoolDecoder() {
+            return new BitPackingBoolDecoder();
+        }
     },
     DELTABITPACKINGHYBRID {
         @Override
@@ -108,7 +120,7 @@ public enum Encoding {
             return new DeltaBitPackingInt32Decoder();
         }
     },
-    EWAH {
+    BITMAP {
         @Override
         public BoolEncoder newBoolEncoder() {
             return new EWAHBitmapBoolEncoder();
@@ -138,6 +150,16 @@ public enum Encoding {
     },
     RLE {
         @Override
+        public Int32Encoder newInt32Encoder() {
+            return new RLEInt32Encoder();
+        }
+
+        @Override
+        public Int32Decoder newInt32Decoder() {
+            return new RLEInt32Decoder();
+        }
+
+        @Override
         public Float32Encoder newFloat32Encoder() {
             return new RLEFloat32Encoder();
         }
@@ -159,58 +181,86 @@ public enum Encoding {
     };
 
     public BoolEncoder newBoolEncoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.BOOLEAN
+        );
     }
 
     public BoolDecoder newBoolDecoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.BOOLEAN
+        );
     }
 
     public Int32Encoder newInt32Encoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.INT32
+        );
     }
 
     public Int32Decoder newInt32Decoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.INT32
+        );
     }
 
     public Int64Encoder newInt64Encoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.INT64
+        );
     }
 
     public Int64Decoder newInt64Decoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.INT64
+        );
     }
 
     public Float32Encoder newFloat32Encoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.FLOAT32
+        );
     }
 
     public Float32Decoder newFloat32Decoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.FLOAT32
+        );
     }
 
     public Float64Encoder newFloat64Encoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.FLOAT64
+        );
     }
 
     public Float64Decoder newFloat64Decoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.FLOAT64
+        );
     }
 
     public BytesEncoder newBytesEncoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.BINARY
+        );
     }
 
     public BytesDecoder newBytesDecoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.BINARY
+        );
     }
 
     public StringEncoder newStringEncoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.STRING
+        );
     }
 
     public StringDecoder newStringDecoder() {
-        throw new IllegalStateException();
+        throw new UnsupportedEncodingException(
+                this, Type.STRING
+        );
     }
 }

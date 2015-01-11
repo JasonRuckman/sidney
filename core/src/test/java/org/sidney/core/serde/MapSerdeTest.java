@@ -24,7 +24,7 @@ public class MapSerdeTest extends SerdeTestBase {
                 Map.class, baos, Integer.class, Integer.class
         );
         writer.write(map);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<Map<Integer, Integer>> reader = (Reader) sid.newCachedReader(

@@ -49,6 +49,6 @@ public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecode
 
     @Override
     public String supportedEncoding() {
-        return Encoding.EWAH.name();
+        return Encoding.BITMAP.name();
     }
 }

@@ -14,10 +14,10 @@ import java.util.List;
 
 public abstract class ColumnOperations {
     protected final List<ColumnIO> columnIOs;
-    protected final BoolEncoder definitionEncoder = Encoding.EWAH.newBoolEncoder();
-    protected final Int32Encoder repetitionEncoder = Encoding.BITPACKED.newInt32Encoder();
-    protected final BoolDecoder definitionDecoder = Encoding.EWAH.newBoolDecoder();
-    protected final Int32Decoder repetitionDecoder = Encoding.BITPACKED.newInt32Decoder();
+    protected final BoolEncoder definitionEncoder = Encoding.BITPACKED.newBoolEncoder();
+    protected final Int32Encoder repetitionEncoder = Encoding.DELTABITPACKINGHYBRID.newInt32Encoder();
+    protected final BoolDecoder definitionDecoder = Encoding.BITPACKED.newBoolDecoder();
+    protected final Int32Decoder repetitionDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
 
     public ColumnOperations(TypeHandler typeHandler) {
         columnIOs = extractColumns(typeHandler);

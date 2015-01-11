@@ -1,6 +1,6 @@
 package org.sidney.core.serde;
 
-import org.sidney.core.Header;
+import org.sidney.core.PageHeader;
 
 public class WriteContext extends Context {
     private ColumnWriter columnWriter;
@@ -9,9 +9,9 @@ public class WriteContext extends Context {
         this.columnWriter = columnWriter;
     }
 
-    public WriteContext(ColumnWriter columnWriter, Header header) {
+    public WriteContext(ColumnWriter columnWriter, PageHeader pageHeader) {
         this.columnWriter = columnWriter;
-        setHeader(header);
+        setPageHeader(pageHeader);
     }
 
     public ColumnWriter getColumnWriter() {

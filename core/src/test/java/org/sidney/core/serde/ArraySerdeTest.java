@@ -16,7 +16,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         Writer<int[]> writer = sid.newCachedWriter(int[].class, baos);
         writer.write(ints);
         writer.write(ints);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<int[]> reader = sid.newCachedReader(int[].class, bais);
@@ -35,7 +35,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         Sid sid = new Sid();
         Writer<AllPrimitives[]> writer = sid.newCachedWriter(AllPrimitives[].class, baos);
         writer.write(primitiveses);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitives[]> reader = sid.newCachedReader(AllPrimitives[].class, bais);
@@ -50,7 +50,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         Sid sid = new Sid();
         Writer<AllPrimitiveArrays> writer = sid.newCachedWriter(AllPrimitiveArrays.class, baos);
         writer.write(arrays);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveArrays> reader = sid.newCachedReader(AllPrimitiveArrays.class, bais);
@@ -67,7 +67,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         Writer<AllPrimitiveRefsArrays> writer = sid.newCachedWriter(AllPrimitiveRefsArrays.class, baos);
         writer.write(one);
         writer.write(two);
-        writer.flush();
+        writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveRefsArrays> reader = sid.newCachedReader(AllPrimitiveRefsArrays.class, bais);

@@ -69,4 +69,20 @@ public class AllPrimitives {
         result = 31 * result + (tenth != null ? tenth.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "AllPrimitives{" +
+                "first=" + first +
+                ", second=" + second +
+                ", third=" + third +
+                ", fourth=" + fourth +
+                ", fifth=" + fifth +
+                ", sixth=" + sixth +
+                ", seventh=" + seventh +
+                ", eighth=" + eighth +
+                ", ninth=" + Arrays.toString(ninth) +
+                ", tenth='" + tenth + '\'' +
+                '}';
+    }
 }

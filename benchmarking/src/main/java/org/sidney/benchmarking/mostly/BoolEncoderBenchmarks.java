@@ -33,12 +33,6 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("boolEncodingMostly")
-    public boolean[] roaringBoolEncoderUncompressed() throws IOException {
-        return run(getEncoder(RoaringBitmapBoolEncoder.class), getDecoder(RoaringBitmapBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingMostly")
     public boolean[] plainEncoderUncompressed() throws IOException {
         return run(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
     }
@@ -57,12 +51,6 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("boolEncodingGZIPMostly")
-    public boolean[] roaringBoolEncoderGZIP() throws IOException {
-        return runGZipCompressed(getEncoder(RoaringBitmapBoolEncoder.class), getDecoder(RoaringBitmapBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingGZIPMostly")
     public boolean[] plainEncoderGZIP() throws IOException {
         return runGZipCompressed(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
     }
@@ -77,14 +65,6 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
     @Group("boolEncodingGZIPMostly")
     public boolean[] bitPackingEncoderGZIP() throws IOException {
         return runGZipCompressed(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingSnappyMostly")
-    public boolean[] roaringBoolEncoderSnappy() throws IOException {
-        return runSnappyCompressed(
-                getEncoder(RoaringBitmapBoolEncoder.class), getDecoder(RoaringBitmapBoolDecoder.class)
-        );
     }
 
     @Benchmark

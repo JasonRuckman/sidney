@@ -18,29 +18,32 @@ public class Reader<T> {
     private TypeHandler typeHandler;
     private TypeReader typeReader = new TypeReader();
     private int recordCount = 0;
+    private TypeHandlerFactory handlerFactory;
+    private PageHeader currentPageHeader = null;
+    private int totalCount = 0;
 
-    Reader(Class<T> type, InputStream inputStream) {
+    Reader(Class type, InputStream inputStream, Registrations registrations) {
+        this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
         this.inputStream = inputStream;
-        this.typeHandler = TypeHandlerFactory.instance().handler(
+        this.typeHandler = handlerFactory.handler(
                 type, null, TypeUtil.binding(type)
         );
         try {
-            loadHeader();
-            loadColumns();
+            loadNextPage();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    Reader(Class<T> type, InputStream inputStream, Class... generics) {
+    Reader(Class type, InputStream inputStream, Registrations registrations, Class... generics) {
+        this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
         this.inputStream = inputStream;
         this.generics = generics;
-        this.typeHandler = TypeHandlerFactory.instance().handler(type, null, null, generics);
+        this.typeHandler = handlerFactory.handler(type, null, null, generics);
         try {
-            loadHeader();
-            loadColumns();
+            loadNextPage();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -54,38 +57,54 @@ public class Reader<T> {
         this.inputStream = inputStream;
     }
 
-    public T read() {
-        if(recordCount-- == 0) {
-            throw new IllegalStateException();
+    public boolean hasNext() {
+        if(currentPageHeader == null) {
+            loadNextPage();
+            return hasNext();
         }
+
+        if(recordCount-- > 0) {
+            return true;
+        }
+
+        if(!currentPageHeader.isLastPage()) {
+            loadNextPage();
+            return hasNext();
+        }
+
+        return false;
+    }
+
+    public T read() {
         context.setIndex(0);
         return (T) typeHandler.readValue(typeReader, context);
     }
 
     public List<T> readAll() {
         List<T> records = new ArrayList<>();
-        for(int i = 0; i < recordCount; i++) {
+        while (hasNext()) {
             records.add(read());
         }
         return records;
     }
 
-    private void loadHeader() throws IOException, ClassNotFoundException {
-        int size = StreamUtils.readIntFromStream(inputStream);
-        byte[] bytes = new byte[size];
-        inputStream.read(bytes);
-        Header header = json.readValue(bytes, Header.class);
-        header.prepareForRead();
-        context = new ReadContext(
-                new ColumnReader(
-                        typeHandler
-                )
-        );
-        context.setHeader(header);
-    }
-
-    private void loadColumns() throws IOException {
-        recordCount = StreamUtils.readIntFromStream(inputStream);
-        context.getColumnReader().loadFromInputStream(inputStream);
+    private void loadNextPage() {
+        try {
+            int size = StreamUtils.readIntFromStream(inputStream);
+            byte[] bytes = new byte[size];
+            inputStream.read(bytes);
+            currentPageHeader = json.readValue(bytes, PageHeader.class);
+            currentPageHeader.prepareForRead();
+            context = new ReadContext(
+                    new ColumnReader(
+                            typeHandler
+                    )
+            );
+            recordCount = currentPageHeader.getPageSize();
+            context.setPageHeader(currentPageHeader);
+            context.getColumnReader().loadFromInputStream(inputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -26,9 +26,11 @@ public class CollectionSerdeTest extends SerdeTestBase {
         Sid sid = new Sid();
         Writer<List> writer = sid.newCachedWriter(List.class, baos, AllPrimitives.class);
         writer.write(list);
-        writer.flush();
+        writer.close();
 
-        Reader<List> reader = sid.newCachedReader(List.class, new ByteArrayInputStream(baos.toByteArray()), AllPrimitives.class);
+        Reader<List<AllPrimitives>> reader = sid.newCachedReader(
+                List.class, new ByteArrayInputStream(baos.toByteArray()), AllPrimitives.class
+        );
 
         List<AllPrimitives> output = reader.read();
         Assert.assertEquals(list, output);

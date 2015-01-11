@@ -1,18 +1,16 @@
 package org.sidney.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.encoding.io.StreamUtils;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
-import org.sidney.core.serde.TypeHandler;
-import org.sidney.core.serde.TypeHandlerFactory;
-import org.sidney.core.serde.TypeUtil;
-import org.sidney.core.serde.ColumnWriter;
+import org.sidney.core.serde.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.sidney.core.encoding.io.StreamUtils.*;
+
 public class Writer<T> {
+    public static final int DEFAULT_PAGE_SIZE = 1024;
+
     private final Class<T> type;
     private final TypeHandler handler;
     private final ObjectMapper json = new ObjectMapper();
@@ -21,20 +19,25 @@ public class Writer<T> {
     private int recordCount = 0;
     private Class[] generics = null;
     private WriteContext context;
+    private TypeHandlerFactory handlerFactory;
 
-    Writer(Class<T> type, OutputStream outputStream) {
+    //don't use a type variable since it screws up the inference
+    Writer(Class type, OutputStream outputStream, Registrations registrations) {
+        this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
         this.outputStream = outputStream;
-        this.handler = TypeHandlerFactory.instance().handler(type, null, null);
-        this.context = new WriteContext(new ColumnWriter(handler), new Header());
+        this.handler = handlerFactory.handler(type, null, null);
+        this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
     }
-    Writer(Class<T> type, OutputStream outputStream, Class... generics) {
+
+    Writer(Class type, OutputStream outputStream, Registrations registrations, Class... generics) {
+        this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
         this.outputStream = outputStream;
         this.generics = generics;
-        this.handler = TypeHandlerFactory.instance().handler(type, null, null, generics);
-        this.context = new WriteContext(new ColumnWriter(handler), new Header());
+        this.handler = handlerFactory.handler(type, null, null, generics);
+        this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
     }
 
@@ -44,6 +47,7 @@ public class Writer<T> {
 
     public void setOutputStream(OutputStream outputStream) {
         this.outputStream = outputStream;
+        this.recordCount = 0;
     }
 
     public Class<T> getType() {
@@ -53,7 +57,10 @@ public class Writer<T> {
     public void write(T value) {
         context.setIndex(0);
         handler.writeValue(value, typeWriter, context);
-        ++recordCount;
+
+        if (++recordCount == DEFAULT_PAGE_SIZE) {
+            flushPage(false);
+        }
     }
 
     public void write(Iterable<T> values) {
@@ -62,29 +69,28 @@ public class Writer<T> {
         }
     }
 
-    public void flush() {
+    public void close() {
+        flushPage(true);
+    }
+
+    private void flushPage(boolean isLastPage) {
         try {
-            writeHeader();
-            writeColumns();
-            context.setHeader(new Header());
-            context.getColumnWriter().reset();
+            writePage(isLastPage);
+            context.setPageHeader(new PageHeader());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void writeHeader() throws IOException {
-        if (generics != null) {
-            context.getHeader().setGenerics(generics);
-        }
-        context.getHeader().prepareForStorage();
-        byte[] bytes = json.writeValueAsBytes(context.getHeader());
-        StreamUtils.writeIntToStream(bytes.length, outputStream);
-        outputStream.write(bytes);
-    }
+    private void writePage(boolean isLastPage) throws IOException {
+        context.getPageHeader().setLastPage(isLastPage);
+        context.getPageHeader().prepareForStorage();
+        context.getPageHeader().setPageSize(recordCount);
 
-    private void writeColumns() throws IOException {
-        StreamUtils.writeIntToStream(recordCount, outputStream);
+        recordCount = 0;
+        byte[] bytes = json.writeValueAsBytes(context.getPageHeader());
+        writeIntToStream(bytes.length, outputStream);
+        outputStream.write(bytes);
         context.getColumnWriter().flushToOutputStream(outputStream);
     }
 }

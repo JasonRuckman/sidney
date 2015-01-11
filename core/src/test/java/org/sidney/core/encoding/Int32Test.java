@@ -20,6 +20,10 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
             new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
                     new BitPackingInt32Encoder(),
                     new BitPackingInt32Decoder()
+            ),
+            new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
+                    new RLEInt32Encoder(),
+                    new RLEInt32Decoder()
             )
     );
 

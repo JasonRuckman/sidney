@@ -59,7 +59,7 @@ public class FlaInsuranceRecord {
     @Encode(Encoding.RLE)
     private String construction;
     @Parsed(field = "point_granularity", defaultNullRead = "0")
-    @Encode(Encoding.BITPACKED)
+    @Encode(Encoding.RLE)
     private int pointGranularity;
 
     public int getPolicyId() {
