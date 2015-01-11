@@ -13,8 +13,21 @@ public class TypeUtil {
         return new TypeBindings(TypeFactory.defaultInstance(), javaType);
     }
 
+    public static TypeBindings binding(Type clazz, TypeBindings parentBindings) {
+        JavaType javaType = TypeFactory.defaultInstance().constructType(clazz, parentBindings);
+        return new TypeBindings(TypeFactory.defaultInstance(), javaType);
+    }
+
     public static TypeBindings binding(Class type, Class... generics) {
         JavaType javaType = TypeFactory.defaultInstance().constructParametricType(type, generics);
+        return new TypeBindings(TypeFactory.defaultInstance(), javaType);
+    }
+
+    public static TypeBindings binding(Class type, JavaType... javaTypes) {
+        JavaType javaType = TypeFactory.defaultInstance().constructParametricType(
+                type, javaTypes
+        );
+
         return new TypeBindings(TypeFactory.defaultInstance(), javaType);
     }
 
@@ -33,5 +46,11 @@ public class TypeUtil {
 
     public static JavaType type(Type type, TypeBindings typeBindings) {
         return TypeFactory.defaultInstance().constructType(type, typeBindings);
+    }
+
+    public static JavaType parameterizedType(Class<?> type, Class<?>... paramTypes) {
+        return TypeFactory.defaultInstance().constructParametricType(
+                type, paramTypes
+        );
     }
 }

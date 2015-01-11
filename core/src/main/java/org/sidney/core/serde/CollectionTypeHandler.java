@@ -1,5 +1,6 @@
 package org.sidney.core.serde;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 
@@ -17,8 +18,7 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
     public CollectionTypeHandler(Type jdkType,
                                  Field field,
                                  TypeBindings parentTypeBindings,
-                                 TypeHandlerFactory typeHandlerFactory,
-                                 Class... generics) {
+                                 TypeHandlerFactory typeHandlerFactory, Class... generics) {
         super(jdkType, field, parentTypeBindings, typeHandlerFactory, generics);
 
         handlers.add(contentTypeHandler);
@@ -56,28 +56,26 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
     }
 
     @Override
-    protected void fromParameterizedClass(CollectionType javaType, Class<?> clazz, Class... types) {
-        rawClass = javaType.getRawClass();
+    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+        rawClass = clazz;
         contentTypeHandler = getTypeHandlerFactory().handler(
-                types[0], types[0], null, getParentTypeBindings()
+                types[0], null, getTypeBindings()
         );
     }
 
     @Override
-    protected void fromParameterizedType(CollectionType javaType, ParameterizedType type) {
-        rawClass = javaType.getRawClass();
+    protected void fromParameterizedType(ParameterizedType type) {
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
         contentTypeHandler = getTypeHandlerFactory().handler(
-                javaType.getContentType().getRawClass(), args[0], null, getParentTypeBindings()
+                args[0], null, getTypeBindings()
         );
     }
 
     @Override
-    protected void fromTypeVariable(CollectionType javaType, TypeVariable typeVariable) {
-        rawClass = javaType.getRawClass();
+    protected void fromTypeVariable(TypeVariable typeVariable) {
         TypeVariable variable = (TypeVariable) getJdkType();
         contentTypeHandler = getTypeHandlerFactory().handler(
-                javaType.getRawClass(), variable, null, getParentTypeBindings()
+                variable, null, getTypeBindings()
         );
     }
 

@@ -42,8 +42,8 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
     public ArrayTypeHandler(Type jdkType,
                             Field field,
                             TypeBindings parentTypeBindings,
-                            TypeHandlerFactory typeHandlerFactory) {
-        super(jdkType, field, parentTypeBindings, typeHandlerFactory);
+                            TypeHandlerFactory typeHandlerFactory, Class... generics) {
+        super(jdkType, field, parentTypeBindings, typeHandlerFactory, generics);
 
         handlers = new ArrayList<>();
         handlers.add(contentTypeHandler);
@@ -90,20 +90,28 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
     }
 
     @Override
-    protected void fromType(ArrayType javaType, Type type) {
-        rawClass = javaType.getRawClass();
-        GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
-        JavaType componentJavaType = TypeUtil.type(genericArrayType.getGenericComponentType(), getParentTypeBindings());
+    protected void fromType(Type type) {
+        rawClass = (Class)type;
         contentTypeHandler = getTypeHandlerFactory().handler(
-                componentJavaType.getRawClass(), componentJavaType.getRawClass(), null, getParentTypeBindings()
+                rawClass.getComponentType(),
+                null, getParentTypeBindings()
         );
     }
 
     @Override
-    protected void fromParameterizedClass(ArrayType javaType, Class<?> clazz, Class... types) {
-        rawClass = javaType.getRawClass();
+    protected void fromArrayType(GenericArrayType type) {
+        rawClass = TypeUtil.type(type, getParentTypeBindings()).getRawClass();
+        GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
+        contentTypeHandler = getTypeHandlerFactory().handler(
+                genericArrayType.getGenericComponentType(), null, getParentTypeBindings()
+        );
+    }
+
+    @Override
+    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+        rawClass = clazz;
         Class<?> componentType = ((Class) getJdkType()).getComponentType();
-        contentTypeHandler = getTypeHandlerFactory().handler(componentType, componentType, null, getParentTypeBindings());
+        contentTypeHandler = getTypeHandlerFactory().handler(componentType, null, getTypeBindings());
     }
 
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
@@ -112,15 +120,17 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
             //bump to component column
             context.incrementIndex();
             arrayWriter.writeArray(array, typeWriter, context);
+            context.incrementIndex();
         }
     }
 
     private Object readArray(TypeReader typeReader, ReadContext context) {
         if(typeReader.readNullMarker(context)) {
             int arraySize = typeReader.readRepetitionCount(context);
-            context.incrementIndex();
             Object array = Array.newInstance(rawClass.getComponentType(), arraySize);
+            context.incrementIndex();
             arrayReader.readValue(typeReader, context, array);
+            context.incrementIndex();
             return array;
         }
         return null;

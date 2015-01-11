@@ -19,8 +19,7 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
     public MapTypeHandler(Type jdkType,
                           Field field,
                           TypeBindings parentTypeBindings,
-                          TypeHandlerFactory typeHandlerFactory,
-                          Class... generics) {
+                          TypeHandlerFactory typeHandlerFactory, Class... generics) {
         super(jdkType, field, parentTypeBindings, typeHandlerFactory, generics);
 
         handlers.add(keyTypeHandler);
@@ -30,27 +29,26 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
     }
 
     @Override
-    protected void fromParameterizedClass(MapType javaType, Class<?> clazz, Class... types) {
-        rawClass = javaType.getRawClass();
-        keyTypeHandler = getTypeHandlerFactory().handler(types[0], types[0], null, getParentTypeBindings());
-        valueTypeHandler = getTypeHandlerFactory().handler(types[1], types[1], null, getParentTypeBindings());
+    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+        rawClass = clazz;
+        keyTypeHandler = getTypeHandlerFactory().handler(types[0], null, getTypeBindings());
+        valueTypeHandler = getTypeHandlerFactory().handler(types[1], null, getTypeBindings());
     }
 
     @Override
-    protected void fromParameterizedType(MapType javaType, ParameterizedType type) {
-        rawClass = javaType.getRawClass();
+    protected void fromParameterizedType(ParameterizedType type) {
+        rawClass = type.getRawType().getClass();
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        keyTypeHandler = getTypeHandlerFactory().handler(javaType.getRawClass(), args[0], null, getParentTypeBindings());
-        valueTypeHandler = getTypeHandlerFactory().handler(javaType.getRawClass(), args[1], null, getParentTypeBindings());
+        keyTypeHandler = getTypeHandlerFactory().handler(args[0], null, getParentTypeBindings());
+        valueTypeHandler = getTypeHandlerFactory().handler(args[1], null, getParentTypeBindings());
     }
 
     @Override
-    protected void fromTypeVariable(MapType javaType, TypeVariable typeVariable) {
-        rawClass = javaType.getRawClass();
-        JavaType keyType = javaType.getKeyType();
-        JavaType valueType = javaType.getContentType();
-        keyTypeHandler = getTypeHandlerFactory().handler(keyType.getRawClass(), keyType.getRawClass(), null, getParentTypeBindings());
-        valueTypeHandler = getTypeHandlerFactory().handler(valueType.getRawClass(), valueType.getRawClass(), null, getParentTypeBindings());
+    protected void fromTypeVariable(TypeVariable typeVariable) {
+        keyTypeHandler = getTypeHandlerFactory().handler(
+                typeVariable.getBounds()[0], null, getParentTypeBindings());
+        valueTypeHandler = getTypeHandlerFactory().handler(
+                typeVariable.getBounds()[1], null, getParentTypeBindings());
     }
 
     @Override
@@ -83,7 +81,6 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
             for(int i = 0; i < size; i++) {
                 context.setIndex(idx);
                 Object key = keyTypeHandler.readValue(typeReader, context);
-                context.incrementIndex();
                 Object value = valueTypeHandler.readValue(typeReader, context);
                 map.put(key, value);
             }
@@ -112,7 +109,6 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
                 context.setIndex(valueIndex); //for each entry, make sure we are starting at the root
                 Map.Entry entry = (Map.Entry) e;
                 keyTypeHandler.writeValue(entry.getKey(), typeWriter, context);
-                context.incrementIndex();
                 valueTypeHandler.writeValue(entry.getValue(), typeWriter, context);
             }
         }

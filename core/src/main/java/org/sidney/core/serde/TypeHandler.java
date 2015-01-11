@@ -14,30 +14,37 @@ public abstract class TypeHandler {
     protected List<TypeHandler> handlers = new ArrayList<>();
     protected int numSubFields = 0;
     protected Class[] generics;
-
     private Type jdkType;
-    private FieldAccessor accessor;
+    private Field field;
     private TypeBindings parentTypeBindings;
+    private FieldAccessor accessor;
     private TypeHandlerFactory typeHandlerFactory;
     private TypeBindings typeBindings;
-
     public TypeHandler(Type jdkType,
                        Field field,
                        TypeBindings parentTypeBindings,
-                       TypeHandlerFactory typeHandlerFactory,
-                       Class... generics) {
+                       TypeHandlerFactory typeHandlerFactory, Class... generics) {
         this.jdkType = jdkType;
-        this.accessor = (field != null) ? new UnsafeFieldAccessor(field) : null;
+        this.field = field;
         this.parentTypeBindings = parentTypeBindings;
+        this.accessor = (field != null) ? new UnsafeFieldAccessor(field) : null;
         this.typeHandlerFactory = typeHandlerFactory;
         this.generics = generics;
 
+        resolveTypes();
+    }
+
+    public TypeBindings getParentTypeBindings() {
+        return parentTypeBindings;
+    }
+
+    protected void resolveTypes() {
         if (field != null) {
             typeBindings = TypeUtil.binding(field, parentTypeBindings);
-        } else if(generics != null && generics.length > 0) {
-            typeBindings = TypeUtil.binding((Class)jdkType, generics);
+        } else if(generics.length > 0) {
+            typeBindings = TypeUtil.binding((Class) jdkType, generics);
         } else {
-            typeBindings = TypeUtil.binding(jdkType);
+            typeBindings = TypeUtil.binding(jdkType, parentTypeBindings);
         }
     }
 
@@ -60,8 +67,8 @@ public abstract class TypeHandler {
         return typeBindings;
     }
 
-    public TypeBindings getParentTypeBindings() {
-        return parentTypeBindings;
+    public void setTypeBindings(TypeBindings typeBindings) {
+        this.typeBindings = typeBindings;
     }
 
     public Type getJdkType() {

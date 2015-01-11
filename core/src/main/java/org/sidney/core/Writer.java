@@ -25,7 +25,7 @@ public class Writer<T> {
     Writer(Class<T> type, OutputStream outputStream) {
         this.type = type;
         this.outputStream = outputStream;
-        this.handler = TypeHandlerFactory.instance().handler(type, type, null, TypeUtil.binding(type));
+        this.handler = TypeHandlerFactory.instance().handler(type, null, null);
         this.context = new WriteContext(new ColumnWriter(handler), new Header());
         this.typeWriter = new TypeWriter();
     }
@@ -33,7 +33,7 @@ public class Writer<T> {
         this.type = type;
         this.outputStream = outputStream;
         this.generics = generics;
-        this.handler = TypeHandlerFactory.instance().handler(type, type, null, TypeUtil.binding(type), generics);
+        this.handler = TypeHandlerFactory.instance().handler(type, null, null, generics);
         this.context = new WriteContext(new ColumnWriter(handler), new Header());
         this.typeWriter = new TypeWriter();
     }

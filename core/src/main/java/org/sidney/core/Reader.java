@@ -23,7 +23,7 @@ public class Reader<T> {
         this.type = type;
         this.inputStream = inputStream;
         this.typeHandler = TypeHandlerFactory.instance().handler(
-                type, type, null, TypeUtil.binding(type)
+                type, null, TypeUtil.binding(type)
         );
         try {
             loadHeader();
@@ -37,9 +37,7 @@ public class Reader<T> {
         this.type = type;
         this.inputStream = inputStream;
         this.generics = generics;
-        this.typeHandler = TypeHandlerFactory.instance().handler(
-                type, type, null, TypeUtil.binding(type), generics
-        );
+        this.typeHandler = TypeHandlerFactory.instance().handler(type, null, null, generics);
         try {
             loadHeader();
             loadColumns();

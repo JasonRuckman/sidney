@@ -2,6 +2,7 @@ package org.sidney.core.serde;
 
 import org.sidney.core.*;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class DataFactory {
@@ -206,6 +207,30 @@ public class DataFactory {
     public AllPrimitiveRefsArrays newAllPrimitiveRefArrays() {
         return new AllPrimitiveRefsArrays(
                 newBoolRefs(), newByteRefs(), newShortRefs(), newCharRefs(), newIntRefs(), newLongRefs(), newFloatRefs(), newDoubleRefs()
+        );
+    }
+
+    public NestedArray<Integer> newNestedArray() {
+        NestedArray<Integer> arr = new NestedArray<>();
+        arr.setArray(newIntRefs());
+        return arr;
+    }
+
+    public NestedMap<Integer, Double> newNestedMap() {
+        NestedMap<Integer, Double> map = new NestedMap<>();
+        map.setMap(new HashMap<Integer, Double>());
+        int[] ints = newInts();
+        for(int i = 0; i < ints.length; i++) {
+            map.getMap().put(
+                    i, newDouble()
+            );
+        }
+        return map;
+    }
+
+    public GenericsContainer<Integer, Double> newGenericsContainer() {
+        return new GenericsContainer<>(
+                newNestedArray(), newNestedMap()
         );
     }
 }

@@ -72,4 +72,29 @@ public class BeanSerdeTest extends SerdeTestBase {
         Assert.assertEquals(one, out);
         Assert.assertEquals(two, outTwo);
     }
+
+    @Test
+    public void testInheritedGenerics() {
+        GenericsContainer<Integer, Double> one = getDataFactory().newGenericsContainer();
+        GenericsContainer<Integer, Double> two = getDataFactory().newGenericsContainer();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Sid sid = new Sid();
+        Writer<GenericsContainer<Integer, Double>> writer = (Writer) sid.newCachedWriter(
+                GenericsContainer.class, baos, Integer.class, Double.class
+        );
+        writer.write(one);
+        writer.write(two);
+        writer.flush();
+
+        Reader<GenericsContainer<Integer, Double>> reader = (Reader) sid.newCachedReader(
+                GenericsContainer.class, new ByteArrayInputStream(baos.toByteArray()), Integer.class, Double.class
+        );
+
+        GenericsContainer<Integer, Double> outOne = reader.read();
+        GenericsContainer<Integer, Double> outTwo = reader.read();
+
+        Assert.assertEquals(one, outOne);
+        Assert.assertEquals(two, outTwo);
+    }
 }

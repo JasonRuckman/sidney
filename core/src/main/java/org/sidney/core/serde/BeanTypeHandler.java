@@ -1,5 +1,6 @@
 package org.sidney.core.serde;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import org.sidney.core.field.FieldUtils;
@@ -19,18 +20,16 @@ public class BeanTypeHandler extends GenericTypeHandler<SimpleType> {
     public BeanTypeHandler(Type jdkType,
                            Field field,
                            TypeBindings parentBindings,
-                           TypeHandlerFactory typeHandlerFactory,
-                           Class... generics) {
+                           TypeHandlerFactory typeHandlerFactory, Class... generics) {
         super(jdkType, field, parentBindings, typeHandlerFactory, generics);
 
         List<Field> fields = FieldUtils.getAllFields(rawClass);
         for (int i = 0; i < fields.size(); i++) {
             Field subField = fields.get(i);
             Type type = subField.getGenericType();
-            if (type == null) {
-                type = subField.getType();
-            }
-            TypeHandler typeHandler = getTypeHandlerFactory().handler(subField.getType(), type, subField, getParentTypeBindings());
+            TypeHandler typeHandler = getTypeHandlerFactory().handler(
+                    (type == null) ? subField.getType() : type, subField, getTypeBindings()
+            );
 
             handlers.add(typeHandler);
             handlers.addAll(typeHandler.getHandlers());
@@ -71,27 +70,31 @@ public class BeanTypeHandler extends GenericTypeHandler<SimpleType> {
     }
 
     @Override
-    protected void fromParameterizedClass(SimpleType javaType, Class<?> clazz, Class... types) {
-        rawClass = clazz;
+    protected void fromType(Type type) {
+        rawClass = (Class) type;
     }
 
     @Override
-    protected void fromParameterizedType(SimpleType javaType, ParameterizedType type) {
-        rawClass = javaType.getRawClass();
+    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+        rawClass = TypeUtil.parameterizedType(clazz, types).getRawClass();
     }
 
     @Override
-    protected void fromTypeVariable(SimpleType javaType, TypeVariable typeVariable) {
-        rawClass = javaType.getRawClass();
+    protected void fromParameterizedType(ParameterizedType type) {
+        rawClass = TypeUtil.type(type, getParentTypeBindings()).getRawClass();
+    }
+
+    @Override
+    protected void fromTypeVariable(TypeVariable typeVariable) {
+        rawClass = TypeUtil.type(typeVariable, getParentTypeBindings()).getRawClass();
     }
 
     private void writeBean(Object value, TypeWriter typeWriter, WriteContext context) {
-        if(typeWriter.writeNullMarker(value, context)) {
+        if (typeWriter.writeNullMarker(value, context)) {
             //advance into fields
             context.incrementIndex();
-            for(TypeHandler handler : fieldHandlers) {
+            for (TypeHandler handler : fieldHandlers) {
                 handler.writeFromField(value, typeWriter, context);
-                context.incrementIndex();
             }
         } else {
             context.incrementIndex(numSubFields);
@@ -99,16 +102,14 @@ public class BeanTypeHandler extends GenericTypeHandler<SimpleType> {
     }
 
     private Object readBean(TypeReader typeReader, ReadContext context) {
-        if(typeReader.readNullMarker(context)) {
+        if (typeReader.readNullMarker(context)) {
             Object bean = instanceFactory.newInstance();
             context.incrementIndex();
-            for(TypeHandler handler : fieldHandlers) {
+            for (TypeHandler handler : fieldHandlers) {
                 handler.readIntoField(bean, typeReader, context);
-                context.incrementIndex();
             }
             return bean;
         }
-
         return null;
     }
 }

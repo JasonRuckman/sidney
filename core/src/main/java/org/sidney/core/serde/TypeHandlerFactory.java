@@ -44,29 +44,31 @@ public class TypeHandlerFactory {
         return instance;
     }
 
-    public TypeHandler handler(Class clazz, Type type, Field field, TypeBindings typeBindings, Class... generics) {
-        JavaType javaType = TypeUtil.type(type, typeBindings);
-
-        if (TypeVariable.class.isAssignableFrom(type.getClass())) {
-            clazz = javaType.getRawClass();
+    public TypeHandler handler(Type type, Field field, TypeBindings typeBindings, Class... generics) {
+        JavaType javaType;
+        if(generics.length == 0) {
+            javaType = TypeUtil.type(type, typeBindings);
+        } else {
+            javaType = TypeUtil.parameterizedType((Class)type, generics);
         }
+        Class<?> clazz = javaType.getRawClass();
 
         if (PRIMITIVES.contains(clazz) || clazz.isEnum()) {
-            return new PrimitiveTypeHandler(clazz, field, typeBindings, instance());
+            return new PrimitiveTypeHandler(clazz, field, typeBindings, this);
         }
 
         if (clazz.isArray()) {
-            return new ArrayTypeHandler(type, field, typeBindings, instance());
+            return new ArrayTypeHandler(type, field, typeBindings, this, generics);
         }
 
         if (Map.class.isAssignableFrom(clazz)) {
-            return new MapTypeHandler<>(type, field, typeBindings, instance(), generics);
+            return new MapTypeHandler<>(type, field, typeBindings, this, generics);
         }
 
         if (Collection.class.isAssignableFrom(clazz)) {
-            return new CollectionTypeHandler<>(type, field, typeBindings, instance(), generics);
+            return new CollectionTypeHandler<>(type, field, typeBindings, this, generics);
         }
 
-        return new BeanTypeHandler(type, field, typeBindings, instance(), generics);
+        return new BeanTypeHandler(type, field, typeBindings, this, generics);
     }
 }

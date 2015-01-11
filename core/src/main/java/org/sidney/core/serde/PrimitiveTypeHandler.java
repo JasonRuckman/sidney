@@ -89,21 +89,26 @@ public class PrimitiveTypeHandler extends TypeHandler {
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
         writer.writeValue(value, typeWriter, context);
+        context.incrementIndex();
     }
 
     @Override
     public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
         writer.writeFromField(parent, typeWriter, context, getAccessor());
+        context.incrementIndex();
     }
 
     @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
-        return reader.readValue(typeReader, context);
+        Object value = reader.readValue(typeReader, context);
+        context.incrementIndex();
+        return value;
     }
 
     @Override
     public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
         reader.readIntoField(parent, typeReader, context, getAccessor());
+        context.incrementIndex();
     }
 
     @Override
