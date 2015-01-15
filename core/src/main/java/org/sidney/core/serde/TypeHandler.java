@@ -28,7 +28,7 @@ public abstract class TypeHandler {
         this.jdkType = jdkType;
         this.field = field;
         this.parentTypeBindings = parentTypeBindings;
-        this.accessor = (field != null) ? new ReflectionFieldAccessor(field) : null;
+        this.accessor = (field != null) ? new UnsafeFieldAccessor(field) : null;
         this.typeHandlerFactory = typeHandlerFactory;
         this.generics = generics;
 
