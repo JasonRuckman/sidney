@@ -9,14 +9,14 @@ public class InstanceFactoryCache {
     private Map<Class, InstanceFactory> factories = new HashMap<>();
 
     public Object newInstance(Class type) {
-        if(type == lastClass) {
+        if (type == lastClass) {
             return lastFactory.newInstance();
         }
 
         lastFactory = factories.get(type);
         lastClass = type;
 
-        if(lastFactory == null) {
+        if (lastFactory == null) {
             lastFactory = new InstanceFactory(type);
             factories.put(type, lastFactory);
         }

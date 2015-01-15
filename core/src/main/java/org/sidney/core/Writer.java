@@ -6,7 +6,7 @@ import org.sidney.core.serde.*;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.sidney.core.encoding.io.StreamUtils.*;
+import static org.sidney.core.encoding.io.StreamUtils.writeIntToStream;
 
 public class Writer<T> {
     public static final int DEFAULT_PAGE_SIZE = 1024;
@@ -55,7 +55,7 @@ public class Writer<T> {
     }
 
     public void write(T value) {
-        context.setIndex(0);
+        context.setColumnIndex(0);
         handler.writeValue(value, typeWriter, context);
 
         if (++recordCount == DEFAULT_PAGE_SIZE) {

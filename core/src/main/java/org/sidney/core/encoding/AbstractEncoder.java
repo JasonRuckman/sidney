@@ -38,7 +38,6 @@ public abstract class AbstractEncoder implements Encoder {
     public void writeToStream(OutputStream outputStream) throws IOException {
         StreamUtils.writeIntToStream(getPosition(), outputStream);
         outputStream.write(getBuffer(), 0, getPosition());
-        reset();
     }
 
     protected void ensureCapacity(int bytes) {

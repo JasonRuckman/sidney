@@ -1,6 +1,5 @@
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 
@@ -26,6 +25,9 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
         handlers.addAll(keyTypeHandler.getHandlers());
         handlers.add(valueTypeHandler);
         handlers.addAll(valueTypeHandler.getHandlers());
+
+        numSubFields += keyTypeHandler.numSubFields;
+        numSubFields += valueTypeHandler.numSubFields;
     }
 
     @Override
@@ -72,23 +74,6 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
         getAccessor().set(parent, readMap(typeReader, context));
     }
 
-    private Object readMap(TypeReader typeReader, ReadContext context) {
-        if(typeReader.readNullMarker(context)) {
-            Map map = (Map)cache.newInstance(typeReader.readConcreteType(context));
-            int size = typeReader.readRepetitionCount(context);
-            context.incrementIndex();
-            int idx = context.getIndex();
-            for(int i = 0; i < size; i++) {
-                context.setIndex(idx);
-                Object key = keyTypeHandler.readValue(typeReader, context);
-                Object value = valueTypeHandler.readValue(typeReader, context);
-                map.put(key, value);
-            }
-            return map;
-        }
-        return null;
-    }
-
     @Override
     public boolean requiresTypeColumn() {
         return true;
@@ -101,16 +86,36 @@ public class MapTypeHandler<T extends Map> extends GenericTypeHandler<MapType> {
 
     private void writeMap(Map map, TypeWriter typeWriter, WriteContext context) {
         if (typeWriter.writeNullMarkerAndType(map, context)) {
-            context.getColumnWriter().writeRepetitionCount(context.getIndex(), map.size());
+            context.getColumnWriter().writeRepetitionCount(context.getColumnIndex(), map.size());
             //bump index forward to key
-            context.incrementIndex();
-            int valueIndex = context.getIndex();
+            context.incrementColumnIndex();
+            int valueIndex = context.getColumnIndex();
             for (Object e : map.entrySet()) {
-                context.setIndex(valueIndex); //for each entry, make sure we are starting at the root
+                context.setColumnIndex(valueIndex); //for each entry, make sure we are starting at the root
                 Map.Entry entry = (Map.Entry) e;
                 keyTypeHandler.writeValue(entry.getKey(), typeWriter, context);
                 valueTypeHandler.writeValue(entry.getValue(), typeWriter, context);
             }
+        } else {
+            context.incrementColumnIndex(numSubFields + 1);
         }
+    }
+
+    private Object readMap(TypeReader typeReader, ReadContext context) {
+        if (typeReader.readNullMarker(context)) {
+            Map map = (Map) cache.newInstance(typeReader.readConcreteType(context));
+            int size = typeReader.readRepetitionCount(context);
+            context.incrementColumnIndex();
+            int idx = context.getColumnIndex();
+            for (int i = 0; i < size; i++) {
+                context.setColumnIndex(idx);
+                Object key = keyTypeHandler.readValue(typeReader, context);
+                Object value = valueTypeHandler.readValue(typeReader, context);
+                map.put(key, value);
+            }
+            return map;
+        }
+        context.incrementColumnIndex(numSubFields + 1);
+        return null;
     }
 }

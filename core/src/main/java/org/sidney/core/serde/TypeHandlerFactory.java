@@ -6,7 +6,6 @@ import org.sidney.core.Registrations;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,14 +42,17 @@ public class TypeHandlerFactory {
 
     public TypeHandler handler(Type type, Field field, TypeBindings typeBindings, Class... generics) {
         JavaType javaType;
-        if(generics.length == 0) {
+        if (generics.length == 0) {
             javaType = TypeUtil.type(type, typeBindings);
         } else {
-            javaType = TypeUtil.parameterizedType((Class)type, generics);
+            javaType = TypeUtil.parameterizedType((Class) type, generics);
         }
         Class<?> clazz = javaType.getRawClass();
 
         if (PRIMITIVES.contains(clazz) || clazz.isEnum()) {
+            if(clazz.isPrimitive()) {
+                return new PrimitiveTypeHandler.NonNullPrimitiveTypeHandler(clazz, field, typeBindings, this);
+            }
             return new PrimitiveTypeHandler(clazz, field, typeBindings, this);
         }
 

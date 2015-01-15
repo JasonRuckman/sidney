@@ -104,12 +104,12 @@ public class BeanSerdeTest extends SerdeTestBase {
     public void testManyPrimitives() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        int num = 65536;
+        int num = 4097;
         Sid sid = new Sid();
         Writer<AllPrimitives> writer = sid.newCachedWriter(AllPrimitives.class, baos);
         List<AllPrimitives> list = new ArrayList<>();
         List<AllPrimitives> out = new ArrayList<>();
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             AllPrimitives record = getDataFactory().newPrimitives();
             writer.write(
                     record
@@ -119,17 +119,15 @@ public class BeanSerdeTest extends SerdeTestBase {
         writer.close();
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class, bais);
-        for(int i = 0; i < num; i++) {
-            if(reader.hasNext()) {
+        for (int i = 0; i < num; i++) {
+            if (reader.hasNext()) {
                 out.add(reader.read());
             }
         }
 
-        for(int i = 0; i < num; i++) {
-            AllPrimitives left = list.get(i);
-            AllPrimitives right = out.get(i);
+        AllPrimitives[] expected = list.toArray(new AllPrimitives[list.size()]);
+        AllPrimitives[] actual = out.toArray(new AllPrimitives[out.size()]);
 
-            Assert.assertEquals(left, right);
-        }
+        Assert.assertArrayEquals(expected, actual);
     }
 }

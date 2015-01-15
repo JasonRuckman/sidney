@@ -28,11 +28,11 @@ public class Sid {
     }
 
     private <T> Writer<T> createWriter(Class type, OutputStream outputStream, boolean cache, Class... generics) {
-        if(!cache) {
+        if (!cache) {
             return new Writer<>(type, outputStream, registrations, generics);
         }
         Writer<T> writer = (Writer<T>) writerCache.get(type);
-        if(writer == null) {
+        if (writer == null) {
             writer = new Writer<>(type, outputStream, registrations, generics);
             writerCache.put(type, writer);
         } else {
@@ -42,11 +42,11 @@ public class Sid {
     }
 
     private <T> Reader<T> createReader(Class<T> type, InputStream inputStream, boolean cache, Class... generics) {
-        if(!cache) {
+        if (!cache) {
             return new Reader<>(type, inputStream, registrations, generics);
         }
         Reader<T> reader = (Reader<T>) readerCache.get(type);
-        if(reader == null) {
+        if (reader == null) {
             reader = new Reader<>(type, inputStream, registrations, generics);
             readerCache.put(type, reader);
         } else {

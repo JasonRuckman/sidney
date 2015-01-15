@@ -29,6 +29,11 @@ public class PlainFloat64Encoder extends AbstractEncoder implements Float64Encod
     }
 
     @Override
+    public void reset() {
+        encoder.reset();
+    }
+
+    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         encoder.writeToStream(outputStream);
     }

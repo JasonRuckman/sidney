@@ -3,7 +3,6 @@ package org.sidney.core.serde;
 import org.sidney.core.ColumnOperations;
 import org.sidney.core.column.ColumnIO;
 import org.sidney.core.encoding.Decoder;
-import org.sidney.core.encoding.Encoder;
 
 import java.io.IOException;
 import java.io.InputStream;

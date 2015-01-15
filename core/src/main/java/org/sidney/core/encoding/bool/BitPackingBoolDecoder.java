@@ -3,6 +3,9 @@ package org.sidney.core.encoding.bool;
 import org.sidney.core.encoding.AbstractDecoder;
 import org.sidney.core.encoding.Encoding;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecoder {
     private int currentBitIndex = 0;
 
@@ -34,5 +37,11 @@ public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecode
     @Override
     public String supportedEncoding() {
         return Encoding.BITPACKED.name();
+    }
+
+    @Override
+    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+        super.populateBufferFromStream(inputStream);
+        currentBitIndex = 0;
     }
 }

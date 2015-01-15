@@ -18,7 +18,7 @@ public class DataFactory {
 
     public boolean[] newBools() {
         boolean[] booleans = new boolean[random.nextInt(128)];
-        for(int i = 0; i < booleans.length; i++) {
+        for (int i = 0; i < booleans.length; i++) {
             booleans[i] = newBool();
         }
         return booleans;
@@ -26,8 +26,8 @@ public class DataFactory {
 
     public Boolean[] newBoolRefs() {
         Boolean[] booleans = new Boolean[random.nextInt(128)];
-        for(int i = 0; i < booleans.length; i++) {
-            booleans[i] = newBool();
+        for (int i = 0; i < booleans.length; i++) {
+            booleans[i] = maybeMakeNull(newBool());
         }
         return booleans;
     }
@@ -38,8 +38,8 @@ public class DataFactory {
 
     public Byte[] newByteRefs() {
         Byte[] bytes = new Byte[random.nextInt(128)];
-        for(int i = 0; i < bytes.length; i++) {
-            bytes[i] = newByte();
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = maybeMakeNull(newByte());
         }
         return bytes;
     }
@@ -50,7 +50,7 @@ public class DataFactory {
 
     public short[] newShorts() {
         short[] shorts = new short[random.nextInt(128)];
-        for(int i = 0; i < shorts.length; i++) {
+        for (int i = 0; i < shorts.length; i++) {
             shorts[i] = newShort();
         }
         return shorts;
@@ -58,8 +58,8 @@ public class DataFactory {
 
     public Short[] newShortRefs() {
         Short[] shorts = new Short[random.nextInt(128)];
-        for(int i = 0; i < shorts.length; i++) {
-            shorts[i] = newShort();
+        for (int i = 0; i < shorts.length; i++) {
+            shorts[i] = maybeMakeNull(newShort());
         }
         return shorts;
     }
@@ -70,7 +70,7 @@ public class DataFactory {
 
     public char[] newChars() {
         char[] chars = new char[random.nextInt(128)];
-        for(int i = 0; i < chars.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             chars[i] = newChar();
         }
         return chars;
@@ -78,8 +78,8 @@ public class DataFactory {
 
     public Character[] newCharRefs() {
         Character[] chars = new Character[random.nextInt(128)];
-        for(int i = 0; i < chars.length; i++) {
-            chars[i] = newChar();
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = maybeMakeNull(newChar());
         }
         return chars;
     }
@@ -90,7 +90,7 @@ public class DataFactory {
 
     public int[] newInts() {
         int[] ints = new int[random.nextInt(128)];
-        for(int i = 0; i < ints.length; i++) {
+        for (int i = 0; i < ints.length; i++) {
             ints[i] = newInt();
         }
         return ints;
@@ -98,8 +98,8 @@ public class DataFactory {
 
     public Integer[] newIntRefs() {
         Integer[] ints = new Integer[random.nextInt(128)];
-        for(int i = 0; i < ints.length; i++) {
-            ints[i] = newInt();
+        for (int i = 0; i < ints.length; i++) {
+            ints[i] = maybeMakeNull(newInt());
         }
         return ints;
     }
@@ -110,7 +110,7 @@ public class DataFactory {
 
     public long[] newLongs() {
         long[] longs = new long[random.nextInt(128)];
-        for(int i = 0; i < longs.length; i++) {
+        for (int i = 0; i < longs.length; i++) {
             longs[i] = newLong();
         }
         return longs;
@@ -118,8 +118,8 @@ public class DataFactory {
 
     public Long[] newLongRefs() {
         Long[] longs = new Long[random.nextInt(128)];
-        for(int i = 0; i < longs.length; i++) {
-            longs[i] = newLong();
+        for (int i = 0; i < longs.length; i++) {
+            longs[i] = maybeMakeNull(newLong());
         }
         return longs;
     }
@@ -130,7 +130,7 @@ public class DataFactory {
 
     public float[] newFloats() {
         float[] floats = new float[random.nextInt(128)];
-        for(int i = 0; i < floats.length; i++) {
+        for (int i = 0; i < floats.length; i++) {
             floats[i] = newFloat();
         }
         return floats;
@@ -138,8 +138,8 @@ public class DataFactory {
 
     public Float[] newFloatRefs() {
         Float[] floats = new Float[random.nextInt(128)];
-        for(int i = 0; i < floats.length; i++) {
-            floats[i] = newFloat();
+        for (int i = 0; i < floats.length; i++) {
+            floats[i] = maybeMakeNull(newFloat());
         }
         return floats;
     }
@@ -150,7 +150,7 @@ public class DataFactory {
 
     public double[] newDoubles() {
         double[] doubles = new double[random.nextInt(128)];
-        for(int i = 0; i < doubles.length; i++) {
+        for (int i = 0; i < doubles.length; i++) {
             doubles[i] = newDouble();
         }
         return doubles;
@@ -158,8 +158,8 @@ public class DataFactory {
 
     public Double[] newDoubleRefs() {
         Double[] doubles = new Double[random.nextInt(128)];
-        for(int i = 0; i < doubles.length; i++) {
-            doubles[i] = newDouble();
+        for (int i = 0; i < doubles.length; i++) {
+            doubles[i] = maybeMakeNull(newDouble());
         }
         return doubles;
     }
@@ -167,70 +167,77 @@ public class DataFactory {
     public String newString() {
         int size = random.nextInt(24);
         char[] array = new char[size];
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = (char) random.nextInt(100);
         }
-        return new String(array);
+        return maybeMakeNull(new String(array));
     }
 
     public byte[] newBytes() {
         int size = random.nextInt(256);
         byte[] bytes = new byte[size];
         random.nextBytes(bytes);
-        return bytes;
+        return maybeMakeNull(bytes);
     }
 
     public AllPrimitives newPrimitives() {
-        return new AllPrimitives(
-                newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes() ,newString()
-        );
+        return maybeMakeNull(new AllPrimitives(
+                newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString()
+        ));
     }
 
     public AllPrimitiveRefs newPrimitiveRefs() {
-        return new AllPrimitiveRefs(
+        return maybeMakeNull(new AllPrimitiveRefs(
                 newBool(), newByte(), newShort(), newChar(), newInt(), newLong(), newFloat(), newDouble()
-        );
+        ));
     }
 
     public InheritedAllPrimitives newInheritedAllPrimitives() {
-        return new InheritedAllPrimitives(
+        return maybeMakeNull(new InheritedAllPrimitives(
                 newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString()
-        );
+        ));
     }
 
     public AllPrimitiveArrays newAllArrays() {
-        return new AllPrimitiveArrays(
+        return maybeMakeNull(new AllPrimitiveArrays(
                 newBools(), newShorts(), newChars(), newInts(), newLongs(), newFloats(), newDoubles()
-        );
+        ));
     }
 
     public AllPrimitiveRefsArrays newAllPrimitiveRefArrays() {
-        return new AllPrimitiveRefsArrays(
+        return maybeMakeNull(new AllPrimitiveRefsArrays(
                 newBoolRefs(), newByteRefs(), newShortRefs(), newCharRefs(), newIntRefs(), newLongRefs(), newFloatRefs(), newDoubleRefs()
-        );
+        ));
     }
 
     public NestedArray<Integer> newNestedArray() {
         NestedArray<Integer> arr = new NestedArray<>();
         arr.setArray(newIntRefs());
-        return arr;
+        return maybeMakeNull(arr);
     }
 
     public NestedMap<Integer, Double> newNestedMap() {
         NestedMap<Integer, Double> map = new NestedMap<>();
         map.setMap(new HashMap<Integer, Double>());
         int[] ints = newInts();
-        for(int i = 0; i < ints.length; i++) {
+        for (int i = 0; i < ints.length; i++) {
             map.getMap().put(
                     i, newDouble()
             );
         }
-        return map;
+        return maybeMakeNull(map);
     }
 
     public GenericsContainer<Integer, Double> newGenericsContainer() {
-        return new GenericsContainer<>(
+        return maybeMakeNull(new GenericsContainer<>(
                 newNestedArray(), newNestedMap()
-        );
+        ));
+    }
+
+    private <T> T maybeMakeNull(T value) {
+        if(random.nextInt(10) < 4) {
+            return null;
+        }
+        return value;
     }
 }

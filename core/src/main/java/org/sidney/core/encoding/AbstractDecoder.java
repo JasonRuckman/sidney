@@ -38,7 +38,8 @@ public abstract class AbstractDecoder implements Decoder {
     @Override
     public void populateBufferFromStream(InputStream inputStream) throws IOException {
         setPosition(0);
-        buffer = new byte[StreamUtils.readIntFromStream(inputStream)];
+        int bufferSize = StreamUtils.readIntFromStream(inputStream);
+        buffer = new byte[bufferSize];
         inputStream.read(buffer);
     }
 

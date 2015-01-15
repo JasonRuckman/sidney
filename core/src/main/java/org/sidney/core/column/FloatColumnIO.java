@@ -4,7 +4,6 @@ import org.sidney.core.encoding.Decoder;
 import org.sidney.core.encoding.Encoder;
 import org.sidney.core.encoding.float32.Float32Decoder;
 import org.sidney.core.encoding.float32.Float32Encoder;
-import org.sidney.core.serde.WriteContext;
 
 import java.util.Arrays;
 import java.util.List;

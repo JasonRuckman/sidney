@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class TypeHandler {
     protected List<TypeHandler> handlers = new ArrayList<>();
-    protected int numSubFields = 0;
+    protected int numSubFields = 1;
     protected Class[] generics;
     private Type jdkType;
     private Field field;
@@ -28,7 +28,7 @@ public abstract class TypeHandler {
         this.jdkType = jdkType;
         this.field = field;
         this.parentTypeBindings = parentTypeBindings;
-        this.accessor = (field != null) ? new UnsafeFieldAccessor(field) : null;
+        this.accessor = (field != null) ? new ReflectionFieldAccessor(field) : null;
         this.typeHandlerFactory = typeHandlerFactory;
         this.generics = generics;
 
@@ -42,7 +42,7 @@ public abstract class TypeHandler {
     protected void resolveTypes() {
         if (field != null) {
             typeBindings = TypeUtil.binding(field, parentTypeBindings);
-        } else if(generics.length > 0) {
+        } else if (generics.length > 0) {
             typeBindings = TypeUtil.binding((Class) jdkType, generics);
         } else {
             typeBindings = TypeUtil.binding(jdkType, parentTypeBindings);
@@ -54,7 +54,7 @@ public abstract class TypeHandler {
     }
 
     public Field getField() {
-        if(accessor == null) {
+        if (accessor == null) {
             return null;
         }
         return accessor.getField();
@@ -101,13 +101,13 @@ public abstract class TypeHandler {
     }
 
     public void writeBytes(byte[] bytes, TypeWriter typeWriter, WriteContext context) {
-        if(typeWriter.writeNullMarker(bytes, context)) {
+        if (typeWriter.writeNullMarker(bytes, context)) {
             typeWriter.writeBytes(bytes, context);
         }
     }
 
     public void writeString(String s, TypeWriter typeWriter, WriteContext context) {
-        if(typeWriter.writeNullMarker(s, context)) {
+        if (typeWriter.writeNullMarker(s, context)) {
             typeWriter.writeString(s, context);
         }
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sidney.core.encoding.io.StreamUtils;
 import org.sidney.core.serde.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,16 +57,16 @@ public class Reader<T> {
     }
 
     public boolean hasNext() {
-        if(currentPageHeader == null) {
+        if (currentPageHeader == null) {
             loadNextPage();
             return hasNext();
         }
 
-        if(recordCount-- > 0) {
+        if (recordCount-- > 0) {
             return true;
         }
 
-        if(!currentPageHeader.isLastPage()) {
+        if (!currentPageHeader.isLastPage()) {
             loadNextPage();
             return hasNext();
         }
@@ -76,7 +75,7 @@ public class Reader<T> {
     }
 
     public T read() {
-        context.setIndex(0);
+        context.setColumnIndex(0);
         return (T) typeHandler.readValue(typeReader, context);
     }
 

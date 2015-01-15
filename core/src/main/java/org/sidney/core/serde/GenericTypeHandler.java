@@ -44,7 +44,7 @@ public abstract class GenericTypeHandler<JT extends JavaType> extends TypeHandle
             fromTypeVariable(variable);
         } else if (getJdkType().getClass() == Class.class && generics.length > 0) {
             fromParameterizedClass((Class) getJdkType(), generics);
-        } else if(GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
+        } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
             fromArrayType((GenericArrayType) getJdkType());
         } else {
             fromType(getJdkType());

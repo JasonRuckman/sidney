@@ -21,7 +21,7 @@ public class WriteContext extends Context {
     @Override
     public String toString() {
         return "WriteContext{" +
-                "index=" + getIndex() +
+                "index=" + getColumnIndex() +
                 '}';
     }
 }

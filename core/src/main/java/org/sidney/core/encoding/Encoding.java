@@ -1,6 +1,5 @@
 package org.sidney.core.encoding;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.sidney.core.encoding.bool.*;
 import org.sidney.core.encoding.bytes.ByteArrayDecoder;
 import org.sidney.core.encoding.bytes.ByteArrayEncoder;

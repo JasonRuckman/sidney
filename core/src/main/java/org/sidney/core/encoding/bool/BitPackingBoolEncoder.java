@@ -35,6 +35,12 @@ public class BitPackingBoolEncoder extends AbstractEncoder implements BoolEncode
     }
 
     @Override
+    public void reset() {
+        super.reset();
+        currentBitIndex = 0;
+    }
+
+    @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         //account for the current byte we are on
         incrementPosition(1);

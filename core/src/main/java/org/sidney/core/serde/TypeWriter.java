@@ -2,7 +2,7 @@ package org.sidney.core.serde;
 
 public class TypeWriter {
     public void writeBool(boolean value, WriteContext context) {
-        context.getColumnWriter().writeBoolean(context.getIndex(), value);
+        context.getColumnWriter().writeBoolean(context.getColumnIndex(), value);
     }
 
     public void writeByte(byte value, WriteContext context) {
@@ -22,41 +22,41 @@ public class TypeWriter {
     }
 
     public void writeLong(long value, WriteContext context) {
-        context.getColumnWriter().writeLong(context.getIndex(), value);
+        context.getColumnWriter().writeLong(context.getColumnIndex(), value);
     }
 
     public void writeFloat(float value, WriteContext context) {
-        context.getColumnWriter().writeFloat(context.getIndex(), value);
+        context.getColumnWriter().writeFloat(context.getColumnIndex(), value);
     }
 
     public void writeDouble(double value, WriteContext context) {
-        context.getColumnWriter().writeDouble(context.getIndex(), value);
+        context.getColumnWriter().writeDouble(context.getColumnIndex(), value);
     }
 
     public void writeBytes(byte[] value, WriteContext context) {
-        context.getColumnWriter().writeBytes(context.getIndex(), value);
+        context.getColumnWriter().writeBytes(context.getColumnIndex(), value);
     }
 
     public void writeString(String value, WriteContext context) {
-        context.getColumnWriter().writeString(context.getIndex(), value);
+        context.getColumnWriter().writeString(context.getColumnIndex(), value);
     }
 
     public <T> boolean writeNullMarker(T value, WriteContext context) {
         if (value == null) {
-            context.getColumnWriter().writeNull(context.getIndex());
+            context.getColumnWriter().writeNull(context.getColumnIndex());
             return false;
         }
-        context.getColumnWriter().writeNotNull(context.getIndex());
+        context.getColumnWriter().writeNotNull(context.getColumnIndex());
         return true;
     }
 
-    public  <T> boolean writeNullMarkerAndType(T value, WriteContext context) {
+    public <T> boolean writeNullMarkerAndType(T value, WriteContext context) {
         if (value == null) {
-            context.getColumnWriter().writeNull(context.getIndex());
+            context.getColumnWriter().writeNull(context.getColumnIndex());
             return false;
         }
-        context.getColumnWriter().writeNotNull(context.getIndex());
-        context.getColumnWriter().writeConcreteType(value.getClass(), context.getIndex(), context);
+        context.getColumnWriter().writeNotNull(context.getColumnIndex());
+        context.getColumnWriter().writeConcreteType(value.getClass(), context.getColumnIndex(), context);
         return true;
     }
 
@@ -65,6 +65,6 @@ public class TypeWriter {
     }
 
     private void writeIntLike(int value, WriteContext context) {
-        context.getColumnWriter().writeInt(context.getIndex(), value);
+        context.getColumnWriter().writeInt(context.getColumnIndex(), value);
     }
 }

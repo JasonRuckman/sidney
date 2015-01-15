@@ -15,7 +15,7 @@ public class MapSerdeTest extends SerdeTestBase {
     @Test
     public void testIntToIntMap() {
         Map<Integer, Integer> map = new HashMap<>();
-        for(int i = 0; i < getRandom().nextInt(128); i++) {
+        for (int i = 0; i < getRandom().nextInt(128); i++) {
             map.put(getDataFactory().newInt(), getDataFactory().newInt());
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

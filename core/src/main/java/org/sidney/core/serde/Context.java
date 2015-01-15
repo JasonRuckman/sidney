@@ -3,7 +3,7 @@ package org.sidney.core.serde;
 import org.sidney.core.PageHeader;
 
 public class Context {
-    private int index = 0;
+    private int columnIndex = 0;
     private PageHeader pageHeader;
 
     public PageHeader getPageHeader() {
@@ -14,23 +14,23 @@ public class Context {
         this.pageHeader = pageHeader;
     }
 
-    public int getIndex() {
-        return index;
+    public int getColumnIndex() {
+        return columnIndex;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setColumnIndex(int columnIndex) {
+        this.columnIndex = columnIndex;
     }
 
-    public void incrementIndex() {
-        ++index;
+    public void incrementColumnIndex() {
+        ++columnIndex;
     }
 
-    public void incrementIndex(int size) {
-        index += size;
+    public void incrementColumnIndex(int size) {
+        columnIndex += size;
     }
 
-    public void reset() {
-        index = 0;
+    public void resetColumnIndex() {
+        columnIndex = 0;
     }
 }

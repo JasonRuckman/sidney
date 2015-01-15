@@ -7,6 +7,7 @@ public class PrimitiveReaders {
         public Object readValue(TypeReader typeReader, ReadContext context) {
             throw new IllegalStateException();
         }
+
         public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, FieldAccessor accessor) {
             accessor.set(parent, readValue(typeReader, context));
         }
@@ -70,12 +71,22 @@ public class PrimitiveReaders {
 
     static class BytesPrimitiveReader extends PrimitiveReader {
         @Override
+        public Object readValue(TypeReader typeReader, ReadContext context) {
+            return typeReader.readBytes(context);
+        }
+
+        @Override
         public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, FieldAccessor accessor) {
             accessor.set(parent, typeReader.readBytes(context));
         }
     }
 
     static class StringPrimitiveReader extends PrimitiveReader {
+        @Override
+        public Object readValue(TypeReader typeReader, ReadContext context) {
+            return typeReader.readString(context);
+        }
+
         @Override
         public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, FieldAccessor accessor) {
             accessor.set(parent, typeReader.readString(context));

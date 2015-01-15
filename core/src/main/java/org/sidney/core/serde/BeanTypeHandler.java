@@ -1,6 +1,5 @@
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import org.sidney.core.field.FieldUtils;
@@ -35,6 +34,7 @@ public class BeanTypeHandler extends GenericTypeHandler<SimpleType> {
             handlers.addAll(typeHandler.getHandlers());
 
             fieldHandlers.add(typeHandler);
+            numSubFields += typeHandler.numSubFields;
         }
         instanceFactory = new InstanceFactory(rawClass);
     }
@@ -92,23 +92,25 @@ public class BeanTypeHandler extends GenericTypeHandler<SimpleType> {
     private void writeBean(Object value, TypeWriter typeWriter, WriteContext context) {
         if (typeWriter.writeNullMarker(value, context)) {
             //advance into fields
-            context.incrementIndex();
+            context.incrementColumnIndex();
             for (TypeHandler handler : fieldHandlers) {
                 handler.writeFromField(value, typeWriter, context);
             }
         } else {
-            context.incrementIndex(numSubFields);
+            context.incrementColumnIndex(numSubFields);
         }
     }
 
     private Object readBean(TypeReader typeReader, ReadContext context) {
         if (typeReader.readNullMarker(context)) {
             Object bean = instanceFactory.newInstance();
-            context.incrementIndex();
+            context.incrementColumnIndex();
             for (TypeHandler handler : fieldHandlers) {
                 handler.readIntoField(bean, typeReader, context);
             }
             return bean;
+        } else {
+            context.incrementColumnIndex(numSubFields);
         }
         return null;
     }

@@ -27,7 +27,7 @@ public class ArraySerdeTest extends SerdeTestBase {
 
     @Test
     public void testArrayOfBeans() {
-        AllPrimitives[] primitiveses = new AllPrimitives[] {
+        AllPrimitives[] primitiveses = new AllPrimitives[]{
                 getDataFactory().newPrimitives(),
                 getDataFactory().newPrimitives()
         };
@@ -61,19 +61,15 @@ public class ArraySerdeTest extends SerdeTestBase {
     @Test
     public void testPrimitiveRefArrays() {
         AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
-        AllPrimitiveRefsArrays two = getDataFactory().newAllPrimitiveRefArrays();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
         Writer<AllPrimitiveRefsArrays> writer = sid.newCachedWriter(AllPrimitiveRefsArrays.class, baos);
         writer.write(one);
-        writer.write(two);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveRefsArrays> reader = sid.newCachedReader(AllPrimitiveRefsArrays.class, bais);
         AllPrimitiveRefsArrays out = reader.read();
-        AllPrimitiveRefsArrays outTwo = reader.read();
         Assert.assertEquals(one, out);
-        Assert.assertEquals(two, outTwo);
     }
 }

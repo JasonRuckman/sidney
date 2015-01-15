@@ -1,6 +1,5 @@
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 
@@ -23,6 +22,8 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
 
         handlers.add(contentTypeHandler);
         handlers.addAll(contentTypeHandler.getHandlers());
+
+        numSubFields += contentTypeHandler.numSubFields;
     }
 
     @Override
@@ -81,28 +82,33 @@ public class CollectionTypeHandler<T extends Collection> extends GenericTypeHand
 
     private void writeCollection(Collection collection, TypeWriter typeWriter, WriteContext context) {
         if (typeWriter.writeNullMarkerAndType(collection, context)) {
-            context.incrementIndex();
-            int index = context.getIndex();
-            typeWriter.writeRepetitionCount(context.getIndex(), collection.size(), context);
+            context.incrementColumnIndex();
+            int index = context.getColumnIndex();
+            typeWriter.writeRepetitionCount(context.getColumnIndex(), collection.size(), context);
             for (Object value : collection) {
                 contentTypeHandler.writeValue(value, typeWriter, context);
-                context.setIndex(index); //rewind back to the start of the component type
+                context.setColumnIndex(index); //rewind back to the start of the component type
             }
+            context.incrementColumnIndex();
+        } else {
+            context.incrementColumnIndex(numSubFields);
         }
     }
 
     private Object readCollection(TypeReader typeReader, ReadContext context) {
-        if(typeReader.readNullMarker(context)) {
-            Collection c = (Collection)cache.newInstance(typeReader.readConcreteType(context));
-            context.incrementIndex();
+        if (typeReader.readNullMarker(context)) {
+            Collection c = (Collection) cache.newInstance(typeReader.readConcreteType(context));
+            context.incrementColumnIndex();
             int count = typeReader.readRepetitionCount(context);
-            int valueIndex = context.getIndex();
-            for(int i = 0; i < count; i++) {
-                context.setIndex(valueIndex);
+            int valueIndex = context.getColumnIndex();
+            for (int i = 0; i < count; i++) {
+                context.setColumnIndex(valueIndex);
                 c.add(contentTypeHandler.readValue(typeReader, context));
             }
+            context.incrementColumnIndex();
             return c;
         }
+        context.incrementColumnIndex(numSubFields);
         return null;
     }
 }

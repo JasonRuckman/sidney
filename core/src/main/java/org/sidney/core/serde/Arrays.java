@@ -9,7 +9,7 @@ public class Arrays {
         public static class BoolArrayReader implements ArrayReader<boolean[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, boolean[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readBoolean(context);
                 }
             }
@@ -18,7 +18,7 @@ public class Arrays {
         public static class CharArrayReader implements ArrayReader<char[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, char[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readChar(context);
                 }
             }
@@ -27,7 +27,7 @@ public class Arrays {
         public static class ShortArrayReader implements ArrayReader<short[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, short[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readShort(context);
                 }
             }
@@ -36,7 +36,7 @@ public class Arrays {
         public static class IntArrayReader implements ArrayReader<int[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, int[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readInt(context);
                 }
             }
@@ -45,7 +45,7 @@ public class Arrays {
         public static class LongArrayReader implements ArrayReader<long[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, long[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readLong(context);
                 }
             }
@@ -54,7 +54,7 @@ public class Arrays {
         public static class FloatArrayReader implements ArrayReader<float[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, float[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readFloat(context);
                 }
             }
@@ -63,7 +63,7 @@ public class Arrays {
         public static class DoubleArrayReader implements ArrayReader<double[]> {
             @Override
             public void readValue(TypeReader typeReader, ReadContext context, double[] newArray) {
-                for(int i = 0; i < newArray.length; i++) {
+                for (int i = 0; i < newArray.length; i++) {
                     newArray[i] = typeReader.readDouble(context);
                 }
             }
@@ -87,7 +87,7 @@ public class Arrays {
         static class ShortArrayWriter implements ArrayWriter<short[]> {
             @Override
             public void writeArray(short[] value, TypeWriter typeWriter, WriteContext context) {
-                for(short s : value) {
+                for (short s : value) {
                     typeWriter.writeShort(s, context);
                 }
             }
@@ -96,7 +96,7 @@ public class Arrays {
         static class CharArrayWriter implements ArrayWriter<char[]> {
             @Override
             public void writeArray(char[] value, TypeWriter typeWriter, WriteContext context) {
-                for(char c : value) {
+                for (char c : value) {
                     typeWriter.writeChar(c, context);
                 }
             }

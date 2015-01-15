@@ -74,8 +74,8 @@ public class PrimitiveTypeHandler extends TypeHandler {
     }
 
     private Class<?> actualType;
-    private PrimitiveWriters.PrimitiveWriter writer;
-    private PrimitiveReaders.PrimitiveReader reader;
+    protected PrimitiveWriters.PrimitiveWriter writer;
+    protected PrimitiveReaders.PrimitiveReader reader;
 
     public PrimitiveTypeHandler(Type jdkType, Field field, TypeBindings parentTypeBindings, TypeHandlerFactory typeHandlerFactory) {
         super(jdkType, field, parentTypeBindings, typeHandlerFactory);
@@ -88,27 +88,32 @@ public class PrimitiveTypeHandler extends TypeHandler {
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        writer.writeValue(value, typeWriter, context);
-        context.incrementIndex();
+        if(typeWriter.writeNullMarker(value, context)) {
+            writer.writeValue(value, typeWriter, context);
+        }
+        context.incrementColumnIndex();
     }
 
     @Override
     public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
-        writer.writeFromField(parent, typeWriter, context, getAccessor());
-        context.incrementIndex();
+        Object value = getAccessor().get(parent);
+        writeValue(value, typeWriter, context);
     }
 
     @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
-        Object value = reader.readValue(typeReader, context);
-        context.incrementIndex();
-        return value;
+        if(typeReader.readNullMarker(context)) {
+            Object value = reader.readValue(typeReader, context);
+            context.incrementColumnIndex();
+            return value;
+        }
+        context.incrementColumnIndex();
+        return null;
     }
 
     @Override
     public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
-        reader.readIntoField(parent, typeReader, context, getAccessor());
-        context.incrementIndex();
+        getAccessor().set(parent, readValue(typeReader, context));
     }
 
     @Override
@@ -130,7 +135,7 @@ public class PrimitiveTypeHandler extends TypeHandler {
     }
 
     public Encoding getEncoding() {
-        if(getField() != null && getField().getAnnotation(Encode.class) != null) {
+        if (getField() != null && getField().getAnnotation(Encode.class) != null) {
             return getField().getAnnotation(Encode.class).value();
         }
         return Encoding.PLAIN;
@@ -141,5 +146,23 @@ public class PrimitiveTypeHandler extends TypeHandler {
         return "PrimitiveNode{" +
                 "actualType=" + actualType +
                 '}';
+    }
+
+    static class NonNullPrimitiveTypeHandler extends PrimitiveTypeHandler {
+        public NonNullPrimitiveTypeHandler(Type jdkType, Field field, TypeBindings parentTypeBindings, TypeHandlerFactory typeHandlerFactory) {
+            super(jdkType, field, parentTypeBindings, typeHandlerFactory);
+        }
+
+        @Override
+        public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
+            writer.writeFromField(parent, typeWriter, context, getAccessor());
+            context.incrementColumnIndex();
+        }
+
+        @Override
+        public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
+            reader.readIntoField(parent, typeReader, context, getAccessor());
+            context.incrementColumnIndex();
+        }
     }
 }

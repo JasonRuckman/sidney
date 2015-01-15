@@ -29,7 +29,6 @@ public class ColumnWriter extends ColumnOperations {
 
     public void writeFloat(int index, float value) {
         ColumnIO columnIO = columnIOs.get(index);
-        columnIO.writeNotNull();
         columnIO.writeFloat(value);
     }
 

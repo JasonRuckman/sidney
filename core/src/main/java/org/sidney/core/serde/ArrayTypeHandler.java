@@ -1,6 +1,5 @@
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.ArrayType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 
@@ -50,13 +49,14 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
         handlers.addAll(contentTypeHandler.getHandlers());
 
         arrayWriter = PRIMITIVE_WRITERS.get(rawClass);
-        if(arrayWriter == null) {
+        if (arrayWriter == null) {
             arrayWriter = new RefArrayWriter();
         }
         arrayReader = PRIMITIVE_READERS.get(rawClass);
-        if(arrayReader == null) {
+        if (arrayReader == null) {
             arrayReader = new RefArrayReader();
         }
+        numSubFields += contentTypeHandler.numSubFields;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
 
     @Override
     protected void fromType(Type type) {
-        rawClass = (Class)type;
+        rawClass = (Class) type;
         contentTypeHandler = getTypeHandlerFactory().handler(
                 rawClass.getComponentType(),
                 null, getParentTypeBindings()
@@ -115,34 +115,37 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
     }
 
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
-        if(typeWriter.writeNullMarker(array, context)) {
-            typeWriter.writeRepetitionCount(context.getIndex(), Array.getLength(array), context);
+        if (typeWriter.writeNullMarker(array, context)) {
+            typeWriter.writeRepetitionCount(context.getColumnIndex(), Array.getLength(array), context);
             //bump to component column
-            context.incrementIndex();
+            context.incrementColumnIndex();
             arrayWriter.writeArray(array, typeWriter, context);
-            context.incrementIndex();
+            context.incrementColumnIndex();
+        } else {
+            context.incrementColumnIndex(numSubFields);
         }
     }
 
     private Object readArray(TypeReader typeReader, ReadContext context) {
-        if(typeReader.readNullMarker(context)) {
+        if (typeReader.readNullMarker(context)) {
             int arraySize = typeReader.readRepetitionCount(context);
             Object array = Array.newInstance(rawClass.getComponentType(), arraySize);
-            context.incrementIndex();
+            context.incrementColumnIndex();
             arrayReader.readValue(typeReader, context, array);
-            context.incrementIndex();
+            context.incrementColumnIndex();
             return array;
         }
+        context.incrementColumnIndex(numSubFields);
         return null;
     }
 
     private class RefArrayWriter implements Arrays.ArrayWriters.ArrayWriter<Object[]> {
         @Override
         public void writeArray(Object[] value, TypeWriter typeWriter, WriteContext context) {
-            int index = context.getIndex();
+            int index = context.getColumnIndex();
             for (Object o : value) {
                 contentTypeHandler.writeValue(o, typeWriter, context);
-                context.setIndex(index); //rewind back to start of component type
+                context.setColumnIndex(index); //rewind back to start of component type
             }
         }
     }
@@ -150,10 +153,10 @@ public class ArrayTypeHandler extends GenericTypeHandler<ArrayType> {
     private class RefArrayReader implements Arrays.ArrayReaders.ArrayReader<Object[]> {
         @Override
         public void readValue(TypeReader typeReader, ReadContext context, Object[] newArray) {
-            int index = context.getIndex();
-            for(int i = 0; i < newArray.length; i++) {
+            int index = context.getColumnIndex();
+            for (int i = 0; i < newArray.length; i++) {
                 newArray[i] = contentTypeHandler.readValue(typeReader, context);
-                context.setIndex(index);
+                context.setColumnIndex(index);
             }
         }
     }
