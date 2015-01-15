@@ -2,6 +2,7 @@ package org.sidney.core.serde;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.sidney.core.AllPrimitiveRefs;
 import org.sidney.core.Reader;
 import org.sidney.core.Sid;
 import org.sidney.core.Writer;
@@ -20,17 +21,36 @@ public class MapSerdeTest extends SerdeTestBase {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<Map<Integer, Integer>> writer = (Writer) sid.newCachedWriter(
+        Writer<Map<Integer, Integer>> writer = sid.newCachedWriter(
                 Map.class, baos, Integer.class, Integer.class
         );
         writer.write(map);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<Map<Integer, Integer>> reader = (Reader) sid.newCachedReader(
+        Reader<Map<Integer, Integer>> reader = sid.newCachedReader(
                 Map.class, bais, Integer.class, Integer.class
         );
         Map<Integer, Integer> outMap = reader.read();
         Assert.assertEquals(map, outMap);
+    }
+
+    @Test
+    public void testBeanToBeanMap() {
+        Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Sid sid = new Sid();
+        Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newCachedWriter(
+                Map.class, baos, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+        );
+        writer.write(map);
+        writer.close();
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newCachedReader(
+                Map.class, bais, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+        );
+        Map<AllPrimitiveRefs, AllPrimitiveRefs> out = reader.read();
+        Assert.assertEquals(map, out);
     }
 }

@@ -3,6 +3,7 @@ package org.sidney.core.serde;
 import org.sidney.core.*;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class DataFactory {
@@ -234,8 +235,18 @@ public class DataFactory {
         ));
     }
 
+    public Map<AllPrimitiveRefs, AllPrimitiveRefs> newMaps() {
+        Map<AllPrimitiveRefs, AllPrimitiveRefs> map = new HashMap<>();
+        for (int i = 0; i < newByte(); i++) {
+            map.put(
+                    newPrimitiveRefs(), newPrimitiveRefs()
+            );
+        }
+        return maybeMakeNull(map);
+    }
+
     private <T> T maybeMakeNull(T value) {
-        if(random.nextInt(10) < 4) {
+        if (random.nextInt(10) < 4) {
             return null;
         }
         return value;

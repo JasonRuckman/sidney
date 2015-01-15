@@ -72,4 +72,9 @@ public class ArraySerdeTest extends SerdeTestBase {
         AllPrimitiveRefsArrays out = reader.read();
         Assert.assertEquals(one, out);
     }
+
+    @Test
+    public void testArraysOfMaps() {
+
+    }
 }
