@@ -174,6 +174,16 @@ public enum Encoding {
         }
 
         @Override
+        public Int64Encoder newInt64Encoder() {
+            return new RLEInt64Encoder();
+        }
+
+        @Override
+        public Int64Decoder newInt64Decoder() {
+            return new RLEInt64Decoder();
+        }
+
+        @Override
         public Float32Encoder newFloat32Encoder() {
             return new RLEFloat32Encoder();
         }
