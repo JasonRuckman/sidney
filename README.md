@@ -24,6 +24,8 @@ Sidney Leaf Types:
 
 All of (byte.class, short.class, char.class) are encoded as ints, so int encodings apply to them.
 
+For the reference implementations of the primitive types, the same encodings apply, but they are nullable.
+
 Generics are supported, and they will be respected even if they are inherited and the correct column type will be chosen. You may pass in parameter types into your writer and readers as well.
 
 A simple example of a java bean:
