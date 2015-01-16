@@ -19,13 +19,14 @@ import org.junit.Test;
 import org.sidney.core.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xerial.snappy.SnappyInputStream;
-import org.xerial.snappy.SnappyOutputStream;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
     private Logger logger = LoggerFactory.getLogger(getRunningClass());
@@ -91,7 +92,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     private void logAndRunWithCompression(EncoderDecoderPair<E, D> pair, int size) throws IOException {
         pair.getEncoder().reset();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gos = new SnappyOutputStream(baos);
+        OutputStream gos = new GZIPOutputStream(baos);
         T t = dataSupplier().apply(size);
         encodingFunction().accept(pair.getEncoder(), t);
         pair.getEncoder().writeToStream(gos);
@@ -101,7 +102,11 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-        pair.getDecoder().populateBufferFromStream(new SnappyInputStream(Bytes.wrapInStream(bytes)));
+        pair.getDecoder().populateBufferFromStream(
+               new BufferedInputStream(
+                       new GZIPInputStream(Bytes.wrapInStream(bytes))
+               )
+        );
         consumeAndAssert().accept(pair.getDecoder(), t);
     }
 

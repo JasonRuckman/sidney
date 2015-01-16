@@ -103,7 +103,7 @@ public abstract class AbstractDecoder implements Decoder {
         return res;
     }
 
-    protected void ensureSize(int size) {
+    protected void resizeBufferIfNecessary(int size) {
         if (buffer == null || buffer.length < size) {
             buffer = new byte[size];
         }

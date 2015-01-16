@@ -76,7 +76,7 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
             return;
         }
         int bufferSize = readIntFromStream(inputStream);
-        ensureSize(bufferSize);
+        resizeBufferIfNecessary(bufferSize);
         inputStream.read(getBuffer());
         loadNextMiniBlock();
     }

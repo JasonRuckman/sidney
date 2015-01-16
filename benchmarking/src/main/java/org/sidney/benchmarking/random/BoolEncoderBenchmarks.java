@@ -19,8 +19,6 @@ import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
 import org.sidney.core.encoding.bool.*;
-import org.xerial.snappy.SnappyInputStream;
-import org.xerial.snappy.SnappyOutputStream;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -82,41 +80,12 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         return runGZipCompressed(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
     }
 
-    @Benchmark
-    @Group("boolEncodingSnappyRandom")
-    public boolean[] plainEncoderSnappy() throws IOException {
-        return runSnappyCompressed(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingSnappyRandom")
-    public boolean[] ewahBoolEncoderSnappy() throws IOException {
-        return runSnappyCompressed(getEncoder(EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmapBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingSnappyRandom")
-    public boolean[] bitPackingEncoderSnappy() throws IOException {
-        return runSnappyCompressed(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
-    }
-
     private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
         encoder.reset();
         encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
-        return decoder.nextBools(num);
-    }
-
-    private boolean[] runSnappyCompressed(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
-        encoder.reset();
-        encoder.writeBools(booleans);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SnappyOutputStream sos = new SnappyOutputStream(baos);
-        encoder.writeToStream(sos);
-        sos.close();
-        decoder.populateBufferFromStream(new SnappyInputStream(Bytes.wrapInStream(baos.toByteArray())));
         return decoder.nextBools(num);
     }
 

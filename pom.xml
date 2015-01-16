@@ -18,13 +18,13 @@
 
     <modules>
         <module>core</module>
-        <module>tools</module>
         <module>bitpacking</module>
         <module>benchmarking</module>
     </modules>
 
     <properties>
         <junit.version>4.11</junit.version>
+        <slfj.version>1.7.7</slfj.version>
     </properties>
 
     <dependencyManagement>
@@ -36,24 +36,14 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.openjdk.jmh</groupId>
-                <artifactId>jmh-core</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjdk.jmh</groupId>
-                <artifactId>jmh-generator-annprocess</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.7</version>
+                <version>${slfj.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.7</version>
+                <version>${slfj.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -95,13 +85,6 @@
                         <exclude>src/main/resources/**</exclude>
                     </excludes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

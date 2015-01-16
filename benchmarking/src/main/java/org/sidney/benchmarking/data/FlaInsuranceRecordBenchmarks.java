@@ -24,11 +24,10 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.openjdk.jmh.annotations.*;
 import org.sidney.core.Sid;
-import org.springframework.core.io.ClassPathResource;
-import org.xerial.snappy.SnappyOutputStream;
 
 import java.io.*;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
@@ -38,6 +37,8 @@ import java.util.List;
 public class FlaInsuranceRecordBenchmarks {
     private List<FlaInsuranceRecord> records;
     private Sid sid = new Sid();
+    private Kryo kryo = new Kryo();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public FlaInsuranceRecordBenchmarks() {
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
@@ -49,14 +50,10 @@ public class FlaInsuranceRecordBenchmarks {
         format.setDelimiter(',');
         format.setLineSeparator("\n");
         parserSettings.setFormat(format);
-        ClassPathResource pathResource = new ClassPathResource("FL_insurance_sample.csv");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("FL_insurance_sample.csv");
         CsvParser parser = new CsvParser(parserSettings);
-        try {
-            parser.parse(new InputStreamReader(pathResource.getInputStream()));
-            records = processor.getBeans();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        parser.parse(new InputStreamReader(inputStream));
+        records = processor.getBeans();
     }
 
     @Benchmark
@@ -67,7 +64,7 @@ public class FlaInsuranceRecordBenchmarks {
 
     private byte[] writeSidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream os = new SnappyOutputStream(new BufferedOutputStream(baos));
+        OutputStream os = new GZIPOutputStream(new BufferedOutputStream(baos));
         org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = sid.newCachedWriter(FlaInsuranceRecord.class, os);
         for (FlaInsuranceRecord record : records) {
             recordSerializer.write(record);
@@ -82,9 +79,9 @@ public class FlaInsuranceRecordBenchmarks {
     @Group("data")
     public byte[] kryo() throws IOException {
         ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new SnappyOutputStream(new BufferedOutputStream(kryoBaos));
+        OutputStream kryoGzos = new GZIPOutputStream(new BufferedOutputStream(kryoBaos));
         Output output = new Output(kryoGzos);
-        new Kryo().writeObject(output, records);
+        kryo.writeObject(output, records);
         output.close();
         kryoGzos.close();
         return kryoBaos.toByteArray();
@@ -94,9 +91,8 @@ public class FlaInsuranceRecordBenchmarks {
     @Group("data")
     public byte[] jackson() throws IOException {
         ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new SnappyOutputStream(new BufferedOutputStream(kryoBaos));
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(kryoGzos, records);
+        OutputStream kryoGzos = new GZIPOutputStream(new BufferedOutputStream(kryoBaos));
+        objectMapper.writeValue(kryoGzos, records);
         kryoGzos.close();
         return kryoBaos.toByteArray();
     }
