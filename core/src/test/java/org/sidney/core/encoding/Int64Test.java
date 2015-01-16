@@ -25,6 +25,7 @@ import java.util.Random;
 public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, long[]> {
     private final List<EncoderDecoderPair<Int64Encoder, Int64Decoder>> pairs = Arrays.asList(
             new EncoderDecoderPair<Int64Encoder, Int64Decoder>(new PlainInt64Encoder(), new PlainInt64Decoder()),
+            new EncoderDecoderPair<Int64Encoder, Int64Decoder>(new RLEInt64Encoder(), new RLEInt64Decoder()),
             new EncoderDecoderPair<Int64Encoder, Int64Decoder>(new GroupVarInt64Encoder(), new GroupVarInt64Decoder())
     );
 

@@ -15,14 +15,13 @@
  */
 package org.sidney.core.encoding.float32;
 
-import org.sidney.core.encoding.AbstractDecoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.Int32Decoder;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RLEFloat32Decoder extends AbstractDecoder implements Float32Decoder {
+public class RLEFloat32Decoder implements Float32Decoder {
     private final Int32Decoder valueDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
     private final Int32Decoder runSizeDecoder = Encoding.BITPACKED.newInt32Decoder();
     private int runSize = 0;

@@ -65,7 +65,7 @@ public class TypeHandlerFactory {
         Class<?> clazz = javaType.getRawClass();
 
         if (PRIMITIVES.contains(clazz) || clazz.isEnum()) {
-            if(clazz.isPrimitive()) {
+            if (clazz.isPrimitive()) {
                 return new PrimitiveTypeHandler.NonNullPrimitiveTypeHandler(clazz, field, typeBindings, this);
             }
             return new PrimitiveTypeHandler(clazz, field, typeBindings, this);

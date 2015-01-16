@@ -58,9 +58,9 @@ public class CollectionSerdeTest extends SerdeTestBase {
         Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, baos, AllPrimitives.class);
         List<List<AllPrimitives>> lists = new ArrayList<>();
         int num = 1025;
-        for(int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++) {
             List<AllPrimitives> primitiveses = new ArrayList<>();
-            for(int j = 0; j < getDataFactory().newByte(); j++) {
+            for (int j = 0; j < getDataFactory().newByte(); j++) {
                 primitiveses.add(
                         getDataFactory().newPrimitives()
                 );

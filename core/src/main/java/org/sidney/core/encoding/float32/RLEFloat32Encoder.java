@@ -15,7 +15,6 @@
  */
 package org.sidney.core.encoding.float32;
 
-import org.sidney.core.encoding.AbstractEncoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.DeltaBitPackingInt32Encoder;
@@ -24,7 +23,7 @@ import org.sidney.core.encoding.int32.Int32Encoder;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class RLEFloat32Encoder extends AbstractEncoder implements Float32Encoder {
+public class RLEFloat32Encoder implements Float32Encoder {
     private final Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
     private final Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
     private float currentRun = 0;

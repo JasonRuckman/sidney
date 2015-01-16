@@ -103,6 +103,7 @@ public class Writer<T> {
         context.getPageHeader().prepareForStorage();
         context.getPageHeader().setPageSize(recordCount);
 
+        //replace
         recordCount = 0;
         byte[] bytes = json.writeValueAsBytes(context.getPageHeader());
         writeIntToStream(bytes.length, outputStream);

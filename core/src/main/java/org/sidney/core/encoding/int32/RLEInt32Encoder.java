@@ -15,13 +15,12 @@
  */
 package org.sidney.core.encoding.int32;
 
-import org.sidney.core.encoding.AbstractEncoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class RLEInt32Encoder extends AbstractEncoder implements Int32Encoder {
+public class RLEInt32Encoder implements Int32Encoder {
     private final Int32Encoder valueEncoder = new DeltaBitPackingInt32Encoder();
     private final Int32Encoder runSizeEncoder = new BitPackingInt32Encoder();
     private int currentRun = 0;
@@ -52,14 +51,6 @@ public class RLEInt32Encoder extends AbstractEncoder implements Int32Encoder {
         return Encoding.RLE.name();
     }
 
-    private void flush() {
-        valueEncoder.writeInt(currentRun);
-        runSizeEncoder.writeInt(runSize);
-
-        currentRun = 0;
-        runSize = 0;
-    }
-
     @Override
     public void reset() {
         valueEncoder.reset();
@@ -75,5 +66,13 @@ public class RLEInt32Encoder extends AbstractEncoder implements Int32Encoder {
 
         valueEncoder.writeToStream(outputStream);
         runSizeEncoder.writeToStream(outputStream);
+    }
+
+    private void flush() {
+        valueEncoder.writeInt(currentRun);
+        runSizeEncoder.writeInt(runSize);
+
+        currentRun = 0;
+        runSize = 0;
     }
 }

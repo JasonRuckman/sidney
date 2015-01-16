@@ -17,7 +17,6 @@ package org.sidney.core.serde;
 
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import org.sidney.core.field.FieldAccessor;
-import org.sidney.core.field.ReflectionFieldAccessor;
 import org.sidney.core.field.UnsafeFieldAccessor;
 
 import java.lang.reflect.Field;

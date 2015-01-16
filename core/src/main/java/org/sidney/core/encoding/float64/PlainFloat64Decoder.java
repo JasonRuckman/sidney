@@ -15,7 +15,6 @@
  */
 package org.sidney.core.encoding.float64;
 
-import org.sidney.core.encoding.AbstractDecoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int64.Int64Decoder;
 import org.sidney.core.encoding.int64.PlainInt64Decoder;
@@ -23,7 +22,7 @@ import org.sidney.core.encoding.int64.PlainInt64Decoder;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PlainFloat64Decoder extends AbstractDecoder implements Float64Decoder {
+public class PlainFloat64Decoder implements Float64Decoder {
     private final Int64Decoder decoder = new PlainInt64Decoder();
 
     @Override

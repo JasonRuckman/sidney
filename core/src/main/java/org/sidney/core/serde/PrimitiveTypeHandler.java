@@ -87,10 +87,9 @@ public class PrimitiveTypeHandler extends TypeHandler {
         TYPES.put(byte[].class, org.sidney.core.schema.Type.BINARY);
         TYPES.put(String.class, org.sidney.core.schema.Type.STRING);
     }
-
-    private Class<?> actualType;
     protected PrimitiveWriters.PrimitiveWriter writer;
     protected PrimitiveReaders.PrimitiveReader reader;
+    private Class<?> actualType;
 
     public PrimitiveTypeHandler(Type jdkType, Field field, TypeBindings parentTypeBindings, TypeHandlerFactory typeHandlerFactory) {
         super(jdkType, field, parentTypeBindings, typeHandlerFactory);
@@ -103,7 +102,7 @@ public class PrimitiveTypeHandler extends TypeHandler {
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        if(typeWriter.writeNullMarker(value, context)) {
+        if (typeWriter.writeNullMarker(value, context)) {
             writer.writeValue(value, typeWriter, context);
         }
         context.incrementColumnIndex();
@@ -117,7 +116,7 @@ public class PrimitiveTypeHandler extends TypeHandler {
 
     @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
-        if(typeReader.readNullMarker(context)) {
+        if (typeReader.readNullMarker(context)) {
             Object value = reader.readValue(typeReader, context);
             context.incrementColumnIndex();
             return value;

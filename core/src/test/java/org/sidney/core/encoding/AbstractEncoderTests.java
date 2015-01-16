@@ -103,9 +103,9 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
         pair.getDecoder().populateBufferFromStream(
-               new BufferedInputStream(
-                       new GZIPInputStream(Bytes.wrapInStream(bytes))
-               )
+                new BufferedInputStream(
+                        new GZIPInputStream(Bytes.wrapInStream(bytes))
+                )
         );
         consumeAndAssert().accept(pair.getDecoder(), t);
     }

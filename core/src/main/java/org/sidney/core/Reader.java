@@ -20,8 +20,6 @@ import org.sidney.core.encoding.io.StreamUtils;
 import org.sidney.core.serde.*;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Reader<T> {
     private InputStream inputStream;
