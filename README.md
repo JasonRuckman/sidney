@@ -1,32 +1,57 @@
 sidney
 ======
 
-Sidney is an experimental general serializer. 
+Sidney is an experimental general java serializer. 
 
 It's named after my dog Sid.
 
-Currently a WIP, not usable at all to anyone. 
+It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns.
 
-Planned features: 
+Right now Sidney works on java beans, maps, arrays and collection types, there's underlying support to simply write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). 
 
-* Columnar storage of field values using specialized encoding mechanisms.
-* Code generation on hot paths to avoid megamorphic call sites (if benchmarking shows that it actually does anything)
-* Compressed bitmaps to encode null values
+Primitives in Sidney are these Java classes: 
 
-Not intended for any sort of long term storage, its main use case is in something like Apache Spark for RDD serialization.
+boolean.class
+byte.class
+short.class
+char.class
+int.class
+long.class
+float.class
+double.class
+String.class
+byte[].class
 
-State: 
+String and byte[] are handled slightly differently since they are nullable, you can customize the encoding and they will be stored as columns, but they will be marked as null or not null in the definition column.
 
-Encodings: 
+Generics are supported, and they will be respected even if they are inherited and the correct column type will be chosen.
 
-Boolean: Bit Packed / Ewah DONE
+A simple example of a java bean:
 
-Int32: Bit Packed / BitPacking-Delta / Plain DONE / RLE PLANNED
+```
+  public class Foo {
+    private int first;
+    private int second;
+    
+    public Foo(int first, int second) {
+      this.first = first;
+      this.second = second;
+    }
+  }
+```
 
-Int64: Plain / GroupVarInt : DONE
-
-Float32: Plain: DONE / RLE: PLANNED
-
-Float64: Plain: DONE / RLE: PLANNED
-
-String: Plain / Delta Length / CharAsInt : DONE
+And here's how you would write and read it to Sidney: 
+```
+  Foo foo = new Foo(1, 1.0f);
+  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  
+  Sid sid = new Sid();
+  
+  Writer<Foo> writer = sid.newCachedWriter(Foo.class, baos);
+  writer.write(one);
+  writer.close();
+  
+  ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+  Reader<Foo> reader = sid.newCachedReader(Foo.class, bais);
+  Foo out = reader.read();
+```
