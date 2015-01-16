@@ -31,36 +31,16 @@ public class Reader<T> {
     private TypeHandlerFactory handlerFactory;
     private PageHeader currentPageHeader = null;
 
-    Reader(Class type, InputStream inputStream, Registrations registrations) {
+    Reader(Class type, Registrations registrations) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.inputStream = inputStream;
         this.typeHandler = handlerFactory.handler(
                 type, null, TypeUtil.binding(type)
         );
-        try {
-            loadNextPage();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    Reader(Class type, InputStream inputStream, Registrations registrations, Class... generics) {
+    Reader(Class type, Registrations registrations, Class... generics) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.inputStream = inputStream;
         this.typeHandler = handlerFactory.handler(type, null, null, generics);
-        try {
-            loadNextPage();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
     }
 
     public boolean hasNext() {
@@ -84,6 +64,17 @@ public class Reader<T> {
     public T read() {
         context.setColumnIndex(0);
         return (T) typeHandler.readValue(typeReader, context);
+    }
+
+    public void open(InputStream inputStream) {
+        this.inputStream = inputStream;
+        this.recordCount = 0;
+
+        try {
+            loadNextPage();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void close() {

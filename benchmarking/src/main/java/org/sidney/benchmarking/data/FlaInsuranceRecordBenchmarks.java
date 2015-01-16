@@ -65,7 +65,8 @@ public class FlaInsuranceRecordBenchmarks {
     private byte[] writeSidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream os = new GZIPOutputStream(new BufferedOutputStream(baos));
-        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = sid.newCachedWriter(FlaInsuranceRecord.class, os);
+        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = sid.newCachedWriter(FlaInsuranceRecord.class);
+        recordSerializer.open(baos);
         for (FlaInsuranceRecord record : records) {
             recordSerializer.write(record);
         }

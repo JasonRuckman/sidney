@@ -37,32 +37,21 @@ public class Writer<T> {
     private TypeHandlerFactory handlerFactory;
 
     //don't use a type variable since it screws up the inference
-    Writer(Class type, OutputStream outputStream, Registrations registrations) {
+    Writer(Class type, Registrations registrations) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
-        this.outputStream = outputStream;
         this.handler = handlerFactory.handler(type, null, null);
         this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
     }
 
-    Writer(Class type, OutputStream outputStream, Registrations registrations, Class... generics) {
+    Writer(Class type, Registrations registrations, Class... generics) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
         this.type = type;
-        this.outputStream = outputStream;
         this.generics = generics;
         this.handler = handlerFactory.handler(type, null, null, generics);
         this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
-    }
-
-    public OutputStream getOutputStream() {
-        return outputStream;
-    }
-
-    public void setOutputStream(OutputStream outputStream) {
-        this.outputStream = outputStream;
-        this.recordCount = 0;
     }
 
     public Class<T> getType() {
@@ -82,6 +71,11 @@ public class Writer<T> {
         for (T value : values) {
             write(value);
         }
+    }
+
+    public void open(OutputStream outputStream) {
+        this.outputStream = outputStream;
+        this.recordCount = 0;
     }
 
     public void close() {

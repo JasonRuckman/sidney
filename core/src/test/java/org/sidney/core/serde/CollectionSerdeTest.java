@@ -39,14 +39,16 @@ public class CollectionSerdeTest extends SerdeTestBase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, baos, AllPrimitives.class);
+        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, AllPrimitives.class);
+        writer.open(baos);
         writer.write(list);
         writer.close();
 
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<List<AllPrimitives>> reader = sid.newCachedReader(
-                List.class, new ByteArrayInputStream(baos.toByteArray()), AllPrimitives.class
+                List.class, AllPrimitives.class
         );
-
+        reader.open(bais);
         List<AllPrimitives> output = reader.read();
         Assert.assertEquals(list, output);
     }
@@ -55,7 +57,9 @@ public class CollectionSerdeTest extends SerdeTestBase {
     public void testManyListsOfBeans() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, baos, AllPrimitives.class);
+        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, AllPrimitives.class);
+        writer.open(baos);
+
         List<List<AllPrimitives>> lists = new ArrayList<>();
         int num = 1025;
         for (int i = 0; i < num; i++) {
@@ -70,9 +74,12 @@ public class CollectionSerdeTest extends SerdeTestBase {
         }
         writer.close();
 
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<List<AllPrimitives>> reader = sid.newCachedReader(
-                List.class, new ByteArrayInputStream(baos.toByteArray()), AllPrimitives.class
+                List.class, AllPrimitives.class
         );
+        reader.open(bais);
+
         List<List<AllPrimitives>> out = new ArrayList<>();
         while (reader.hasNext()) {
             out.add(reader.read());

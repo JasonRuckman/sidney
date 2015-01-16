@@ -15,8 +15,6 @@
  */
 package org.sidney.core;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,46 +24,42 @@ public class Sid {
     private final Registrations registrations = new Registrations();
 
     //don't use Class<T> it will make the inference weird when you have generics
-    public <T> Writer<T> newCachedWriter(Class type, OutputStream outputStream) {
-        return createWriter(type, outputStream, true);
+    public <T> Writer<T> newCachedWriter(Class type) {
+        return createWriter(type, true);
     }
 
-    public <T> Writer<T> newCachedWriter(Class type, OutputStream outputStream, Class... generics) {
-        return createWriter(type, outputStream, true, generics);
+    public <T> Writer<T> newCachedWriter(Class type, Class... generics) {
+        return createWriter(type, true, generics);
     }
 
-    public <T> Reader<T> newCachedReader(Class type, InputStream inputStream) {
-        return createReader(type, inputStream, true);
+    public <T> Reader<T> newCachedReader(Class type) {
+        return createReader(type, true);
     }
 
-    public <T> Reader<T> newCachedReader(Class type, InputStream inputStream, Class... generics) {
-        return createReader(type, inputStream, true, generics);
+    public <T> Reader<T> newCachedReader(Class type, Class... generics) {
+        return createReader(type, true, generics);
     }
 
-    private <T> Writer<T> createWriter(Class type, OutputStream outputStream, boolean cache, Class... generics) {
+    private <T> Writer<T> createWriter(Class type, boolean cache, Class... generics) {
         if (!cache) {
-            return new Writer<>(type, outputStream, registrations, generics);
+            return new Writer<>(type, registrations, generics);
         }
         Writer<T> writer = (Writer<T>) writerCache.get(type);
         if (writer == null) {
-            writer = new Writer<>(type, outputStream, registrations, generics);
+            writer = new Writer<>(type, registrations, generics);
             writerCache.put(type, writer);
-        } else {
-            writer.setOutputStream(outputStream);
         }
         return writer;
     }
 
-    private <T> Reader<T> createReader(Class<T> type, InputStream inputStream, boolean cache, Class... generics) {
+    private <T> Reader<T> createReader(Class type, boolean cache, Class... generics) {
         if (!cache) {
-            return new Reader<>(type, inputStream, registrations, generics);
+            return new Reader<>(type, registrations, generics);
         }
         Reader<T> reader = (Reader<T>) readerCache.get(type);
         if (reader == null) {
-            reader = new Reader<>(type, inputStream, registrations, generics);
+            reader = new Reader<>(type, registrations, generics);
             readerCache.put(type, reader);
-        } else {
-            reader.setInputStream(inputStream);
         }
         return reader;
     }

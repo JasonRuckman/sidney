@@ -37,15 +37,17 @@ public class MapSerdeTest extends SerdeTestBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
         Writer<Map<Integer, Integer>> writer = sid.newCachedWriter(
-                Map.class, baos, Integer.class, Integer.class
+                Map.class, Integer.class, Integer.class
         );
+        writer.open(baos);
         writer.write(map);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<Map<Integer, Integer>> reader = sid.newCachedReader(
-                Map.class, bais, Integer.class, Integer.class
+                Map.class, Integer.class, Integer.class
         );
+        reader.open(bais);
         Map<Integer, Integer> outMap = reader.read();
         Assert.assertEquals(map, outMap);
     }
@@ -56,15 +58,17 @@ public class MapSerdeTest extends SerdeTestBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
         Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newCachedWriter(
-                Map.class, baos, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+                Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
         );
+        writer.open(baos);
         writer.write(map);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newCachedReader(
-                Map.class, bais, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+                Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
         );
+        reader.open(bais);
         Map<AllPrimitiveRefs, AllPrimitiveRefs> out = reader.read();
         Assert.assertEquals(map, out);
     }
