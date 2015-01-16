@@ -86,6 +86,7 @@ public class Writer<T> {
 
     public void close() {
         flushPage(true);
+        outputStream = null;
     }
 
     private void flushPage(boolean isLastPage) {

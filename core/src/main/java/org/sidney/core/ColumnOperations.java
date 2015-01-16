@@ -29,9 +29,9 @@ import java.util.List;
 
 public abstract class ColumnOperations {
     protected final List<ColumnIO> columnIOs;
-    protected final BoolEncoder definitionEncoder = Encoding.BITPACKED.newBoolEncoder();
+    protected final BoolEncoder definitionEncoder = Encoding.BITMAP.newBoolEncoder();
     protected final Int32Encoder repetitionEncoder = Encoding.DELTABITPACKINGHYBRID.newInt32Encoder();
-    protected final BoolDecoder definitionDecoder = Encoding.BITPACKED.newBoolDecoder();
+    protected final BoolDecoder definitionDecoder = Encoding.BITMAP.newBoolDecoder();
     protected final Int32Decoder repetitionDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
 
     public ColumnOperations(TypeHandler typeHandler) {

@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reader<T> {
-    private Class<T> type;
     private InputStream inputStream;
-    private Class[] generics;
     private ReadContext context;
     private ObjectMapper json = new ObjectMapper();
     private TypeHandler typeHandler;
@@ -34,11 +32,9 @@ public class Reader<T> {
     private int recordCount = 0;
     private TypeHandlerFactory handlerFactory;
     private PageHeader currentPageHeader = null;
-    private int totalCount = 0;
 
     Reader(Class type, InputStream inputStream, Registrations registrations) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.type = type;
         this.inputStream = inputStream;
         this.typeHandler = handlerFactory.handler(
                 type, null, TypeUtil.binding(type)
@@ -52,9 +48,7 @@ public class Reader<T> {
 
     Reader(Class type, InputStream inputStream, Registrations registrations, Class... generics) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.type = type;
         this.inputStream = inputStream;
-        this.generics = generics;
         this.typeHandler = handlerFactory.handler(type, null, null, generics);
         try {
             loadNextPage();
@@ -94,12 +88,8 @@ public class Reader<T> {
         return (T) typeHandler.readValue(typeReader, context);
     }
 
-    public List<T> readAll() {
-        List<T> records = new ArrayList<>();
-        while (hasNext()) {
-            records.add(read());
-        }
-        return records;
+    public void close() {
+        inputStream = null;
     }
 
     private void loadNextPage() {
