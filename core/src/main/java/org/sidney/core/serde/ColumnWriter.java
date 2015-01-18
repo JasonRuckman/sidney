@@ -15,7 +15,7 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.ColumnOperations;
+import org.sidney.core.serde.handler.ColumnOperations;
 import org.sidney.core.serde.column.ColumnIO;
 import org.sidney.core.encoding.Encoder;
 import org.sidney.core.serde.handler.TypeHandler;

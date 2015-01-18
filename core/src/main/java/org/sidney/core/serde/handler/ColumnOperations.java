@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.sidney.core;
+package org.sidney.core.serde.handler;
 
 import org.sidney.core.serde.column.*;
 import org.sidney.core.encoding.Encoding;
@@ -58,7 +58,7 @@ public abstract class ColumnOperations {
             columnIO = createPrimitiveIO(primitiveTypeHandler);
         } else {
             if (typeHandler.requiresTypeColumn()) {
-                columnIO = new TypeColumnIO(Encoding.BITPACKED.newInt32Encoder(), Encoding.BITPACKED.newInt32Decoder());
+                columnIO = new TypeColumnIO(Encoding.RLE.newInt32Encoder(), Encoding.RLE.newInt32Decoder());
             } else {
                 columnIO = new ColumnIO();
             }
