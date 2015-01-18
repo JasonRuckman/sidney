@@ -73,3 +73,26 @@ And here's how you would write and read it to Sidney:
 ```
 
 Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
+
+### Parameterized Type Example
+
+Sidney supports generics, and will resolve them all the way down the object hierarchy.  If a field uses generic types, there is no work that needs to be done, Sidney will inspect the field and extract the types, however if one wants to use something like a map as the root level object, the types need to be passed in.
+
+```
+  Map<Integer, Integer> map = new HashMap<>();
+  map.put(1, 1);
+  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  
+  Sid sid = new Sid();
+  
+  Writer<Map<Integer, Integer>> writer = sid.newWriter(Map.class, Integer.class, Integer.class);
+  writer.open(baos);
+  writer.write(one);
+  writer.close();
+  
+  ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+  Reader<Map<Integer, Integer>> reader = sid.newReader(Map.class, Integer.class, Integer.class);
+  reader.open(bais);
+  Map<Integer, Integer> out = (reader.hasNext()) ? reader.read() : null;
+  reader.close();
+```
