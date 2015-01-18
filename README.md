@@ -1,13 +1,17 @@
 sidney
 ======
 
-Sidney is an experimental general java serializer. 
+Sidney is an generic java serializer. 
 
 It's named after my dog Sid.
 
-It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like Kryo which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
+It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
 Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
+
+### When would I use it?
+
+Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
 
 ### Algorithm Description
 
