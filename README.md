@@ -13,6 +13,8 @@ Sidney works on java beans, maps, arrays and collection types, there's underlyin
 
 Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
 
+My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs.
+
 ### Algorithm Description
 
 Sidney follows some of the same conventions that Parquet does, there are definition and repetition columns, however there's slight differences. 
