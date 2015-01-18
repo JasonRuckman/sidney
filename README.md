@@ -58,12 +58,14 @@ And here's how you would write and read it to Sidney:
   
   Sid sid = new Sid();
   
-  Writer<Foo> writer = sid.newCachedWriter(Foo.class, baos);
+  Writer<Foo> writer = sid.newWriter(Foo.class);
+  writer.open(baos);
   writer.write(one);
   writer.close();
   
   ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-  Reader<Foo> reader = sid.newCachedReader(Foo.class, bais);
+  Reader<Foo> reader = sid.newReader(Foo.class);
+  reader.open(bais);
   Foo out = reader.read();
 ```
 
