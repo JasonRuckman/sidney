@@ -15,13 +15,13 @@
  */
 package org.sidney.core.encoding.bytes;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
-public class ByteArrayDecoder extends AbstractDecoder implements BytesDecoder {
+public class ByteArrayDecoder extends BaseDecoder implements BytesDecoder {
     @Override
     public byte[] readBytes(int num) {
-        int length = readIntLE();
+        int length = readIntInternal();
         return readBytesInternal(length);
     }
 

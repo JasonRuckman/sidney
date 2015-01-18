@@ -15,14 +15,13 @@
  */
 package org.sidney.core.encoding.int32;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 
-public class PlainInt32Encoder extends AbstractEncoder implements Int32Encoder {
+public class PlainInt32Encoder extends BaseEncoder implements Int32Encoder {
     @Override
     public void writeInt(int value) {
         writeIntInternal(value);
-        numValues++;
     }
 
     @Override

@@ -15,7 +15,7 @@
  */
 package org.sidney.core.encoding.float32;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.Int32Encoder;
 import org.sidney.core.encoding.int32.PlainInt32Encoder;
@@ -23,7 +23,7 @@ import org.sidney.core.encoding.int32.PlainInt32Encoder;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class PlainFloat32Encoder extends AbstractEncoder implements Float32Encoder {
+public class PlainFloat32Encoder extends BaseEncoder implements Float32Encoder {
     private final Int32Encoder encoder = new PlainInt32Encoder();
 
     @Override

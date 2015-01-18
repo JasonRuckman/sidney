@@ -16,7 +16,7 @@
 package org.sidney.core.encoding.int64;
 
 import org.sidney.core.Longs;
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.io.OutputStream;
 /**
  * Zigzag encodes integers, then variable length encodes them
  */
-public class GroupVarInt64Encoder extends AbstractEncoder implements Int64Encoder {
+public class GroupVarInt64Encoder extends BaseEncoder implements Int64Encoder {
     private final long[] block = new long[4];
     private int currentIndex = 0;
     private int num = 0;

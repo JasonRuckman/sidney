@@ -15,10 +15,10 @@
  */
 package org.sidney.core.encoding.bytes;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
-public class RawBytesDecoder extends AbstractDecoder implements BytesDecoder {
+public class RawBytesDecoder extends BaseDecoder implements BytesDecoder {
     @Override
     public byte[] readBytes(int num) {
         return super.readBytesInternal(num);

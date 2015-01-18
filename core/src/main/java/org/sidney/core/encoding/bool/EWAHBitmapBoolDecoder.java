@@ -17,14 +17,14 @@ package org.sidney.core.encoding.bool;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EWAHBitmapBoolDecoder extends AbstractDecoder implements BoolDecoder {
+public class EWAHBitmapBoolDecoder extends BaseDecoder implements BoolDecoder {
     private EWAHCompressedBitmap bitmap;
     private int index = 0;
     private int nextTrueBit;

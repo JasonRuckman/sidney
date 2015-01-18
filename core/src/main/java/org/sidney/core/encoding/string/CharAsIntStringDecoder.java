@@ -15,14 +15,14 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.int32.DeltaBitPackingInt32Decoder;
 import org.sidney.core.encoding.int32.Int32Decoder;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class CharAsIntStringDecoder extends AbstractDecoder implements StringDecoder {
+public class CharAsIntStringDecoder extends BaseDecoder implements StringDecoder {
     private final Int32Decoder lengthDecoder = new DeltaBitPackingInt32Decoder();
     private final Int32Decoder characterDecoder = new DeltaBitPackingInt32Decoder();
 

@@ -15,14 +15,14 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.Int32Decoder;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RLEStringDecoder extends AbstractDecoder implements StringDecoder {
+public class RLEStringDecoder extends BaseDecoder implements StringDecoder {
     private final StringDecoder valueDecoder = Encoding.PLAIN.newStringDecoder();
     private final Int32Decoder runSizeDecoder = Encoding.BITPACKED.newInt32Decoder();
     private int runSize = 0;

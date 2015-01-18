@@ -23,6 +23,7 @@ import org.sidney.core.encoding.float64.Float64Encoder;
 import org.sidney.core.encoding.float64.PlainFloat64Decoder;
 import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
@@ -57,7 +58,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
         return decoder.nextDoubles(num);
     }
 }

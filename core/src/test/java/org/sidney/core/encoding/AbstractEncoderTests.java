@@ -20,10 +20,7 @@ import org.sidney.core.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -104,7 +101,8 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
         pair.getDecoder().readFromStream(
                 new BufferedInputStream(
-                        new GZIPInputStream(Bytes.wrapInStream(bytes))
+                        new GZIPInputStream(
+                                new ByteArrayInputStream(bytes))
                 )
         );
         consumeAndAssert().accept(pair.getDecoder(), t);
@@ -122,7 +120,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
-        pair.getDecoder().readFromStream(Bytes.wrapInStream(bytes));
+        pair.getDecoder().readFromStream(new ByteArrayInputStream(bytes));
         consumeAndAssert().accept(pair.getDecoder(), t);
     }
 }

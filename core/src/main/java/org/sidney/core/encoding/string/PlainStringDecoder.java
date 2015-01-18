@@ -15,17 +15,17 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-public class PlainStringDecoder extends AbstractDecoder implements StringDecoder {
+public class PlainStringDecoder extends BaseDecoder implements StringDecoder {
     private final Charset charset = Charset.forName("UTF-8");
 
     public String readString() {
-        int length = readIntLE();
+        int length = readIntInternal();
         byte[] bytes = readBytesInternal(length);
         return charset.decode(ByteBuffer.wrap(bytes)).toString();
     }

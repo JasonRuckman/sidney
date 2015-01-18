@@ -15,10 +15,10 @@
  */
 package org.sidney.core.encoding.int32;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
-public class PlainInt32Decoder extends AbstractDecoder implements Int32Decoder {
+public class PlainInt32Decoder extends BaseDecoder implements Int32Decoder {
     @Override
     public String supportedEncoding() {
         return Encoding.PLAIN.name();
@@ -26,7 +26,7 @@ public class PlainInt32Decoder extends AbstractDecoder implements Int32Decoder {
 
     @Override
     public int nextInt() {
-        return readIntLE();
+        return readIntInternal();
     }
 
     @Override

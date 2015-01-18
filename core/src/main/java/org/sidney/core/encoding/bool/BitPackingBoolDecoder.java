@@ -15,13 +15,13 @@
  */
 package org.sidney.core.encoding.bool;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecoder {
+public class BitPackingBoolDecoder extends BaseDecoder implements BoolDecoder {
     private int currentBitIndex = 0;
 
     @Override

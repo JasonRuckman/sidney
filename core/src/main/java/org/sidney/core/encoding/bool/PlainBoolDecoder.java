@@ -15,10 +15,10 @@
  */
 package org.sidney.core.encoding.bool;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
-public class PlainBoolDecoder extends AbstractDecoder implements BoolDecoder {
+public class PlainBoolDecoder extends BaseDecoder implements BoolDecoder {
     @Override
     public boolean nextBool() {
         return readBoolean();

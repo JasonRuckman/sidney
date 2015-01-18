@@ -18,7 +18,7 @@ package org.sidney.core.encoding.int32;
 import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.io.InputStream;
 
 import static org.sidney.core.Bytes.readIntFromStream;
 
-public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int32Decoder {
+public class DeltaBitPackingInt32Decoder extends BaseDecoder implements Int32Decoder {
     private int[] intBuffer = new int[0];
     private int currentIndex = 0;
     private int blockSize;
@@ -88,9 +88,9 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
 
     private void loadNextMiniBlock() {
         currentIndex = 0;
-        int bitWidth = readIntLE();
-        int minDelta = readIntLE();
-        int numValuesToRead = readIntLE();
+        int bitWidth = readIntInternal();
+        int minDelta = readIntInternal();
+        int numValuesToRead = readIntInternal();
         totalValueCount -= numValuesToRead;
         int strideSize = Bytes.sizeInBytes(8, bitWidth);
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);

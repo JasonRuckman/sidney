@@ -20,6 +20,7 @@ import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
 import org.sidney.core.encoding.bool.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
@@ -64,7 +65,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
         return decoder.nextBools(num);
     }
 }

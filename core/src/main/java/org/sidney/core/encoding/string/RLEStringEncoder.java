@@ -15,7 +15,7 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.int32.BitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
@@ -23,7 +23,7 @@ import org.sidney.core.encoding.int32.Int32Encoder;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class RLEStringEncoder extends AbstractEncoder implements StringEncoder {
+public class RLEStringEncoder extends BaseEncoder implements StringEncoder {
     private String currentRun = "";
     private int runSize;
     private boolean isNewRun = true;

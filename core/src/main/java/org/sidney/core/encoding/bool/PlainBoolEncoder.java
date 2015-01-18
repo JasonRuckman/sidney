@@ -15,10 +15,10 @@
  */
 package org.sidney.core.encoding.bool;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 
-public class PlainBoolEncoder extends AbstractEncoder implements BoolEncoder {
+public class PlainBoolEncoder extends BaseEncoder implements BoolEncoder {
     @Override
     public void writeBool(boolean value) {
         writeBoolean(value);

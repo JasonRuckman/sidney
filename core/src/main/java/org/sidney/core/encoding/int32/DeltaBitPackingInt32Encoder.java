@@ -18,7 +18,7 @@ package org.sidney.core.encoding.int32;
 import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static org.sidney.core.Bytes.writeIntToStream;
 /**
  * Inspired by parquet's delta packer.  Packs ints into blocks of 128, bitpacked on the max bitwidth of the block
  */
-public class DeltaBitPackingInt32Encoder extends AbstractEncoder implements Int32Encoder {
+public class DeltaBitPackingInt32Encoder extends BaseEncoder implements Int32Encoder {
     public static final int DEFAULT_BLOCK_SIZE = 128;
 
     private int firstValue = 0;

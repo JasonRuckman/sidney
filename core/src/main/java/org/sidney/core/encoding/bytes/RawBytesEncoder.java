@@ -15,10 +15,10 @@
  */
 package org.sidney.core.encoding.bytes;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.Encoding;
 
-public class RawBytesEncoder extends AbstractEncoder implements BytesEncoder {
+public class RawBytesEncoder extends BaseEncoder implements BytesEncoder {
     @Override
     public void writeBytes(byte[] bytes) {
         writeBytes(bytes, 0, bytes.length);

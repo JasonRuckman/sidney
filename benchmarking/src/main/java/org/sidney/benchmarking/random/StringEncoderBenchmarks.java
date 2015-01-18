@@ -20,6 +20,7 @@ import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
 import org.sidney.core.encoding.string.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
@@ -70,7 +71,7 @@ public class StringEncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
         return decoder.readStrings(num);
     }
 }

@@ -51,10 +51,6 @@ public class Bytes {
                 ((bytes[offset] & 255));
     }
 
-    public static ByteArrayInputStream wrapInStream(byte[] bytes) {
-        return new ByteArrayInputStream(bytes);
-    }
-
     public static int readIntFromStream(InputStream inputStream) throws IOException {
         byte[] arr = new byte[4];
         inputStream.read(arr);

@@ -15,7 +15,7 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 import org.sidney.core.encoding.int32.DeltaBitPackingInt32Encoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
 import org.sidney.core.field.FieldAccessor;
@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 
 //Special sort of encoder that is efficient on text with characters that have high unicode values, since it delta / bitpacks the values
-public class CharAsIntStringEncoder extends AbstractEncoder implements StringEncoder {
+public class CharAsIntStringEncoder extends BaseEncoder implements StringEncoder {
     private FieldAccessor charArrayField;
     private Int32Encoder lengthEncoder = new DeltaBitPackingInt32Encoder();
     private Int32Encoder charEncoder = new DeltaBitPackingInt32Encoder();

@@ -21,14 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.BufferUnderflowException;
 
-public abstract class AbstractDecoder implements Decoder {
+public abstract class BaseDecoder implements Decoder {
     private byte[] buffer;
     private int position = 0;
-    private int numValues = 0;
-
-    public int getNumValues() {
-        return numValues;
-    }
 
     public byte[] getBuffer() {
         return buffer;
@@ -76,7 +71,7 @@ public abstract class AbstractDecoder implements Decoder {
         return buf;
     }
 
-    protected int readIntLE() {
+    protected int readIntInternal() {
         require(4);
 
         int res = ((buffer[position + 3] & 0xff) << 24)
@@ -88,7 +83,7 @@ public abstract class AbstractDecoder implements Decoder {
         return res;
     }
 
-    protected long readLongLE() {
+    protected long readLongInternal() {
         require(8);
         long res =
                 ((long) (buffer[position + 7] & 0xff) << 56) |

@@ -16,13 +16,13 @@
 package org.sidney.core.encoding.int64;
 
 import org.sidney.core.Longs;
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class GroupVarInt64Decoder extends AbstractDecoder implements Int64Decoder {
+public class GroupVarInt64Decoder extends BaseDecoder implements Int64Decoder {
     private long[] buffer = new long[4];
     private int currentIndex = 0;
 

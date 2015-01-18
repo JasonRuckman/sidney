@@ -18,14 +18,14 @@ package org.sidney.core.encoding.int32;
 import org.sidney.bitpacking.Int32BytePacker;
 import org.sidney.bitpacking.Packers;
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 //fastpfor is better than this impl, but its relatively competitive if i want to remove the dep
-public class BitPackingInt32Decoder extends AbstractDecoder implements Int32Decoder {
+public class BitPackingInt32Decoder extends BaseDecoder implements Int32Decoder {
     private int[] currentMiniBlock;
     private int currentIndex;
 
@@ -63,8 +63,8 @@ public class BitPackingInt32Decoder extends AbstractDecoder implements Int32Deco
         currentIndex = 0;
         currentMiniBlock = new int[128];
 
-        int numValuesToRead = readIntLE();
-        int bitWidth = readIntLE();
+        int numValuesToRead = readIntInternal();
+        int bitWidth = readIntInternal();
         if (numValuesToRead > 0) {
             int strideSize = Bytes.sizeInBytes(8, bitWidth);
             Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);

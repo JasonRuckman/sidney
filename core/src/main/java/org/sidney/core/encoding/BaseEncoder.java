@@ -20,8 +20,7 @@ import org.sidney.core.Bytes;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class AbstractEncoder implements Encoder {
-    protected int numValues = 0;
+public abstract class BaseEncoder implements Encoder {
     private byte[] buffer = new byte[256];
     private int position = 0;
 
@@ -45,7 +44,6 @@ public abstract class AbstractEncoder implements Encoder {
     public void reset() {
         position = 0;
         buffer = new byte[256];
-        numValues = 0;
     }
 
     @Override

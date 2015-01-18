@@ -15,7 +15,7 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractDecoder;
+import org.sidney.core.encoding.BaseDecoder;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.bytes.RawBytesDecoder;
 import org.sidney.core.encoding.int32.DeltaBitPackingInt32Decoder;
@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-public class DeltaLengthStringDecoder extends AbstractDecoder implements StringDecoder {
+public class DeltaLengthStringDecoder extends BaseDecoder implements StringDecoder {
     private final Int32Decoder lengthDecoder = new DeltaBitPackingInt32Decoder();
     private final RawBytesDecoder bytesDecoder = new RawBytesDecoder();
     private final Charset charset = Charset.forName("UTF-8");

@@ -15,16 +15,15 @@
  */
 package org.sidney.core.encoding.string;
 
-import org.sidney.core.encoding.AbstractEncoder;
+import org.sidney.core.encoding.BaseEncoder;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-public class PlainStringEncoder extends AbstractEncoder implements StringEncoder {
+public class PlainStringEncoder extends BaseEncoder implements StringEncoder {
     private final Charset charset = Charset.forName("UTF-8");
 
     public void writeString(String s) {
-        numValues++;
         ByteBuffer bb = charset.encode(s);
         writeIntInternal(bb.limit());
         writeBytesInternal(bb.array(), 0, bb.limit());
