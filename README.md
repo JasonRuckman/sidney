@@ -69,6 +69,4 @@ And here's how you would write and read it to Sidney:
   Foo out = reader.read();
 ```
 
-Writers and readers are cached, by their type and reused. 
-
 Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) and the .close() will flush the last page only.
