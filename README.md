@@ -69,4 +69,4 @@ And here's how you would write and read it to Sidney:
   Foo out = reader.read();
 ```
 
-Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) and the .close() will flush the last page only.
+Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
