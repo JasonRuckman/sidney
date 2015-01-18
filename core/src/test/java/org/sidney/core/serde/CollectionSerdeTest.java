@@ -49,7 +49,7 @@ public class CollectionSerdeTest extends SerdeTestBase {
                 List.class, AllPrimitives.class
         );
         reader.open(bais);
-        List<AllPrimitives> output = reader.read();
+        List<AllPrimitives> output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(list, output);
     }
 

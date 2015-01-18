@@ -48,7 +48,7 @@ public class MapSerdeTest extends SerdeTestBase {
                 Map.class, Integer.class, Integer.class
         );
         reader.open(bais);
-        Map<Integer, Integer> outMap = reader.read();
+        Map<Integer, Integer> outMap = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(map, outMap);
     }
 
@@ -69,7 +69,7 @@ public class MapSerdeTest extends SerdeTestBase {
                 Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
         );
         reader.open(bais);
-        Map<AllPrimitiveRefs, AllPrimitiveRefs> out = reader.read();
+        Map<AllPrimitiveRefs, AllPrimitiveRefs> out = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(map, out);
     }
 }

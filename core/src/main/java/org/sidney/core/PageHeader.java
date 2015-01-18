@@ -30,6 +30,10 @@ public class PageHeader {
     private transient Map<Integer, Class> valueToClassMap = new HashMap<>();
     private transient int counter = 0;
 
+    public Map<String, Integer> getClassNameToValue() {
+        return classNameToValue;
+    }
+
     /**
      * Get the number of records in this page
      * @return the page size

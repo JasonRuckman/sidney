@@ -37,7 +37,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<int[]> reader = sid.newCachedReader(int[].class);
         reader.open(bais);
-        int[] output = reader.read();
+        int[] output = (reader.hasNext()) ? reader.read() : null;
 
         Assert.assertArrayEquals(ints, output);
     }
@@ -58,7 +58,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitives[]> reader = sid.newCachedReader(AllPrimitives[].class);
         reader.open(bais);
-        AllPrimitives[] output = reader.read();
+        AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertArrayEquals(primitiveses, output);
     }
 
@@ -75,7 +75,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveArrays> reader = sid.newCachedReader(AllPrimitiveArrays.class);
         reader.open(bais);
-        AllPrimitiveArrays output = reader.read();
+        AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(arrays, output);
     }
 
@@ -92,12 +92,7 @@ public class ArraySerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveRefsArrays> reader = sid.newCachedReader(AllPrimitiveRefsArrays.class);
         reader.open(bais);
-        AllPrimitiveRefsArrays out = reader.read();
+        AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(one, out);
-}
-
-    @Test
-    public void testArraysOfMaps() {
-
     }
 }

@@ -43,8 +43,8 @@ public class BeanSerdeTest extends SerdeTestBase {
         Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class);
         reader.open(bais);
 
-        AllPrimitives out = reader.read();
-        AllPrimitives outTwo = reader.read();
+        AllPrimitives out = (reader.hasNext()) ? reader.read() : null;
+        AllPrimitives outTwo = (reader.hasNext()) ? reader.read() : null;
 
         Assert.assertEquals(one, out);
         Assert.assertEquals(two, outTwo);
@@ -66,8 +66,8 @@ public class BeanSerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<AllPrimitiveRefs> reader = sid.newCachedReader(AllPrimitiveRefs.class);
         reader.open(bais);
-        AllPrimitiveRefs out = reader.read();
-        AllPrimitiveRefs outTwo = reader.read();
+        AllPrimitiveRefs out = (reader.hasNext()) ? reader.read() : null;
+        AllPrimitiveRefs outTwo = (reader.hasNext()) ? reader.read() : null;
 
         Assert.assertEquals(one, out);
         Assert.assertEquals(two, outTwo);
@@ -90,8 +90,8 @@ public class BeanSerdeTest extends SerdeTestBase {
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<InheritedAllPrimitives> reader = sid.newCachedReader(InheritedAllPrimitives.class);
         reader.open(bais);
-        InheritedAllPrimitives out = reader.read();
-        InheritedAllPrimitives outTwo = reader.read();
+        InheritedAllPrimitives out = (reader.hasNext()) ? reader.read() : null;
+        InheritedAllPrimitives outTwo = (reader.hasNext()) ? reader.read() : null;
 
         Assert.assertEquals(one, out);
         Assert.assertEquals(two, outTwo);
@@ -118,8 +118,8 @@ public class BeanSerdeTest extends SerdeTestBase {
         );
         reader.open(bais);
 
-        GenericsContainer<Integer, Double> outOne = reader.read();
-        GenericsContainer<Integer, Double> outTwo = reader.read();
+        GenericsContainer<Integer, Double> outOne = (reader.hasNext()) ? reader.read() : null;
+        GenericsContainer<Integer, Double> outTwo = (reader.hasNext()) ? reader.read() : null;
 
         Assert.assertEquals(one, outOne);
         Assert.assertEquals(two, outTwo);
