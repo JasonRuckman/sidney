@@ -16,8 +16,9 @@
 package org.sidney.core.serde;
 
 import org.sidney.core.ColumnOperations;
-import org.sidney.core.column.ColumnIO;
+import org.sidney.core.serde.column.ColumnIO;
 import org.sidney.core.encoding.Encoder;
+import org.sidney.core.serde.handler.TypeHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -83,10 +84,8 @@ public class ColumnWriter extends ColumnOperations {
         repetitionEncoder.writeToStream(outputStream);
 
         for (ColumnIO columnIO : columnIOs) {
-            if (columnIO.getEncoders() != null) {
-                for (Encoder encoder : columnIO.getEncoders()) {
-                    encoder.writeToStream(outputStream);
-                }
+            for (Encoder encoder : columnIO.getEncoders()) {
+                encoder.writeToStream(outputStream);
             }
         }
 

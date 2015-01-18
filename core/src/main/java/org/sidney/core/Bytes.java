@@ -16,6 +16,10 @@
 package org.sidney.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 public class Bytes {
     public static int sizeInBytes(int num, int bitwidth) {
@@ -49,5 +53,30 @@ public class Bytes {
 
     public static ByteArrayInputStream wrapInStream(byte[] bytes) {
         return new ByteArrayInputStream(bytes);
+    }
+
+    public static int readIntFromStream(InputStream inputStream) throws IOException {
+        byte[] arr = new byte[4];
+        inputStream.read(arr);
+        return bytesToInt(arr, 0);
+    }
+
+    public static void writeIntToStream(int value, OutputStream outputStream) throws IOException {
+        byte[] arr = new byte[4];
+        writeIntOn4Bytes(value, arr, 0);
+        outputStream.write(arr);
+    }
+
+    public static void writeStringToStream(String value, OutputStream outputStream) throws IOException {
+        byte[] bytes = value.getBytes(Charset.forName("UTF-8"));
+        writeIntToStream(bytes.length, outputStream);
+        outputStream.write(bytes);
+    }
+
+    public static String readStringFromStream(InputStream inputStream) throws IOException {
+        int length = readIntFromStream(inputStream);
+        byte[] bytes = new byte[length];
+        inputStream.read(bytes);
+        return new String(bytes, Charset.forName("UTF-8"));
     }
 }

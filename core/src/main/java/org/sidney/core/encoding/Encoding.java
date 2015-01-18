@@ -28,7 +28,8 @@ import org.sidney.core.encoding.float64.PlainFloat64Encoder;
 import org.sidney.core.encoding.int32.*;
 import org.sidney.core.encoding.int64.*;
 import org.sidney.core.encoding.string.*;
-import org.sidney.core.schema.Type;
+import org.sidney.core.exception.UnsupportedEncodingException;
+import org.sidney.core.serde.Type;
 
 public enum Encoding {
     PLAIN {

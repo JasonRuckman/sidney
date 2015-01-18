@@ -20,12 +20,9 @@ import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.Bytes;
 import org.sidney.core.encoding.bool.*;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 @State(Scope.Benchmark)
 @Warmup(iterations = 10)
@@ -46,38 +43,20 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("boolEncodingRandom")
-    public boolean[] plainEncoderUncompressed() throws IOException {
+    public boolean[] plain() throws IOException {
         return run(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
     }
 
     @Benchmark
     @Group("boolEncodingRandom")
-    public boolean[] ewahBoolEncoderUncompressed() throws IOException {
+    public boolean[] bitmap() throws IOException {
         return run(getEncoder(EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmapBoolDecoder.class));
     }
 
     @Benchmark
     @Group("boolEncodingRandom")
-    public boolean[] bitPackingEncoderUncompressed() throws IOException {
+    public boolean[] bitpacking() throws IOException {
         return run(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingGZIPRandom")
-    public boolean[] plainEncoderGZIP() throws IOException {
-        return runGZipCompressed(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingGZIPRandom")
-    public boolean[] ewahBoolEncoderGZIP() throws IOException {
-        return runGZipCompressed(getEncoder(EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmapBoolDecoder.class));
-    }
-
-    @Benchmark
-    @Group("boolEncodingGZIPRandom")
-    public boolean[] bitPackingEncoderGZIP() throws IOException {
-        return runGZipCompressed(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
     }
 
     private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
@@ -85,22 +64,7 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
         encoder.writeBools(booleans);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
-        return decoder.nextBools(num);
-    }
-
-    private boolean[] runGZipCompressed(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
-        encoder.reset();
-        encoder.writeBools(booleans);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GZIPOutputStream gos = new GZIPOutputStream(baos);
-        encoder.writeToStream(gos);
-        gos.close();
-        decoder.populateBufferFromStream(
-                new BufferedInputStream(new GZIPInputStream(
-                        Bytes.wrapInStream(baos.toByteArray()))
-                )
-        );
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextBools(num);
     }
 }

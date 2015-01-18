@@ -16,7 +16,6 @@
 package org.sidney.core.encoding;
 
 import org.sidney.core.Bytes;
-import org.sidney.core.encoding.io.StreamUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,7 +50,7 @@ public abstract class AbstractEncoder implements Encoder {
 
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
-        StreamUtils.writeIntToStream(getPosition(), outputStream);
+        Bytes.writeIntToStream(getPosition(), outputStream);
         outputStream.write(getBuffer(), 0, getPosition());
     }
 

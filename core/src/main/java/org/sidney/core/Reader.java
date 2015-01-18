@@ -16,11 +16,18 @@
 package org.sidney.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.encoding.io.StreamUtils;
+import org.sidney.core.exception.SidneyException;
 import org.sidney.core.serde.*;
+import org.sidney.core.serde.handler.TypeHandler;
+import org.sidney.core.serde.handler.TypeHandlerFactory;
+import org.sidney.core.serde.handler.Types;
 
 import java.io.InputStream;
 
+/**
+ * Reads out items from underlying streams
+ * @param <T>
+ */
 public class Reader<T> {
     private InputStream inputStream;
     private ReadContext context;
@@ -30,11 +37,12 @@ public class Reader<T> {
     private int recordCount = 0;
     private TypeHandlerFactory handlerFactory;
     private PageHeader currentPageHeader = null;
+    private boolean isOpen = false;
 
     Reader(Class type, Registrations registrations) {
         this.handlerFactory = new TypeHandlerFactory(registrations);
         this.typeHandler = handlerFactory.handler(
-                type, null, TypeUtil.binding(type)
+                type, null, Types.binding(type)
         );
     }
 
@@ -43,6 +51,10 @@ public class Reader<T> {
         this.typeHandler = handlerFactory.handler(type, null, null, generics);
     }
 
+    /**
+     * Check for new items
+     * @return whether there are more items
+     */
     public boolean hasNext() {
         if (currentPageHeader == null) {
             loadNextPage();
@@ -61,29 +73,38 @@ public class Reader<T> {
         return false;
     }
 
+    /**
+     * Read the next item from the stream
+     * @return the next item
+     */
     public T read() {
+        if(!isOpen) {
+            throw new SidneyException("Reader is not open.");
+        }
         context.setColumnIndex(0);
         return (T) typeHandler.readValue(typeReader, context);
     }
 
+    /**
+     * Open the given {@link java.io.InputStream} for reading.
+     */
     public void open(InputStream inputStream) {
         this.inputStream = inputStream;
         this.recordCount = 0;
-
-        try {
-            loadNextPage();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.isOpen = true;
     }
 
+    /**
+     * Marks this reader as closed
+     */
     public void close() {
         inputStream = null;
+        isOpen = false;
     }
 
     private void loadNextPage() {
         try {
-            int size = StreamUtils.readIntFromStream(inputStream);
+            int size = Bytes.readIntFromStream(inputStream);
             byte[] bytes = new byte[size];
             inputStream.read(bytes);
             currentPageHeader = json.readValue(bytes, PageHeader.class);

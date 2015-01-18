@@ -24,7 +24,7 @@ import org.sidney.core.encoding.Encoding;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.sidney.core.encoding.io.StreamUtils.writeIntToStream;
+import static org.sidney.core.Bytes.writeIntToStream;
 
 /**
  * Inspired by parquet's delta packer.  Packs ints into blocks of 128, bitpacked on the max bitwidth of the block

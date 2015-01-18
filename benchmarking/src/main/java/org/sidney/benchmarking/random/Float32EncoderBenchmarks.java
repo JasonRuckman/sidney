@@ -60,7 +60,7 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextFloats(num);
     }
 }

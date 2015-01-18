@@ -16,8 +16,6 @@
 package org.sidney.core.serde;
 
 public class TypeReader {
-    private int count = 0;
-
     public boolean readBoolean(ReadContext context) {
         return context.getColumnReader().readBool(context.getColumnIndex());
     }

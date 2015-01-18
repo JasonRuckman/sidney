@@ -15,7 +15,7 @@
  */
 package org.sidney.core.encoding;
 
-import org.sidney.core.encoding.io.StreamUtils;
+import org.sidney.core.Bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,9 +51,9 @@ public abstract class AbstractDecoder implements Decoder {
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+    public void readFromStream(InputStream inputStream) throws IOException {
         setPosition(0);
-        int bufferSize = StreamUtils.readIntFromStream(inputStream);
+        int bufferSize = Bytes.readIntFromStream(inputStream);
         buffer = new byte[bufferSize];
         inputStream.read(buffer);
     }

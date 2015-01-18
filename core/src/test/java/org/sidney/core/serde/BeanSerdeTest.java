@@ -131,7 +131,7 @@ public class BeanSerdeTest extends SerdeTestBase {
 
         int num = 4097;
         Sid sid = new Sid();
-        Writer<AllPrimitives> writer = sid.newCachedWriter(AllPrimitives.class);
+        Writer<AllPrimitives> writer = sid.newWriter(AllPrimitives.class);
         writer.open(baos);
         List<AllPrimitives> list = new ArrayList<>();
         List<AllPrimitives> out = new ArrayList<>();

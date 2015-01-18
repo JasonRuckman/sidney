@@ -19,15 +19,21 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+/**
+ * Represents data about the serialized page
+ */
 public class PageHeader {
     private Map<String, Integer> classNameToValue = new HashMap<>();
     private boolean isLastPage;
     private int pageSize;
-
     private transient Map<Class, Integer> classToValueMap = new IdentityHashMap<>();
     private transient Map<Integer, Class> valueToClassMap = new HashMap<>();
     private transient int counter = 0;
 
+    /**
+     * Get the number of records in this page
+     * @return the page size
+     */
     public int getPageSize() {
         return pageSize;
     }
@@ -36,6 +42,10 @@ public class PageHeader {
         this.pageSize = pageSize;
     }
 
+    /**
+     * Whether or not this is the last page that was serialized (set when the writer is closed)
+     * @return whether this is the last page
+     */
     public boolean isLastPage() {
         return isLastPage;
     }
@@ -44,14 +54,11 @@ public class PageHeader {
         this.isLastPage = isLastPage;
     }
 
-    public Map<String, Integer> getClassNameToValue() {
-        return classNameToValue;
-    }
-
-    public void setClassNameToValue(Map<String, Integer> classNameToValue) {
-        this.classNameToValue = classNameToValue;
-    }
-
+    /**
+     * Return an integer value for
+     * @param clazz
+     * @return
+     */
     public int valueForType(Class clazz) {
         Integer value = classToValueMap.get(clazz);
         if (value == null) {
@@ -59,10 +66,6 @@ public class PageHeader {
             classToValueMap.put(clazz, value);
         }
         return value;
-    }
-
-    public Class classForValue(int value) {
-        return valueToClassMap.get(value);
     }
 
     public Class readConcreteType(int value) {

@@ -16,13 +16,19 @@
 package org.sidney.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.sidney.core.exception.SidneyException;
 import org.sidney.core.serde.*;
+import org.sidney.core.serde.handler.TypeHandler;
+import org.sidney.core.serde.handler.TypeHandlerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.sidney.core.encoding.io.StreamUtils.writeIntToStream;
+import static org.sidney.core.Bytes.*;
 
+/**
+ * Writers values to a given {@link java.io.OutputStream}
+ */
 public class Writer<T> {
     public static final int DEFAULT_PAGE_SIZE = 1024;
 
@@ -35,6 +41,7 @@ public class Writer<T> {
     private Class[] generics = null;
     private WriteContext context;
     private TypeHandlerFactory handlerFactory;
+    private boolean isOpen = false;
 
     //don't use a type variable since it screws up the inference
     Writer(Class type, Registrations registrations) {
@@ -54,11 +61,21 @@ public class Writer<T> {
         this.typeWriter = new TypeWriter();
     }
 
+    /**
+     * Get the root type of this writer
+     * @return the root type
+     */
     public Class<T> getType() {
         return type;
     }
 
+    /**
+     * Write the given value
+     */
     public void write(T value) {
+        if(!isOpen) {
+            throw new SidneyException("Cannot write to a closed writer");
+        }
         context.setColumnIndex(0);
         handler.writeValue(value, typeWriter, context);
 
@@ -67,20 +84,24 @@ public class Writer<T> {
         }
     }
 
-    public void write(Iterable<T> values) {
-        for (T value : values) {
-            write(value);
-        }
-    }
-
+    /**
+     * Open this writer against the given {@link java.io.OutputStream}
+     */
     public void open(OutputStream outputStream) {
         this.outputStream = outputStream;
         this.recordCount = 0;
+        this.isOpen = true;
+        this.context.setPageHeader(new PageHeader());
     }
 
+    /**
+     * Flush the last page and mark the writer as closed
+     */
     public void close() {
         flushPage(true);
+
         outputStream = null;
+        isOpen = false;
     }
 
     private void flushPage(boolean isLastPage) {

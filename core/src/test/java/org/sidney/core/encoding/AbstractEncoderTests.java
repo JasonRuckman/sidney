@@ -102,7 +102,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-        pair.getDecoder().populateBufferFromStream(
+        pair.getDecoder().readFromStream(
                 new BufferedInputStream(
                         new GZIPInputStream(Bytes.wrapInStream(bytes))
                 )
@@ -122,7 +122,7 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
-        pair.getDecoder().populateBufferFromStream(Bytes.wrapInStream(bytes));
+        pair.getDecoder().readFromStream(Bytes.wrapInStream(bytes));
         consumeAndAssert().accept(pair.getDecoder(), t);
     }
 }

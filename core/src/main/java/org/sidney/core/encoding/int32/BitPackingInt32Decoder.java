@@ -53,8 +53,8 @@ public class BitPackingInt32Decoder extends AbstractDecoder implements Int32Deco
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        super.populateBufferFromStream(inputStream);
+    public void readFromStream(InputStream inputStream) throws IOException {
+        super.readFromStream(inputStream);
 
         loadNextMiniBlock();
     }

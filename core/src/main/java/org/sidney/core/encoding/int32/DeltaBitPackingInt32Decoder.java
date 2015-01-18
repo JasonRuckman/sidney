@@ -24,7 +24,7 @@ import org.sidney.core.encoding.Encoding;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.sidney.core.encoding.io.StreamUtils.readIntFromStream;
+import static org.sidney.core.Bytes.readIntFromStream;
 
 public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int32Decoder {
     private int[] intBuffer = new int[0];
@@ -66,7 +66,7 @@ public class DeltaBitPackingInt32Decoder extends AbstractDecoder implements Int3
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+    public void readFromStream(InputStream inputStream) throws IOException {
         reset();
         totalValueCount = readIntFromStream(inputStream);
         firstValue = readIntFromStream(inputStream);

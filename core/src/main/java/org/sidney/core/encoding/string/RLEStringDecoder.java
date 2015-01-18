@@ -29,12 +29,12 @@ public class RLEStringDecoder extends AbstractDecoder implements StringDecoder {
     private String currentRun = null;
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+    public void readFromStream(InputStream inputStream) throws IOException {
         runSize = 0;
         currentRun = null;
 
-        valueDecoder.populateBufferFromStream(inputStream);
-        runSizeDecoder.populateBufferFromStream(inputStream);
+        valueDecoder.readFromStream(inputStream);
+        runSizeDecoder.readFromStream(inputStream);
     }
 
     @Override

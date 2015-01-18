@@ -32,12 +32,12 @@ public class FlaInsuranceRecord {
     @Encode(Encoding.RLE)
     private String county;
     @Parsed(field = "eq_site_limit", defaultNullRead = "0")
-    @Encode(Encoding.RLE)
+    @Encode(Encoding.PLAIN)
     private float eqSiteLimit;
-    @Encode(Encoding.RLE)
+    @Encode(Encoding.PLAIN)
     @Parsed(field = "hu_site_limit", defaultNullRead = "0")
     private float huSiteLimit;
-    @Encode(Encoding.RLE)
+    @Encode(Encoding.PLAIN)
     @Parsed(field = "fl_site_limit", defaultNullRead = "0")
     private float flSiteLimit;
     @Encode(Encoding.RLE)

@@ -42,19 +42,19 @@ public class Int32EncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("intEncoders")
-    public int[] deltaInt32Encoder() throws IOException {
+    public int[] deltaBitPackingHybrid() throws IOException {
         return run(getEncoder(DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPackingInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
-    public int[] plainInt32Encoder() throws IOException {
+    public int[] plain() throws IOException {
         return run(getEncoder(PlainInt32Encoder.class), getDecoder(PlainInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
-    public int[] bitpackingInt32Encoder() throws IOException {
+    public int[] bitpacking() throws IOException {
         return run(getEncoder(BitPackingInt32Encoder.class), getDecoder(BitPackingInt32Decoder.class));
     }
 
@@ -65,7 +65,7 @@ public class Int32EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextInts(num);
     }
 }

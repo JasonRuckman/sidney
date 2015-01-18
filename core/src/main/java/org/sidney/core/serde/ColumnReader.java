@@ -16,8 +16,9 @@
 package org.sidney.core.serde;
 
 import org.sidney.core.ColumnOperations;
-import org.sidney.core.column.ColumnIO;
+import org.sidney.core.serde.column.ColumnIO;
 import org.sidney.core.encoding.Decoder;
+import org.sidney.core.serde.handler.TypeHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,14 +69,12 @@ public class ColumnReader extends ColumnOperations {
     }
 
     public void loadFromInputStream(InputStream inputStream) throws IOException {
-        definitionDecoder.populateBufferFromStream(inputStream);
-        repetitionDecoder.populateBufferFromStream(inputStream);
+        definitionDecoder.readFromStream(inputStream);
+        repetitionDecoder.readFromStream(inputStream);
 
         for (ColumnIO columnIO : columnIOs) {
-            if (columnIO.getEncoders() != null) {
-                for (Decoder decoder : columnIO.getDecoders()) {
-                    decoder.populateBufferFromStream(inputStream);
-                }
+            for (Decoder decoder : columnIO.getDecoders()) {
+                decoder.readFromStream(inputStream);
             }
         }
     }

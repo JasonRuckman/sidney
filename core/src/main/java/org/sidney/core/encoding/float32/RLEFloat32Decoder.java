@@ -51,12 +51,12 @@ public class RLEFloat32Decoder implements Float32Decoder {
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
+    public void readFromStream(InputStream inputStream) throws IOException {
         runSize = 0;
         currentRun = 0;
 
-        valueDecoder.populateBufferFromStream(inputStream);
-        runSizeDecoder.populateBufferFromStream(inputStream);
+        valueDecoder.readFromStream(inputStream);
+        runSizeDecoder.readFromStream(inputStream);
     }
 
     private void loadNextRun() {

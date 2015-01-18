@@ -162,8 +162,8 @@ public class GroupVarInt64Decoder extends AbstractDecoder implements Int64Decode
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        super.populateBufferFromStream(inputStream);
+    public void readFromStream(InputStream inputStream) throws IOException {
+        super.readFromStream(inputStream);
         currentIndex = 4;
     }
 }

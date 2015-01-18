@@ -15,7 +15,7 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.TypeHandler;
+import org.sidney.core.serde.handler.TypeHandler;
 
 import java.util.HashMap;
 import java.util.Map;

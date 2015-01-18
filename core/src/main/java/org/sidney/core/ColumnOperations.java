@@ -15,14 +15,15 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.column.*;
+import org.sidney.core.serde.column.*;
 import org.sidney.core.encoding.Encoding;
 import org.sidney.core.encoding.bool.BoolDecoder;
 import org.sidney.core.encoding.bool.BoolEncoder;
 import org.sidney.core.encoding.int32.Int32Decoder;
 import org.sidney.core.encoding.int32.Int32Encoder;
-import org.sidney.core.serde.PrimitiveTypeHandler;
-import org.sidney.core.serde.TypeHandler;
+import org.sidney.core.exception.UnsupportedColumnTypeException;
+import org.sidney.core.serde.handler.PrimitiveTypeHandler;
+import org.sidney.core.serde.handler.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,9 @@ public abstract class ColumnOperations {
     private List<ColumnIO> extractColumns(TypeHandler typeHandler) {
         List<ColumnIO> columns = new ArrayList<>();
         columns.addAll(columnsFor(typeHandler));
-        for (TypeHandler r : typeHandler.getHandlers()) {
+
+        List<TypeHandler> handlers = (List<TypeHandler>)typeHandler.getHandlers();
+        for (TypeHandler<?> r : handlers) {
             columns.addAll(columnsFor(r));
         }
         return columns;
@@ -59,7 +62,6 @@ public abstract class ColumnOperations {
             } else {
                 columnIO = new ColumnIO();
             }
-            columnIO.setPath(String.format("%s_METADATA", typeHandler.name()));
         }
         columns.add(columnIO);
 
@@ -126,10 +128,9 @@ public abstract class ColumnOperations {
                 break;
             }
             default: {
-                throw new IllegalStateException();
+                throw new UnsupportedColumnTypeException(typeHandler.getType());
             }
         }
-        columnIO.setPath(typeHandler.name());
         return columnIO;
     }
 }

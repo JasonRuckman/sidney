@@ -43,13 +43,13 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("int64Encoders")
-    public long[] runPlainInt64Encoder() throws IOException {
+    public long[] plain() throws IOException {
         return run(getEncoder(PlainInt64Encoder.class), getDecoder(PlainInt64Decoder.class));
     }
 
     @Benchmark
     @Group("int64Encoders")
-    public long[] runVarInt64Encoder() throws IOException {
+    public long[] groupVarInt() throws IOException {
         return run(getEncoder(GroupVarInt64Encoder.class), getDecoder(GroupVarInt64Decoder.class));
     }
 
@@ -60,7 +60,7 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextLongs(num);
     }
 }

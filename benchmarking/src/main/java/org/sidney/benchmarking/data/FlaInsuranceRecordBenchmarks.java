@@ -16,6 +16,7 @@
 package org.sidney.benchmarking.data;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.univocity.parsers.common.processor.BeanListProcessor;
@@ -23,10 +24,12 @@ import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.openjdk.jmh.annotations.*;
-import org.sidney.core.Sid;
+import org.sidney.core.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 @State(Scope.Benchmark)
@@ -58,43 +61,61 @@ public class FlaInsuranceRecordBenchmarks {
 
     @Benchmark
     @Group("data")
-    public byte[] sidney() throws IOException {
-        return writeSidney();
-    }
-
-    private byte[] writeSidney() throws IOException {
+    public List<FlaInsuranceRecord> sidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream os = new GZIPOutputStream(new BufferedOutputStream(baos));
-        org.sidney.core.Writer<FlaInsuranceRecord> recordSerializer = sid.newCachedWriter(FlaInsuranceRecord.class);
-        recordSerializer.open(baos);
+        OutputStream os = new GZIPOutputStream(baos);
+        org.sidney.core.Writer<FlaInsuranceRecord> writer = sid.newCachedWriter(FlaInsuranceRecord.class);
+        writer.open(os);
         for (FlaInsuranceRecord record : records) {
-            recordSerializer.write(record);
+            writer.write(record);
         }
-        recordSerializer.close();
+        writer.close();
         os.close();
 
-        return baos.toByteArray();
+        List<FlaInsuranceRecord> list = new ArrayList<>();
+        org.sidney.core.Reader<FlaInsuranceRecord> reader = sid.newCachedReader(FlaInsuranceRecord.class);
+        reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
+
+        while (reader.hasNext()) {
+            list.add(reader.read());
+        }
+        return list;
     }
 
     @Benchmark
     @Group("data")
-    public byte[] kryo() throws IOException {
-        ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new GZIPOutputStream(new BufferedOutputStream(kryoBaos));
-        Output output = new Output(kryoGzos);
+    public List<FlaInsuranceRecord> kryo() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        OutputStream gzos = new GZIPOutputStream(baos);
+        Output output = new Output(gzos);
         kryo.writeObject(output, records);
         output.close();
-        kryoGzos.close();
-        return kryoBaos.toByteArray();
+        gzos.close();
+
+        InputStream inputStream = new BufferedInputStream(
+                new GZIPInputStream(
+                        new ByteArrayInputStream(baos.toByteArray())
+                )
+        );
+
+        Input input = new Input(inputStream);
+        return kryo.readObject(input, ArrayList.class);
     }
 
     @Benchmark
     @Group("data")
-    public byte[] jackson() throws IOException {
-        ByteArrayOutputStream kryoBaos = new ByteArrayOutputStream();
-        OutputStream kryoGzos = new GZIPOutputStream(new BufferedOutputStream(kryoBaos));
-        objectMapper.writeValue(kryoGzos, records);
-        kryoGzos.close();
-        return kryoBaos.toByteArray();
+    public List<FlaInsuranceRecord> jackson() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        OutputStream gzos = new GZIPOutputStream(baos);
+        objectMapper.writeValue(gzos, records);
+        gzos.close();
+
+        InputStream inputStream = new BufferedInputStream(
+                new GZIPInputStream(
+                        new ByteArrayInputStream(baos.toByteArray())
+                )
+        );
+
+        return objectMapper.readValue(inputStream, ArrayList.class);
     }
 }

@@ -46,7 +46,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("float64Encoders")
-    public double[] runPlainFloat64Encoder() throws IOException {
+    public double[] plain() throws IOException {
         return run(getEncoder(PlainFloat64Encoder.class), getDecoder(PlainFloat64Decoder.class));
     }
 
@@ -57,7 +57,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.nextDoubles(num);
     }
 }

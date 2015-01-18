@@ -47,19 +47,19 @@ public class StringEncoderBenchmarks extends BenchmarkingBase {
 
     @Benchmark
     @Group("stringEncodersRandom")
-    public String[] runPlainStringEncoder() throws IOException {
+    public String[] plain() throws IOException {
         return run(getEncoder(PlainStringEncoder.class), getDecoder(PlainStringDecoder.class));
     }
 
     @Benchmark
     @Group("stringEncodersRandom")
-    public String[] runDeltaLengthEncoder() throws IOException {
+    public String[] deltaLength() throws IOException {
         return run(getEncoder(DeltaLengthStringEncoder.class), getDecoder(DeltaLengthStringDecoder.class));
     }
 
     @Benchmark
     @Group("stringEncodersRandom")
-    public String[] runCharAsIntEncoder() throws IOException {
+    public String[] charAsInt() throws IOException {
         return run(getEncoder(CharAsIntStringEncoder.class), getDecoder(CharAsIntStringDecoder.class));
     }
 
@@ -70,7 +70,7 @@ public class StringEncoderBenchmarks extends BenchmarkingBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         encoder.writeToStream(baos);
         encoder.reset();
-        decoder.populateBufferFromStream(Bytes.wrapInStream(baos.toByteArray()));
+        decoder.readFromStream(Bytes.wrapInStream(baos.toByteArray()));
         return decoder.readStrings(num);
     }
 }

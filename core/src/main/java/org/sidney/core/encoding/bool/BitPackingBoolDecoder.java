@@ -55,8 +55,8 @@ public class BitPackingBoolDecoder extends AbstractDecoder implements BoolDecode
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        super.populateBufferFromStream(inputStream);
+    public void readFromStream(InputStream inputStream) throws IOException {
+        super.readFromStream(inputStream);
         currentBitIndex = 0;
     }
 }

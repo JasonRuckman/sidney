@@ -21,32 +21,91 @@ import java.util.Map;
 public class Sid {
     private final Map<Class, Writer> writerCache = new HashMap<>();
     private final Map<Class, Reader> readerCache = new HashMap<>();
-    private final Registrations registrations = new Registrations();
+    private SidneyConf conf = new SidneyConf();
 
-    //don't use Class<T> it will make the inference weird when you have generics
+    /**
+     * Creates a new {@link org.sidney.core.Writer} for the given type
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Writer} bound to the given type
+     */
+    public <T> Writer<T> newWriter(Class type) {
+        return createWriter(type, false);
+    }
+
+    /**
+     * Creates a new {@link org.sidney.core.Writer} for the given type with the given type parameters
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Writer} bound to the given type
+     */
+    public <T> Writer<T> newWriter(Class type, Class... generics) {
+        return createWriter(type, false, generics);
+    }
+
+    /**
+     * Creates a new {@link org.sidney.core.Writer} for the given type.
+     * This writer will be cached and reused if a writer for the same type is requested again
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Writer} bound to the given type
+     */
     public <T> Writer<T> newCachedWriter(Class type) {
         return createWriter(type, true);
     }
 
+    /**
+     * Creates a new {@link org.sidney.core.Writer} for the given type with the given type parameters
+     * This writer will be cached and reused if a writer for the same type is requested again
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Writer} bound to the given type
+     */
     public <T> Writer<T> newCachedWriter(Class type, Class... generics) {
         return createWriter(type, true, generics);
     }
 
+    /**
+     * Creates a new {@link org.sidney.core.Reader} for the given type
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Reader} bound to the given type
+     */
+    public <T> Reader<T> newReader(Class type) {
+        return createReader(type, false);
+    }
+
+    /**
+     * Creates a new {@link org.sidney.core.Reader} for the given type and given type parameters
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Reader} bound to the given type
+     */
+    public <T> Reader<T> newReader(Class type, Class... generics) {
+        return createReader(type, false, generics);
+    }
+
+    /**
+     * Creates a new {@link org.sidney.core.Reader} for the given type
+     * The reader will be cached and reused if a reader for the same type is requested again
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Reader} bound to the given type
+     */
     public <T> Reader<T> newCachedReader(Class type) {
         return createReader(type, true);
     }
 
+    /**
+     * Creates a new {@link org.sidney.core.Reader} for the given type with the given type parameters
+     * The reader will be cached and reused if a reader for the same type is requested again
+     * @param type the root type
+     * @return a new {@link org.sidney.core.Reader} bound to the given type
+     */
     public <T> Reader<T> newCachedReader(Class type, Class... generics) {
         return createReader(type, true, generics);
     }
 
     private <T> Writer<T> createWriter(Class type, boolean cache, Class... generics) {
         if (!cache) {
-            return new Writer<>(type, registrations, generics);
+            return new Writer<>(type, conf.getRegistrations(), generics);
         }
         Writer<T> writer = (Writer<T>) writerCache.get(type);
         if (writer == null) {
-            writer = new Writer<>(type, registrations, generics);
+            writer = new Writer<>(type, conf.getRegistrations(), generics);
             writerCache.put(type, writer);
         }
         return writer;
@@ -54,11 +113,11 @@ public class Sid {
 
     private <T> Reader<T> createReader(Class type, boolean cache, Class... generics) {
         if (!cache) {
-            return new Reader<>(type, registrations, generics);
+            return new Reader<>(type, conf.getRegistrations(), generics);
         }
         Reader<T> reader = (Reader<T>) readerCache.get(type);
         if (reader == null) {
-            reader = new Reader<>(type, registrations, generics);
+            reader = new Reader<>(type, conf.getRegistrations(), generics);
             readerCache.put(type, reader);
         }
         return reader;

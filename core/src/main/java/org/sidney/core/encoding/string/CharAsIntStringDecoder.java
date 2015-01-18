@@ -50,8 +50,8 @@ public class CharAsIntStringDecoder extends AbstractDecoder implements StringDec
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        lengthDecoder.populateBufferFromStream(inputStream);
-        characterDecoder.populateBufferFromStream(inputStream);
+    public void readFromStream(InputStream inputStream) throws IOException {
+        lengthDecoder.readFromStream(inputStream);
+        characterDecoder.readFromStream(inputStream);
     }
 }

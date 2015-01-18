@@ -45,7 +45,7 @@ public class PlainFloat64Decoder implements Float64Decoder {
     }
 
     @Override
-    public void populateBufferFromStream(InputStream inputStream) throws IOException {
-        decoder.populateBufferFromStream(inputStream);
+    public void readFromStream(InputStream inputStream) throws IOException {
+        decoder.readFromStream(inputStream);
     }
 }
