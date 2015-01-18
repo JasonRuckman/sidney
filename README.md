@@ -68,7 +68,7 @@ And here's how you would write and read it to Sidney:
   ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
   Reader<Foo> reader = sid.newReader(Foo.class);
   reader.open(bais);
-  Foo out = reader.read();
+  Foo out = (reader.hasNext()) ? reader.read() : null;
   reader.close();
 ```
 
