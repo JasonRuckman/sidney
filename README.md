@@ -5,17 +5,17 @@ Sidney is an experimental general java serializer.
 
 It's named after my dog Sid.
 
-It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns.
+It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like Kryo which is more flexible.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
-Right now Sidney works on java beans, maps, arrays and collection types, there's underlying support to simply write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).
+Sidney works on java beans, maps, arrays and collection types, there's underlying support to simply write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
 
 ### Algorithm Description
 
-Sidney follows some of the same conventions that Dremel encoding does, there are definition and repetition columns, however there's slight differences. 
+Sidney follows some of the same conventions that Parquet does, there are definition and repetition columns, however there's slight differences. 
 
 Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will set a true bit in a compressed bitmap.  As of this instant there's only one bitmap, not a bitmap per column which would improve compression if columns had long runs of null or not null, but that's relatively easy to change and it may be configurable in the future.
 
-Repetitions are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
+Repetition counts are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
 For map and collection types (and eventually generalized to any interface type) the actual concrete type is encoded as its own column, it is RLE encoded as an int and a map of the class name to that types int value is encoded into the page header.
 
