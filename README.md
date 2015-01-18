@@ -13,7 +13,7 @@ Right now Sidney works on java beans, maps, arrays and collection types, there's
 
 Sidney follows some of the same conventions that Dremel encoding does, there are definition and repetition columns, however there's slight differences. 
 
-Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will write a boolean value into a compressed bitmap.  As of this instant there's only one bitmap, not a bitmap per column which would improve compression if columns had long runs of null or not null, but that's relatively easy to change and it may be configurable in the future.
+Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will set a true bit in a compressed bitmap.  As of this instant there's only one bitmap, not a bitmap per column which would improve compression if columns had long runs of null or not null, but that's relatively easy to change and it may be configurable in the future.
 
 Repetitions are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
