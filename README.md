@@ -41,7 +41,9 @@ Generics are supported, and they will be respected even if they are inherited an
 
 ```
   public class Foo {
+    @Encode(Encoding.RLE)
     private int first;
+    @Encode(Encoding.BITPACKED)
     private int second;
     
     public Foo(int first, int second) {
@@ -67,6 +69,7 @@ And here's how you would write and read it to Sidney:
   Reader<Foo> reader = sid.newReader(Foo.class);
   reader.open(bais);
   Foo out = reader.read();
+  reader.close();
 ```
 
 Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
