@@ -15,17 +15,17 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.serde.handler.ColumnOperations;
+import org.sidney.core.serde.serializer.ColumnOperations;
 import org.sidney.core.serde.column.ColumnIO;
-import org.sidney.core.encoding.Encoder;
-import org.sidney.core.serde.handler.TypeHandler;
+import org.sidney.core.io.Encoder;
+import org.sidney.core.serde.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class ColumnWriter extends ColumnOperations {
-    public ColumnWriter(TypeHandler typeHandler) {
-        super(typeHandler);
+    public ColumnWriter(Serializer serializer) {
+        super(serializer);
     }
 
     public void writeBoolean(int index, boolean value) {

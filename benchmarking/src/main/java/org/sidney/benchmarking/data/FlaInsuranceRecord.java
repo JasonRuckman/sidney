@@ -16,8 +16,8 @@
 package org.sidney.benchmarking.data;
 
 import com.univocity.parsers.annotations.Parsed;
-import org.sidney.core.annotations.Encode;
-import org.sidney.core.encoding.Encoding;
+import org.sidney.core.Encode;
+import org.sidney.core.io.Encoding;
 
 public class FlaInsuranceRecord {
     //policyID,statecode,county,eq_site_limit,hu_site_limit,fl_site_limit,fr_site_limit,tiv_2011,tiv_2012,eq_site_deductible,hu_site_deductible,

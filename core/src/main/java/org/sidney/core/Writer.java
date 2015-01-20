@@ -16,10 +16,9 @@
 package org.sidney.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.exception.SidneyException;
 import org.sidney.core.serde.*;
-import org.sidney.core.serde.handler.TypeHandler;
-import org.sidney.core.serde.handler.TypeHandlerFactory;
+import org.sidney.core.serde.serializer.Serializer;
+import org.sidney.core.serde.serializer.Serializers;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,30 +32,30 @@ public class Writer<T> {
     public static final int DEFAULT_PAGE_SIZE = 1024;
 
     private final Class<T> type;
-    private final TypeHandler handler;
+    private final Serializer handler;
     private final ObjectMapper json = new ObjectMapper();
     private final TypeWriter typeWriter;
     private OutputStream outputStream;
     private int recordCount = 0;
     private Class[] generics = null;
     private WriteContext context;
-    private TypeHandlerFactory handlerFactory;
+    private Serializers handlerFactory;
     private boolean isOpen = false;
 
     //don't use a type variable since it screws up the inference
     Writer(Class type, Registrations registrations) {
-        this.handlerFactory = new TypeHandlerFactory(registrations);
+        this.handlerFactory = new Serializers(registrations);
         this.type = type;
-        this.handler = handlerFactory.handler(type, null, null);
+        this.handler = handlerFactory.serializer(type, null, null);
         this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
     }
 
     Writer(Class type, Registrations registrations, Class... generics) {
-        this.handlerFactory = new TypeHandlerFactory(registrations);
+        this.handlerFactory = new Serializers(registrations);
         this.type = type;
         this.generics = generics;
-        this.handler = handlerFactory.handler(type, null, null, generics);
+        this.handler = handlerFactory.serializer(type, null, null, generics);
         this.context = new WriteContext(new ColumnWriter(handler), new PageHeader());
         this.typeWriter = new TypeWriter();
     }
@@ -80,7 +79,7 @@ public class Writer<T> {
         handler.writeValue(value, typeWriter, context);
 
         if (++recordCount == DEFAULT_PAGE_SIZE) {
-            flushPage(false);
+            flush();
         }
     }
 
@@ -92,6 +91,10 @@ public class Writer<T> {
         this.recordCount = 0;
         this.isOpen = true;
         this.context.setPageHeader(new PageHeader());
+    }
+
+    public void flush() {
+        flushPage(false);
     }
 
     /**

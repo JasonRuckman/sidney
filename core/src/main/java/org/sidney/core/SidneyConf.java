@@ -15,7 +15,8 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.handler.TypeHandler;
+import org.sidney.core.serde.serializer.Serializer;
+import org.sidney.core.serde.serializer.SerializerFactory;
 
 /**
  * Various configurations for serialization
@@ -51,10 +52,10 @@ public class SidneyConf {
     }
 
     /**
-     * Register a {@link org.sidney.core.serde.handler.TypeHandler} that will handle instances of the given type, but not subclasses
+     * Register a {@link org.sidney.core.serde.serializer.Serializer} that will handle instances of the given type, but not subclasses
      */
-    public SidneyConf registerConcrete(Class type, Class<? extends TypeHandler> typeHandler) {
-        registrations.registerConcrete(type, typeHandler);
+    public SidneyConf register(Class type, SerializerFactory serializerFactory) {
+        registrations.register(type, serializerFactory);
         return this;
     }
 

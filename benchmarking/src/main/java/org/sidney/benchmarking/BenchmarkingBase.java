@@ -15,8 +15,8 @@
  */
 package org.sidney.benchmarking;
 
-import org.sidney.core.encoding.Decoder;
-import org.sidney.core.encoding.Encoder;
+import org.sidney.core.io.Decoder;
+import org.sidney.core.io.Encoder;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,11 +17,10 @@ package org.sidney.benchmarking.random;
 
 import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
-import org.sidney.core.Bytes;
-import org.sidney.core.encoding.float64.Float64Decoder;
-import org.sidney.core.encoding.float64.Float64Encoder;
-import org.sidney.core.encoding.float64.PlainFloat64Decoder;
-import org.sidney.core.encoding.float64.PlainFloat64Encoder;
+import org.sidney.core.io.float64.Float64Decoder;
+import org.sidney.core.io.float64.Float64Encoder;
+import org.sidney.core.io.float64.PlainFloat64Decoder;
+import org.sidney.core.io.float64.PlainFloat64Encoder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -16,11 +16,10 @@
 package org.sidney.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.exception.SidneyException;
 import org.sidney.core.serde.*;
-import org.sidney.core.serde.handler.TypeHandler;
-import org.sidney.core.serde.handler.TypeHandlerFactory;
-import org.sidney.core.serde.handler.Types;
+import org.sidney.core.serde.serializer.Serializer;
+import org.sidney.core.serde.serializer.Serializers;
+import org.sidney.core.serde.serializer.Types;
 
 import java.io.InputStream;
 
@@ -32,23 +31,23 @@ public class Reader<T> {
     private InputStream inputStream;
     private ReadContext context;
     private ObjectMapper json = new ObjectMapper();
-    private TypeHandler typeHandler;
+    private Serializer serializer;
     private TypeReader typeReader = new TypeReader();
     private int recordCount = 0;
-    private TypeHandlerFactory handlerFactory;
+    private Serializers handlerFactory;
     private PageHeader currentPageHeader = null;
     private boolean isOpen = false;
 
     Reader(Class type, Registrations registrations) {
-        this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.typeHandler = handlerFactory.handler(
+        this.handlerFactory = new Serializers(registrations);
+        this.serializer = handlerFactory.serializer(
                 type, null, Types.binding(type)
         );
     }
 
     Reader(Class type, Registrations registrations, Class... generics) {
-        this.handlerFactory = new TypeHandlerFactory(registrations);
-        this.typeHandler = handlerFactory.handler(type, null, null, generics);
+        this.handlerFactory = new Serializers(registrations);
+        this.serializer = handlerFactory.serializer(type, null, null, generics);
     }
 
     /**
@@ -82,7 +81,7 @@ public class Reader<T> {
             throw new SidneyException("Reader is not open.");
         }
         context.setColumnIndex(0);
-        return (T) typeHandler.readValue(typeReader, context);
+        return (T) serializer.readValue(typeReader, context);
     }
 
     /**
@@ -111,7 +110,7 @@ public class Reader<T> {
             currentPageHeader.prepareForRead();
             context = new ReadContext(
                     new ColumnReader(
-                            typeHandler
+                            serializer
                     )
             );
             recordCount = currentPageHeader.getPageSize();

@@ -15,36 +15,21 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.handler.TypeHandler;
+import org.sidney.core.serde.serializer.SerializerFactory;
+import org.sidney.core.serde.serializer.SerializerFactoryEntry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Registrations {
-    private Map<Class, Class<? extends TypeHandler>> concreteRegistrations = new HashMap<>();
-    private Map<Class, Class<? extends TypeHandler>> superClassRegistrations = new HashMap<>();
+    private List<SerializerFactoryEntry> registeredFactories = new ArrayList<>();
 
-    public Map<Class, Class<? extends TypeHandler>> getConcreteRegistrations() {
-        return concreteRegistrations;
+    public List<SerializerFactoryEntry> getRegistrations() {
+        return Collections.unmodifiableList(registeredFactories);
     }
 
-    public Map<Class, Class<? extends TypeHandler>> getSuperClassRegistrations() {
-        return superClassRegistrations;
-    }
-
-    public void registerSuperclass(Class type, Class<? extends TypeHandler> handlerType) {
-        superClassRegistrations.put(
-                type, handlerType
+    public void register(Class type, SerializerFactory serializerFactory) {
+        registeredFactories.add(
+                new SerializerFactoryEntry(type, serializerFactory)
         );
-    }
-
-    public void registerConcrete(Class type, Class<? extends TypeHandler> handlerType) {
-        concreteRegistrations.put(
-                type, handlerType
-        );
-    }
-
-    public boolean empty() {
-        return superClassRegistrations.size() == 0 && concreteRegistrations.size() == 0;
     }
 }

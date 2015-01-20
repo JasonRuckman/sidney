@@ -17,8 +17,7 @@ package org.sidney.benchmarking.random;
 
 import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
-import org.sidney.core.Bytes;
-import org.sidney.core.encoding.bool.*;
+import org.sidney.core.io.bool.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

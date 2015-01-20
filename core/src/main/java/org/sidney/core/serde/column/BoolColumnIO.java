@@ -15,10 +15,10 @@
  */
 package org.sidney.core.serde.column;
 
-import org.sidney.core.encoding.Decoder;
-import org.sidney.core.encoding.Encoder;
-import org.sidney.core.encoding.bool.BoolDecoder;
-import org.sidney.core.encoding.bool.BoolEncoder;
+import org.sidney.core.io.Decoder;
+import org.sidney.core.io.Encoder;
+import org.sidney.core.io.bool.BoolDecoder;
+import org.sidney.core.io.bool.BoolEncoder;
 
 import java.util.Arrays;
 import java.util.List;
