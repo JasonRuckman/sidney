@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Map;
 
-public class MapSerializer extends GenericSerializer {
+public class MapSerializer extends GenericSerializer<Map> {
     private Serializer keySerializer;
     private Serializer valueSerializer;
     private InstanceFactoryCache cache = new InstanceFactoryCache();
@@ -48,29 +48,29 @@ public class MapSerializer extends GenericSerializer {
     }
 
     @Override
-    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
-        keySerializer = getSerializers().serializer(types[0], null, getTypeBindings());
-        valueSerializer = getSerializers().serializer(types[1], null, getTypeBindings());
+    protected void fromParameterizedClass(Class<?> clazz, Class[] typeParams) {
+        keySerializer = getSerializers().serializer(typeParams[0], null, getTypeBindings(), new Class[0]);
+        valueSerializer = getSerializers().serializer(typeParams[1], null, getTypeBindings(), new Class[0]);
     }
 
     @Override
     protected void fromParameterizedType(ParameterizedType type) {
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        keySerializer = getSerializers().serializer(args[0], null, getParentTypeBindings());
-        valueSerializer = getSerializers().serializer(args[1], null, getParentTypeBindings());
+        keySerializer = getSerializers().serializer(args[0], null, getParentTypeBindings(), new Class[0]);
+        valueSerializer = getSerializers().serializer(args[1], null, getParentTypeBindings(), new Class[0]);
     }
 
     @Override
     protected void fromTypeVariable(TypeVariable typeVariable) {
         keySerializer = getSerializers().serializer(
-                typeVariable.getBounds()[0], null, getParentTypeBindings());
+                typeVariable.getBounds()[0], null, getParentTypeBindings(), new Class[0]);
         valueSerializer = getSerializers().serializer(
-                typeVariable.getBounds()[1], null, getParentTypeBindings());
+                typeVariable.getBounds()[1], null, getParentTypeBindings(), new Class[0]);
     }
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        writeMap((Map) value, typeWriter, context);
+        writeMap((Map)value, typeWriter, context);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class MapSerializer extends GenericSerializer {
         }
     }
 
-    private Object readMap(TypeReader typeReader, ReadContext context) {
+    private Map readMap(TypeReader typeReader, ReadContext context) {
         if (typeReader.readNullMarker(context)) {
             Map map = (Map) cache.newInstance(typeReader.readConcreteType(context));
             int size = typeReader.readRepetitionCount(context);
@@ -127,7 +127,7 @@ public class MapSerializer extends GenericSerializer {
         return null;
     }
 
-    public static class MapSerializerFactory extends GenericSerializerFactory<MapSerializer> {
+    public static class MapSerializerFactory extends GenericSerializerFactory {
         @Override
         public MapSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
             return new MapSerializer(

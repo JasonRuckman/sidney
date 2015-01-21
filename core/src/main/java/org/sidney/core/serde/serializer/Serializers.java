@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class Serializers {
     private Registrations registrations;
-    private List<SerializerFactoryEntry> entries = new ArrayList<>();
+    protected List<SerializerFactoryEntry> entries = new ArrayList<>();
 
     public Serializers(Registrations registrations) {
         this.registrations = registrations;
@@ -91,7 +91,7 @@ public class Serializers {
     /**
      * Create a {@link Serializer} from the given arguments
      */
-    public Serializer serializer(Type type, Field field, TypeBindings typeBindings, Class... generics) {
+    public Serializer serializer(Type type, Field field, TypeBindings typeBindings, Class[] generics) {
         JavaType javaType;
         if (generics.length == 0) {
             javaType = Types.type(type, typeBindings);

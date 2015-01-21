@@ -63,7 +63,7 @@ public class Types {
         return TypeFactory.defaultInstance().constructType(type, typeBindings);
     }
 
-    public static JavaType parameterizedType(Class<?> type, Class<?>... paramTypes) {
+    public static JavaType parameterizedType(Class<?> type, Class[] paramTypes) {
         return TypeFactory.defaultInstance().constructParametricType(
                 type, paramTypes
         );

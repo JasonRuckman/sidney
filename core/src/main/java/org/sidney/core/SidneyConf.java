@@ -23,11 +23,17 @@ import org.sidney.core.serde.serializer.SerializerFactory;
  */
 public class SidneyConf {
     public static final int DEFAULT_SIDNEY_PAGE_SIZE = 1024;
-
-    private final Registrations registrations = new Registrations();
+    private Registrations registrations = new Registrations();
     private boolean useUnsafe = true;
     private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
 
+    public static int getDefaultSidneyPageSize() {
+        return DEFAULT_SIDNEY_PAGE_SIZE;
+    }
+
+    private SidneyConf() {
+
+    }
     /**
      * Create a new configuration
      */
@@ -35,6 +41,14 @@ public class SidneyConf {
         return new SidneyConf();
     }
 
+    /**
+     * Create a new configuration with given registrations
+     */
+    public static SidneyConf newConf(Registrations registrations) {
+        SidneyConf c = new SidneyConf();
+        c.registrations = registrations;
+        return c;
+    }
     /**
      * Set whether or not to use unsafe accessors when accessing fields. Defaults to true
      */
@@ -59,7 +73,7 @@ public class SidneyConf {
         return this;
     }
 
-    Registrations getRegistrations() {
+    public Registrations getRegistrations() {
         return registrations;
     }
 }

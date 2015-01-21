@@ -7,8 +7,7 @@ import java.lang.reflect.Type;
 
 /**
  * type, field, typeBindings, this, generics
- * @param <T>
  */
-public abstract class SerializerFactory<T extends Serializer> {
-    public abstract T newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers);
+public abstract class SerializerFactory {
+    public abstract <T> Serializer<T> newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers);
 }

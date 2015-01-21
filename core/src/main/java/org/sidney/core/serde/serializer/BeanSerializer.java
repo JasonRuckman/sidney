@@ -29,7 +29,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeanSerializer extends GenericSerializer {
+public class BeanSerializer extends GenericSerializer<Object> {
     private Class<?> rawClass;
     private List<Serializer> fieldHandlers = new ArrayList<>();
     private InstanceFactory instanceFactory;
@@ -45,7 +45,7 @@ public class BeanSerializer extends GenericSerializer {
             Field subField = fields.get(i);
             Type type = subField.getGenericType();
             Serializer serializer = getSerializers().serializer(
-                    (type == null) ? subField.getType() : type, subField, getTypeBindings()
+                    (type == null) ? subField.getType() : type, subField, getTypeBindings(), new Class[0]
             );
 
             handlers.add(serializer);
@@ -128,7 +128,7 @@ public class BeanSerializer extends GenericSerializer {
         return null;
     }
 
-    public static class BeanSerializerFactory extends GenericSerializerFactory<BeanSerializer> {
+    public static class BeanSerializerFactory extends GenericSerializerFactory {
         @Override
         public BeanSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
             return new BeanSerializer(type, field, typeBindings, serializers, typeParameters);

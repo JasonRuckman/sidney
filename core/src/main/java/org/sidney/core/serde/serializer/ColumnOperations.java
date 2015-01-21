@@ -41,8 +41,8 @@ public abstract class ColumnOperations {
         List<ColumnIO> columns = new ArrayList<>();
         columns.addAll(columnsFor(serializer));
 
-        List<Serializer> handlers = (List<Serializer>) serializer.getHandlers();
-        for (Serializer<?> r : handlers) {
+        List<Serializer> handlers = serializer.getHandlers();
+        for (Serializer r : handlers) {
             columns.addAll(columnsFor(r));
         }
         return columns;

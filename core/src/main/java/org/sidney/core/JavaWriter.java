@@ -15,21 +15,11 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.serializer.SerializerFactory;
-import org.sidney.core.serde.serializer.SerializerFactoryEntry;
-
-import java.util.*;
-
-public class Registrations {
-    private List<SerializerFactoryEntry> registeredFactories = new ArrayList<>();
-
-    public List<SerializerFactoryEntry> getRegistrations() {
-        return registeredFactories;
-    }
-
-    public void register(Class type, SerializerFactory serializerFactory) {
-        registeredFactories.add(
-                new SerializerFactoryEntry(type, serializerFactory)
-        );
+/**
+ * Writers values to a given {@link java.io.OutputStream}
+ */
+public class JavaWriter<T> extends BaseWriter<T> {
+    JavaWriter(Class type, Registrations registrations, Class... typeParams) {
+        super(type, registrations, typeParams);
     }
 }

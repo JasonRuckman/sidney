@@ -17,10 +17,7 @@ package org.sidney.core.serde;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.AllPrimitives;
-import org.sidney.core.Reader;
-import org.sidney.core.Sid;
-import org.sidney.core.Writer;
+import org.sidney.core.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

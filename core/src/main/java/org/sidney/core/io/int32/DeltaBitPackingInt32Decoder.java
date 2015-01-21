@@ -21,6 +21,7 @@ import org.sidney.core.Bytes;
 import org.sidney.core.io.BaseDecoder;
 import org.sidney.core.io.Encoding;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -62,22 +63,20 @@ public class DeltaBitPackingInt32Decoder extends BaseDecoder implements Int32Dec
         totalValueCount = 0;
         blockSize = 0;
         isFirstValue = true;
-        setPosition(0);
     }
 
     @Override
     public void readFromStream(InputStream inputStream) throws IOException {
         reset();
-        totalValueCount = readIntFromStream(inputStream);
-        firstValue = readIntFromStream(inputStream);
-        blockSize = readIntFromStream(inputStream);
+        DataInputStream dis = new DataInputStream(inputStream);
+        totalValueCount = dis.readInt();
+        firstValue = dis.readInt();
+        blockSize = dis.readInt();
         intBuffer = new int[blockSize];
         if (totalValueCount <= 1) {
             return;
         }
-        int bufferSize = readIntFromStream(inputStream);
-        resizeBufferIfNecessary(bufferSize);
-        inputStream.read(getBuffer());
+        super.readFromStream(inputStream);
         loadNextMiniBlock();
     }
 

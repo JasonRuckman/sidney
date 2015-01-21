@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 
-public class CollectionSerializer extends GenericSerializer {
+public class CollectionSerializer extends GenericSerializer<Collection> {
     private Serializer contentSerializer;
     private InstanceFactoryCache cache = new InstanceFactoryCache();
 
@@ -45,7 +45,7 @@ public class CollectionSerializer extends GenericSerializer {
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        writeCollection((Collection) value, typeWriter, context);
+        writeCollection((Collection)value, typeWriter, context);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class CollectionSerializer extends GenericSerializer {
     @Override
     protected void fromParameterizedClass(Class<?> clazz, Class... types) {
         contentSerializer = getSerializers().serializer(
-                types[0], null, getTypeBindings()
+                types[0], null, getTypeBindings(), new Class[0]
         );
     }
 
@@ -79,7 +79,7 @@ public class CollectionSerializer extends GenericSerializer {
     protected void fromParameterizedType(ParameterizedType type) {
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
         contentSerializer = getSerializers().serializer(
-                args[0], null, getTypeBindings()
+                args[0], null, getTypeBindings(), new Class[0]
         );
     }
 
@@ -87,7 +87,7 @@ public class CollectionSerializer extends GenericSerializer {
     protected void fromTypeVariable(TypeVariable typeVariable) {
         TypeVariable variable = (TypeVariable) getJdkType();
         contentSerializer = getSerializers().serializer(
-                variable, null, getTypeBindings()
+                variable, null, getTypeBindings(), new Class[0]
         );
     }
 
@@ -106,7 +106,7 @@ public class CollectionSerializer extends GenericSerializer {
         }
     }
 
-    private Object readCollection(TypeReader typeReader, ReadContext context) {
+    private Collection readCollection(TypeReader typeReader, ReadContext context) {
         if (typeReader.readNullMarker(context)) {
             Collection c = (Collection) cache.newInstance(typeReader.readConcreteType(context));
             context.incrementColumnIndex();
@@ -123,7 +123,7 @@ public class CollectionSerializer extends GenericSerializer {
         return null;
     }
 
-    public static class CollectionSerializerFactory extends GenericSerializerFactory<CollectionSerializer> {
+    public static class CollectionSerializerFactory extends GenericSerializerFactory {
         @Override
         public CollectionSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
             return new CollectionSerializer(type, field, typeBindings, serializers);

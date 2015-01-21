@@ -10,6 +10,33 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sidney-scala</artifactId>
-
-
+    <properties>
+        <scala.version>2.10.4</scala.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.sidney</groupId>
+            <artifactId>sidney-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 </project>

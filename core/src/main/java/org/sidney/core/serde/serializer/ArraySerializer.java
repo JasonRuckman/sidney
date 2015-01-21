@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArraySerializer extends GenericSerializer {
+public class ArraySerializer extends GenericSerializer<Object> {
     private static final Map<Class, Arrays.ArrayWriters.ArrayWriter> PRIMITIVE_WRITERS = new HashMap<>();
     private static final Map<Class, Arrays.ArrayReaders.ArrayReader> PRIMITIVE_READERS = new HashMap<>();
 
@@ -107,7 +107,7 @@ public class ArraySerializer extends GenericSerializer {
         rawClass = (Class) type;
         contentSerializer = getSerializers().serializer(
                 rawClass.getComponentType(),
-                null, getParentTypeBindings()
+                null, getParentTypeBindings(), new Class[0]
         );
     }
 
@@ -116,7 +116,7 @@ public class ArraySerializer extends GenericSerializer {
         rawClass = Types.type(type, getParentTypeBindings()).getRawClass();
         GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
         contentSerializer = getSerializers().serializer(
-                genericArrayType.getGenericComponentType(), null, getParentTypeBindings()
+                genericArrayType.getGenericComponentType(), null, getParentTypeBindings() ,new Class[0]
         );
     }
 
@@ -124,7 +124,7 @@ public class ArraySerializer extends GenericSerializer {
     protected void fromParameterizedClass(Class<?> clazz, Class... types) {
         rawClass = clazz;
         Class<?> componentType = ((Class) getJdkType()).getComponentType();
-        contentSerializer = getSerializers().serializer(componentType, null, getTypeBindings());
+        contentSerializer = getSerializers().serializer(componentType, null, getTypeBindings(), types);
     }
 
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
@@ -174,7 +174,7 @@ public class ArraySerializer extends GenericSerializer {
         }
     }
 
-    public static class ArraySerializerFactory extends GenericSerializerFactory<ArraySerializer> {
+    public static class ArraySerializerFactory extends GenericSerializerFactory {
         @Override
         public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
             return new ArraySerializer(

@@ -21,6 +21,7 @@ import org.sidney.core.Bytes;
 import org.sidney.core.io.BaseEncoder;
 import org.sidney.core.io.Encoding;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -84,9 +85,10 @@ public class DeltaBitPackingInt32Encoder extends BaseEncoder implements Int32Enc
     @Override
     public void writeToStream(OutputStream outputStream) throws IOException {
         flushMiniBlock();
-        writeIntToStream(totalValueCount, outputStream);
-        writeIntToStream(firstValue, outputStream);
-        writeIntToStream(miniBlockSize, outputStream);
+        DataOutputStream dos = new DataOutputStream(outputStream);
+        dos.writeInt(totalValueCount);
+        dos.writeInt(firstValue);
+        dos.writeInt(miniBlockSize);
         if (totalValueCount <= 1) {
             return;
         }

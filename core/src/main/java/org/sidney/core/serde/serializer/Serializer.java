@@ -30,7 +30,7 @@ import java.util.List;
  * Handles serializing a given type, is responsible for decomposing that type and constructing sub handlers if necessary
  */
 public abstract class Serializer<T> {
-    protected List<Serializer<?>> handlers = new ArrayList<>();
+    protected List<Serializer> handlers = new ArrayList<>();
     protected int numSubFields = 1;
     protected Class[] generics;
     private Type jdkType;
@@ -90,7 +90,7 @@ public abstract class Serializer<T> {
      * All handlers for this level and below
      * @return all type handlers including this level and all sub levels
      */
-    public List<Serializer<?>> getHandlers() {
+    public List<Serializer> getHandlers() {
         return handlers;
     }
 
@@ -202,7 +202,7 @@ public abstract class Serializer<T> {
      * For example, if {@param value} is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
      * and one more to advance into the next field
      */
-    public abstract void writeValue(T value, TypeWriter typeWriter, WriteContext context);
+    public abstract void writeValue(Object value, TypeWriter typeWriter, WriteContext context);
 
     /**
      * Fully consume a field value from the parent, parent is guaranteed to be non-null
@@ -215,7 +215,7 @@ public abstract class Serializer<T> {
      * in either {@link #writeValue} or {@link #writeFromField}
      * @return a fully materialized value
      */
-    public abstract T readValue(TypeReader typeReader, ReadContext context);
+    public abstract Object readValue(TypeReader typeReader, ReadContext context);
 
     /**
      * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written

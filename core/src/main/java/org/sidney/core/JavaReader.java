@@ -15,21 +15,13 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.serializer.SerializerFactory;
-import org.sidney.core.serde.serializer.SerializerFactoryEntry;
-
-import java.util.*;
-
-public class Registrations {
-    private List<SerializerFactoryEntry> registeredFactories = new ArrayList<>();
-
-    public List<SerializerFactoryEntry> getRegistrations() {
-        return registeredFactories;
-    }
-
-    public void register(Class type, SerializerFactory serializerFactory) {
-        registeredFactories.add(
-                new SerializerFactoryEntry(type, serializerFactory)
-        );
+/**
+ * Reads out items from underlying streams
+ *
+ * @param <T>
+ */
+public class JavaReader<T> extends BaseReader<T> {
+    JavaReader(Class type, Registrations registrations, Class... generics) {
+        super(type, registrations, generics);
     }
 }

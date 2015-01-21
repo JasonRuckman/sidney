@@ -22,11 +22,11 @@ import java.lang.reflect.*;
 /**
  * A helper base class for handling classes that can be generic
  */
-public abstract class GenericSerializer extends Serializer {
+public abstract class GenericSerializer<T> extends Serializer<T> {
     public GenericSerializer(Type jdkType,
                              Field field,
                              TypeBindings parentTypeBindings,
-                             Serializers serializers, Class... generics) {
+                             Serializers serializers, Class[] generics) {
         super(jdkType, field, parentTypeBindings, serializers, generics);
     }
 

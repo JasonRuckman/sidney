@@ -25,6 +25,8 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.openjdk.jmh.annotations.*;
 import org.sidney.core.*;
+import org.sidney.core.Reader;
+import org.sidney.core.Writer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -64,7 +66,7 @@ public class FlaInsuranceRecordBenchmarks {
     public List<FlaInsuranceRecord> sidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream os = new GZIPOutputStream(baos);
-        org.sidney.core.Writer<FlaInsuranceRecord> writer = sid.newCachedWriter(FlaInsuranceRecord.class);
+        Writer<FlaInsuranceRecord> writer = sid.newCachedWriter(FlaInsuranceRecord.class);
         writer.open(os);
         for (FlaInsuranceRecord record : records) {
             writer.write(record);
@@ -73,7 +75,7 @@ public class FlaInsuranceRecordBenchmarks {
         os.close();
 
         List<FlaInsuranceRecord> list = new ArrayList<>();
-        org.sidney.core.Reader<FlaInsuranceRecord> reader = sid.newCachedReader(FlaInsuranceRecord.class);
+        Reader<FlaInsuranceRecord> reader = sid.newCachedReader(FlaInsuranceRecord.class);
         reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
 
         while (reader.hasNext()) {
