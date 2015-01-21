@@ -31,29 +31,15 @@ import java.util.List;
 
 public class BeanSerializer extends GenericSerializer<Object> {
     private Class<?> rawClass;
-    private List<Serializer> fieldHandlers = new ArrayList<>();
     private InstanceFactory instanceFactory;
+    private List<Serializer> serializersAtThisLevel;
 
     public BeanSerializer(Type jdkType,
                           Field field,
                           TypeBindings parentBindings,
-                          Serializers serializers, Class... generics) {
-        super(jdkType, field, parentBindings, serializers, generics);
+                          SerializerRepository serializerRepository, Class... generics) {
+        super(jdkType, field, parentBindings, serializerRepository, generics);
 
-        List<Field> fields = FieldUtils.getAllFields(rawClass);
-        for (int i = 0; i < fields.size(); i++) {
-            Field subField = fields.get(i);
-            Type type = subField.getGenericType();
-            Serializer serializer = getSerializers().serializer(
-                    (type == null) ? subField.getType() : type, subField, getTypeBindings(), new Class[0]
-            );
-
-            handlers.add(serializer);
-            handlers.addAll(serializer.getHandlers());
-
-            fieldHandlers.add(serializer);
-            numSubFields += serializer.numSubFields;
-        }
         instanceFactory = new InstanceFactory(rawClass);
     }
 
@@ -83,30 +69,55 @@ public class BeanSerializer extends GenericSerializer<Object> {
     }
 
     @Override
-    protected void fromType(Type type) {
+    protected List<Serializer> fromType(Type type) {
         rawClass = (Class) type;
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
         rawClass = Types.parameterizedType(clazz, types).getRawClass();
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromParameterizedType(ParameterizedType type) {
+    protected List<Serializer> fromParameterizedType(ParameterizedType type) {
         rawClass = Types.type(type, getParentTypeBindings()).getRawClass();
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromTypeVariable(TypeVariable typeVariable) {
+    protected List<Serializer> fromTypeVariable(TypeVariable typeVariable) {
         rawClass = Types.type(typeVariable, getParentTypeBindings()).getRawClass();
+        return createSubSerializers();
+    }
+
+    private List<Serializer> createSubSerializers() {
+        List<Serializer> serializers = new ArrayList<>();
+        serializersAtThisLevel = new ArrayList<>();
+        List<Field> fields = FieldUtils.getAllFields(rawClass);
+        for (int i = 0; i < fields.size(); i++) {
+            Field subField = fields.get(i);
+            Type type = subField.getGenericType();
+            Serializer serializer = getSerializerRepository().serializer(
+                    (type == null) ? subField.getType() : type, subField, getTypeBindings(), new Class[0]
+            );
+
+            serializers.add(serializer);
+            serializers.addAll(serializer.getSerializers());
+
+            serializersAtThisLevel.add(serializer);
+
+            numSubFields += serializer.numSubFields;
+        }
+        return serializers;
     }
 
     private void writeBean(Object value, TypeWriter typeWriter, WriteContext context) {
         if (typeWriter.writeNullMarker(value, context)) {
             //advance into fields
             context.incrementColumnIndex();
-            for (Serializer handler : fieldHandlers) {
+            for (Serializer handler : serializersAtThisLevel) {
                 handler.writeFromField(value, typeWriter, context);
             }
         } else {
@@ -118,7 +129,7 @@ public class BeanSerializer extends GenericSerializer<Object> {
         if (typeReader.readNullMarker(context)) {
             Object bean = instanceFactory.newInstance();
             context.incrementColumnIndex();
-            for (Serializer handler : fieldHandlers) {
+            for (Serializer handler : serializersAtThisLevel) {
                 handler.readIntoField(bean, typeReader, context);
             }
             return bean;
@@ -130,13 +141,13 @@ public class BeanSerializer extends GenericSerializer<Object> {
 
     public static class BeanSerializerFactory extends GenericSerializerFactory {
         @Override
-        public BeanSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
-            return new BeanSerializer(type, field, typeBindings, serializers, typeParameters);
+        public BeanSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository, Class... typeParameters) {
+            return new BeanSerializer(type, field, typeBindings, serializerRepository, typeParameters);
         }
 
         @Override
-        public BeanSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
-            return new BeanSerializer(type, field, typeBindings, serializers);
+        public BeanSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
+            return new BeanSerializer(type, field, typeBindings, serializerRepository);
         }
     }
 }

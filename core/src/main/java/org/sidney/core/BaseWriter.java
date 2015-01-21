@@ -5,7 +5,7 @@ import org.sidney.core.serde.ColumnWriter;
 import org.sidney.core.serde.TypeWriter;
 import org.sidney.core.serde.WriteContext;
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.Serializers;
+import org.sidney.core.serde.serializer.SerializerRepository;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,13 +24,13 @@ public abstract class BaseWriter<T> implements Writer<T> {
     private OutputStream outputStream;
     private int recordCount = 0;
     protected WriteContext context;
-    protected Serializers serializers;
+    protected SerializerRepository serializerRepository;
     private boolean isOpen = false;
 
     public BaseWriter(Class type, Registrations registrations, Class[] typeParams) {
         this.registrations = registrations;
         this.typeParams = typeParams;
-        this.serializers = getSerializers();
+        this.serializerRepository = getSerializerRepository();
         this.type = type;
         this.serializer = getSerializerWithParams();
         this.context = new WriteContext(new ColumnWriter(serializer), new PageHeader());
@@ -106,14 +106,14 @@ public abstract class BaseWriter<T> implements Writer<T> {
     }
 
     protected Serializer<T> getSerializer() {
-        return serializers.serializer(type, null, null, new Class[] { });
+        return serializerRepository.serializer(type, null, null, new Class[] { });
     }
 
     protected Serializer<T> getSerializerWithParams() {
-        return serializers.serializer(type, null, null, typeParams);
+        return serializerRepository.serializer(type, null, null, typeParams);
     }
 
-    protected Serializers getSerializers() {
-        return new Serializers(registrations);
+    protected SerializerRepository getSerializerRepository() {
+        return new SerializerRepository(registrations);
     }
 }

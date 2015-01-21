@@ -25,7 +25,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class CollectionSerializer extends GenericSerializer<Collection> {
     private Serializer contentSerializer;
@@ -34,12 +36,8 @@ public class CollectionSerializer extends GenericSerializer<Collection> {
     public CollectionSerializer(Type jdkType,
                                 Field field,
                                 TypeBindings parentTypeBindings,
-                                Serializers serializers, Class... generics) {
-        super(jdkType, field, parentTypeBindings, serializers, generics);
-
-        handlers.add(contentSerializer);
-        handlers.addAll(contentSerializer.getHandlers());
-
+                                SerializerRepository serializerRepository, Class... generics) {
+        super(jdkType, field, parentTypeBindings, serializerRepository, generics);
         numSubFields += contentSerializer.numSubFields;
     }
 
@@ -69,26 +67,36 @@ public class CollectionSerializer extends GenericSerializer<Collection> {
     }
 
     @Override
-    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
-        contentSerializer = getSerializers().serializer(
+    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
+        contentSerializer = getSerializerRepository().serializer(
                 types[0], null, getTypeBindings(), new Class[0]
         );
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromParameterizedType(ParameterizedType type) {
+    protected List<Serializer> fromParameterizedType(ParameterizedType type) {
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        contentSerializer = getSerializers().serializer(
+        contentSerializer = getSerializerRepository().serializer(
                 args[0], null, getTypeBindings(), new Class[0]
         );
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromTypeVariable(TypeVariable typeVariable) {
+    protected List<Serializer> fromTypeVariable(TypeVariable typeVariable) {
         TypeVariable variable = (TypeVariable) getJdkType();
-        contentSerializer = getSerializers().serializer(
+        contentSerializer = getSerializerRepository().serializer(
                 variable, null, getTypeBindings(), new Class[0]
         );
+        return createSubSerializers();
+    }
+
+    protected List<Serializer> createSubSerializers() {
+        List<Serializer> serializers = new ArrayList<>();
+        serializers.add(contentSerializer);
+        serializers.addAll(contentSerializer.getSerializers());
+        return serializers;
     }
 
     private void writeCollection(Collection collection, TypeWriter typeWriter, WriteContext context) {
@@ -125,13 +133,13 @@ public class CollectionSerializer extends GenericSerializer<Collection> {
 
     public static class CollectionSerializerFactory extends GenericSerializerFactory {
         @Override
-        public CollectionSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
-            return new CollectionSerializer(type, field, typeBindings, serializers);
+        public CollectionSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
+            return new CollectionSerializer(type, field, typeBindings, serializerRepository);
         }
 
         @Override
-        public CollectionSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
-            return new CollectionSerializer(type, field, typeBindings, serializers, typeParameters);
+        public CollectionSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository, Class... typeParameters) {
+            return new CollectionSerializer(type, field, typeBindings, serializerRepository, typeParameters);
         }
     }
 }

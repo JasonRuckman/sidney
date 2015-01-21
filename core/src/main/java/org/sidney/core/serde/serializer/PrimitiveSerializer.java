@@ -22,7 +22,9 @@ import org.sidney.core.serde.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PrimitiveSerializer extends Serializer {
@@ -92,8 +94,8 @@ public class PrimitiveSerializer extends Serializer {
     protected PrimitiveReaders.PrimitiveReader reader;
     private Class<?> actualType;
 
-    public PrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, Serializers serializers) {
-        super(jdkType, field, parentTypeBindings, serializers);
+    public PrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, SerializerRepository serializerRepository) {
+        super(jdkType, field, parentTypeBindings, serializerRepository);
 
         actualType = (Class<?>) jdkType;
 
@@ -136,6 +138,11 @@ public class PrimitiveSerializer extends Serializer {
         return false;
     }
 
+    @Override
+    protected List<Serializer> fromType(Type type) {
+        return new ArrayList<>();
+    }
+
     public Class<?> getActualType() {
         return actualType;
     }
@@ -153,21 +160,21 @@ public class PrimitiveSerializer extends Serializer {
 
     public static class PrimitiveSerializerFactory extends SerializerFactory {
         @Override
-        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
-            return new PrimitiveSerializer(type, field, typeBindings, serializers);
+        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
+            return new PrimitiveSerializer(type, field, typeBindings, serializerRepository);
         }
     }
 
     public static class NonNullPrimitiveSerializerFactory extends SerializerFactory {
         @Override
-        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
-            return new NonNullPrimitiveSerializer(type, field, typeBindings, serializers);
+        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
+            return new NonNullPrimitiveSerializer(type, field, typeBindings, serializerRepository);
         }
     }
 
     static class NonNullPrimitiveSerializer extends PrimitiveSerializer {
-        public NonNullPrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, Serializers serializers) {
-            super(jdkType, field, parentTypeBindings, serializers);
+        public NonNullPrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, SerializerRepository serializerRepository) {
+            super(jdkType, field, parentTypeBindings, serializerRepository);
         }
 
         @Override

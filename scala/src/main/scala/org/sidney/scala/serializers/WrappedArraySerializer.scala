@@ -1,25 +1,27 @@
 package org.sidney.scala.serializers
 
 import java.lang.reflect._
+import java.util
 
 import com.fasterxml.jackson.databind.`type`.TypeBindings
 import org.sidney.core.{ReflectionFieldAccessor, FieldAccessor}
 import org.sidney.core.serde.{WriteContext, TypeWriter, ReadContext, TypeReader}
-import org.sidney.core.serde.serializer.{GenericSerializer, Serializers, Serializer}
-import org.sidney.scala.{ScalaGenericSerializerFactory, ScalaSerializers}
+import org.sidney.core.serde.serializer.{GenericSerializer, SerializerRepository, Serializer}
+import org.sidney.scala.{ScalaGenericSerializerFactory, ScalaSerializerRepository}
 
 import scala.collection.mutable
 import scala.reflect.ClassTag
+import scala.collection.JavaConversions._
 
 class WrappedArraySerializer[T] (jdkType : Type,
                                  field : Field,
                                  parentTypeBindings : TypeBindings,
-                                 serializers : ScalaSerializers,
+                                 serializers : ScalaSerializerRepository,
                                  typeParams : scala.Array[Class[_]]) (implicit tag : ClassTag[T])
   extends GenericSerializer[T](jdkType, field, parentTypeBindings, serializers, typeParams) {
 
   val contentAccessor = new ReflectionFieldAccessor(jdkType.asInstanceOf[Class[_]].getDeclaredField("array"))
-  var contentSerializer : Serializer[_] = getHandlers.get(0)
+  var contentSerializer : Serializer[_] = getSerializers.get(0)
 
   override def writeValue(value: scala.Any, typeWriter: TypeWriter, context: WriteContext) : Unit = {
     if(typeWriter.writeNullMarker(value, context)) {
@@ -48,28 +50,33 @@ class WrappedArraySerializer[T] (jdkType : Type,
     }
   }
 
-  override protected def fromType(t : Type): Unit = {
+  override protected def fromType(t : Type) : util.List[Serializer[_]] = {
     val arrClass = java.lang.reflect.Array.newInstance(typeParams(0), 0).getClass
-    handlers.add(serializers.serializer(arrClass, null, getTypeBindings, scala.Array.empty[Class[_]]))
-    handlers.addAll(handlers.get(0).getHandlers)
+    subSerializers(serializers.serializer(arrClass, null, getTypeBindings, scala.Array.empty[Class[_]]))
   }
 
-  override protected def fromArrayType(t : GenericArrayType): Unit = {
+  override protected def fromArrayType(t : GenericArrayType) : util.List[Serializer[_]] = {
     super.fromArrayType(t)
   }
 
-  override protected def fromParameterizedClass(clazz: Class[_], types: Class[_]*): Unit = {
+  override protected def fromParameterizedClass(clazz: Class[_], types: Class[_]*) : util.List[Serializer[_]] = {
     val arrClass = Array.newInstance(types(0), 0).getClass
-    handlers.add(serializers.serializer(arrClass, null, getTypeBindings, scala.Array.empty[Class[_]]))
-    handlers.addAll(handlers.get(0).getHandlers)
+    subSerializers(serializers.serializer(arrClass, null, getTypeBindings, scala.Array.empty[Class[_]]))
   }
 
-  override protected def fromParameterizedType(t : ParameterizedType): Unit = {
+  override protected def fromParameterizedType(t : ParameterizedType) : util.List[Serializer[_]] = {
     super.fromParameterizedType(t)
   }
 
-  override protected def fromTypeVariable(typeVariable: TypeVariable[_ <: GenericDeclaration]): Unit = {
+  override protected def fromTypeVariable(typeVariable: TypeVariable[_ <: GenericDeclaration]) : util.List[Serializer[_]] = {
     super.fromTypeVariable(typeVariable)
+  }
+
+  private def subSerializers(contentSerializer : Serializer[_]) : java.util.List[Serializer[_]] = {
+    val list = new util.ArrayList[Serializer[_]]()
+    list.add(contentSerializer)
+    contentSerializer.getSerializers.foreach(x => list.add(x))
+    list
   }
 }
 
@@ -77,14 +84,14 @@ class WrappedArraySerializerFactory extends ScalaGenericSerializerFactory {
   override def newScalaSerializer[T](t: Type,
                                   field: Field,
                                   typeBindings: TypeBindings,
-                                  serializers: ScalaSerializers)(implicit tag: ClassTag[T]): Serializer[T] = {
+                                  serializers: ScalaSerializerRepository)(implicit tag: ClassTag[T]): Serializer[T] = {
     new WrappedArraySerializer[T](t, field, typeBindings, serializers, scala.Array.empty[Class[_]])
   }
 
   override def newScalaSerializer[T](t: Type,
                                      field: Field,
                                      typeBindings: TypeBindings,
-                                     serializers: ScalaSerializers,
+                                     serializers: ScalaSerializerRepository,
                                      typeParams: scala.Array[Class[_]])(implicit tag: ClassTag[T]): Serializer[T] = {
     new WrappedArraySerializer[T](t, field, typeBindings, serializers, typeParams)
   }
@@ -92,7 +99,7 @@ class WrappedArraySerializerFactory extends ScalaGenericSerializerFactory {
   override def newSerializer[T](t : Type,
                                 field: Field,
                                 typeBindings: TypeBindings,
-                                serializers: Serializers): Serializer[T] = {
+                                serializers: SerializerRepository): Serializer[T] = {
     ???
   }
 }

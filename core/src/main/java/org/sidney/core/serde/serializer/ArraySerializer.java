@@ -27,6 +27,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ArraySerializer extends GenericSerializer<Object> {
@@ -59,12 +60,8 @@ public class ArraySerializer extends GenericSerializer<Object> {
     public ArraySerializer(Type jdkType,
                            Field field,
                            TypeBindings parentTypeBindings,
-                           Serializers serializers, Class... generics) {
-        super(jdkType, field, parentTypeBindings, serializers, generics);
-
-        handlers = new ArrayList<>();
-        handlers.add(contentSerializer);
-        handlers.addAll(contentSerializer.getHandlers());
+                           SerializerRepository serializerRepository, Class... generics) {
+        super(jdkType, field, parentTypeBindings, serializerRepository, generics);
 
         arrayWriter = PRIMITIVE_WRITERS.get(rawClass);
         if (arrayWriter == null) {
@@ -103,28 +100,40 @@ public class ArraySerializer extends GenericSerializer<Object> {
     }
 
     @Override
-    protected void fromType(Type type) {
+    protected List<Serializer> fromType(Type type) {
         rawClass = (Class) type;
-        contentSerializer = getSerializers().serializer(
+        contentSerializer = getSerializerRepository().serializer(
                 rawClass.getComponentType(),
                 null, getParentTypeBindings(), new Class[0]
         );
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromArrayType(GenericArrayType type) {
+    protected List<Serializer> fromArrayType(GenericArrayType type) {
         rawClass = Types.type(type, getParentTypeBindings()).getRawClass();
         GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
-        contentSerializer = getSerializers().serializer(
+        contentSerializer = getSerializerRepository().serializer(
                 genericArrayType.getGenericComponentType(), null, getParentTypeBindings() ,new Class[0]
         );
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
+    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
         rawClass = clazz;
         Class<?> componentType = ((Class) getJdkType()).getComponentType();
-        contentSerializer = getSerializers().serializer(componentType, null, getTypeBindings(), types);
+        contentSerializer = getSerializerRepository().serializer(componentType, null, getTypeBindings(), types);
+        return createSubSerializers();
+    }
+
+    protected List<Serializer> createSubSerializers() {
+        List<Serializer> serializers = new ArrayList<>();
+
+        serializers.add(contentSerializer);
+        serializers.addAll(contentSerializer.getSerializers());
+
+        return serializers;
     }
 
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
@@ -176,16 +185,16 @@ public class ArraySerializer extends GenericSerializer<Object> {
 
     public static class ArraySerializerFactory extends GenericSerializerFactory {
         @Override
-        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
+        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository, Class... typeParameters) {
             return new ArraySerializer(
-                    type, field, typeBindings, serializers, typeParameters
+                    type, field, typeBindings, serializerRepository, typeParameters
             );
         }
 
         @Override
-        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
+        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
             return new ArraySerializer(
-                    type, field, typeBindings, serializers
+                    type, field, typeBindings, serializerRepository
             );
         }
     }

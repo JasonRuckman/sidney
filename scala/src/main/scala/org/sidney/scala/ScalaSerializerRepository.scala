@@ -10,7 +10,7 @@ import org.sidney.core.serde.serializer._
 import scala.collection.JavaConversions._
 import scala.reflect.ClassTag
 
-class ScalaSerializers(registrations : Registrations) extends Serializers(registrations) {
+class ScalaSerializerRepository(registrations : Registrations) extends SerializerRepository(registrations) {
   def serializer[T](t : Type,
                     field: Field,
                     typeBindings: TypeBindings,

@@ -5,7 +5,7 @@ import org.sidney.core.serde.ColumnReader;
 import org.sidney.core.serde.ReadContext;
 import org.sidney.core.serde.TypeReader;
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.Serializers;
+import org.sidney.core.serde.serializer.SerializerRepository;
 import org.sidney.core.serde.serializer.Types;
 
 import java.io.InputStream;
@@ -20,7 +20,7 @@ public abstract class BaseReader<T> implements Reader<T>  {
     private Serializer serializer;
     private TypeReader typeReader = new TypeReader();
     private int recordCount = 0;
-    protected Serializers serializers;
+    protected SerializerRepository serializerRepository;
     private PageHeader currentPageHeader = null;
     private boolean isOpen = false;
 
@@ -28,7 +28,7 @@ public abstract class BaseReader<T> implements Reader<T>  {
         this.type = type;
         this.registrations = registrations;
         this.typeParams = typeParams;
-        this.serializers = getSerializers();
+        this.serializerRepository = getSerializerRepository();
         this.serializer = getSerializerWithTypeParams();
     }
 
@@ -104,16 +104,16 @@ public abstract class BaseReader<T> implements Reader<T>  {
     }
 
     protected Serializer<T> getSerializer() {
-        return serializers.serializer(
+        return serializerRepository.serializer(
                 type, null, Types.binding(type), typeParams
         );
     }
 
     protected Serializer<T> getSerializerWithTypeParams() {
-        return serializers.serializer(type, null, null, typeParams);
+        return serializerRepository.serializer(type, null, null, typeParams);
     }
 
-    protected Serializers getSerializers() {
-        return new Serializers(registrations);
+    protected SerializerRepository getSerializerRepository() {
+        return new SerializerRepository(registrations);
     }
 }

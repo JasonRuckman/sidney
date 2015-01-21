@@ -26,45 +26,7 @@ public abstract class GenericSerializer<T> extends Serializer<T> {
     public GenericSerializer(Type jdkType,
                              Field field,
                              TypeBindings parentTypeBindings,
-                             Serializers serializers, Class[] generics) {
-        super(jdkType, field, parentTypeBindings, serializers, generics);
-    }
-
-    protected void fromType(Type type) {
-        throw new IllegalStateException();
-    }
-
-    protected void fromArrayType(GenericArrayType type) {
-        throw new IllegalStateException();
-    }
-
-    protected void fromParameterizedClass(Class<?> clazz, Class... types) {
-        throw new IllegalStateException();
-    }
-
-    protected void fromParameterizedType(ParameterizedType type) {
-        throw new IllegalStateException();
-    }
-
-    protected void fromTypeVariable(TypeVariable typeVariable) {
-        throw new IllegalStateException();
-    }
-
-    @Override
-    protected void resolveTypes() {
-        super.resolveTypes();
-
-        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass())) {
-            fromParameterizedType((ParameterizedType) getJdkType());
-        } else if (TypeVariable.class.isAssignableFrom(getJdkType().getClass())) {
-            TypeVariable variable = (TypeVariable) getJdkType();
-            fromTypeVariable(variable);
-        } else if (getJdkType().getClass() == Class.class && generics.length > 0) {
-            fromParameterizedClass((Class) getJdkType(), generics);
-        } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
-            fromArrayType((GenericArrayType) getJdkType());
-        } else {
-            fromType(getJdkType());
-        }
+                             SerializerRepository serializerRepository, Class[] generics) {
+        super(jdkType, field, parentTypeBindings, serializerRepository, generics);
     }
 }

@@ -29,11 +29,11 @@ import java.util.*;
 /**
  * Factory that creates {@link Serializer}s
  */
-public class Serializers {
+public class SerializerRepository {
     private Registrations registrations;
     protected List<SerializerFactoryEntry> entries = new ArrayList<>();
 
-    public Serializers(Registrations registrations) {
+    public SerializerRepository(Registrations registrations) {
         this.registrations = registrations;
 
         addCustomFactories();

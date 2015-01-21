@@ -8,5 +8,5 @@ import java.lang.reflect.Type;
 public abstract class GenericSerializerFactory extends SerializerFactory {
     public abstract <T> GenericSerializer<T> newSerializer(Type type,
                                                     Field field,
-                                                    TypeBindings typeBindings, Serializers serializers, Class[] typeParameters);
+                                                    TypeBindings typeBindings, SerializerRepository serializerRepository, Class[] typeParameters);
 }

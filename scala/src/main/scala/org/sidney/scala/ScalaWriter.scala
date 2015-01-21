@@ -1,7 +1,7 @@
 package org.sidney.scala
 
 import org.sidney.core._
-import org.sidney.core.serde.serializer.{Serializer, Serializers}
+import org.sidney.core.serde.serializer.{Serializer, SerializerRepository}
 
 import scala.reflect.ClassTag
 
@@ -10,9 +10,9 @@ class ScalaWriter[T](registrations: Registrations,
   extends BaseWriter[T](tag.runtimeClass, registrations, typeParams) {
   override protected def getSerializer: Serializer[T] = super.getSerializer
 
-  override protected def getSerializerWithParams: Serializer[T] = serializers.asInstanceOf[ScalaSerializers].serializer(
+  override protected def getSerializerWithParams: Serializer[T] = serializerRepository.asInstanceOf[ScalaSerializerRepository].serializer(
     `type`, null, null, typeParams
   )
 
-  override protected def getSerializers: Serializers = new ScalaSerializers(registrations)
+  override protected def getSerializerRepository: SerializerRepository = new ScalaSerializerRepository(registrations)
 }

@@ -18,40 +18,52 @@ package org.sidney.core.serde.serializer;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import org.sidney.core.FieldAccessor;
 import org.sidney.core.ReflectionFieldAccessor;
-import org.sidney.core.UnsafeFieldAccessor;
 import org.sidney.core.serde.*;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles serializing a given type, is responsible for decomposing that type and constructing sub handlers if necessary
+ * Handles serializing a given type, is responsible for decomposing that type and constructing sub serializers if necessary
  */
 public abstract class Serializer<T> {
-    protected List<Serializer> handlers = new ArrayList<>();
     protected int numSubFields = 1;
     protected Class[] generics;
+    private List<Serializer> serializers = new ArrayList<>();
     private Type jdkType;
     private Field field;
     private TypeBindings parentTypeBindings;
     private FieldAccessor accessor;
-    private Serializers serializers;
+    private SerializerRepository serializerRepository;
     private TypeBindings typeBindings;
 
     public Serializer(Type jdkType,
                       Field field,
                       TypeBindings parentTypeBindings,
-                      Serializers serializers, Class... generics) {
+                      SerializerRepository serializerRepository, Class... generics) {
         this.jdkType = jdkType;
         this.field = field;
         this.parentTypeBindings = parentTypeBindings;
         this.accessor = (field != null) ? new ReflectionFieldAccessor(field) : null;
-        this.serializers = serializers;
+        this.serializerRepository = serializerRepository;
         this.generics = generics;
 
-        resolveTypes();
+        resolveTypeBindings();
+
+        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass())) {
+            getSerializers().addAll(fromParameterizedType((ParameterizedType) getJdkType()));
+        } else if (TypeVariable.class.isAssignableFrom(getJdkType().getClass())) {
+            TypeVariable variable = (TypeVariable) getJdkType();
+            getSerializers().addAll(fromTypeVariable(variable));
+        } else if (getJdkType().getClass() == Class.class && generics.length > 0) {
+            getSerializers().addAll(fromParameterizedClass((Class) getJdkType(), generics));
+        } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
+            getSerializers().addAll(fromArrayType((GenericArrayType) getJdkType()));
+        } else {
+            getSerializers().addAll(fromType(getJdkType()));
+        }
     }
 
     /**
@@ -64,8 +76,8 @@ public abstract class Serializer<T> {
     /**
      * Returns the configured type serializer factory for this object tree
      */
-    public Serializers getSerializers() {
-        return serializers;
+    public SerializerRepository getSerializerRepository() {
+        return serializerRepository;
     }
 
     /**
@@ -87,11 +99,11 @@ public abstract class Serializer<T> {
     }
 
     /**
-     * All handlers for this level and below
-     * @return all type handlers including this level and all sub levels
+     * All serializers for this level and below
+     * @return all type serializers including this level and all sub levels
      */
-    public List<Serializer> getHandlers() {
-        return handlers;
+    public List<Serializer> getSerializers() {
+        return serializers;
     }
 
     /**
@@ -229,6 +241,26 @@ public abstract class Serializer<T> {
      */
     public abstract boolean requiresTypeColumn();
 
+    protected List<Serializer> fromType(Type type) {
+        throw new IllegalStateException();
+    }
+
+    protected List<Serializer> fromArrayType(GenericArrayType type) {
+        throw new IllegalStateException();
+    }
+
+    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
+        throw new IllegalStateException();
+    }
+
+    protected List<Serializer> fromParameterizedType(ParameterizedType type) {
+        throw new IllegalStateException();
+    }
+
+    protected List<Serializer> fromTypeVariable(TypeVariable typeVariable) {
+        throw new IllegalStateException();
+    }
+
     protected FieldAccessor getAccessor() {
         return accessor;
     }
@@ -240,7 +272,7 @@ public abstract class Serializer<T> {
         return accessor.getField();
     }
 
-    protected void resolveTypes() {
+    protected void resolveTypeBindings() {
         if (field != null) {
             typeBindings = Types.binding(field, parentTypeBindings);
         } else if (generics.length > 0) {

@@ -9,5 +9,5 @@ import java.lang.reflect.Type;
  * type, field, typeBindings, this, generics
  */
 public abstract class SerializerFactory {
-    public abstract <T> Serializer<T> newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers);
+    public abstract <T> Serializer<T> newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository);
 }

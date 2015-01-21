@@ -25,7 +25,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.Map;
+import java.util.*;
+import java.util.Arrays;
 
 public class MapSerializer extends GenericSerializer<Map> {
     private Serializer keySerializer;
@@ -35,42 +36,40 @@ public class MapSerializer extends GenericSerializer<Map> {
     public MapSerializer(Type jdkType,
                          Field field,
                          TypeBindings parentTypeBindings,
-                         Serializers serializers, Class... generics) {
-        super(jdkType, field, parentTypeBindings, serializers, generics);
-
-        handlers.add(keySerializer);
-        handlers.addAll(keySerializer.getHandlers());
-        handlers.add(valueSerializer);
-        handlers.addAll(valueSerializer.getHandlers());
+                         SerializerRepository serializerRepository, Class... generics) {
+        super(jdkType, field, parentTypeBindings, serializerRepository, generics);
 
         numSubFields += keySerializer.numSubFields;
         numSubFields += valueSerializer.numSubFields;
     }
 
     @Override
-    protected void fromParameterizedClass(Class<?> clazz, Class[] typeParams) {
-        keySerializer = getSerializers().serializer(typeParams[0], null, getTypeBindings(), new Class[0]);
-        valueSerializer = getSerializers().serializer(typeParams[1], null, getTypeBindings(), new Class[0]);
+    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class[] typeParams) {
+        keySerializer = getSerializerRepository().serializer(typeParams[0], null, getTypeBindings(), new Class[0]);
+        valueSerializer = getSerializerRepository().serializer(typeParams[1], null, getTypeBindings(), new Class[0]);
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromParameterizedType(ParameterizedType type) {
+    protected List<Serializer> fromParameterizedType(ParameterizedType type) {
         Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        keySerializer = getSerializers().serializer(args[0], null, getParentTypeBindings(), new Class[0]);
-        valueSerializer = getSerializers().serializer(args[1], null, getParentTypeBindings(), new Class[0]);
+        keySerializer = getSerializerRepository().serializer(args[0], null, getParentTypeBindings(), new Class[0]);
+        valueSerializer = getSerializerRepository().serializer(args[1], null, getParentTypeBindings(), new Class[0]);
+        return createSubSerializers();
     }
 
     @Override
-    protected void fromTypeVariable(TypeVariable typeVariable) {
-        keySerializer = getSerializers().serializer(
+    protected List<Serializer> fromTypeVariable(TypeVariable typeVariable) {
+        keySerializer = getSerializerRepository().serializer(
                 typeVariable.getBounds()[0], null, getParentTypeBindings(), new Class[0]);
-        valueSerializer = getSerializers().serializer(
+        valueSerializer = getSerializerRepository().serializer(
                 typeVariable.getBounds()[1], null, getParentTypeBindings(), new Class[0]);
+        return createSubSerializers();
     }
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        writeMap((Map)value, typeWriter, context);
+        writeMap((Map) value, typeWriter, context);
     }
 
     @Override
@@ -92,6 +91,15 @@ public class MapSerializer extends GenericSerializer<Map> {
     @Override
     public boolean requiresTypeColumn() {
         return true;
+    }
+
+    protected List<Serializer> createSubSerializers() {
+        List<Serializer> serializers = new ArrayList<>();
+        serializers.add(keySerializer);
+        serializers.addAll(keySerializer.getSerializers());
+        serializers.add(valueSerializer);
+        serializers.addAll(valueSerializer.getSerializers());
+        return serializers;
     }
 
     private void writeMap(Map map, TypeWriter typeWriter, WriteContext context) {
@@ -129,15 +137,15 @@ public class MapSerializer extends GenericSerializer<Map> {
 
     public static class MapSerializerFactory extends GenericSerializerFactory {
         @Override
-        public MapSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers, Class... typeParameters) {
+        public MapSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository, Class... typeParameters) {
             return new MapSerializer(
-                    type, field, typeBindings, serializers, typeParameters
+                    type, field, typeBindings, serializerRepository, typeParameters
             );
         }
 
         @Override
-        public MapSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, Serializers serializers) {
-            return new MapSerializer(type, field, typeBindings, serializers);
+        public MapSerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
+            return new MapSerializer(type, field, typeBindings, serializerRepository);
         }
     }
 }
