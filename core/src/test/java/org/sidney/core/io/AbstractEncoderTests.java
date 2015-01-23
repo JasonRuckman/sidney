@@ -19,7 +19,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -98,11 +101,8 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
 
         byte[] bytes = baos.toByteArray();
         logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-        pair.getDecoder().readFromStream(
-                new BufferedInputStream(
-                        new GZIPInputStream(
-                                new ByteArrayInputStream(bytes))
-                )
+        pair.getDecoder().readFromStream(new GZIPInputStream(
+                        new ByteArrayInputStream(bytes))
         );
         consumeAndAssert().accept(pair.getDecoder(), t);
     }

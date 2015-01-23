@@ -17,7 +17,8 @@ package org.sidney.core.serde;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.*;
+import org.sidney.core.AllPrimitives;
+import org.sidney.core.Sid;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,13 +37,13 @@ public class CollectionSerdeTest extends SerdeTestBase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, AllPrimitives.class);
+        Writer<List<AllPrimitives>> writer = sid.newWriter(List.class, AllPrimitives.class);
         writer.open(baos);
         writer.write(list);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<List<AllPrimitives>> reader = sid.newCachedReader(
+        Reader<List<AllPrimitives>> reader = sid.newReader(
                 List.class, AllPrimitives.class
         );
         reader.open(bais);
@@ -54,7 +55,7 @@ public class CollectionSerdeTest extends SerdeTestBase {
     public void testManyListsOfBeans() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newCachedWriter(List.class, AllPrimitives.class);
+        Writer<List<AllPrimitives>> writer = sid.newWriter(List.class, AllPrimitives.class);
         writer.open(baos);
 
         List<List<AllPrimitives>> lists = new ArrayList<>();
@@ -72,7 +73,7 @@ public class CollectionSerdeTest extends SerdeTestBase {
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<List<AllPrimitives>> reader = sid.newCachedReader(
+        Reader<List<AllPrimitives>> reader = sid.newReader(
                 List.class, AllPrimitives.class
         );
         reader.open(bais);

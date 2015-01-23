@@ -44,19 +44,19 @@ public class BoolEncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("boolEncodingRandom")
     public boolean[] plain() throws IOException {
-        return run(getEncoder(PlainBoolEncoder.class), getDecoder(PlainBoolDecoder.class));
+        return run(getEncoder(Plain.PlainBoolEncoder.class), getDecoder(Plain.PlainBoolDecoder.class));
     }
 
     @Benchmark
     @Group("boolEncodingRandom")
     public boolean[] bitmap() throws IOException {
-        return run(getEncoder(EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmapBoolDecoder.class));
+        return run(getEncoder(EWAHBitmap.EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmap.EWAHBitmapBoolDecoder.class));
     }
 
     @Benchmark
     @Group("boolEncodingRandom")
     public boolean[] bitpacking() throws IOException {
-        return run(getEncoder(BitPackingBoolEncoder.class), getDecoder(BitPackingBoolDecoder.class));
+        return run(getEncoder(BitPacking.BitPackingBoolEncoder.class), getDecoder(BitPacking.BitPackingBoolDecoder.class));
     }
 
     private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {

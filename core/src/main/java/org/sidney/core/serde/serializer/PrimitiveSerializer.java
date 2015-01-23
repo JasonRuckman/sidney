@@ -15,12 +15,14 @@
  */
 package org.sidney.core.serde.serializer;
 
-import com.fasterxml.jackson.databind.type.TypeBindings;
+import org.sidney.core.Accessors;
 import org.sidney.core.Encode;
 import org.sidney.core.io.Encoding;
-import org.sidney.core.serde.*;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.TypeReader;
+import org.sidney.core.serde.TypeWriter;
+import org.sidney.core.serde.WriteContext;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,17 +92,14 @@ public class PrimitiveSerializer extends Serializer {
         TYPES.put(byte[].class, org.sidney.core.serde.Type.BINARY);
         TYPES.put(String.class, org.sidney.core.serde.Type.STRING);
     }
+
     protected PrimitiveWriters.PrimitiveWriter writer;
     protected PrimitiveReaders.PrimitiveReader reader;
-    private Class<?> actualType;
 
-    public PrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, SerializerRepository serializerRepository) {
-        super(jdkType, field, parentTypeBindings, serializerRepository);
-
-        actualType = (Class<?>) jdkType;
-
-        writer = WRITERS.get(actualType);
-        reader = READERS.get(actualType);
+    @Override
+    public void postInit() {
+        writer = WRITERS.get(getRawClass());
+        reader = READERS.get(getRawClass());
     }
 
     @Override
@@ -109,12 +108,6 @@ public class PrimitiveSerializer extends Serializer {
             writer.writeValue(value, typeWriter, context);
         }
         context.incrementColumnIndex();
-    }
-
-    @Override
-    public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
-        Object value = getAccessor().get(parent);
-        writeValue(value, typeWriter, context);
     }
 
     @Override
@@ -129,26 +122,22 @@ public class PrimitiveSerializer extends Serializer {
     }
 
     @Override
-    public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
-        getAccessor().set(parent, readValue(typeReader, context));
-    }
-
-    @Override
     public boolean requiresTypeColumn() {
         return false;
     }
 
     @Override
-    protected List<Serializer> fromType(Type type) {
+    protected List<Serializer> serializers() {
         return new ArrayList<>();
     }
 
-    public Class<?> getActualType() {
-        return actualType;
+    @Override
+    protected void initFromType(Type type) {
+
     }
 
     public org.sidney.core.serde.Type getType() {
-        return TYPES.get(getActualType());
+        return TYPES.get(getRawClass());
     }
 
     public Encoding getEncoding() {
@@ -158,25 +147,7 @@ public class PrimitiveSerializer extends Serializer {
         return Encoding.PLAIN;
     }
 
-    public static class PrimitiveSerializerFactory extends SerializerFactory {
-        @Override
-        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
-            return new PrimitiveSerializer(type, field, typeBindings, serializerRepository);
-        }
-    }
-
-    public static class NonNullPrimitiveSerializerFactory extends SerializerFactory {
-        @Override
-        public Serializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
-            return new NonNullPrimitiveSerializer(type, field, typeBindings, serializerRepository);
-        }
-    }
-
-    static class NonNullPrimitiveSerializer extends PrimitiveSerializer {
-        public NonNullPrimitiveSerializer(Type jdkType, Field field, TypeBindings parentTypeBindings, SerializerRepository serializerRepository) {
-            super(jdkType, field, parentTypeBindings, serializerRepository);
-        }
-
+    public static class NonNullPrimitiveSerializer extends PrimitiveSerializer {
         @Override
         public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
             writer.writeFromField(parent, typeWriter, context, getAccessor());
@@ -187,6 +158,372 @@ public class PrimitiveSerializer extends Serializer {
         public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
             reader.readIntoField(parent, typeReader, context, getAccessor());
             context.incrementColumnIndex();
+        }
+    }
+
+    public static class PrimitiveWriters {
+        static abstract class PrimitiveWriter {
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                throw new IllegalStateException();
+            }
+
+            public abstract void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor);
+        }
+
+        static class BoolWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeBool(accessor.getBoolean(parent), context);
+            }
+        }
+
+        static class ByteWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeInt(accessor.getByte(parent), context);
+            }
+        }
+
+        static class ShortWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeInt(accessor.getShort(parent), context);
+            }
+        }
+
+        static class CharWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeInt(accessor.getChar(parent), context);
+            }
+        }
+
+        static class IntWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeInt(accessor.getInt(parent), context);
+            }
+        }
+
+        static class LongWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeLong(accessor.getLong(parent), context);
+            }
+        }
+
+        static class FloatWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeFloat(accessor.getFloat(parent), context);
+            }
+        }
+
+        static class DoubleWriter extends PrimitiveWriter {
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeDouble(accessor.getDouble(parent), context);
+            }
+        }
+
+        static class StringWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeString((String) value, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeString((String) accessor.get(parent), context);
+            }
+        }
+
+        static class BytesWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeBytes((byte[]) value, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                typeWriter.writeBytes((byte[]) accessor.get(parent), context);
+            }
+        }
+
+        static class BoolRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeBool((Boolean) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeBool((Boolean) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeBool(Boolean value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeBool(value, context);
+            }
+        }
+
+        static class ByteRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeByte((Byte) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeByte((Byte) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeByte(Byte value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+
+        static class ShortRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeShort((Short) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeShort((Short) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeShort(Short value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+
+        static class CharRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeChar((Character) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeChar((Character) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeChar(Character value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+
+        static class IntRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeInteger((Integer) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeInteger((Integer) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeInteger(Integer value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeInt(value, context);
+            }
+        }
+
+        static class LongRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeLong((Long) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeLong((Long) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeLong(Long value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeLong(value, context);
+            }
+        }
+
+        static class FloatRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeFloat((Float) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeFloat((Float) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeFloat(Float value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeFloat(value, context);
+            }
+        }
+
+        static class DoubleRefWriter extends PrimitiveWriter {
+            @Override
+            public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
+                writeDouble((Double) value, typeWriter, context);
+            }
+
+            @Override
+            public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context, Accessors.FieldAccessor accessor) {
+                writeDouble((Double) accessor.get(parent), typeWriter, context);
+            }
+
+            private void writeDouble(Double value, TypeWriter typeWriter, WriteContext context) {
+                typeWriter.writeDouble(value, context);
+            }
+        }
+    }
+
+    public static class PrimitiveReaders {
+        public static abstract class PrimitiveReader {
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                throw new IllegalStateException();
+            }
+
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.set(parent, readValue(typeReader, context));
+            }
+        }
+
+        public static class BoolPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setBoolean(parent, typeReader.readBoolean(context));
+            }
+        }
+
+        public static class BytePrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setByte(parent, typeReader.readByte(context));
+            }
+        }
+
+        public static class ShortPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setShort(parent, typeReader.readShort(context));
+            }
+        }
+
+        public static class CharPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setChar(parent, typeReader.readChar(context));
+            }
+        }
+
+        public static class IntPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setInt(parent, typeReader.readInt(context));
+            }
+        }
+
+        public static class LongPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setLong(parent, typeReader.readLong(context));
+            }
+        }
+
+        public static class FloatPrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setFloat(parent, typeReader.readFloat(context));
+            }
+        }
+
+        public static class DoublePrimitiveReader extends PrimitiveReader {
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.setDouble(parent, typeReader.readDouble(context));
+            }
+        }
+
+        public static class BytesPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readBytes(context);
+            }
+
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.set(parent, typeReader.readBytes(context));
+            }
+        }
+
+        public static class StringPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readString(context);
+            }
+
+            @Override
+            public void readIntoField(Object parent, TypeReader typeReader, ReadContext context, Accessors.FieldAccessor accessor) {
+                accessor.set(parent, typeReader.readString(context));
+            }
+        }
+
+        public static class BoolRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readBoolean(context);
+            }
+        }
+
+        public static class ByteRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readByte(context);
+            }
+        }
+
+        public static class CharRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readChar(context);
+            }
+        }
+
+        public static class ShortRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readShort(context);
+            }
+        }
+
+        public static class IntRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readInt(context);
+            }
+        }
+
+        public static class LongRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readLong(context);
+            }
+        }
+
+        public static class FloatRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readFloat(context);
+            }
+        }
+
+        public static class DoubleRefPrimitiveReader extends PrimitiveReader {
+            @Override
+            public Object readValue(TypeReader typeReader, ReadContext context) {
+                return typeReader.readDouble(context);
+            }
         }
     }
 }

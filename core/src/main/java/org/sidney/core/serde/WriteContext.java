@@ -15,8 +15,6 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.PageHeader;
-
 public class WriteContext extends Context {
     private ColumnWriter columnWriter;
 

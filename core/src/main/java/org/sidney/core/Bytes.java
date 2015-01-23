@@ -15,7 +15,7 @@
  */
 package org.sidney.core;
 
-import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +53,8 @@ public class Bytes {
 
     public static int readIntFromStream(InputStream inputStream) throws IOException {
         byte[] arr = new byte[4];
-        inputStream.read(arr);
+        readFully(arr, inputStream);
+
         return bytesToInt(arr, 0);
     }
 
@@ -72,7 +73,20 @@ public class Bytes {
     public static String readStringFromStream(InputStream inputStream) throws IOException {
         int length = readIntFromStream(inputStream);
         byte[] bytes = new byte[length];
-        inputStream.read(bytes);
+        readFully(bytes, inputStream);
         return new String(bytes, Charset.forName("UTF-8"));
+    }
+
+    public static void readFully(byte[] buffer, InputStream is) throws IOException {
+        int numLeft = buffer.length;
+        int offset = 0;
+        while (numLeft > 0) {
+            int numRead = is.read(buffer, offset, numLeft);
+            if (numRead == -1) {
+                throw new EOFException();
+            }
+            numLeft -= numRead;
+            offset += numRead;
+        }
     }
 }

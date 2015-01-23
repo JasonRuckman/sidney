@@ -16,7 +16,6 @@
 package org.sidney.core;
 
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.SerializerFactory;
 
 /**
  * Various configurations for serialization
@@ -27,13 +26,14 @@ public class SidneyConf {
     private boolean useUnsafe = true;
     private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
 
+    private SidneyConf() {
+
+    }
+
     public static int getDefaultSidneyPageSize() {
         return DEFAULT_SIDNEY_PAGE_SIZE;
     }
 
-    private SidneyConf() {
-
-    }
     /**
      * Create a new configuration
      */
@@ -49,6 +49,7 @@ public class SidneyConf {
         c.registrations = registrations;
         return c;
     }
+
     /**
      * Set whether or not to use unsafe accessors when accessing fields. Defaults to true
      */
@@ -68,8 +69,8 @@ public class SidneyConf {
     /**
      * Register a {@link org.sidney.core.serde.serializer.Serializer} that will handle instances of the given type, but not subclasses
      */
-    public SidneyConf register(Class type, SerializerFactory serializerFactory) {
-        registrations.register(type, serializerFactory);
+    public SidneyConf register(Class type, Class<? extends Serializer> serializerClass) {
+        registrations.register(type, serializerClass);
         return this;
     }
 

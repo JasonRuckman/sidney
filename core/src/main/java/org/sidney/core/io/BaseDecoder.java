@@ -16,6 +16,8 @@
 package org.sidney.core.io;
 
 import org.sidney.core.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,7 @@ import java.nio.BufferUnderflowException;
 public abstract class BaseDecoder implements Decoder {
     private byte[] buffer;
     private int position = 0;
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public byte[] getBuffer() {
         return buffer;
@@ -49,8 +52,11 @@ public abstract class BaseDecoder implements Decoder {
     public void readFromStream(InputStream inputStream) throws IOException {
         setPosition(0);
         int bufferSize = Bytes.readIntFromStream(inputStream);
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Expected buffer size: %s", bufferSize));
+        }
         buffer = new byte[bufferSize];
-        inputStream.read(buffer);
+        Bytes.readFully(buffer, inputStream);
     }
 
     protected byte readByte() {
@@ -85,23 +91,16 @@ public abstract class BaseDecoder implements Decoder {
 
     protected long readLongInternal() {
         require(8);
-        long res =
-                ((long) (buffer[position + 7] & 0xff) << 56) |
-                        ((long) (buffer[position + 6] & 0xff) << 48) |
-                        ((long) (buffer[position + 5] & 0xff) << 40) |
-                        ((long) (buffer[position + 4] & 0xff) << 32) |
-                        ((long) (buffer[position + 3] & 0xff) << 24) |
-                        ((long) (buffer[position + 2] & 0xff) << 16) |
-                        ((long) (buffer[position + 1] & 0xff) << 8) |
-                        (long) (buffer[position] & 0xff);
+        long l = ((((long) buffer[getPosition() + 7]) << 56)
+                | (((long) buffer[getPosition() + 6] & 0xff) << 48)
+                | (((long) buffer[getPosition() + 5] & 0xff) << 40)
+                | (((long) buffer[getPosition() + 4] & 0xff) << 32)
+                | (((long) buffer[getPosition() + 3] & 0xff) << 24)
+                | (((long) buffer[getPosition() + 2] & 0xff) << 16)
+                | (((long) buffer[getPosition() + 1] & 0xff) << 8)
+                | (((long) buffer[getPosition()] & 0xff)));
         position += 8;
-        return res;
-    }
-
-    protected void resizeBufferIfNecessary(int size) {
-        if (buffer == null || buffer.length < size) {
-            buffer = new byte[size];
-        }
+        return l;
     }
 
     private void require(int size) {

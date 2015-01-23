@@ -21,6 +21,7 @@ package org.sidney.core;
 public class Longs {
     /**
      * Zigzag encodes a long
+     *
      * @return the zigzag encoded long
      */
     public static long zigzagEncode(long n) {
@@ -29,6 +30,7 @@ public class Longs {
 
     /**
      * Zigzag encodes a long
+     *
      * @return the zigzag decoded long
      */
     public static long zigzagDecode(long n) {

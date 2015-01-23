@@ -22,7 +22,10 @@ import org.sidney.core.SidneyException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 //TODO: Refactor to accept registrations
 
@@ -30,8 +33,8 @@ import java.util.*;
  * Factory that creates {@link Serializer}s
  */
 public class SerializerRepository {
+    protected List<SerializerEntry> entries = new ArrayList<>();
     private Registrations registrations;
-    protected List<SerializerFactoryEntry> entries = new ArrayList<>();
 
     public SerializerRepository(Registrations registrations) {
         this.registrations = registrations;
@@ -40,9 +43,9 @@ public class SerializerRepository {
         addPrimitiveFactories();
         addArrayFactories();
 
-        addEntry(Collection.class, new CollectionSerializer.CollectionSerializerFactory());
-        addEntry(Map.class, new MapSerializer.MapSerializerFactory());
-        addEntry(Object.class, new BeanSerializer.BeanSerializerFactory());
+        addEntry(Collection.class, CollectionSerializer.class);
+        addEntry(Map.class, MapSerializer.class);
+        addEntry(Object.class, BeanSerializer.class);
 
     }
 
@@ -51,41 +54,46 @@ public class SerializerRepository {
     }
 
     private void addPrimitiveFactories() {
-        PrimitiveSerializer.PrimitiveSerializerFactory primitiveSerializerFactory = new PrimitiveSerializer.PrimitiveSerializerFactory();
-        PrimitiveSerializer.NonNullPrimitiveSerializerFactory nonNullPrimitiveSerializerFactory = new PrimitiveSerializer.NonNullPrimitiveSerializerFactory();
+        Class<PrimitiveSerializer> primitiveSerializerClass = PrimitiveSerializer.class;
+        Class<PrimitiveSerializer.NonNullPrimitiveSerializer> nonNullPrimitiveSerializerClass = PrimitiveSerializer.NonNullPrimitiveSerializer.class;
 
-        addEntry(boolean.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Boolean.class, primitiveSerializerFactory);
-        addEntry(byte.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Byte.class, primitiveSerializerFactory);
-        addEntry(char.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Character.class, primitiveSerializerFactory);
-        addEntry(short.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Short.class, primitiveSerializerFactory);
-        addEntry(int.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Integer.class, primitiveSerializerFactory);
-        addEntry(long.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Long.class, primitiveSerializerFactory);
-        addEntry(float.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Float.class, primitiveSerializerFactory);
-        addEntry(double.class, nonNullPrimitiveSerializerFactory);
-        addEntry(Double.class, primitiveSerializerFactory);
-        addEntry(Enum.class, primitiveSerializerFactory);
-        addEntry(String.class, primitiveSerializerFactory);
-        addEntry(byte[].class, primitiveSerializerFactory);
+        addEntry(boolean.class, nonNullPrimitiveSerializerClass);
+        addEntry(Boolean.class, primitiveSerializerClass);
+        addEntry(byte.class, nonNullPrimitiveSerializerClass);
+        addEntry(Byte.class, primitiveSerializerClass);
+        addEntry(char.class, nonNullPrimitiveSerializerClass);
+        addEntry(Character.class, primitiveSerializerClass);
+        addEntry(short.class, nonNullPrimitiveSerializerClass);
+        addEntry(Short.class, primitiveSerializerClass);
+        addEntry(int.class, nonNullPrimitiveSerializerClass);
+        addEntry(Integer.class, primitiveSerializerClass);
+        addEntry(long.class, nonNullPrimitiveSerializerClass);
+        addEntry(Long.class, primitiveSerializerClass);
+        addEntry(float.class, nonNullPrimitiveSerializerClass);
+        addEntry(Float.class, primitiveSerializerClass);
+        addEntry(double.class, nonNullPrimitiveSerializerClass);
+        addEntry(Double.class, primitiveSerializerClass);
+        addEntry(Enum.class, primitiveSerializerClass);
+        addEntry(String.class, primitiveSerializerClass);
+        addEntry(byte[].class, primitiveSerializerClass);
     }
 
     private void addArrayFactories() {
-        ArraySerializer.ArraySerializerFactory arraySerializerFactory = new ArraySerializer.ArraySerializerFactory();
+        Class<ArraySerializer> arraySerializerClass = ArraySerializer.class;
 
-        addEntry(boolean[].class, arraySerializerFactory);
-        addEntry(char[].class, arraySerializerFactory);
-        addEntry(short[].class, arraySerializerFactory);
-        addEntry(int[].class, arraySerializerFactory);
-        addEntry(long[].class, arraySerializerFactory);
-        addEntry(float[].class, arraySerializerFactory);
-        addEntry(double[].class, arraySerializerFactory);
-        addEntry(Object[].class, arraySerializerFactory);
+        addEntry(boolean[].class, arraySerializerClass);
+        addEntry(char[].class, arraySerializerClass);
+        addEntry(short[].class, arraySerializerClass);
+        addEntry(int[].class, arraySerializerClass);
+        addEntry(long[].class, arraySerializerClass);
+        addEntry(float[].class, arraySerializerClass);
+        addEntry(double[].class, arraySerializerClass);
+        addEntry(Object[].class, arraySerializerClass);
+    }
+
+
+    public Serializer serializer(Type type) {
+        return serializer(type, null, null, new Class[0]);
     }
 
     /**
@@ -100,29 +108,40 @@ public class SerializerRepository {
         }
         Class<?> clazz = javaType.getRawClass();
 
-        SerializerFactory factory = null;
-        for(SerializerFactoryEntry entry : entries) {
-            if(entry.getType() == clazz || entry.getType().isAssignableFrom(clazz)) {
-                factory = entry.getSerializerFactory();
+        Serializer serializer = null;
+        for (SerializerEntry entry : entries) {
+            if (entry.getType() == clazz || entry.getType().isAssignableFrom(clazz)) {
+                serializer = (Serializer) new InstanceFactory(entry.getSerializerType()).newInstance();
                 break;
             }
         }
 
-        if(factory instanceof PrimitiveSerializer.NonNullPrimitiveSerializerFactory ||
-                factory instanceof PrimitiveSerializer.PrimitiveSerializerFactory) {
+        if (serializer == null) {
+            throw new SidneyException(String.format("Could not resolve serializer for type: %s", clazz));
+        }
+
+        if (serializer instanceof PrimitiveSerializer.NonNullPrimitiveSerializer ||
+                serializer instanceof PrimitiveSerializer) {
             type = clazz;
         }
 
-        if(generics.length > 0) {
-            return ((GenericSerializerFactory) factory).newSerializer(
-                    type, field, typeBindings, this, generics
-            );
-        } else {
-            return factory.newSerializer(type, field, typeBindings, this);
-        }
+        serializer.setTypeParams(generics);
+        serializer.setJdkType(type);
+        serializer.setParentTypeBindings(typeBindings);
+        serializer.setSerializerRepository(this);
+        serializer.setParentTypeBindings(typeBindings);
+        serializer.setField(field);
+
+        serializer.resolveTypeBindings();
+        serializer.preInit();
+        serializer.init();
+        serializer.postInit();
+        serializer.finish();
+
+        return serializer;
     }
 
-    private void addEntry(Class type, SerializerFactory serializerFactory) {
-        entries.add(new SerializerFactoryEntry(type, serializerFactory));
+    private void addEntry(Class type, Class<? extends Serializer> serializerType) {
+        entries.add(new SerializerEntry(type, serializerType));
     }
 }

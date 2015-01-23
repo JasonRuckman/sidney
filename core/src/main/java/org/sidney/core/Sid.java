@@ -15,121 +15,47 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.serializer.SerializerFactory;
+import org.sidney.core.serde.Reader;
+import org.sidney.core.serde.Writer;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class Sid {
-    private final Map<Class, JavaWriter> writerCache = new HashMap<>();
-    private final Map<Class, JavaReader> readerCache = new HashMap<>();
-
-    private SidneyConf conf = SidneyConf.newConf();
-
+public class Sid extends BaseSid {
     /**
-     * Creates a new {@link JavaWriter} for the given type
+     * Creates a new {@link org.sidney.core.serde.Writer} for the given type
+     *
      * @param type the root type
-     * @return a new {@link JavaWriter} bound to the given type
+     * @return a new {@link org.sidney.core.serde.Writer} bound to the given type
      */
     public <T> Writer<T> newWriter(Class type) {
-        return createWriter(type, false);
+        return createWriter(type);
     }
 
     /**
-     * Creates a new {@link JavaWriter} for the given type with the given type parameters
+     * Creates a new {@link Writer} for the given type with the given type parameters
+     *
      * @param type the root type
-     * @return a new {@link JavaWriter} bound to the given type
+     * @return a new {@link Writer} bound to the given type
      */
     public <T> Writer<T> newWriter(Class type, Class... generics) {
-        return createWriter(type, false, generics);
+        return createWriter(type, generics);
     }
 
     /**
-     * Creates a new {@link JavaWriter} for the given type.
-     * This writer will be cached and reused if a writer for the same type is requested again
+     * Creates a new {@link org.sidney.core.serde.Reader} for the given type
+     *
      * @param type the root type
-     * @return a new {@link JavaWriter} bound to the given type
-     */
-    public <T> Writer<T> newCachedWriter(Class type) {
-        return createWriter(type, true);
-    }
-
-    /**
-     * Creates a new {@link JavaWriter} for the given type with the given type parameters
-     * This writer will be cached and reused if a writer for the same type is requested again
-     * @param type the root type
-     * @return a new {@link JavaWriter} bound to the given type
-     */
-    public <T> Writer<T> newCachedWriter(Class type, Class... generics) {
-        return createWriter(type, true, generics);
-    }
-
-    /**
-     * Creates a new {@link JavaReader} for the given type
-     * @param type the root type
-     * @return a new {@link JavaReader} bound to the given type
+     * @return a new {@link org.sidney.core.serde.Reader} bound to the given type
      */
     public <T> Reader<T> newReader(Class type) {
-        return createReader(type, false);
+        return createReader(type);
     }
 
     /**
-     * Creates a new {@link JavaReader} for the given type and given type parameters
+     * Creates a new {@link Reader} for the given type and given type parameters
+     *
      * @param type the root type
-     * @return a new {@link JavaReader} bound to the given type
+     * @return a new {@link Reader} bound to the given type
      */
     public <T> Reader<T> newReader(Class type, Class... generics) {
-        return createReader(type, false, generics);
-    }
-
-    /**
-     * Creates a new {@link JavaReader} for the given type
-     * The reader will be cached and reused if a reader for the same type is requested again
-     * @param type the root type
-     * @return a new {@link JavaReader} bound to the given type
-     */
-    public <T> Reader<T> newCachedReader(Class type) {
-        return createReader(type, true);
-    }
-
-    /**
-     * Creates a new {@link JavaReader} for the given type with the given type parameters
-     * The reader will be cached and reused if a reader for the same type is requested again
-     * @param type the root type
-     * @return a new {@link JavaReader} bound to the given type
-     */
-    public <T> Reader<T> newCachedReader(Class type, Class... generics) {
-        return createReader(type, true, generics);
-    }
-
-    public Sid addSerializer(Class type, SerializerFactory factory) {
-        conf.getRegistrations().register(
-                type, factory
-        );
-        return this;
-    }
-
-    private <T> JavaWriter<T> createWriter(Class type, boolean cache, Class... generics) {
-        if (!cache) {
-            return new JavaWriter<>(type, conf.getRegistrations(), generics);
-        }
-        JavaWriter<T> writer = (JavaWriter<T>) writerCache.get(type);
-        if (writer == null) {
-            writer = new JavaWriter<>(type, conf.getRegistrations(), generics);
-            writerCache.put(type, writer);
-        }
-        return writer;
-    }
-
-    private <T> JavaReader<T> createReader(Class type, boolean cache, Class... generics) {
-        if (!cache) {
-            return new JavaReader<>(type, conf.getRegistrations(), generics);
-        }
-        JavaReader<T> reader = (JavaReader<T>) readerCache.get(type);
-        if (reader == null) {
-            reader = new JavaReader<>(type, conf.getRegistrations(), generics);
-            readerCache.put(type, reader);
-        }
-        return reader;
+        return createReader(type, generics);
     }
 }

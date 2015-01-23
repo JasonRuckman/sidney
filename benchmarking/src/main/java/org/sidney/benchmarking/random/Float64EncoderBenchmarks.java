@@ -19,8 +19,7 @@ import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
 import org.sidney.core.io.float64.Float64Decoder;
 import org.sidney.core.io.float64.Float64Encoder;
-import org.sidney.core.io.float64.PlainFloat64Decoder;
-import org.sidney.core.io.float64.PlainFloat64Encoder;
+import org.sidney.core.io.float64.Plain;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +46,7 @@ public class Float64EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("float64Encoders")
     public double[] plain() throws IOException {
-        return run(getEncoder(PlainFloat64Encoder.class), getDecoder(PlainFloat64Decoder.class));
+        return run(getEncoder(Plain.PlainFloat64Encoder.class), getDecoder(Plain.PlainFloat64Decoder.class));
     }
 
     private double[] run(Float64Encoder encoder, Float64Decoder decoder) throws IOException {

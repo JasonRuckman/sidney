@@ -17,7 +17,10 @@ package org.sidney.benchmarking.random;
 
 import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
-import org.sidney.core.io.int64.*;
+import org.sidney.core.io.int64.GroupVarInt;
+import org.sidney.core.io.int64.Int64Decoder;
+import org.sidney.core.io.int64.Int64Encoder;
+import org.sidney.core.io.int64.Plain;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,13 +47,13 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("int64Encoders")
     public long[] plain() throws IOException {
-        return run(getEncoder(PlainInt64Encoder.class), getDecoder(PlainInt64Decoder.class));
+        return run(getEncoder(Plain.PlainInt64Encoder.class), getDecoder(Plain.PlainInt64Decoder.class));
     }
 
     @Benchmark
     @Group("int64Encoders")
     public long[] groupVarInt() throws IOException {
-        return run(getEncoder(GroupVarInt64Encoder.class), getDecoder(GroupVarInt64Decoder.class));
+        return run(getEncoder(GroupVarInt.GroupVarInt64Encoder.class), getDecoder(GroupVarInt.GroupVarInt64Decoder.class));
     }
 
     private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {

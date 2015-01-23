@@ -16,7 +16,10 @@
 package org.sidney.core.io;
 
 import org.junit.Assert;
-import org.sidney.core.io.float32.*;
+import org.sidney.core.io.float32.Float32Decoder;
+import org.sidney.core.io.float32.Float32Encoder;
+import org.sidney.core.io.float32.Plain;
+import org.sidney.core.io.float32.RLE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +27,8 @@ import java.util.Random;
 
 public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Decoder, float[]> {
     private final List<EncoderDecoderPair<Float32Encoder, Float32Decoder>> pairs = Arrays.asList(
-            new EncoderDecoderPair<Float32Encoder, Float32Decoder>(new PlainFloat32Encoder(), new PlainFloat32Decoder()),
-            new EncoderDecoderPair<Float32Encoder, Float32Decoder>(new RLEFloat32Encoder(), new RLEFloat32Decoder())
+            new EncoderDecoderPair<Float32Encoder, Float32Decoder>(new Plain.PlainFloat32Encoder(), new Plain.PlainFloat32Decoder()),
+            new EncoderDecoderPair<Float32Encoder, Float32Decoder>(new RLE.RLEFloat32Encoder(), new RLE.RLEFloat32Decoder())
     );
 
     protected BiConsumer<Float32Encoder, float[]> encodingFunction() {

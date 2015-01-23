@@ -17,7 +17,10 @@ package org.sidney.benchmarking.random;
 
 import org.openjdk.jmh.annotations.*;
 import org.sidney.benchmarking.BenchmarkingBase;
-import org.sidney.core.io.float32.*;
+import org.sidney.core.io.float32.Float32Decoder;
+import org.sidney.core.io.float32.Float32Encoder;
+import org.sidney.core.io.float32.Plain;
+import org.sidney.core.io.float32.RLE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,13 +47,13 @@ public class Float32EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("float32Encoders")
     public float[] plain() throws IOException {
-        return run(getEncoder(PlainFloat32Encoder.class), getDecoder(PlainFloat32Decoder.class));
+        return run(getEncoder(Plain.PlainFloat32Encoder.class), getDecoder(Plain.PlainFloat32Decoder.class));
     }
 
     @Benchmark
     @Group("float32Encoders")
     public float[] rle() throws IOException {
-        return run(getEncoder(RLEFloat32Encoder.class), getDecoder(RLEFloat32Decoder.class));
+        return run(getEncoder(RLE.RLEFloat32Encoder.class), getDecoder(RLE.RLEFloat32Decoder.class));
     }
 
     private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {

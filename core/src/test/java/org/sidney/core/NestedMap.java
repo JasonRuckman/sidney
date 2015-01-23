@@ -44,4 +44,11 @@ public class NestedMap<X, Y> {
     public int hashCode() {
         return map != null ? map.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "NestedMap{" +
+                "map=" + map +
+                '}';
+    }
 }

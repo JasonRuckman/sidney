@@ -15,21 +15,22 @@
  */
 package org.sidney.core;
 
-import org.sidney.core.serde.serializer.SerializerFactory;
-import org.sidney.core.serde.serializer.SerializerFactoryEntry;
+import org.sidney.core.serde.serializer.Serializer;
+import org.sidney.core.serde.serializer.SerializerEntry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Registrations {
-    private List<SerializerFactoryEntry> registeredFactories = new ArrayList<>();
+    private List<SerializerEntry> registeredFactories = new ArrayList<>();
 
-    public List<SerializerFactoryEntry> getRegistrations() {
+    public List<SerializerEntry> getRegistrations() {
         return registeredFactories;
     }
 
-    public void register(Class type, SerializerFactory serializerFactory) {
+    public void register(Class type, Class<? extends Serializer> serializerFactory) {
         registeredFactories.add(
-                new SerializerFactoryEntry(type, serializerFactory)
+                new SerializerEntry(type, serializerFactory)
         );
     }
 }

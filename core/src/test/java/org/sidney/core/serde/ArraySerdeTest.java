@@ -17,7 +17,10 @@ package org.sidney.core.serde;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.*;
+import org.sidney.core.AllPrimitiveArrays;
+import org.sidney.core.AllPrimitiveRefsArrays;
+import org.sidney.core.AllPrimitives;
+import org.sidney.core.Sid;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,14 +31,14 @@ public class ArraySerdeTest extends SerdeTestBase {
         int[] ints = getDataFactory().newInts();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<int[]> writer = sid.newCachedWriter(int[].class);
+        Writer<int[]> writer = sid.newWriter(int[].class);
         writer.open(baos);
         writer.write(ints);
         writer.write(ints);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<int[]> reader = sid.newCachedReader(int[].class);
+        Reader<int[]> reader = sid.newReader(int[].class);
         reader.open(bais);
         int[] output = (reader.hasNext()) ? reader.read() : null;
 
@@ -50,13 +53,13 @@ public class ArraySerdeTest extends SerdeTestBase {
         };
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<AllPrimitives[]> writer = sid.newCachedWriter(AllPrimitives[].class);
+        Writer<AllPrimitives[]> writer = sid.newWriter(AllPrimitives[].class);
         writer.open(baos);
         writer.write(primitiveses);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitives[]> reader = sid.newCachedReader(AllPrimitives[].class);
+        Reader<AllPrimitives[]> reader = sid.newReader(AllPrimitives[].class);
         reader.open(bais);
         AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertArrayEquals(primitiveses, output);
@@ -67,13 +70,13 @@ public class ArraySerdeTest extends SerdeTestBase {
         AllPrimitiveArrays arrays = getDataFactory().newAllArrays();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<AllPrimitiveArrays> writer = sid.newCachedWriter(AllPrimitiveArrays.class);
+        Writer<AllPrimitiveArrays> writer = sid.newWriter(AllPrimitiveArrays.class);
         writer.open(baos);
         writer.write(arrays);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveArrays> reader = sid.newCachedReader(AllPrimitiveArrays.class);
+        Reader<AllPrimitiveArrays> reader = sid.newReader(AllPrimitiveArrays.class);
         reader.open(bais);
         AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(arrays, output);
@@ -84,13 +87,13 @@ public class ArraySerdeTest extends SerdeTestBase {
         AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<AllPrimitiveRefsArrays> writer = sid.newCachedWriter(AllPrimitiveRefsArrays.class);
+        Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(AllPrimitiveRefsArrays.class);
         writer.open(baos);
         writer.write(one);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveRefsArrays> reader = sid.newCachedReader(AllPrimitiveRefsArrays.class);
+        Reader<AllPrimitiveRefsArrays> reader = sid.newReader(AllPrimitiveRefsArrays.class);
         reader.open(bais);
         AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(one, out);

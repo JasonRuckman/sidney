@@ -15,82 +15,92 @@
  */
 package org.sidney.core.io;
 
-import org.sidney.core.io.bool.*;
+import org.sidney.core.UnsupportedEncodingException;
+import org.sidney.core.io.bool.BitPacking;
+import org.sidney.core.io.bool.BoolDecoder;
+import org.sidney.core.io.bool.BoolEncoder;
+import org.sidney.core.io.bool.EWAHBitmap;
 import org.sidney.core.io.bytes.ByteArrayDecoder;
 import org.sidney.core.io.bytes.ByteArrayEncoder;
 import org.sidney.core.io.bytes.BytesDecoder;
 import org.sidney.core.io.bytes.BytesEncoder;
-import org.sidney.core.io.float32.*;
+import org.sidney.core.io.float32.Float32Decoder;
+import org.sidney.core.io.float32.Float32Encoder;
+import org.sidney.core.io.float32.RLE;
 import org.sidney.core.io.float64.Float64Decoder;
 import org.sidney.core.io.float64.Float64Encoder;
-import org.sidney.core.io.float64.PlainFloat64Decoder;
-import org.sidney.core.io.float64.PlainFloat64Encoder;
-import org.sidney.core.io.int32.*;
-import org.sidney.core.io.int64.*;
-import org.sidney.core.io.string.*;
-import org.sidney.core.UnsupportedEncodingException;
+import org.sidney.core.io.int32.DeltaBitPacking;
+import org.sidney.core.io.int32.Int32Decoder;
+import org.sidney.core.io.int32.Int32Encoder;
+import org.sidney.core.io.int32.Plain;
+import org.sidney.core.io.int64.GroupVarInt;
+import org.sidney.core.io.int64.Int64Decoder;
+import org.sidney.core.io.int64.Int64Encoder;
+import org.sidney.core.io.string.DeltaLength;
+import org.sidney.core.io.string.StringDecoder;
+import org.sidney.core.io.string.StringEncoder;
 import org.sidney.core.serde.Type;
 
 public enum Encoding {
     PLAIN {
         @Override
         public BoolEncoder newBoolEncoder() {
-            return new PlainBoolEncoder();
+            return new org.sidney.core.io.bool.Plain.PlainBoolEncoder();
         }
 
         @Override
         public BoolDecoder newBoolDecoder() {
-            return new PlainBoolDecoder();
+            return new org.sidney.core.io.bool.Plain.PlainBoolDecoder();
         }
 
         @Override
         public Int32Encoder newInt32Encoder() {
-            return new PlainInt32Encoder();
+            return new Plain.PlainInt32Encoder();
         }
 
         @Override
         public Int32Decoder newInt32Decoder() {
-            return new PlainInt32Decoder();
+            return new Plain.PlainInt32Decoder();
         }
 
         @Override
         public Int64Encoder newInt64Encoder() {
-            return new PlainInt64Encoder();
+            return new org.sidney.core.io.int64.Plain.PlainInt64Encoder();
         }
 
         @Override
         public Int64Decoder newInt64Decoder() {
-            return new PlainInt64Decoder();
+            return new org.sidney.core.io.int64.Plain.PlainInt64Decoder();
         }
 
         @Override
         public Float32Encoder newFloat32Encoder() {
-            return new PlainFloat32Encoder();
+            return new org.sidney.core.io.float32.Plain.PlainFloat32Encoder();
         }
 
         @Override
         public Float32Decoder newFloat32Decoder() {
-            return new PlainFloat32Decoder();
+            return new org.sidney.core.io.float32.Plain.PlainFloat32Decoder();
         }
 
         @Override
         public Float64Encoder newFloat64Encoder() {
-            return new PlainFloat64Encoder();
+            return new org.sidney.core.io.float64.Plain.PlainFloat64Encoder();
         }
 
         @Override
         public Float64Decoder newFloat64Decoder() {
-            return new PlainFloat64Decoder();
+            return new org.sidney.core.io.float64.Plain.PlainFloat64Decoder();
         }
 
         @Override
         public StringEncoder newStringEncoder() {
-            return new PlainStringEncoder();
+            return new org.sidney.core.io.string.Plain.PlainStringEncoder();
         }
 
         @Override
         public StringDecoder newStringDecoder() {
-            return new PlainStringDecoder();
+            return new org.sidney.core.io.string.Plain.PlainStringDecoder();
         }
 
         @Override
@@ -106,102 +116,102 @@ public enum Encoding {
     BITPACKED {
         @Override
         public Int32Encoder newInt32Encoder() {
-            return new BitPackingInt32Encoder();
+            return new org.sidney.core.io.int32.BitPacking.BitPackingInt32Encoder();
         }
 
         @Override
         public Int32Decoder newInt32Decoder() {
-            return new BitPackingInt32Decoder();
+            return new org.sidney.core.io.int32.BitPacking.BitPackingInt32Decoder();
         }
 
         @Override
         public BoolEncoder newBoolEncoder() {
-            return new BitPackingBoolEncoder();
+            return new BitPacking.BitPackingBoolEncoder();
         }
 
         @Override
         public BoolDecoder newBoolDecoder() {
-            return new BitPackingBoolDecoder();
+            return new BitPacking.BitPackingBoolDecoder();
         }
     },
     DELTABITPACKINGHYBRID {
         @Override
         public Int32Encoder newInt32Encoder() {
-            return new DeltaBitPackingInt32Encoder();
+            return new DeltaBitPacking.DeltaBitPackingInt32Encoder();
         }
 
         @Override
         public Int32Decoder newInt32Decoder() {
-            return new DeltaBitPackingInt32Decoder();
+            return new DeltaBitPacking.DeltaBitPackingInt32Decoder();
         }
     },
     BITMAP {
         @Override
         public BoolEncoder newBoolEncoder() {
-            return new EWAHBitmapBoolEncoder();
+            return new EWAHBitmap.EWAHBitmapBoolEncoder();
         }
 
         @Override
         public BoolDecoder newBoolDecoder() {
-            return new EWAHBitmapBoolDecoder();
+            return new EWAHBitmap.EWAHBitmapBoolDecoder();
         }
     },
     GROUPVARINT {
         @Override
         public Int64Encoder newInt64Encoder() {
-            return new GroupVarInt64Encoder();
+            return new GroupVarInt.GroupVarInt64Encoder();
         }
 
         @Override
         public Int64Decoder newInt64Decoder() {
-            return new GroupVarInt64Decoder();
+            return new GroupVarInt.GroupVarInt64Decoder();
         }
     },
     DELTALENGTH {
         @Override
         public StringEncoder newStringEncoder() {
-            return new DeltaLengthStringEncoder();
+            return new DeltaLength.DeltaLengthStringEncoder();
         }
     },
     RLE {
         @Override
         public Int32Encoder newInt32Encoder() {
-            return new RLEInt32Encoder();
+            return new org.sidney.core.io.int32.RLE.RLEInt32Encoder();
         }
 
         @Override
         public Int32Decoder newInt32Decoder() {
-            return new RLEInt32Decoder();
+            return new org.sidney.core.io.int32.RLE.RLEInt32Decoder();
         }
 
         @Override
         public Int64Encoder newInt64Encoder() {
-            return new RLEInt64Encoder();
+            return new org.sidney.core.io.int64.RLE.RLEInt64Encoder();
         }
 
         @Override
         public Int64Decoder newInt64Decoder() {
-            return new RLEInt64Decoder();
+            return new org.sidney.core.io.int64.RLE.RLEInt64Decoder();
         }
 
         @Override
         public Float32Encoder newFloat32Encoder() {
-            return new RLEFloat32Encoder();
+            return new RLE.RLEFloat32Encoder();
         }
 
         @Override
         public Float32Decoder newFloat32Decoder() {
-            return new RLEFloat32Decoder();
+            return new RLE.RLEFloat32Decoder();
         }
 
         @Override
         public StringEncoder newStringEncoder() {
-            return new RLEStringEncoder();
+            return new org.sidney.core.io.string.RLE.RLEStringEncoder();
         }
 
         @Override
         public StringDecoder newStringDecoder() {
-            return new RLEStringDecoder();
+            return new org.sidney.core.io.string.RLE.RLEStringDecoder();
         }
     };
 

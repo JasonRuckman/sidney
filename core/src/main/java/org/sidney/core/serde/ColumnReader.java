@@ -15,9 +15,8 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.serde.serializer.ColumnOperations;
-import org.sidney.core.serde.column.ColumnIO;
 import org.sidney.core.io.Decoder;
+import org.sidney.core.serde.serializer.ColumnOperations;
 import org.sidney.core.serde.serializer.Serializer;
 
 import java.io.IOException;
@@ -72,7 +71,7 @@ public class ColumnReader extends ColumnOperations {
         definitionDecoder.readFromStream(inputStream);
         repetitionDecoder.readFromStream(inputStream);
 
-        for (ColumnIO columnIO : columnIOs) {
+        for (Columns.ColumnIO columnIO : columnIOs) {
             for (Decoder decoder : columnIO.getDecoders()) {
                 decoder.readFromStream(inputStream);
             }

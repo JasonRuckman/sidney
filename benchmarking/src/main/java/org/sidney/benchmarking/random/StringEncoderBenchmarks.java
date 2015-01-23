@@ -48,19 +48,19 @@ public class StringEncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("stringEncodersRandom")
     public String[] plain() throws IOException {
-        return run(getEncoder(PlainStringEncoder.class), getDecoder(PlainStringDecoder.class));
+        return run(getEncoder(Plain.PlainStringEncoder.class), getDecoder(Plain.PlainStringDecoder.class));
     }
 
     @Benchmark
     @Group("stringEncodersRandom")
     public String[] deltaLength() throws IOException {
-        return run(getEncoder(DeltaLengthStringEncoder.class), getDecoder(DeltaLengthStringDecoder.class));
+        return run(getEncoder(DeltaLength.DeltaLengthStringEncoder.class), getDecoder(DeltaLength.DeltaLengthStringDecoder.class));
     }
 
     @Benchmark
     @Group("stringEncodersRandom")
     public String[] charAsInt() throws IOException {
-        return run(getEncoder(CharAsIntStringEncoder.class), getDecoder(CharAsIntStringDecoder.class));
+        return run(getEncoder(CharAsInt.CharAsIntStringEncoder.class), getDecoder(CharAsInt.CharAsIntStringDecoder.class));
     }
 
     private String[] run(StringEncoder encoder, StringDecoder decoder) throws IOException {

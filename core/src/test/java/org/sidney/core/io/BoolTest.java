@@ -23,9 +23,9 @@ import java.util.Random;
 
 public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boolean[]> {
     private final List<EncoderDecoderPair<BoolEncoder, BoolDecoder>> pairs = Arrays.asList(
-            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new PlainBoolEncoder(), new PlainBoolDecoder()),
-            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new EWAHBitmapBoolEncoder(), new EWAHBitmapBoolDecoder()),
-            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new BitPackingBoolEncoder(), new BitPackingBoolDecoder())
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new Plain.PlainBoolEncoder(), new Plain.PlainBoolDecoder()),
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new EWAHBitmap.EWAHBitmapBoolEncoder(), new EWAHBitmap.EWAHBitmapBoolDecoder()),
+            new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new BitPacking.BitPackingBoolEncoder(), new BitPacking.BitPackingBoolDecoder())
     );
 
     protected BiConsumer<BoolEncoder, boolean[]> encodingFunction() {

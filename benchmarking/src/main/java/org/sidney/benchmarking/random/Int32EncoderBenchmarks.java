@@ -43,19 +43,19 @@ public class Int32EncoderBenchmarks extends BenchmarkingBase {
     @Benchmark
     @Group("intEncoders")
     public int[] deltaBitPackingHybrid() throws IOException {
-        return run(getEncoder(DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPackingInt32Decoder.class));
+        return run(getEncoder(DeltaBitPacking.DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPacking.DeltaBitPackingInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] plain() throws IOException {
-        return run(getEncoder(PlainInt32Encoder.class), getDecoder(PlainInt32Decoder.class));
+        return run(getEncoder(Plain.PlainInt32Encoder.class), getDecoder(Plain.PlainInt32Decoder.class));
     }
 
     @Benchmark
     @Group("intEncoders")
     public int[] bitpacking() throws IOException {
-        return run(getEncoder(BitPackingInt32Encoder.class), getDecoder(BitPackingInt32Decoder.class));
+        return run(getEncoder(BitPacking.BitPackingInt32Encoder.class), getDecoder(BitPacking.BitPackingInt32Decoder.class));
     }
 
     private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {

@@ -16,12 +16,13 @@
 package org.sidney.core.serde.serializer;
 
 import com.fasterxml.jackson.databind.type.TypeBindings;
-import org.sidney.core.FieldAccessor;
-import org.sidney.core.ReflectionFieldAccessor;
-import org.sidney.core.serde.*;
+import org.sidney.core.Accessors;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.TypeReader;
+import org.sidney.core.serde.TypeWriter;
+import org.sidney.core.serde.WriteContext;
 
 import java.lang.reflect.*;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,48 +30,43 @@ import java.util.List;
  * Handles serializing a given type, is responsible for decomposing that type and constructing sub serializers if necessary
  */
 public abstract class Serializer<T> {
-    protected int numSubFields = 1;
-    protected Class[] generics;
+    private Class[] typeParams;
+    private int numAllFields = 1;
     private List<Serializer> serializers = new ArrayList<>();
     private Type jdkType;
     private Field field;
     private TypeBindings parentTypeBindings;
-    private FieldAccessor accessor;
+    private Accessors.FieldAccessor accessor;
     private SerializerRepository serializerRepository;
     private TypeBindings typeBindings;
+    private Class<T> rawClass;
 
-    public Serializer(Type jdkType,
-                      Field field,
-                      TypeBindings parentTypeBindings,
-                      SerializerRepository serializerRepository, Class... generics) {
-        this.jdkType = jdkType;
-        this.field = field;
-        this.parentTypeBindings = parentTypeBindings;
-        this.accessor = (field != null) ? new ReflectionFieldAccessor(field) : null;
-        this.serializerRepository = serializerRepository;
-        this.generics = generics;
+    public Class[] getTypeParams() {
+        return typeParams;
+    }
 
-        resolveTypeBindings();
+    public void setTypeParams(Class[] typeParams) {
+        this.typeParams = typeParams;
+    }
 
-        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass())) {
-            getSerializers().addAll(fromParameterizedType((ParameterizedType) getJdkType()));
-        } else if (TypeVariable.class.isAssignableFrom(getJdkType().getClass())) {
-            TypeVariable variable = (TypeVariable) getJdkType();
-            getSerializers().addAll(fromTypeVariable(variable));
-        } else if (getJdkType().getClass() == Class.class && generics.length > 0) {
-            getSerializers().addAll(fromParameterizedClass((Class) getJdkType(), generics));
-        } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
-            getSerializers().addAll(fromArrayType((GenericArrayType) getJdkType()));
-        } else {
-            getSerializers().addAll(fromType(getJdkType()));
-        }
+    public int getNumFields() {
+        return numAllFields;
     }
 
     /**
-     * Get the type bindings for the object that contains this one
+     * Get the raw class derived from whatever type info is available
      */
-    public TypeBindings getParentTypeBindings() {
-        return parentTypeBindings;
+    public final Class<T> getRawClass() {
+        return rawClass;
+    }
+
+    /**
+     * All serializers for this level and below
+     *
+     * @return all type serializers including this level and all sub levels
+     */
+    public List<Serializer> getSerializers() {
+        return serializers;
     }
 
     /**
@@ -78,6 +74,10 @@ public abstract class Serializer<T> {
      */
     public SerializerRepository getSerializerRepository() {
         return serializerRepository;
+    }
+
+    public void setSerializerRepository(SerializerRepository serializerRepository) {
+        this.serializerRepository = serializerRepository;
     }
 
     /**
@@ -98,113 +98,83 @@ public abstract class Serializer<T> {
         return jdkType;
     }
 
-    /**
-     * All serializers for this level and below
-     * @return all type serializers including this level and all sub levels
-     */
-    public List<Serializer> getSerializers() {
-        return serializers;
+    public void setJdkType(Type jdkType) {
+        this.jdkType = jdkType;
     }
 
     /**
-     * Write a boolean value directly to the current column
+     * Get the type bindings for the object that contains this one
      */
-    public void writeBool(boolean value, TypeWriter typeWriter, WriteContext context) {
-        typeWriter.writeBool(value, context);
+    public TypeBindings getParentTypeBindings() {
+        return parentTypeBindings;
     }
 
-    /**
-     * Write an int directly to the current column
-     */
-    public void writeInt(int value, TypeWriter typeWriter, WriteContext context) {
-        typeWriter.writeInt(value, context);
+    public void setParentTypeBindings(TypeBindings parentTypeBindings) {
+        this.parentTypeBindings = parentTypeBindings;
     }
 
-    /**
-     * Write an long directly to the current column
-     */
-    public void writeLong(long value, TypeWriter typeWriter, WriteContext context) {
-        typeWriter.writeLong(value, context);
+    public void addToFieldCount(int subFieldCount) {
+        numAllFields += subFieldCount;
     }
 
-    /**
-     * Write a float directly to the current column
-     */
-    public void writeFloat(float value, TypeWriter typeWriter, WriteContext context) {
-        typeWriter.writeFloat(value, context);
-    }
-
-    /**
-     * Write double directly to the current column
-     */
-    public void writeDouble(double value, TypeWriter typeWriter, WriteContext context) {
-        typeWriter.writeDouble(value, context);
-    }
-
-    /**
-     * Write bytes directly to the current column
-     */
-    public void writeBytes(byte[] bytes, TypeWriter typeWriter, WriteContext context) {
-        if (typeWriter.writeNullMarker(bytes, context)) {
-            typeWriter.writeBytes(bytes, context);
+    public final void preInit() {
+        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass()) ||
+                TypeVariable.class.isAssignableFrom(getJdkType().getClass()) ||
+                GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
+            rawClass = (Class) Types.type(getJdkType(), getParentTypeBindings()).getRawClass();
+        } else if (getJdkType().getClass() == Class.class && typeParams.length > 0) {
+            rawClass = (Class) Types.parameterizedType((Class) getJdkType(), typeParams).getRawClass();
+        } else {
+            rawClass = (Class) getJdkType();
         }
     }
 
-    /**
-     * Write string directly to the current column
-     */
-    public void writeString(String s, TypeWriter typeWriter, WriteContext context) {
-        if (typeWriter.writeNullMarker(s, context)) {
-            typeWriter.writeString(s, context);
+    public final void init() {
+        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass())) {
+            initFromParameterizedType((ParameterizedType) getJdkType());
+        } else if (TypeVariable.class.isAssignableFrom(getJdkType().getClass())) {
+            TypeVariable variable = (TypeVariable) getJdkType();
+            initFromTypeVariable(variable);
+        } else if (getJdkType().getClass() == Class.class && typeParams.length > 0) {
+            initFromParameterizedClass((Class) getJdkType(), typeParams);
+        } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
+            initFromArrayType((GenericArrayType) getJdkType());
+        } else {
+            initFromType(getJdkType());
         }
     }
 
-    /**
-     * Read a boolean from the current column
-     */
-    public boolean readBoolean(TypeReader typeReader, ReadContext context) {
-        return typeReader.readBoolean(context);
+    public void postInit() {
+
     }
 
-    /**
-     * Read a int from the current column
-     */
-    public int readInt(TypeReader typeReader, ReadContext context) {
-        return typeReader.readInt(context);
+    public final void finish() {
+        serializers.addAll(
+                serializers()
+        );
     }
 
-    /**
-     * Read a long from the current column
-     */
-    public long readLong(TypeReader typeReader, ReadContext context) {
-        return typeReader.readLong(context);
-    }
-
-    /**
-     * Read a float from the current column
-     */
-    public float readFloat(TypeReader typeReader, ReadContext context) {
-        return typeReader.readFloat(context);
-    }
-
-    /**
-     * Read a double from the current column
-     */
-    public double readDouble(TypeReader typeReader, ReadContext context) {
-        return typeReader.readDouble(context);
+    public final void resolveTypeBindings() {
+        if (field != null) {
+            typeBindings = Types.binding(field, parentTypeBindings);
+        } else if (typeParams.length > 0) {
+            typeBindings = Types.binding((Class) jdkType, typeParams);
+        } else {
+            typeBindings = Types.binding(jdkType, parentTypeBindings);
+        }
     }
 
     /**
      * Read bytes from the current column
      */
-    public byte[] readBytes(TypeReader typeReader, ReadContext context) {
+    public final byte[] readBytes(TypeReader typeReader, ReadContext context) {
         return typeReader.readBytes(context);
     }
 
     /**
      * Read a string from the current column
      */
-    public String readString(TypeReader typeReader, ReadContext context) {
+    public final String readString(TypeReader typeReader, ReadContext context) {
         return typeReader.readString(context);
     }
 
@@ -220,11 +190,14 @@ public abstract class Serializer<T> {
      * Fully consume a field value from the parent, parent is guaranteed to be non-null
      * Follow the same incrementing rules as {@link #writeValue}
      */
-    public abstract void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context);
+    public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
+        writeValue(getAccessor().get(parent), typeWriter, context);
+    }
 
     /**
      * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
      * in either {@link #writeValue} or {@link #writeFromField}
+     *
      * @return a fully materialized value
      */
     public abstract Object readValue(TypeReader typeReader, ReadContext context);
@@ -233,52 +206,54 @@ public abstract class Serializer<T> {
      * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
      * in either {@link #writeValue} or {@link #writeFromField} and the materialized value must be written into the field of the parent
      */
-    public abstract void readIntoField(Object parent, TypeReader typeReader, ReadContext context);
+    public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
+        getAccessor().set(parent, readValue(typeReader, context));
+    }
 
     /**
      * Denotes whether or not the value requires serializing the type e.g {@link java.util.Map} so that a reader knows what constructor to use
+     *
      * @return whether or not a type column is required
      */
     public abstract boolean requiresTypeColumn();
 
-    protected List<Serializer> fromType(Type type) {
-        throw new IllegalStateException();
+    protected abstract List<Serializer> serializers();
+
+    protected void initFromType(Type type) {
+
     }
 
-    protected List<Serializer> fromArrayType(GenericArrayType type) {
-        throw new IllegalStateException();
+    protected void initFromArrayType(GenericArrayType type) {
+
     }
 
-    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
-        throw new IllegalStateException();
+    protected void initFromParameterizedClass(Class<?> clazz, Class... types) {
+
     }
 
-    protected List<Serializer> fromParameterizedType(ParameterizedType type) {
-        throw new IllegalStateException();
+    protected void initFromParameterizedType(ParameterizedType type) {
+
     }
 
-    protected List<Serializer> fromTypeVariable(TypeVariable typeVariable) {
-        throw new IllegalStateException();
+    protected void initFromTypeVariable(TypeVariable typeVariable) {
+
     }
 
-    protected FieldAccessor getAccessor() {
+    protected final Accessors.FieldAccessor getAccessor() {
         return accessor;
     }
 
-    protected Field getField() {
+    protected final Field getField() {
         if (accessor == null) {
             return null;
         }
         return accessor.getField();
     }
 
-    protected void resolveTypeBindings() {
+    public void setField(Field field) {
+        this.field = field;
         if (field != null) {
-            typeBindings = Types.binding(field, parentTypeBindings);
-        } else if (generics.length > 0) {
-            typeBindings = Types.binding((Class) jdkType, generics);
-        } else {
-            typeBindings = Types.binding(jdkType, parentTypeBindings);
+            accessor = Accessors.newAccessor(field);
         }
     }
 }

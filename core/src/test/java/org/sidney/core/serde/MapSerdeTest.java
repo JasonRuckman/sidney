@@ -17,7 +17,8 @@ package org.sidney.core.serde;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.sidney.core.*;
+import org.sidney.core.AllPrimitiveRefs;
+import org.sidney.core.Sid;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +34,7 @@ public class MapSerdeTest extends SerdeTestBase {
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<Map<Integer, Integer>> writer = sid.newCachedWriter(
+        Writer<Map<Integer, Integer>> writer = sid.newWriter(
                 Map.class, Integer.class, Integer.class
         );
         writer.open(baos);
@@ -41,7 +42,7 @@ public class MapSerdeTest extends SerdeTestBase {
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<Map<Integer, Integer>> reader = sid.newCachedReader(
+        Reader<Map<Integer, Integer>> reader = sid.newReader(
                 Map.class, Integer.class, Integer.class
         );
         reader.open(bais);
@@ -54,7 +55,7 @@ public class MapSerdeTest extends SerdeTestBase {
         Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newCachedWriter(
+        Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newWriter(
                 Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
         );
         writer.open(baos);
@@ -62,7 +63,7 @@ public class MapSerdeTest extends SerdeTestBase {
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newCachedReader(
+        Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newReader(
                 Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
         );
         reader.open(bais);

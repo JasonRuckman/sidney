@@ -15,14 +15,12 @@
  */
 package org.sidney.core.serde.serializer;
 
-import com.fasterxml.jackson.databind.type.TypeBindings;
 import org.sidney.core.serde.ReadContext;
 import org.sidney.core.serde.TypeReader;
 import org.sidney.core.serde.TypeWriter;
 import org.sidney.core.serde.WriteContext;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ArraySerializer extends GenericSerializer<Object> {
+public class ArraySerializer extends Serializer<Object> {
     private static final Map<Class, Arrays.ArrayWriters.ArrayWriter> PRIMITIVE_WRITERS = new HashMap<>();
     private static final Map<Class, Arrays.ArrayReaders.ArrayReader> PRIMITIVE_READERS = new HashMap<>();
 
@@ -53,25 +51,20 @@ public class ArraySerializer extends GenericSerializer<Object> {
     }
 
     private Serializer contentSerializer;
-    private Class rawClass;
     private Arrays.ArrayWriters.ArrayWriter arrayWriter;
     private Arrays.ArrayReaders.ArrayReader arrayReader;
 
-    public ArraySerializer(Type jdkType,
-                           Field field,
-                           TypeBindings parentTypeBindings,
-                           SerializerRepository serializerRepository, Class... generics) {
-        super(jdkType, field, parentTypeBindings, serializerRepository, generics);
-
-        arrayWriter = PRIMITIVE_WRITERS.get(rawClass);
+    @Override
+    public void postInit() {
+        arrayWriter = PRIMITIVE_WRITERS.get(getRawClass());
         if (arrayWriter == null) {
             arrayWriter = new RefArrayWriter();
         }
-        arrayReader = PRIMITIVE_READERS.get(rawClass);
+        arrayReader = PRIMITIVE_READERS.get(getRawClass());
         if (arrayReader == null) {
             arrayReader = new RefArrayReader();
         }
-        numSubFields += contentSerializer.numSubFields;
+        addToFieldCount(contentSerializer.getNumFields());
     }
 
     @Override
@@ -80,18 +73,8 @@ public class ArraySerializer extends GenericSerializer<Object> {
     }
 
     @Override
-    public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
-        writeArray(getAccessor().get(parent), typeWriter, context);
-    }
-
-    @Override
     public Object readValue(TypeReader typeReader, ReadContext context) {
         return readArray(typeReader, context);
-    }
-
-    @Override
-    public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
-        getAccessor().set(parent, readValue(typeReader, context));
     }
 
     @Override
@@ -100,40 +83,35 @@ public class ArraySerializer extends GenericSerializer<Object> {
     }
 
     @Override
-    protected List<Serializer> fromType(Type type) {
-        rawClass = (Class) type;
-        contentSerializer = getSerializerRepository().serializer(
-                rawClass.getComponentType(),
-                null, getParentTypeBindings(), new Class[0]
-        );
-        return createSubSerializers();
-    }
-
-    @Override
-    protected List<Serializer> fromArrayType(GenericArrayType type) {
-        rawClass = Types.type(type, getParentTypeBindings()).getRawClass();
-        GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
-        contentSerializer = getSerializerRepository().serializer(
-                genericArrayType.getGenericComponentType(), null, getParentTypeBindings() ,new Class[0]
-        );
-        return createSubSerializers();
-    }
-
-    @Override
-    protected List<Serializer> fromParameterizedClass(Class<?> clazz, Class... types) {
-        rawClass = clazz;
-        Class<?> componentType = ((Class) getJdkType()).getComponentType();
-        contentSerializer = getSerializerRepository().serializer(componentType, null, getTypeBindings(), types);
-        return createSubSerializers();
-    }
-
-    protected List<Serializer> createSubSerializers() {
+    protected List<Serializer> serializers() {
         List<Serializer> serializers = new ArrayList<>();
 
         serializers.add(contentSerializer);
         serializers.addAll(contentSerializer.getSerializers());
 
         return serializers;
+    }
+
+    @Override
+    protected void initFromType(Type type) {
+        contentSerializer = getSerializerRepository().serializer(
+                getRawClass().getComponentType(),
+                null, getParentTypeBindings(), new Class[0]
+        );
+    }
+
+    @Override
+    protected void initFromArrayType(GenericArrayType type) {
+        GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
+        contentSerializer = getSerializerRepository().serializer(
+                genericArrayType.getGenericComponentType(), null, getParentTypeBindings(), new Class[0]
+        );
+    }
+
+    @Override
+    protected void initFromParameterizedClass(Class<?> clazz, Class... types) {
+        Class<?> componentType = ((Class) getJdkType()).getComponentType();
+        contentSerializer = getSerializerRepository().serializer(componentType, null, getTypeBindings(), types);
     }
 
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
@@ -144,21 +122,161 @@ public class ArraySerializer extends GenericSerializer<Object> {
             arrayWriter.writeArray(array, typeWriter, context);
             context.incrementColumnIndex();
         } else {
-            context.incrementColumnIndex(numSubFields);
+            context.incrementColumnIndex(getNumFields() + 1);
         }
     }
 
     private Object readArray(TypeReader typeReader, ReadContext context) {
         if (typeReader.readNullMarker(context)) {
             int arraySize = typeReader.readRepetitionCount(context);
-            Object array = Array.newInstance(rawClass.getComponentType(), arraySize);
+            Object array = Array.newInstance(getRawClass().getComponentType(), arraySize);
             context.incrementColumnIndex();
             arrayReader.readValue(typeReader, context, array);
             context.incrementColumnIndex();
             return array;
         }
-        context.incrementColumnIndex(numSubFields);
+        context.incrementColumnIndex(getNumFields() + 1);
         return null;
+    }
+
+    public static class Arrays {
+        public static class ArrayReaders {
+            public abstract static interface ArrayReader<T> {
+                void readValue(TypeReader typeReader, ReadContext context, T newArray);
+            }
+
+            public static class BoolArrayReader implements ArrayReader<boolean[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, boolean[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readBoolean(context);
+                    }
+                }
+            }
+
+            public static class CharArrayReader implements ArrayReader<char[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, char[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readChar(context);
+                    }
+                }
+            }
+
+            public static class ShortArrayReader implements ArrayReader<short[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, short[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readShort(context);
+                    }
+                }
+            }
+
+            public static class IntArrayReader implements ArrayReader<int[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, int[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readInt(context);
+                    }
+                }
+            }
+
+            public static class LongArrayReader implements ArrayReader<long[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, long[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readLong(context);
+                    }
+                }
+            }
+
+            public static class FloatArrayReader implements ArrayReader<float[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, float[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readFloat(context);
+                    }
+                }
+            }
+
+            public static class DoubleArrayReader implements ArrayReader<double[]> {
+                @Override
+                public void readValue(TypeReader typeReader, ReadContext context, double[] newArray) {
+                    for (int i = 0; i < newArray.length; i++) {
+                        newArray[i] = typeReader.readDouble(context);
+                    }
+                }
+            }
+        }
+
+        public static class ArrayWriters {
+            public static interface ArrayWriter<T> {
+                void writeArray(T value, TypeWriter typeWriter, WriteContext context);
+            }
+
+            public static class BoolArrayWriter implements ArrayWriter<boolean[]> {
+                @Override
+                public void writeArray(boolean[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (boolean b : value) {
+                        typeWriter.writeBool(b, context);
+                    }
+                }
+            }
+
+            public static class ShortArrayWriter implements ArrayWriter<short[]> {
+                @Override
+                public void writeArray(short[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (short s : value) {
+                        typeWriter.writeShort(s, context);
+                    }
+                }
+            }
+
+            public static class CharArrayWriter implements ArrayWriter<char[]> {
+                @Override
+                public void writeArray(char[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (char c : value) {
+                        typeWriter.writeChar(c, context);
+                    }
+                }
+            }
+
+            public static class IntArrayWriter implements ArrayWriter<int[]> {
+                @Override
+                public void writeArray(int[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (int i : value) {
+                        typeWriter.writeInt(i, context);
+                    }
+                }
+            }
+
+            public static class LongArrayWriter implements ArrayWriter<long[]> {
+                @Override
+                public void writeArray(long[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (long l : value) {
+                        typeWriter.writeLong(l, context);
+                    }
+                }
+            }
+
+            public static class FloatArrayWriter implements ArrayWriter<float[]> {
+                @Override
+                public void writeArray(float[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (float f : value) {
+                        typeWriter.writeFloat(f, context);
+                    }
+                }
+            }
+
+            public static class DoubleArrayWriter implements ArrayWriter<double[]> {
+                @Override
+                public void writeArray(double[] value, TypeWriter typeWriter, WriteContext context) {
+                    for (double d : value) {
+                        typeWriter.writeDouble(d, context);
+                    }
+                }
+            }
+        }
     }
 
     private class RefArrayWriter implements Arrays.ArrayWriters.ArrayWriter<Object[]> {
@@ -180,22 +298,6 @@ public class ArraySerializer extends GenericSerializer<Object> {
                 newArray[i] = contentSerializer.readValue(typeReader, context);
                 context.setColumnIndex(index);
             }
-        }
-    }
-
-    public static class ArraySerializerFactory extends GenericSerializerFactory {
-        @Override
-        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository, Class... typeParameters) {
-            return new ArraySerializer(
-                    type, field, typeBindings, serializerRepository, typeParameters
-            );
-        }
-
-        @Override
-        public ArraySerializer newSerializer(Type type, Field field, TypeBindings typeBindings, SerializerRepository serializerRepository) {
-            return new ArraySerializer(
-                    type, field, typeBindings, serializerRepository
-            );
         }
     }
 }

@@ -24,10 +24,10 @@ import java.util.Random;
 
 public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecoder, String[]> {
     private List<EncoderDecoderPair<StringEncoder, StringDecoder>> pairs = Arrays.asList(
-            new EncoderDecoderPair<StringEncoder, StringDecoder>(new PlainStringEncoder(), new PlainStringDecoder()),
-            new EncoderDecoderPair<StringEncoder, StringDecoder>(new DeltaLengthStringEncoder(), new DeltaLengthStringDecoder()),
-            new EncoderDecoderPair<StringEncoder, StringDecoder>(new CharAsIntStringEncoder(), new CharAsIntStringDecoder()),
-            new EncoderDecoderPair<StringEncoder, StringDecoder>(new RLEStringEncoder(), new RLEStringDecoder())
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new Plain.PlainStringEncoder(), new Plain.PlainStringDecoder()),
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new DeltaLength.DeltaLengthStringEncoder(), new DeltaLength.DeltaLengthStringDecoder()),
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new CharAsInt.CharAsIntStringEncoder(), new CharAsInt.CharAsIntStringDecoder()),
+            new EncoderDecoderPair<StringEncoder, StringDecoder>(new RLE.RLEStringEncoder(), new RLE.RLEStringDecoder())
     );
 
     protected BiConsumer<StringEncoder, String[]> encodingFunction() {

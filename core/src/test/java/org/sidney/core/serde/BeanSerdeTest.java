@@ -33,14 +33,14 @@ public class BeanSerdeTest extends SerdeTestBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Sid sid = new Sid();
-        Writer<AllPrimitives> writer = sid.newCachedWriter(AllPrimitives.class);
+        Writer<AllPrimitives> writer = sid.newWriter(AllPrimitives.class);
         writer.open(baos);
         writer.write(one);
         writer.write(two);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class);
+        Reader<AllPrimitives> reader = sid.newReader(AllPrimitives.class);
         reader.open(bais);
 
         AllPrimitives out = (reader.hasNext()) ? reader.read() : null;
@@ -57,14 +57,14 @@ public class BeanSerdeTest extends SerdeTestBase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<AllPrimitiveRefs> writer = sid.newCachedWriter(AllPrimitiveRefs.class);
+        Writer<AllPrimitiveRefs> writer = sid.newWriter(AllPrimitiveRefs.class);
         writer.open(baos);
         writer.write(one);
         writer.write(two);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveRefs> reader = sid.newCachedReader(AllPrimitiveRefs.class);
+        Reader<AllPrimitiveRefs> reader = sid.newReader(AllPrimitiveRefs.class);
         reader.open(bais);
         AllPrimitiveRefs out = (reader.hasNext()) ? reader.read() : null;
         AllPrimitiveRefs outTwo = (reader.hasNext()) ? reader.read() : null;
@@ -81,14 +81,14 @@ public class BeanSerdeTest extends SerdeTestBase {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Sid sid = new Sid();
-        Writer<InheritedAllPrimitives> writer = sid.newCachedWriter(InheritedAllPrimitives.class);
+        Writer<InheritedAllPrimitives> writer = sid.newWriter(InheritedAllPrimitives.class);
         writer.open(baos);
         writer.write(one);
         writer.write(two);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<InheritedAllPrimitives> reader = sid.newCachedReader(InheritedAllPrimitives.class);
+        Reader<InheritedAllPrimitives> reader = sid.newReader(InheritedAllPrimitives.class);
         reader.open(bais);
         InheritedAllPrimitives out = (reader.hasNext()) ? reader.read() : null;
         InheritedAllPrimitives outTwo = (reader.hasNext()) ? reader.read() : null;
@@ -104,7 +104,7 @@ public class BeanSerdeTest extends SerdeTestBase {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();
-        Writer<GenericsContainer<Integer, Double>> writer = sid.newCachedWriter(
+        Writer<GenericsContainer<Integer, Double>> writer = sid.newWriter(
                 GenericsContainer.class, Integer.class, Double.class
         );
         writer.open(baos);
@@ -113,7 +113,7 @@ public class BeanSerdeTest extends SerdeTestBase {
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<GenericsContainer<Integer, Double>> reader = sid.newCachedReader(
+        Reader<GenericsContainer<Integer, Double>> reader = sid.newReader(
                 GenericsContainer.class, Integer.class, Double.class
         );
         reader.open(bais);
@@ -144,7 +144,7 @@ public class BeanSerdeTest extends SerdeTestBase {
         }
         writer.close();
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitives> reader = sid.newCachedReader(AllPrimitives.class);
+        Reader<AllPrimitives> reader = sid.newReader(AllPrimitives.class);
         reader.open(bais);
         for (int i = 0; i < num; i++) {
             if (reader.hasNext()) {

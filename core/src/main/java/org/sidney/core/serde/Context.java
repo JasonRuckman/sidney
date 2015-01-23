@@ -15,8 +15,6 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.PageHeader;
-
 public class Context {
     private int columnIndex = 0;
     private PageHeader pageHeader;

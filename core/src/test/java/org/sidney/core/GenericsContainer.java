@@ -47,4 +47,12 @@ public class GenericsContainer<T, R> {
         result = 31 * result + (map != null ? map.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "GenericsContainer{" +
+                "array=" + array +
+                ", map=" + map +
+                '}';
+    }
 }

@@ -56,7 +56,7 @@ public abstract class BaseEncoder implements Encoder {
         if (position + bytes >= buffer.length) {
             int newSize = Math.max(buffer.length * 2, (position + bytes) * 2);
             byte[] newBuffer = new byte[newSize];
-            System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
+            System.arraycopy(buffer, 0, newBuffer, 0, position);
             buffer = newBuffer;
         }
     }

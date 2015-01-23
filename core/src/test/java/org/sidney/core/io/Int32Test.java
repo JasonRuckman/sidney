@@ -25,20 +25,20 @@ import java.util.Random;
 public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, int[]> {
     private final List<EncoderDecoderPair<Int32Encoder, Int32Decoder>> pairs = Arrays.asList(
             new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-                    new PlainInt32Encoder(),
-                    new PlainInt32Decoder()
+                    new Plain.PlainInt32Encoder(),
+                    new Plain.PlainInt32Decoder()
             ),
             new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-                    new DeltaBitPackingInt32Encoder(),
-                    new DeltaBitPackingInt32Decoder()
+                    new DeltaBitPacking.DeltaBitPackingInt32Encoder(),
+                    new DeltaBitPacking.DeltaBitPackingInt32Decoder()
             ),
             new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-                    new BitPackingInt32Encoder(),
-                    new BitPackingInt32Decoder()
+                    new BitPacking.BitPackingInt32Encoder(),
+                    new BitPacking.BitPackingInt32Decoder()
             ),
             new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-                    new RLEInt32Encoder(),
-                    new RLEInt32Decoder()
+                    new RLE.RLEInt32Encoder(),
+                    new RLE.RLEInt32Decoder()
             )
     );
 
