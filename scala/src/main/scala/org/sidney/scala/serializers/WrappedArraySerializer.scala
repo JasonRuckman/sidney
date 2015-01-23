@@ -37,7 +37,7 @@ class WrappedArraySerializer[T] extends Serializer[T] {
       context.incrementColumnIndex()
       contentSerializer.writeValue(contentAccessor.get(value), typeWriter, context)
     } else {
-      context.incrementColumnIndex(getNumFields)
+      context.incrementColumnIndex(getNumFieldsToIncrementBy)
     }
   }
 
@@ -47,7 +47,7 @@ class WrappedArraySerializer[T] extends Serializer[T] {
       val value = contentSerializer.readValue(typeReader, context)
       mutable.WrappedArray.make[T](value)
     } else {
-      context.incrementColumnIndex(getNumFields)
+      context.incrementColumnIndex(getNumFieldsToIncrementBy)
       null
     }
   }
@@ -58,7 +58,7 @@ class WrappedArraySerializer[T] extends Serializer[T] {
     contentAccessor = Accessors.newAccessor(getRawClass.asInstanceOf[Class[_]].getDeclaredField("array"))
   }
 
-  override protected def initFromType(t: Type): Unit = {
+  override protected def initFromClass(t: Class[_]): Unit = {
     //is there a better way to figure out an array class from a component type?
     val arrClass = t.asInstanceOf[Class[_]] match {
       case x if x.eq(refArrayType) => java.lang.reflect.Array.newInstance(getTypeParams()(0), 0).getClass
@@ -75,7 +75,7 @@ class WrappedArraySerializer[T] extends Serializer[T] {
     contentSerializer = getSerializerRepository.serializer(arrClass, null, getTypeBindings, scala.Array.empty[Class[_]])
   }
 
-  override protected def serializers(): util.List[Serializer[_]] = {
+  override protected def serializersAtThisLevel(): util.List[Serializer[_]] = {
     val list = new util.ArrayList[Serializer[_]]()
     list.add(contentSerializer)
     contentSerializer.getSerializers.foreach(x => list.add(x))

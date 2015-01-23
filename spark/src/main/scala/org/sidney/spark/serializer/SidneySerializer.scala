@@ -88,6 +88,7 @@ class SidneySerializationStream(private val os: OutputStream) extends Serializat
 
   override def close(): Unit = {
     writer.close()
+    os.close()
   }
 }
 
@@ -124,6 +125,7 @@ class SidneyDeserializationStream(private val is: InputStream) extends Deseriali
 
   override def close(): Unit = {
     reader.close()
+    is.close()
   }
 }
 

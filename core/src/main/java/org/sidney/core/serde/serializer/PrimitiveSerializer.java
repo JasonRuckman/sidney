@@ -97,9 +97,9 @@ public class PrimitiveSerializer extends Serializer {
     protected PrimitiveReaders.PrimitiveReader reader;
 
     @Override
-    public void postInit() {
-        writer = WRITERS.get(getRawClass());
-        reader = READERS.get(getRawClass());
+    public void initFromClass(Class type) {
+        writer = WRITERS.get(type);
+        reader = READERS.get(type);
     }
 
     @Override
@@ -127,13 +127,8 @@ public class PrimitiveSerializer extends Serializer {
     }
 
     @Override
-    protected List<Serializer> serializers() {
+    protected List<Serializer> serializersAtThisLevel() {
         return new ArrayList<>();
-    }
-
-    @Override
-    protected void initFromType(Type type) {
-
     }
 
     public org.sidney.core.serde.Type getType() {
@@ -144,7 +139,7 @@ public class PrimitiveSerializer extends Serializer {
         if (getField() != null && getField().getAnnotation(Encode.class) != null) {
             return getField().getAnnotation(Encode.class).value();
         }
-        return Encoding.PLAIN;
+        return getType().defaultEncoding();
     }
 
     public static class NonNullPrimitiveSerializer extends PrimitiveSerializer {

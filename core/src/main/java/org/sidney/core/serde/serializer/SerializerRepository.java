@@ -129,11 +129,9 @@ public class SerializerRepository {
         serializer.setJdkType(type);
         serializer.setParentTypeBindings(typeBindings);
         serializer.setSerializerRepository(this);
-        serializer.setParentTypeBindings(typeBindings);
         serializer.setField(field);
 
         serializer.resolveTypeBindings();
-        serializer.preInit();
         serializer.init();
         serializer.postInit();
         serializer.finish();

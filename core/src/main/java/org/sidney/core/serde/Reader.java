@@ -20,14 +20,12 @@ import java.io.InputStream;
 public interface Reader<T> {
     /**
      * Check for new items
-     *
      * @return whether there are more items
      */
     boolean hasNext();
 
     /**
      * Read the next item from the stream
-     *
      * @return the next item
      */
     T read();
@@ -38,7 +36,7 @@ public interface Reader<T> {
     void open(InputStream inputStream);
 
     /**
-     * Marks this reader as closed
+     * Marks this reader as closed, does not close the underlying stream
      */
     void close();
 }

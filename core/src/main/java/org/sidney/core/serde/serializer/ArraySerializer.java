@@ -64,7 +64,6 @@ public class ArraySerializer extends Serializer<Object> {
         if (arrayReader == null) {
             arrayReader = new RefArrayReader();
         }
-        addToFieldCount(contentSerializer.getNumFields());
     }
 
     @Override
@@ -83,19 +82,16 @@ public class ArraySerializer extends Serializer<Object> {
     }
 
     @Override
-    protected List<Serializer> serializers() {
+    protected List<Serializer> serializersAtThisLevel() {
         List<Serializer> serializers = new ArrayList<>();
-
         serializers.add(contentSerializer);
-        serializers.addAll(contentSerializer.getSerializers());
-
         return serializers;
     }
 
     @Override
-    protected void initFromType(Type type) {
+    protected void initFromClass(Class type) {
         contentSerializer = getSerializerRepository().serializer(
-                getRawClass().getComponentType(),
+                type.getComponentType(),
                 null, getParentTypeBindings(), new Class[0]
         );
     }
@@ -122,7 +118,7 @@ public class ArraySerializer extends Serializer<Object> {
             arrayWriter.writeArray(array, typeWriter, context);
             context.incrementColumnIndex();
         } else {
-            context.incrementColumnIndex(getNumFields() + 1);
+            context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         }
     }
 
@@ -135,7 +131,7 @@ public class ArraySerializer extends Serializer<Object> {
             context.incrementColumnIndex();
             return array;
         }
-        context.incrementColumnIndex(getNumFields() + 1);
+        context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         return null;
     }
 

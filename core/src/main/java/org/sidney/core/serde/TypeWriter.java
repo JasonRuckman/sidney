@@ -15,6 +15,9 @@
  */
 package org.sidney.core.serde;
 
+/**
+ * Utility class to simplify some common writing operations
+ */
 public class TypeWriter {
     public void writeBool(boolean value, WriteContext context) {
         context.getColumnWriter().writeBoolean(context.getColumnIndex(), value);

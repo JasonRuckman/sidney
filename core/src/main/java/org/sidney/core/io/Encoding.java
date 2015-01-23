@@ -172,6 +172,11 @@ public enum Encoding {
         public StringEncoder newStringEncoder() {
             return new DeltaLength.DeltaLengthStringEncoder();
         }
+
+        @Override
+        public StringDecoder newStringDecoder() {
+            return new DeltaLength.DeltaLengthStringDecoder();
+        }
     },
     RLE {
         @Override
@@ -202,6 +207,16 @@ public enum Encoding {
         @Override
         public Float32Decoder newFloat32Decoder() {
             return new RLE.RLEFloat32Decoder();
+        }
+
+        @Override
+        public Float64Encoder newFloat64Encoder() {
+            return new org.sidney.core.io.float64.RLE.RLEFloat64Encoder();
+        }
+
+        @Override
+        public Float64Decoder newFloat64Decoder() {
+            return new org.sidney.core.io.float64.RLE.RLEFloat64Decoder();
         }
 
         @Override

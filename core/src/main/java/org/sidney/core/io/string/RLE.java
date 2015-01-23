@@ -27,9 +27,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
+    private static final Encoding RUN_SIZE_ENCODING = Encoding.DELTABITPACKINGHYBRID;
+
     public static class RLEStringDecoder extends BaseDecoder implements StringDecoder {
         private final StringDecoder valueDecoder = Encoding.PLAIN.newStringDecoder();
-        private final Int32Decoder runSizeDecoder = Encoding.BITPACKED.newInt32Decoder();
+        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+
         private int runSize = 0;
         private String currentRun = null;
 
@@ -72,11 +75,11 @@ public class RLE {
     }
 
     public static class RLEStringEncoder extends BaseEncoder implements StringEncoder {
+        private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
+        private final StringEncoder valueEncoder = new Plain.PlainStringEncoder();
         private String currentRun = "";
         private int runSize;
         private boolean isNewRun = true;
-        private Int32Encoder runSizeEncoder = new BitPacking.BitPackingInt32Encoder();
-        private StringEncoder valueEncoder = new Plain.PlainStringEncoder();
 
         @Override
         public void writeString(String s) {

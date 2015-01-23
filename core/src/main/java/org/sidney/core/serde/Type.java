@@ -15,13 +15,51 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.io.Encoding;
+
 public enum Type {
-    BOOLEAN,
-    INT32,
-    INT64,
-    FLOAT32,
-    FLOAT64,
-    STRING,
-    BINARY,
-    GROUP
+    BOOLEAN {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.BITPACKED;
+        }
+    },
+    INT32 {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.PLAIN;
+        }
+    },
+    INT64 {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.PLAIN;
+        }
+    },
+    FLOAT32 {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.PLAIN;
+        }
+    },
+    FLOAT64 {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.PLAIN;
+        }
+    },
+    STRING {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.DELTALENGTH;
+        }
+    },
+    BINARY {
+        @Override
+        public Encoding defaultEncoding() {
+            return Encoding.PLAIN;
+        }
+    };
+
+    public abstract Encoding defaultEncoding();
 }

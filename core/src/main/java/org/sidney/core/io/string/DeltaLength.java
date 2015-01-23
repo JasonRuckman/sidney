@@ -34,8 +34,10 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 public class DeltaLength {
+    private static final Encoding LENGTH_ENCODING = Encoding.DELTABITPACKINGHYBRID;
+
     public static class DeltaLengthStringDecoder extends BaseDecoder implements StringDecoder {
-        private final Int32Decoder lengthDecoder = new DeltaBitPacking.DeltaBitPackingInt32Decoder();
+        private final Int32Decoder lengthDecoder = LENGTH_ENCODING.newInt32Decoder();
         private final RawBytesDecoder bytesDecoder = new RawBytesDecoder();
         private final Charset charset = Charset.forName("UTF-8");
 
@@ -68,7 +70,7 @@ public class DeltaLength {
     }
 
     public static class DeltaLengthStringEncoder implements StringEncoder {
-        private final Int32Encoder lengthEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
+        private final Int32Encoder lengthEncoder = LENGTH_ENCODING.newInt32Encoder();
         private final RawBytesEncoder bytesEncoder = new RawBytesEncoder();
         private final Charset charset = Charset.forName("UTF-8");
         private Accessors.FieldAccessor charArrayField;

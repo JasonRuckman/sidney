@@ -16,11 +16,15 @@
 package org.sidney.scala
 
 import org.sidney.core._
+import org.sidney.core.serde.serializer.Serializer
 import org.sidney.core.serde.{ObjectReader, ObjectWriter, Reader, Writer}
+import org.sidney.scala.serializers.WrappedArraySerializer
 
+import scala.collection.mutable
 import scala.reflect.ClassTag
 
 class ScalaSid extends BaseSid {
+  register[mutable.WrappedArray[_]](classOf[WrappedArraySerializer[_]])
 
   def newWriter[T]()(implicit tag: ClassTag[T]): Writer[T] = {
     new ObjectWriter[T](tag.runtimeClass, getConf.getRegistrations, Array.empty[Class[_]])
@@ -52,5 +56,9 @@ class ScalaSid extends BaseSid {
 
   def newCachedReader[T](typeParams: Class[_]*)(implicit tag: ClassTag[T]): Reader[T] = {
     ???
+  }
+
+  def register[T](serializerClass : Class[_ <: Serializer[_]])(implicit tag : ClassTag[T]) = {
+    getConf.register(tag.runtimeClass, serializerClass)
   }
 }

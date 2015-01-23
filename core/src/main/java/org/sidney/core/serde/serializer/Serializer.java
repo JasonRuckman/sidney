@@ -28,10 +28,17 @@ import java.util.List;
 
 /**
  * Handles serializing a given type, is responsible for decomposing that type and constructing sub serializers if necessary
+ *
+ * Directions for creating a serializer:
+ * 1. Do not create parameterized constructors, serializers must have default constructors
+ * 2. Override the writeValue and readValue methods, optionally override the writeFromField or readIntoField methods if the defaults won't work for you.
+ *    It should be rare that the default methods don't work (primitives are the only case I can think of where you wouldn't use them)
+ * 3. If your class takes generic arguments, implement the {@link #initFromParameterizedClass} and {@link #initFromParameterizedType} methods
+ * 4. Implement the {@link #serializers} method to return any sub serializers you created (only this level).
  */
 public abstract class Serializer<T> {
     private Class[] typeParams;
-    private int numAllFields = 1;
+    private int numFieldsToIncrementBy = 1;
     private List<Serializer> serializers = new ArrayList<>();
     private Type jdkType;
     private Field field;
@@ -41,16 +48,28 @@ public abstract class Serializer<T> {
     private TypeBindings typeBindings;
     private Class<T> rawClass;
 
+    public Serializer() {
+
+    }
+    /**
+     * Get the type params for thsi serializer, if this is a parameterized class
+     */
     public Class[] getTypeParams() {
         return typeParams;
     }
 
-    public void setTypeParams(Class[] typeParams) {
+    /**
+     * Set the type params for this serializer, if this is a parameterized class
+     */
+    void setTypeParams(Class[] typeParams) {
         this.typeParams = typeParams;
     }
 
-    public int getNumFields() {
-        return numAllFields;
+    /**
+     * Indicates the number of fields to increment by if this value is null, includes all subfields + 1
+     */
+    public int getNumFieldsToIncrementBy() {
+        return numFieldsToIncrementBy;
     }
 
     /**
@@ -70,13 +89,16 @@ public abstract class Serializer<T> {
     }
 
     /**
-     * Returns the configured type serializer factory for this object tree
+     * Returns the configured type serializer repository
      */
     public SerializerRepository getSerializerRepository() {
         return serializerRepository;
     }
 
-    public void setSerializerRepository(SerializerRepository serializerRepository) {
+    /**
+     * Set the configured type serializer repository
+     */
+    void setSerializerRepository(SerializerRepository serializerRepository) {
         this.serializerRepository = serializerRepository;
     }
 
@@ -87,10 +109,6 @@ public abstract class Serializer<T> {
         return typeBindings;
     }
 
-    public void setTypeBindings(TypeBindings typeBindings) {
-        this.typeBindings = typeBindings;
-    }
-
     /**
      * Return the jdk type at this level
      */
@@ -98,7 +116,10 @@ public abstract class Serializer<T> {
         return jdkType;
     }
 
-    public void setJdkType(Type jdkType) {
+    /**
+     * Return the jdk type for this level
+     */
+    void setJdkType(Type jdkType) {
         this.jdkType = jdkType;
     }
 
@@ -109,51 +130,59 @@ public abstract class Serializer<T> {
         return parentTypeBindings;
     }
 
-    public void setParentTypeBindings(TypeBindings parentTypeBindings) {
+    /**
+     * Set parent type bindings for this type
+     */
+    void setParentTypeBindings(TypeBindings parentTypeBindings) {
         this.parentTypeBindings = parentTypeBindings;
     }
 
-    public void addToFieldCount(int subFieldCount) {
-        numAllFields += subFieldCount;
-    }
-
-    public final void preInit() {
-        if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass()) ||
-                TypeVariable.class.isAssignableFrom(getJdkType().getClass()) ||
-                GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
-            rawClass = (Class) Types.type(getJdkType(), getParentTypeBindings()).getRawClass();
-        } else if (getJdkType().getClass() == Class.class && typeParams.length > 0) {
-            rawClass = (Class) Types.parameterizedType((Class) getJdkType(), typeParams).getRawClass();
-        } else {
-            rawClass = (Class) getJdkType();
-        }
-    }
-
+    /**
+     * Do type resolution and delegate to impl on handling of various types
+     */
     public final void init() {
         if (ParameterizedType.class.isAssignableFrom(getJdkType().getClass())) {
+            rawClass = (Class) Types.type(getJdkType(), getParentTypeBindings()).getRawClass();
             initFromParameterizedType((ParameterizedType) getJdkType());
         } else if (TypeVariable.class.isAssignableFrom(getJdkType().getClass())) {
+            rawClass = (Class) Types.type(getJdkType(), getParentTypeBindings()).getRawClass();
             TypeVariable variable = (TypeVariable) getJdkType();
             initFromTypeVariable(variable);
         } else if (getJdkType().getClass() == Class.class && typeParams.length > 0) {
+            rawClass = (Class) Types.parameterizedType((Class) getJdkType(), typeParams).getRawClass();
             initFromParameterizedClass((Class) getJdkType(), typeParams);
         } else if (GenericArrayType.class.isAssignableFrom(getJdkType().getClass())) {
+            rawClass = (Class) Types.type(getJdkType(), getParentTypeBindings()).getRawClass();
             initFromArrayType((GenericArrayType) getJdkType());
         } else {
-            initFromType(getJdkType());
+            rawClass = (Class) getJdkType();
+            initFromClass(rawClass);
         }
     }
 
+    /**
+     * Called after all types are resolved but before sub serializers are created.
+     * Override this method to do any cleanup before serializers are created
+     */
     public void postInit() {
 
     }
 
+    /**
+     * Final stage in serializer initialization, creates all sub serializers and calculates their field counts
+     */
     public final void finish() {
-        serializers.addAll(
-                serializers()
-        );
+        for(Serializer serializer : serializersAtThisLevel()) {
+            serializers.add(serializer);
+            serializers.addAll(serializer.getSerializers());
+
+            numFieldsToIncrementBy += serializer.getNumFieldsToIncrementBy();
+        }
     }
 
+    /**
+     * Resolve any type bindings given the context
+     */
     public final void resolveTypeBindings() {
         if (field != null) {
             typeBindings = Types.binding(field, parentTypeBindings);
@@ -162,20 +191,6 @@ public abstract class Serializer<T> {
         } else {
             typeBindings = Types.binding(jdkType, parentTypeBindings);
         }
-    }
-
-    /**
-     * Read bytes from the current column
-     */
-    public final byte[] readBytes(TypeReader typeReader, ReadContext context) {
-        return typeReader.readBytes(context);
-    }
-
-    /**
-     * Read a string from the current column
-     */
-    public final String readString(TypeReader typeReader, ReadContext context) {
-        return typeReader.readString(context);
     }
 
     /**
@@ -217,9 +232,18 @@ public abstract class Serializer<T> {
      */
     public abstract boolean requiresTypeColumn();
 
-    protected abstract List<Serializer> serializers();
 
-    protected void initFromType(Type type) {
+    /**
+     * Return any serializers created for this level only
+     * @return serializers at this level
+     */
+    protected abstract List<Serializer> serializersAtThisLevel();
+
+    /**
+     * Initialize from a
+     * @param type
+     */
+    protected void initFromClass(Class type) {
 
     }
 
@@ -239,10 +263,18 @@ public abstract class Serializer<T> {
 
     }
 
+    /**
+     * Get the accessor for this field, if present, otherwise null
+     * @return the accessor
+     */
     protected final Accessors.FieldAccessor getAccessor() {
         return accessor;
     }
 
+    /**
+     * Get the field for this serializer, if present, otherwise null
+     * @return the field
+     */
     protected final Field getField() {
         if (accessor == null) {
             return null;
@@ -250,7 +282,7 @@ public abstract class Serializer<T> {
         return accessor.getField();
     }
 
-    public void setField(Field field) {
+    void setField(Field field) {
         this.field = field;
         if (field != null) {
             accessor = Accessors.newAccessor(field);

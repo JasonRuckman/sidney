@@ -17,7 +17,7 @@ package org.sidney.core.serde.serializer;
 
 import java.lang.reflect.Constructor;
 
-class InstanceFactory {
+public class InstanceFactory {
     private Constructor constructor;
 
     public InstanceFactory(Class type) {
@@ -28,6 +28,9 @@ class InstanceFactory {
         }
     }
 
+    /**
+     * Create a new instance of the given type using the default constructor
+     */
     public Object newInstance() {
         try {
             return constructor.newInstance();

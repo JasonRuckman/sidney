@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.sidney.core.io.float64.Float64Decoder;
 import org.sidney.core.io.float64.Float64Encoder;
 import org.sidney.core.io.float64.Plain;
+import org.sidney.core.io.float64.RLE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +27,8 @@ import java.util.Random;
 
 public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Decoder, double[]> {
     private final List<EncoderDecoderPair<Float64Encoder, Float64Decoder>> pairs = Arrays.asList(
-            new EncoderDecoderPair<Float64Encoder, Float64Decoder>(new Plain.PlainFloat64Encoder(), new Plain.PlainFloat64Decoder())
+            new EncoderDecoderPair<Float64Encoder, Float64Decoder>(new Plain.PlainFloat64Encoder(), new Plain.PlainFloat64Decoder()),
+            new EncoderDecoderPair<Float64Encoder, Float64Decoder>(new RLE.RLEFloat64Encoder(), new RLE.RLEFloat64Decoder())
     );
 
     @Override

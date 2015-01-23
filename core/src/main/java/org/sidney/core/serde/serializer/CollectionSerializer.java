@@ -32,11 +32,6 @@ public class CollectionSerializer extends Serializer<Collection> {
     private InstanceFactoryCache cache = new InstanceFactoryCache();
 
     @Override
-    public void postInit() {
-        addToFieldCount(contentSerializer.getNumFields());
-    }
-
-    @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
         writeCollection((Collection) value, typeWriter, context);
     }
@@ -52,7 +47,7 @@ public class CollectionSerializer extends Serializer<Collection> {
     }
 
     @Override
-    protected List<Serializer> serializers() {
+    protected List<Serializer> serializersAtThisLevel() {
         List<Serializer> serializers = new ArrayList<>();
         serializers.add(contentSerializer);
         serializers.addAll(contentSerializer.getSerializers());
@@ -93,7 +88,7 @@ public class CollectionSerializer extends Serializer<Collection> {
             }
             context.incrementColumnIndex();
         } else {
-            context.incrementColumnIndex(getNumFields() + 1);
+            context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         }
     }
 
@@ -110,7 +105,7 @@ public class CollectionSerializer extends Serializer<Collection> {
             context.incrementColumnIndex();
             return c;
         }
-        context.incrementColumnIndex(getNumFields() + 1);
+        context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         return null;
     }
 }

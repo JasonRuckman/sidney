@@ -28,7 +28,7 @@ import java.util.List;
 
 public class BeanSerializer extends Serializer<Object> {
     private InstanceFactory instanceFactory;
-    private List<Serializer> serializersAtThisLevel;
+    private List<Serializer> serializersAtThisLevel = new ArrayList<>();
 
     @Override
     public void postInit() {
@@ -51,9 +51,8 @@ public class BeanSerializer extends Serializer<Object> {
     }
 
     @Override
-    protected List<Serializer> serializers() {
+    protected List<Serializer> serializersAtThisLevel() {
         List<Serializer> serializers = new ArrayList<>();
-        serializersAtThisLevel = new ArrayList<>();
         List<Field> fields = Fields.getAllFields(getRawClass());
         for (Field subField : fields) {
             Type type = subField.getGenericType();
@@ -62,11 +61,8 @@ public class BeanSerializer extends Serializer<Object> {
             );
 
             serializers.add(serializer);
-            serializers.addAll(serializer.getSerializers());
-
-            serializersAtThisLevel.add(serializer);
-            addToFieldCount(serializer.getNumFields());
         }
+        serializersAtThisLevel.addAll(serializers);
         return serializers;
     }
 
@@ -78,7 +74,7 @@ public class BeanSerializer extends Serializer<Object> {
                 handler.writeFromField(value, typeWriter, context);
             }
         } else {
-            context.incrementColumnIndex(getNumFields());
+            context.incrementColumnIndex(getNumFieldsToIncrementBy());
         }
     }
 
@@ -91,7 +87,7 @@ public class BeanSerializer extends Serializer<Object> {
             }
             return bean;
         } else {
-            context.incrementColumnIndex(getNumFields());
+            context.incrementColumnIndex(getNumFieldsToIncrementBy());
         }
         return null;
     }

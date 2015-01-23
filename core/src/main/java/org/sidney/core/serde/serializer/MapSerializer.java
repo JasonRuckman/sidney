@@ -54,12 +54,6 @@ public class MapSerializer extends Serializer<Map> {
     }
 
     @Override
-    public void postInit() {
-        addToFieldCount(keySerializer.getNumFields());
-        addToFieldCount(valueSerializer.getNumFields());
-    }
-
-    @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
         writeMap((Map) value, typeWriter, context);
     }
@@ -75,12 +69,10 @@ public class MapSerializer extends Serializer<Map> {
     }
 
     @Override
-    protected List<Serializer> serializers() {
+    protected List<Serializer> serializersAtThisLevel() {
         List<Serializer> serializers = new ArrayList<>();
         serializers.add(keySerializer);
-        serializers.addAll(keySerializer.getSerializers());
         serializers.add(valueSerializer);
-        serializers.addAll(valueSerializer.getSerializers());
         return serializers;
     }
 
@@ -97,7 +89,7 @@ public class MapSerializer extends Serializer<Map> {
                 valueSerializer.writeValue(entry.getValue(), typeWriter, context);
             }
         } else {
-            context.incrementColumnIndex(getNumFields() + 1);
+            context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         }
     }
 
@@ -113,7 +105,7 @@ public class MapSerializer extends Serializer<Map> {
             }
             return map;
         }
-        context.incrementColumnIndex(getNumFields() + 1);
+        context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
         return null;
     }
 }

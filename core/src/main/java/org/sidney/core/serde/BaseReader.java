@@ -80,11 +80,6 @@ public abstract class BaseReader {
      * Marks this reader as closed
      */
     public void close() {
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         inputStream = null;
         isOpen = false;
     }

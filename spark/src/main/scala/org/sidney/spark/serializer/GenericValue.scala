@@ -27,6 +27,6 @@ object GenericValue {
 /**
  * Container class for encapsulating type information so Sidney can decompose it
  */
-class GenericValue[T](val value: T)(implicit typeTag: TypeTag[T]) {
+class GenericValue[T](val value: T)(implicit val typeTag: TypeTag[T]) {
 
 }

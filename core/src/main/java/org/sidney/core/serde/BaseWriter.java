@@ -66,12 +66,6 @@ public abstract class BaseWriter {
      */
     public void close() {
         flushPage(true);
-
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         isOpen = false;
     }
 

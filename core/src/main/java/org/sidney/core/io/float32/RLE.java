@@ -26,9 +26,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
+    private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
+    private static final Encoding RUN_SIZE_ENCODING = Encoding.BITPACKED;
+
     public static class RLEFloat32Decoder implements Float32Decoder {
-        private final Int32Decoder valueDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
-        private final Int32Decoder runSizeDecoder = Encoding.BITPACKED.newInt32Decoder();
+        private final Int32Decoder valueDecoder = VALUE_ENCODING.newInt32Decoder();
+        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
         private int runSize = 0;
         private float currentRun = 0;
 
@@ -71,8 +74,8 @@ public class RLE {
     }
 
     public static class RLEFloat32Encoder implements Float32Encoder {
-        private final Int32Encoder valueEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
-        private final Int32Encoder runSizeEncoder = new BitPacking.BitPackingInt32Encoder();
+        private final Int32Encoder valueEncoder = VALUE_ENCODING.newInt32Encoder();
+        private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
         private float currentRun = 0;
         private int runSize = 0;
         private boolean isNewRun = true;
