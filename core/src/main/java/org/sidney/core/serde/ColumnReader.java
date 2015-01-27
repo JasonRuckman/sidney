@@ -15,18 +15,14 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.io.Columns;
 import org.sidney.core.io.Decoder;
 import org.sidney.core.serde.serializer.ColumnOperations;
-import org.sidney.core.serde.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ColumnReader extends ColumnOperations {
-    public ColumnReader(Serializer serializer) {
-        super(serializer);
-    }
-
     public boolean readBool(int index) {
         return columnIOs.get(index).readBoolean();
     }
@@ -68,10 +64,10 @@ public class ColumnReader extends ColumnOperations {
     }
 
     public void loadFromInputStream(InputStream inputStream) throws IOException {
-        definitionDecoder.readFromStream(inputStream);
-        repetitionDecoder.readFromStream(inputStream);
-
         for (Columns.ColumnIO columnIO : columnIOs) {
+            columnIO.getDefinitionDecoder().readFromStream(inputStream);
+            columnIO.getRepetitionDecoder().readFromStream(inputStream);
+
             for (Decoder decoder : columnIO.getDecoders()) {
                 decoder.readFromStream(inputStream);
             }

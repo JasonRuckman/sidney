@@ -17,6 +17,7 @@ package org.sidney.core.serde;
 
 import org.sidney.core.Registrations;
 import org.sidney.core.SidneyException;
+import org.sidney.core.TypeRefBuilder;
 
 public class ObjectReader<T> extends BaseReader implements Reader<T> {
     public ObjectReader(Class type, Registrations registrations, Class[] typeParams) {
@@ -24,7 +25,9 @@ public class ObjectReader<T> extends BaseReader implements Reader<T> {
 
         this.type = type;
         this.typeParams = typeParams;
-        this.serializer = serializerRepository.serializer(type, null, null, typeParams);
+        this.serializer = builder.serializer(TypeRefBuilder.typeRef(
+                type, typeParams
+        ), null);
     }
 
     /**

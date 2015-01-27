@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.sidney.core.serde;
+package org.sidney.core.io;
 
 import org.sidney.core.io.Decoder;
 import org.sidney.core.io.Encoder;
@@ -31,6 +31,8 @@ import org.sidney.core.io.int64.Int64Decoder;
 import org.sidney.core.io.int64.Int64Encoder;
 import org.sidney.core.io.string.StringDecoder;
 import org.sidney.core.io.string.StringEncoder;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.WriteContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,20 +107,36 @@ public class Columns {
         private BoolDecoder definitionDecoder;
         private Int32Decoder repetitionDecoder;
 
-        public void setRepetitionEncoder(Int32Encoder repetitionEncoder) {
-            this.repetitionEncoder = repetitionEncoder;
+        public BoolEncoder getDefinitionEncoder() {
+            return definitionEncoder;
         }
 
         public void setDefinitionEncoder(BoolEncoder definitionEncoder) {
             this.definitionEncoder = definitionEncoder;
         }
 
-        public void setRepetitionDecoder(Int32Decoder repetitionDecoder) {
-            this.repetitionDecoder = repetitionDecoder;
+        public Int32Encoder getRepetitionEncoder() {
+            return repetitionEncoder;
+        }
+
+        public void setRepetitionEncoder(Int32Encoder repetitionEncoder) {
+            this.repetitionEncoder = repetitionEncoder;
+        }
+
+        public BoolDecoder getDefinitionDecoder() {
+            return definitionDecoder;
         }
 
         public void setDefinitionDecoder(BoolDecoder definitionDecoder) {
             this.definitionDecoder = definitionDecoder;
+        }
+
+        public Int32Decoder getRepetitionDecoder() {
+            return repetitionDecoder;
+        }
+
+        public void setRepetitionDecoder(Int32Decoder repetitionDecoder) {
+            this.repetitionDecoder = repetitionDecoder;
         }
 
         public void writeBoolean(boolean value) {

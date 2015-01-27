@@ -66,6 +66,46 @@ public class BaseSid {
         return new Primitives.BoolWriter(conf.getRegistrations());
     }
 
+    public Primitives.ByteWriter newByteWriter() {
+        if(caching) {
+            if(byteWriter == null) {
+                byteWriter = new Primitives.ByteWriter(conf.getRegistrations());
+            }
+            return byteWriter;
+        }
+        return new Primitives.ByteWriter(conf.getRegistrations());
+    }
+
+    public Primitives.ByteReader newByteReader() {
+        if(caching) {
+            if(byteReader == null) {
+                byteReader = new Primitives.ByteReader(conf.getRegistrations());
+            }
+            return byteReader;
+        }
+        return new Primitives.ByteReader(conf.getRegistrations());
+    }
+
+    public Primitives.ShortWriter newShortWriter() {
+        if(caching) {
+            if(shortWriter == null) {
+                shortWriter = new Primitives.ShortWriter(conf.getRegistrations());
+            }
+            return shortWriter;
+        }
+        return new Primitives.ShortWriter(conf.getRegistrations());
+    }
+
+    public Primitives.ShortReader newShortReader() {
+        if(caching) {
+            if(shortReader == null) {
+                shortReader = new Primitives.ShortReader(conf.getRegistrations());
+            }
+            return shortReader;
+        }
+        return new Primitives.ShortReader(conf.getRegistrations());
+    }
+
     public Primitives.IntWriter newIntWriter() {
         if (caching) {
             if (intWriter == null) {

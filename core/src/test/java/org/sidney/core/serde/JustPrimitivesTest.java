@@ -24,6 +24,48 @@ import java.io.ByteArrayOutputStream;
 
 public class JustPrimitivesTest {
     @Test
+    public void testBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Sid sid = new Sid();
+        Primitives.ByteWriter writer = sid.newByteWriter();
+        writer.open(baos);
+        byte[] bytes = new byte[100];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte)i;
+            writer.writeByte((byte)i);
+        }
+        writer.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Primitives.ByteReader reader = sid.newByteReader();
+        reader.open(bais);
+        int counter = 0;
+        while (reader.hasNext()) {
+            Assert.assertEquals(bytes[counter++], reader.readByte());
+        }
+    }
+
+    @Test
+    public void testShorts() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Sid sid = new Sid();
+        Primitives.ShortWriter writer = sid.newShortWriter();
+        writer.open(baos);
+        short[] shorts = new short[100];
+        for (int i = 0; i < shorts.length; i++) {
+            shorts[i] = (short)i;
+            writer.writeShort((short)i);
+        }
+        writer.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        Primitives.ShortReader reader = sid.newShortReader();
+        reader.open(bais);
+        int counter = 0;
+        while (reader.hasNext()) {
+            Assert.assertEquals(shorts[counter++], reader.readShort());
+        }
+    }
+
+    @Test
     public void testInts() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Sid sid = new Sid();

@@ -20,7 +20,6 @@
         <module>core</module>
         <module>bitpacking</module>
         <module>benchmarking</module>
-        <module>spark</module>
         <module>scala</module>
     </modules>
 

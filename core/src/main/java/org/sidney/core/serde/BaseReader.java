@@ -20,9 +20,8 @@ import org.sidney.core.Bytes;
 import org.sidney.core.Registrations;
 import org.sidney.core.SidneyException;
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.SerializerRepository;
+import org.sidney.core.serde.serializer.SerializerContext;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public abstract class BaseReader {
@@ -35,13 +34,13 @@ public abstract class BaseReader {
     protected Serializer serializer;
     protected TypeReader typeReader = new TypeReader();
     protected int recordCount = 0;
-    protected SerializerRepository serializerRepository;
+    protected SerializerContext builder;
     protected PageHeader currentPageHeader = null;
     protected boolean isOpen = false;
 
     public BaseReader(Registrations registrations) {
         this.registrations = registrations;
-        this.serializerRepository = new SerializerRepository(registrations);
+        this.builder = new SerializerContext(registrations);
     }
 
     /**
@@ -94,11 +93,11 @@ public abstract class BaseReader {
             }
             currentPageHeader = json.readValue(bytes, PageHeader.class);
             currentPageHeader.prepareForRead();
+            ColumnReader reader = new ColumnReader();
             context = new ReadContext(
-                    new ColumnReader(
-                            serializer
-                    )
+                reader
             );
+            builder.finish(reader);
             recordCount = currentPageHeader.getPageSize();
             context.setPageHeader(currentPageHeader);
             context.getColumnReader().loadFromInputStream(inputStream);

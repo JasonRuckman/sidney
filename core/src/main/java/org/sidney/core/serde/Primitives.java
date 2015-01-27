@@ -16,12 +16,18 @@
 package org.sidney.core.serde;
 
 import org.sidney.core.Registrations;
+import org.sidney.core.TypeRefBuilder;
+import org.sidney.core.serde.serializer.Serializer;
 
 public class Primitives {
     static abstract class PrimitiveWriter extends BaseWriter {
         public PrimitiveWriter(Registrations registrations, Class<?> type) {
             super(registrations);
-            this.context = new WriteContext(new ColumnWriter(serializerRepository.serializer(type)));
+
+            ColumnWriter writer = new ColumnWriter();
+            Serializer serializer = builder.serializer(TypeRefBuilder.typeRef(type));
+            writer.consume(serializer);
+            context = new WriteContext(writer);
         }
     }
 
@@ -104,7 +110,10 @@ public class Primitives {
     public static class PrimitiveReader extends BaseReader {
         public PrimitiveReader(Registrations registrations, Class<?> type) {
             super(registrations);
-            this.serializer = serializerRepository.serializer(type);
+
+            ColumnReader reader = new ColumnReader();
+            reader.consume(builder.serializer(TypeRefBuilder.typeRef(type)));
+            context = new ReadContext(reader);
         }
     }
 

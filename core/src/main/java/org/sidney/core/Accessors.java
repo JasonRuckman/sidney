@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 
 public class Accessors {
     public static FieldAccessor newAccessor(Field field) {
-        return new ReflectionFieldAccessor(field);
+        return new UnsafeFieldAccessor(field);
     }
 
     public static interface FieldAccessor {

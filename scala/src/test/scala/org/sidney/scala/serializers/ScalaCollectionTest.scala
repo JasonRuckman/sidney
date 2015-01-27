@@ -27,13 +27,13 @@ class ScalaCollectionTest {
     val arr = new util.ArrayList[Int]()
     val scalaSid = new ScalaSid
 
-    val writer = scalaSid.newWriter[util.ArrayList[Int]](classOf[Int])
+    val writer = scalaSid.newWriter[util.ArrayList[Int]]
     val baos = new ByteArrayOutputStream()
     writer.open(baos)
     writer.write(arr)
     writer.close()
 
-    val reader = scalaSid.newReader[util.ArrayList[Int]](classOf[Int])
+    val reader = scalaSid.newReader[util.ArrayList[Int]]
     val bais = new ByteArrayInputStream(baos.toByteArray)
     reader.open(bais)
     val out = if (reader.hasNext) reader.read() else null

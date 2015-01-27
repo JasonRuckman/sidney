@@ -15,17 +15,11 @@
  */
 package org.sidney.core.serde.serializer;
 
-import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
+import org.sidney.core.TypeRef;
+import org.sidney.core.serde.*;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ArraySerializer extends Serializer<Object> {
@@ -53,17 +47,20 @@ public class ArraySerializer extends Serializer<Object> {
     private Serializer contentSerializer;
     private Arrays.ArrayWriters.ArrayWriter arrayWriter;
     private Arrays.ArrayReaders.ArrayReader arrayReader;
+    private Class<?> rawClass;
 
     @Override
-    public void postInit() {
-        arrayWriter = PRIMITIVE_WRITERS.get(getRawClass());
+    public void consume(TypeRef typeRef, SerializerContext builder) {
+        arrayWriter = PRIMITIVE_WRITERS.get(typeRef.getType());
         if (arrayWriter == null) {
             arrayWriter = new RefArrayWriter();
         }
-        arrayReader = PRIMITIVE_READERS.get(getRawClass());
+        arrayReader = PRIMITIVE_READERS.get(typeRef.getType());
         if (arrayReader == null) {
             arrayReader = new RefArrayReader();
         }
+        contentSerializer = builder.serializer(typeRef.getComponentType(), this);
+        rawClass = typeRef.getType();
     }
 
     @Override
@@ -81,35 +78,6 @@ public class ArraySerializer extends Serializer<Object> {
         return false;
     }
 
-    @Override
-    protected List<Serializer> serializersAtThisLevel() {
-        List<Serializer> serializers = new ArrayList<>();
-        serializers.add(contentSerializer);
-        return serializers;
-    }
-
-    @Override
-    protected void initFromClass(Class type) {
-        contentSerializer = getSerializerRepository().serializer(
-                type.getComponentType(),
-                null, getParentTypeBindings(), new Class[0]
-        );
-    }
-
-    @Override
-    protected void initFromArrayType(GenericArrayType type) {
-        GenericArrayType genericArrayType = (GenericArrayType) getJdkType();
-        contentSerializer = getSerializerRepository().serializer(
-                genericArrayType.getGenericComponentType(), null, getParentTypeBindings(), new Class[0]
-        );
-    }
-
-    @Override
-    protected void initFromParameterizedClass(Class<?> clazz, Class... types) {
-        Class<?> componentType = ((Class) getJdkType()).getComponentType();
-        contentSerializer = getSerializerRepository().serializer(componentType, null, getTypeBindings(), types);
-    }
-
     private void writeArray(Object array, TypeWriter typeWriter, WriteContext context) {
         if (typeWriter.writeNullMarker(array, context)) {
             typeWriter.writeRepetitionCount(context.getColumnIndex(), Array.getLength(array), context);
@@ -125,7 +93,7 @@ public class ArraySerializer extends Serializer<Object> {
     private Object readArray(TypeReader typeReader, ReadContext context) {
         if (typeReader.readNullMarker(context)) {
             int arraySize = typeReader.readRepetitionCount(context);
-            Object array = Array.newInstance(getRawClass().getComponentType(), arraySize);
+            Object array = Array.newInstance(rawClass.getComponentType(), arraySize);
             context.incrementColumnIndex();
             arrayReader.readValue(typeReader, context, array);
             context.incrementColumnIndex();

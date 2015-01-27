@@ -15,14 +15,9 @@
  */
 package org.sidney.core.serde.serializer;
 
-import org.sidney.core.Fields;
-import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
+import org.sidney.core.TypeRef;
+import org.sidney.core.serde.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +26,12 @@ public class BeanSerializer extends Serializer<Object> {
     private List<Serializer> serializersAtThisLevel = new ArrayList<>();
 
     @Override
-    public void postInit() {
-        instanceFactory = new InstanceFactory(getRawClass());
+    public void consume(TypeRef typeRef, SerializerContext builder) {
+        for (TypeRef.TypeFieldRef fieldRef : typeRef.getFields()) {
+            Serializer fieldSerializer = builder.serializer(fieldRef, this);
+            serializersAtThisLevel.add(fieldSerializer);
+        }
+        instanceFactory = new InstanceFactory(typeRef.getType());
     }
 
     @Override
@@ -48,22 +47,6 @@ public class BeanSerializer extends Serializer<Object> {
     @Override
     public boolean requiresTypeColumn() {
         return false;
-    }
-
-    @Override
-    protected List<Serializer> serializersAtThisLevel() {
-        List<Serializer> serializers = new ArrayList<>();
-        List<Field> fields = Fields.getAllFields(getRawClass());
-        for (Field subField : fields) {
-            Type type = subField.getGenericType();
-            Serializer serializer = getSerializerRepository().serializer(
-                    (type == null) ? subField.getType() : type, subField, getTypeBindings(), new Class[0]
-            );
-
-            serializers.add(serializer);
-        }
-        serializersAtThisLevel.addAll(serializers);
-        return serializers;
     }
 
     private void writeBean(Object value, TypeWriter typeWriter, WriteContext context) {

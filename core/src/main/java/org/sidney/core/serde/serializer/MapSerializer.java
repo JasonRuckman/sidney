@@ -15,16 +15,9 @@
  */
 package org.sidney.core.serde.serializer;
 
-import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
+import org.sidney.core.TypeRef;
+import org.sidney.core.serde.*;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MapSerializer extends Serializer<Map> {
@@ -33,24 +26,12 @@ public class MapSerializer extends Serializer<Map> {
     private InstanceFactoryCache cache = new InstanceFactoryCache();
 
     @Override
-    protected void initFromParameterizedClass(Class<?> clazz, Class[] typeParams) {
-        keySerializer = getSerializerRepository().serializer(typeParams[0], null, getTypeBindings(), new Class[0]);
-        valueSerializer = getSerializerRepository().serializer(typeParams[1], null, getTypeBindings(), new Class[0]);
-    }
+    public void consume(TypeRef typeRef, SerializerContext builder) {
+        keySerializer = builder.serializer(typeRef.getTypeParameters().get(0), this);
+        valueSerializer = builder.serializer(typeRef.getTypeParameters().get(1), this);
 
-    @Override
-    protected void initFromParameterizedType(ParameterizedType type) {
-        Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        keySerializer = getSerializerRepository().serializer(args[0], null, getParentTypeBindings(), new Class[0]);
-        valueSerializer = getSerializerRepository().serializer(args[1], null, getParentTypeBindings(), new Class[0]);
-    }
-
-    @Override
-    protected void initFromTypeVariable(TypeVariable typeVariable) {
-        keySerializer = getSerializerRepository().serializer(
-                typeVariable.getBounds()[0], null, getParentTypeBindings(), new Class[0]);
-        valueSerializer = getSerializerRepository().serializer(
-                typeVariable.getBounds()[1], null, getParentTypeBindings(), new Class[0]);
+        addNumFieldsToIncrementBy(keySerializer.getNumFieldsToIncrementBy());
+        addNumFieldsToIncrementBy(valueSerializer.getNumFieldsToIncrementBy());
     }
 
     @Override
@@ -66,14 +47,6 @@ public class MapSerializer extends Serializer<Map> {
     @Override
     public boolean requiresTypeColumn() {
         return true;
-    }
-
-    @Override
-    protected List<Serializer> serializersAtThisLevel() {
-        List<Serializer> serializers = new ArrayList<>();
-        serializers.add(keySerializer);
-        serializers.add(valueSerializer);
-        return serializers;
     }
 
     private void writeMap(Map map, TypeWriter typeWriter, WriteContext context) {

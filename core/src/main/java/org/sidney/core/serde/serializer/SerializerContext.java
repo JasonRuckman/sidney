@@ -1,42 +1,21 @@
-/**
- * Copyright 2014 Jason Ruckman
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.sidney.core.serde.serializer;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeBindings;
+import org.sidney.core.Accessors;
 import org.sidney.core.Registrations;
 import org.sidney.core.SidneyException;
+import org.sidney.core.TypeRef;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Refactor to accept registrations
-
-/**
- * Factory that creates {@link Serializer}s
- */
-public class SerializerRepository {
-    protected List<SerializerEntry> entries = new ArrayList<>();
+public class SerializerContext {
+    private final List<SerializerEntry> entries = new ArrayList<>();
     private Registrations registrations;
+    private final List<Serializer> serializers = new ArrayList<>();
 
-    public SerializerRepository(Registrations registrations) {
+    public SerializerContext(Registrations registrations) {
         this.registrations = registrations;
 
         addCustomFactories();
@@ -91,52 +70,41 @@ public class SerializerRepository {
         addEntry(Object[].class, arraySerializerClass);
     }
 
-
-    public Serializer serializer(Type type) {
-        return serializer(type, null, null, new Class[0]);
+    public <T> Serializer<T> serializer(TypeRef typeRef) {
+        return serializer(typeRef, null);
     }
 
-    /**
-     * Create a {@link Serializer} from the given arguments
-     */
-    public Serializer serializer(Type type, Field field, TypeBindings typeBindings, Class[] generics) {
-        JavaType javaType;
-        if (generics.length == 0) {
-            javaType = Types.type(type, typeBindings);
-        } else {
-            javaType = Types.parameterizedType((Class) type, generics);
-        }
-        Class<?> clazz = javaType.getRawClass();
-
-        Serializer serializer = null;
+    public <T> Serializer<T> serializer(TypeRef typeRef, Serializer parent) {
+        Class<T> clazz = (Class<T>) typeRef.getType();
+        Serializer<T> serializer = null;
         for (SerializerEntry entry : entries) {
             if (entry.getType() == clazz || entry.getType().isAssignableFrom(clazz)) {
                 serializer = (Serializer) new InstanceFactory(entry.getSerializerType()).newInstance();
                 break;
             }
         }
-
         if (serializer == null) {
             throw new SidneyException(String.format("Could not resolve serializer for type: %s", clazz));
         }
+        serializers.add(serializer);
+        if (typeRef instanceof TypeRef.TypeFieldRef) {
+            serializer.setAccessor(Accessors.newAccessor(
+                    ((TypeRef.TypeFieldRef) typeRef).getJdkField()
+            ));
+        }
+        serializer.consume(typeRef, this);
 
-        if (serializer instanceof PrimitiveSerializer.NonNullPrimitiveSerializer ||
-                serializer instanceof PrimitiveSerializer) {
-            type = clazz;
+        if (parent != null) {
+            parent.addNumFieldsToIncrementBy(serializer.getNumFieldsToIncrementBy());
         }
 
-        serializer.setTypeParams(generics);
-        serializer.setJdkType(type);
-        serializer.setParentTypeBindings(typeBindings);
-        serializer.setSerializerRepository(this);
-        serializer.setField(field);
-
-        serializer.resolveTypeBindings();
-        serializer.init();
-        serializer.postInit();
-        serializer.finish();
-
         return serializer;
+    }
+
+    public void finish(TypeConsumer consumer) {
+        for (Serializer serializer : serializers) {
+            consumer.consume(serializer);
+        }
     }
 
     private void addEntry(Class type, Class<? extends Serializer> serializerType) {

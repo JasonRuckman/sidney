@@ -17,16 +17,11 @@ package org.sidney.core.serde.serializer;
 
 import org.sidney.core.Accessors;
 import org.sidney.core.Encode;
+import org.sidney.core.TypeRef;
 import org.sidney.core.io.Encoding;
-import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
+import org.sidney.core.serde.*;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PrimitiveSerializer extends Serializer {
@@ -95,11 +90,18 @@ public class PrimitiveSerializer extends Serializer {
 
     protected PrimitiveWriters.PrimitiveWriter writer;
     protected PrimitiveReaders.PrimitiveReader reader;
+    private Encoding encoding;
+    private Class<?> rawClass;
 
     @Override
-    public void initFromClass(Class type) {
-        writer = WRITERS.get(type);
-        reader = READERS.get(type);
+    public void consume(TypeRef typeRef, SerializerContext builder) {
+        writer = WRITERS.get(typeRef.getType());
+        reader = READERS.get(typeRef.getType());
+        if(typeRef instanceof TypeRef.TypeFieldRef &&
+                ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class) != null) {
+            encoding = ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class).value();
+        }
+        rawClass = typeRef.getType();
     }
 
     @Override
@@ -126,18 +128,13 @@ public class PrimitiveSerializer extends Serializer {
         return false;
     }
 
-    @Override
-    protected List<Serializer> serializersAtThisLevel() {
-        return new ArrayList<>();
-    }
-
     public org.sidney.core.serde.Type getType() {
-        return TYPES.get(getRawClass());
+        return TYPES.get(rawClass);
     }
 
     public Encoding getEncoding() {
-        if (getField() != null && getField().getAnnotation(Encode.class) != null) {
-            return getField().getAnnotation(Encode.class).value();
+        if(encoding != null) {
+            return encoding;
         }
         return getType().defaultEncoding();
     }

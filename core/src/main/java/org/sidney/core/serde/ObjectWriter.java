@@ -17,6 +17,7 @@ package org.sidney.core.serde;
 
 import org.sidney.core.Registrations;
 import org.sidney.core.SidneyException;
+import org.sidney.core.TypeRefBuilder;
 import org.sidney.core.serde.serializer.Serializer;
 
 
@@ -30,8 +31,10 @@ public class ObjectWriter<T> extends BaseWriter implements Writer<T> {
         super(registrations);
 
         this.type = type;
-        this.serializer = serializerRepository.serializer(type, null, null, typeParams);
-        this.context = new WriteContext(new ColumnWriter(serializer), new PageHeader());
+        ColumnWriter writer = new ColumnWriter();
+        this.serializer = builder.serializer(TypeRefBuilder.typeRef(type, typeParams), null);
+        this.builder.finish(writer);
+        this.context = new WriteContext(writer, new PageHeader());
     }
 
     /**

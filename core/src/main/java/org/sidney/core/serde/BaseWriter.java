@@ -17,7 +17,7 @@ package org.sidney.core.serde;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sidney.core.Registrations;
-import org.sidney.core.serde.serializer.SerializerRepository;
+import org.sidney.core.serde.serializer.SerializerContext;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,20 +30,20 @@ public abstract class BaseWriter {
     protected OutputStream outputStream;
     protected int recordCount = 0;
     protected WriteContext context;
-    protected SerializerRepository serializerRepository;
+    protected SerializerContext builder;
     protected boolean isOpen = false;
     protected TypeWriter typeWriter = new TypeWriter();
 
     public BaseWriter(Registrations registrations) {
         this.registrations = registrations;
-        this.serializerRepository = new SerializerRepository(registrations);
+        this.builder = new SerializerContext(registrations);
     }
 
-    public WriteContext getContext() {
+    protected WriteContext getContext() {
         return context;
     }
 
-    public TypeWriter getTypeWriter() {
+    protected TypeWriter getTypeWriter() {
         return typeWriter;
     }
 

@@ -15,18 +15,14 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.io.Columns;
 import org.sidney.core.io.Encoder;
 import org.sidney.core.serde.serializer.ColumnOperations;
-import org.sidney.core.serde.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class ColumnWriter extends ColumnOperations {
-    public ColumnWriter(Serializer serializer) {
-        super(serializer);
-    }
-
     public void writeBoolean(int index, boolean value) {
         Columns.ColumnIO columnIO = columnIOs.get(index);
         columnIO.writeBoolean(value);
@@ -79,10 +75,10 @@ public class ColumnWriter extends ColumnOperations {
     }
 
     public void flushToOutputStream(OutputStream outputStream) throws IOException {
-        definitionEncoder.writeToStream(outputStream);
-        repetitionEncoder.writeToStream(outputStream);
-
         for (Columns.ColumnIO columnIO : columnIOs) {
+            columnIO.getDefinitionEncoder().writeToStream(outputStream);
+            columnIO.getRepetitionEncoder().writeToStream(outputStream);
+
             for (Encoder encoder : columnIO.getEncoders()) {
                 encoder.writeToStream(outputStream);
             }
@@ -92,10 +88,10 @@ public class ColumnWriter extends ColumnOperations {
     }
 
     public void reset() {
-        definitionEncoder.reset();
-        repetitionEncoder.reset();
-
         for (Columns.ColumnIO columnIO : columnIOs) {
+            columnIO.getDefinitionEncoder().reset();
+            columnIO.getRepetitionEncoder().reset();
+
             for (Encoder encoder : columnIO.getEncoders()) {
                 encoder.reset();
             }

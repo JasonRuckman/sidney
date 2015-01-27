@@ -58,6 +58,10 @@ public class Bytes {
         return bytesToInt(arr, 0);
     }
 
+    public static void writeBoolToStream(boolean value, OutputStream outputStream) throws IOException {
+        outputStream.write((value) ? 1 : 0);
+    }
+
     public static void writeIntToStream(int value, OutputStream outputStream) throws IOException {
         byte[] arr = new byte[4];
         writeIntOn4Bytes(value, arr, 0);
@@ -68,6 +72,10 @@ public class Bytes {
         byte[] bytes = value.getBytes(Charset.forName("UTF-8"));
         writeIntToStream(bytes.length, outputStream);
         outputStream.write(bytes);
+    }
+
+    public static boolean readBoolFromStream(InputStream inputStream) throws IOException {
+        return inputStream.read() > 0;
     }
 
     public static String readStringFromStream(InputStream inputStream) throws IOException {

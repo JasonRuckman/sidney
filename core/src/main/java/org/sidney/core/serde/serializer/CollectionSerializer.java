@@ -15,21 +15,20 @@
  */
 package org.sidney.core.serde.serializer;
 
-import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
-import org.sidney.core.serde.WriteContext;
+import org.sidney.core.TypeRef;
+import org.sidney.core.serde.*;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class CollectionSerializer extends Serializer<Collection> {
     private Serializer contentSerializer;
     private InstanceFactoryCache cache = new InstanceFactoryCache();
+
+    @Override
+    public void consume(TypeRef typeRef, SerializerContext builder) {
+        contentSerializer = builder.serializer(typeRef.getTypeParameters().get(0), this);
+        addNumFieldsToIncrementBy(contentSerializer.getNumFieldsToIncrementBy());
+    }
 
     @Override
     public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
@@ -44,37 +43,6 @@ public class CollectionSerializer extends Serializer<Collection> {
     @Override
     public boolean requiresTypeColumn() {
         return true;
-    }
-
-    @Override
-    protected List<Serializer> serializersAtThisLevel() {
-        List<Serializer> serializers = new ArrayList<>();
-        serializers.add(contentSerializer);
-        serializers.addAll(contentSerializer.getSerializers());
-        return serializers;
-    }
-
-    @Override
-    protected void initFromParameterizedClass(Class<?> clazz, Class... types) {
-        contentSerializer = getSerializerRepository().serializer(
-                types[0], null, getTypeBindings(), new Class[0]
-        );
-    }
-
-    @Override
-    protected void initFromParameterizedType(ParameterizedType type) {
-        Type[] args = ((ParameterizedType) getJdkType()).getActualTypeArguments();
-        contentSerializer = getSerializerRepository().serializer(
-                args[0], null, getTypeBindings(), new Class[0]
-        );
-    }
-
-    @Override
-    protected void initFromTypeVariable(TypeVariable typeVariable) {
-        TypeVariable variable = (TypeVariable) getJdkType();
-        contentSerializer = getSerializerRepository().serializer(
-                variable, null, getTypeBindings(), new Class[0]
-        );
     }
 
     private void writeCollection(Collection collection, TypeWriter typeWriter, WriteContext context) {

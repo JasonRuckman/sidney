@@ -17,6 +17,7 @@ package org.sidney.core.io.bool;
 
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
+import org.sidney.core.Bytes;
 import org.sidney.core.io.BaseDecoder;
 import org.sidney.core.io.Encoding;
 
@@ -26,7 +27,7 @@ public class EWAHBitmap {
     public static class EWAHBitmapBoolDecoder extends BaseDecoder implements BoolDecoder {
         private EWAHCompressedBitmap bitmap;
         private int index = 0;
-        private int nextTrueBit;
+        private int nextTrueBit = -1;
         private IntIterator intIterator;
 
         @Override
@@ -51,13 +52,16 @@ public class EWAHBitmap {
 
         @Override
         public void readFromStream(InputStream inputStream) throws IOException {
-            index = 0;
-            nextTrueBit = -1;
-            bitmap = new EWAHCompressedBitmap();
-            bitmap.deserialize(new DataInputStream(inputStream));
-            intIterator = bitmap.intIterator();
-            if (intIterator.hasNext()) {
-                nextTrueBit = intIterator.next();
+            int num = Bytes.readIntFromStream(inputStream);
+            if(num > 0) {
+                index = 0;
+                nextTrueBit = -1;
+                bitmap = new EWAHCompressedBitmap();
+                bitmap.deserialize(new DataInputStream(inputStream));
+                intIterator = bitmap.intIterator();
+                if (intIterator.hasNext()) {
+                    nextTrueBit = intIterator.next();
+                }
             }
         }
 
@@ -101,8 +105,11 @@ public class EWAHBitmap {
 
         @Override
         public void writeToStream(OutputStream outputStream) throws IOException {
-            DataOutputStream dos = new DataOutputStream(outputStream);
-            currentBitmap.serialize(dos);
+            Bytes.writeIntToStream(currentIndex, outputStream);
+            if(currentIndex > 0) {
+                DataOutputStream dos = new DataOutputStream(outputStream);
+                currentBitmap.serialize(dos);
+            }
         }
 
         @Override

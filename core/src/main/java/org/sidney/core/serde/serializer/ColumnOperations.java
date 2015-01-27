@@ -21,32 +21,16 @@ import org.sidney.core.io.bool.BoolDecoder;
 import org.sidney.core.io.bool.BoolEncoder;
 import org.sidney.core.io.int32.Int32Decoder;
 import org.sidney.core.io.int32.Int32Encoder;
-import org.sidney.core.serde.Columns;
+import org.sidney.core.io.Columns;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ColumnOperations {
-    protected final List<Columns.ColumnIO> columnIOs;
-    protected final BoolEncoder definitionEncoder = Encoding.BITMAP.newBoolEncoder();
-    protected final Int32Encoder repetitionEncoder = Encoding.DELTABITPACKINGHYBRID.newInt32Encoder();
-    protected final BoolDecoder definitionDecoder = Encoding.BITMAP.newBoolDecoder();
-    protected final Int32Decoder repetitionDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
+public abstract class ColumnOperations implements TypeConsumer {
+    public static final Encoding DEFINITION_ENCODING = Encoding.BITMAP;
+    public static final Encoding REPETITION_ENCODING = Encoding.DELTABITPACKINGHYBRID;
 
-    public ColumnOperations(Serializer serializer) {
-        columnIOs = extractColumns(serializer);
-    }
-
-    private List<Columns.ColumnIO> extractColumns(Serializer serializer) {
-        List<Columns.ColumnIO> columns = new ArrayList<>();
-        columns.addAll(columnsFor(serializer));
-
-        List<Serializer> handlers = serializer.getSerializers();
-        for (Serializer r : handlers) {
-            columns.addAll(columnsFor(r));
-        }
-        return columns;
-    }
+    protected final List<Columns.ColumnIO> columnIOs = new ArrayList<>();
 
     private List<Columns.ColumnIO> columnsFor(Serializer serializer) {
         List<Columns.ColumnIO> columns = new ArrayList<>();
@@ -64,6 +48,12 @@ public abstract class ColumnOperations {
         columns.add(columnIO);
 
         for (Columns.ColumnIO co : columns) {
+            BoolEncoder definitionEncoder = DEFINITION_ENCODING.newBoolEncoder();
+            BoolDecoder definitionDecoder = DEFINITION_ENCODING.newBoolDecoder();
+
+            Int32Encoder repetitionEncoder = REPETITION_ENCODING.newInt32Encoder();
+            Int32Decoder repetitionDecoder = REPETITION_ENCODING.newInt32Decoder();
+
             co.setDefinitionEncoder(definitionEncoder);
             co.setRepetitionEncoder(repetitionEncoder);
             co.setDefinitionDecoder(definitionDecoder);
@@ -130,5 +120,10 @@ public abstract class ColumnOperations {
             }
         }
         return columnIO;
+    }
+
+    @Override
+    public void consume(Serializer serializer) {
+        columnIOs.addAll(columnsFor(serializer));
     }
 }
