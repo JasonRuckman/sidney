@@ -15,26 +15,30 @@
  */
 package org.sidney.core.serde;
 
-public class WriteContext extends Context {
-    private ColumnWriter columnWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 
-    public WriteContext(ColumnWriter columnWriter) {
-        this.columnWriter = columnWriter;
-    }
+public interface WriteContext {
+    void writeBool(boolean value);
+    void writeByte(byte value);
+    void writeChar(char value);
+    void writeShort(short value);
+    void writeInt(int value);
+    void writeLong(long value);
+    void writeFloat(float value);
+    void writeDouble(double value);
+    void writeBytes(byte[] value);
+    void writeString(String value);
+    <T> boolean writeNullMarker(T value);
+    <T> boolean writeNullMarkerAndType(T value);
+    void writeRepetitionCount(int index, int count);
 
-    public WriteContext(ColumnWriter columnWriter, PageHeader pageHeader) {
-        this.columnWriter = columnWriter;
-        setPageHeader(pageHeader);
-    }
+    int getColumnIndex();
+    void setColumnIndex(int index);
+    void incrementColumnIndex();
+    void incrementColumnIndex(int size);
 
-    public ColumnWriter getColumnWriter() {
-        return columnWriter;
-    }
-
-    @Override
-    public String toString() {
-        return "WriteContext{" +
-                "index=" + getColumnIndex() +
-                '}';
-    }
+    PageHeader getPageHeader();
+    void setPageHeader(PageHeader pageHeader);
+    void flushToOutputStream(OutputStream outputStream) throws IOException;
 }

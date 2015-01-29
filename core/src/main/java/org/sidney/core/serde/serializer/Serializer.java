@@ -18,8 +18,6 @@ package org.sidney.core.serde.serializer;
 import org.sidney.core.Accessors;
 import org.sidney.core.TypeRef;
 import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
 import org.sidney.core.serde.WriteContext;
 
 /**
@@ -40,7 +38,10 @@ public abstract class Serializer<T> {
         return numFieldsToIncrementBy;
     }
 
-    public abstract void consume(TypeRef typeRef, SerializerContext builder);
+    /**
+     * Called after a type ref is fully constructed, the implementing class should use this information to create any sub-serializers necessary
+     */
+    public abstract void consume(TypeRef typeRef, SerializerContext context);
 
     /**
      * Fully consume {@param value}
@@ -48,14 +49,14 @@ public abstract class Serializer<T> {
      * For example, if {@param value} is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
      * and one more to advance into the next field
      */
-    public abstract void writeValue(Object value, TypeWriter typeWriter, WriteContext context);
+    public abstract void writeValue(Object value, WriteContext context);
 
     /**
      * Fully consume a field value from the parent, parent is guaranteed to be non-null
      * Follow the same incrementing rules as {@link #writeValue}
      */
-    public void writeFromField(Object parent, TypeWriter typeWriter, WriteContext context) {
-        writeValue(getAccessor().get(parent), typeWriter, context);
+    public void writeFromField(Object parent, WriteContext context) {
+        writeValue(getAccessor().get(parent), context);
     }
 
     /**
@@ -64,14 +65,14 @@ public abstract class Serializer<T> {
      *
      * @return a fully materialized value
      */
-    public abstract Object readValue(TypeReader typeReader, ReadContext context);
+    public abstract Object readValue(ReadContext context);
 
     /**
      * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
      * in either {@link #writeValue} or {@link #writeFromField} and the materialized value must be written into the field of the parent
      */
-    public void readIntoField(Object parent, TypeReader typeReader, ReadContext context) {
-        getAccessor().set(parent, readValue(typeReader, context));
+    public void readIntoField(Object parent, ReadContext context) {
+        getAccessor().set(parent, readValue(context));
     }
 
     /**

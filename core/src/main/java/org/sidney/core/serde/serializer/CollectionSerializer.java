@@ -17,8 +17,6 @@ package org.sidney.core.serde.serializer;
 
 import org.sidney.core.TypeRef;
 import org.sidney.core.serde.ReadContext;
-import org.sidney.core.serde.TypeReader;
-import org.sidney.core.serde.TypeWriter;
 import org.sidney.core.serde.WriteContext;
 
 import java.util.Collection;
@@ -28,19 +26,19 @@ public class CollectionSerializer extends Serializer<Collection> {
     private InstanceFactoryCache cache = new InstanceFactoryCache();
 
     @Override
-    public void consume(TypeRef typeRef, SerializerContext builder) {
-        contentSerializer = builder.serializer(typeRef.getTypeParameters().get(0), this);
+    public void consume(TypeRef typeRef, SerializerContext context) {
+        contentSerializer = context.serializer(typeRef.getTypeParameters().get(0), this);
         addNumFieldsToIncrementBy(contentSerializer.getNumFieldsToIncrementBy());
     }
 
     @Override
-    public void writeValue(Object value, TypeWriter typeWriter, WriteContext context) {
-        writeCollection((Collection) value, typeWriter, context);
+    public void writeValue(Object value, WriteContext context) {
+        writeCollection((Collection) value, context);
     }
 
     @Override
-    public Object readValue(TypeReader typeReader, ReadContext context) {
-        return readCollection(typeReader, context);
+    public Object readValue(ReadContext context) {
+        return readCollection(context);
     }
 
     @Override
@@ -48,13 +46,13 @@ public class CollectionSerializer extends Serializer<Collection> {
         return true;
     }
 
-    private void writeCollection(Collection collection, TypeWriter typeWriter, WriteContext context) {
-        if (typeWriter.writeNullMarkerAndType(collection, context)) {
+    private void writeCollection(Collection collection, WriteContext context) {
+        if (context.writeNullMarkerAndType(collection)) {
             context.incrementColumnIndex();
             int index = context.getColumnIndex();
-            typeWriter.writeRepetitionCount(context.getColumnIndex(), collection.size(), context);
+            context.writeRepetitionCount(context.getColumnIndex(), collection.size());
             for (Object value : collection) {
-                contentSerializer.writeValue(value, typeWriter, context);
+                contentSerializer.writeValue(value, context);
                 context.setColumnIndex(index); //rewind back to the start of the component type
             }
             context.incrementColumnIndex();
@@ -63,15 +61,15 @@ public class CollectionSerializer extends Serializer<Collection> {
         }
     }
 
-    private Collection readCollection(TypeReader typeReader, ReadContext context) {
-        if (typeReader.readNullMarker(context)) {
-            Collection c = (Collection) cache.newInstance(typeReader.readConcreteType(context));
+    private Collection readCollection(ReadContext context) {
+        if (context.readNullMarker()) {
+            Collection c = (Collection) cache.newInstance(context.readConcreteType());
             context.incrementColumnIndex();
-            int count = typeReader.readRepetitionCount(context);
+            int count = context.readRepetitionCount();
             int valueIndex = context.getColumnIndex();
             for (int i = 0; i < count; i++) {
                 context.setColumnIndex(valueIndex);
-                c.add(contentSerializer.readValue(typeReader, context));
+                c.add(contentSerializer.readValue(context));
             }
             context.incrementColumnIndex();
             return c;

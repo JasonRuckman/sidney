@@ -15,17 +15,13 @@
  */
 package org.sidney.core.serde.serializer;
 
-import java.lang.reflect.Constructor;
+import com.esotericsoftware.reflectasm.ConstructorAccess;
 
 public class InstanceFactory {
-    private Constructor constructor;
+    private ConstructorAccess access;
 
     public InstanceFactory(Class type) {
-        try {
-            this.constructor = type.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        access = ConstructorAccess.get(type);
     }
 
     /**
@@ -33,7 +29,7 @@ public class InstanceFactory {
      */
     public Object newInstance() {
         try {
-            return constructor.newInstance();
+            return access.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

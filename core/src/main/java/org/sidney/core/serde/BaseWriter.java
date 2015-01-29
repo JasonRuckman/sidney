@@ -37,7 +37,6 @@ public abstract class BaseWriter<T> {
     protected WriteContext context;
     protected SerializerContext builder;
     protected boolean isOpen = false;
-    protected TypeWriter typeWriter = new TypeWriter();
     protected Serializer serializer;
 
     public BaseWriter(Registrations registrations, TypeRef typeRef) {
@@ -47,15 +46,11 @@ public abstract class BaseWriter<T> {
         ColumnWriter writer = new ColumnWriter();
         this.serializer = builder.serializer(typeRef);
         this.builder.finish(writer);
-        this.context = new WriteContext(writer, new PageHeader());
+        this.context = new WriteContextImpl(writer, new PageHeader());
     }
 
     protected WriteContext getContext() {
         return context;
-    }
-
-    protected TypeWriter getTypeWriter() {
-        return typeWriter;
     }
 
     /**
@@ -66,7 +61,7 @@ public abstract class BaseWriter<T> {
             throw new SidneyException("Cannot write to a closed writer");
         }
         context.setColumnIndex(0);
-        serializer.writeValue(value, typeWriter, context);
+        serializer.writeValue(value, context);
 
         if (++recordCount == DEFAULT_PAGE_SIZE) {
             flush();
@@ -118,6 +113,6 @@ public abstract class BaseWriter<T> {
         byte[] bytes = json.writeValueAsBytes(context.getPageHeader());
         writeIntToStream(bytes.length, outputStream);
         outputStream.write(bytes);
-        context.getColumnWriter().flushToOutputStream(outputStream);
+        context.flushToOutputStream(outputStream);
     }
 }

@@ -53,9 +53,13 @@ object ScalaTypeRefBuilder {
     })
     typeArgsAsRefs.foreach(ref.addTypeParameter)
 
-    val availableFields = ref.getType.getDeclaredFields.filterNot(f => {
-      Modifier.isStatic(f.getModifiers) || Modifier.isTransient(f.getModifiers)
-    }).map(f => (f.getName, f)).toMap
+    val availableFields = ref.getType.getDeclaredFields.flatMap(x => {
+      if(Modifier.isStatic(x.getModifiers) || Modifier.isTransient(x.getModifiers)) {
+        Some(x.getName, x)
+      } else {
+        None
+      }
+    }).toMap
 
     members.foreach(member => {
       val name = member.name.decoded.trim

@@ -31,7 +31,7 @@ public class Primitives {
         }
 
         public void writeBool(boolean value) {
-            getTypeWriter().writeBool(value, context);
+            context.writeBool(value);
         }
     }
 
@@ -41,7 +41,7 @@ public class Primitives {
         }
 
         public void writeByte(byte value) {
-            getTypeWriter().writeByte(value, context);
+            context.writeByte(value);
         }
     }
 
@@ -51,7 +51,7 @@ public class Primitives {
         }
 
         public void writeChar(char value) {
-            getTypeWriter().writeChar(value, context);
+            context.writeChar(value);
         }
     }
 
@@ -61,7 +61,7 @@ public class Primitives {
         }
 
         public void writeShort(short value) {
-            getTypeWriter().writeShort(value, context);
+            context.writeShort(value);
         }
     }
 
@@ -71,7 +71,7 @@ public class Primitives {
         }
 
         public void writeInt(int value) {
-            getTypeWriter().writeInt(value, getContext());
+            context.writeInt(value);
         }
     }
 
@@ -81,7 +81,7 @@ public class Primitives {
         }
 
         public void writeLong(long value) {
-            getTypeWriter().writeLong(value, getContext());
+            context.writeLong(value);
         }
     }
 
@@ -97,7 +97,7 @@ public class Primitives {
         }
 
         public void writeDouble(double value) {
-            getTypeWriter().writeDouble(value, getContext());
+            context.writeDouble(value);
         }
     }
 
@@ -113,7 +113,7 @@ public class Primitives {
         }
 
         public boolean readBoolean() {
-            return typeReader.readBoolean(context);
+            return context.readBoolean();
         }
     }
 
@@ -123,7 +123,7 @@ public class Primitives {
         }
 
         public byte readByte() {
-            return typeReader.readByte(context);
+            return context.readByte();
         }
     }
 
@@ -133,7 +133,7 @@ public class Primitives {
         }
 
         public char readChar() {
-            return typeReader.readChar(context);
+            return context.readChar();
         }
     }
 
@@ -143,7 +143,7 @@ public class Primitives {
         }
 
         public short readShort() {
-            return typeReader.readShort(context);
+            return context.readShort();
         }
     }
 
@@ -153,7 +153,7 @@ public class Primitives {
         }
 
         public int readInt() {
-            return typeReader.readInt(context);
+            return context.readInt();
         }
     }
 
@@ -163,7 +163,7 @@ public class Primitives {
         }
 
         public long readLong() {
-            return typeReader.readLong(context);
+            return context.readLong();
         }
     }
 
@@ -173,7 +173,7 @@ public class Primitives {
         }
 
         public float readFloat() {
-            return typeReader.readFloat(context);
+            return context.readFloat();
         }
     }
 
@@ -183,7 +183,7 @@ public class Primitives {
         }
 
         public double readDouble() {
-            return typeReader.readDouble(context);
+            return context.readDouble();
         }
     }
 }

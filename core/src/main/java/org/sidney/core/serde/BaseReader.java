@@ -32,7 +32,6 @@ public abstract class BaseReader<T> {
     protected ReadContext context;
     protected ObjectMapper json = new ObjectMapper();
     protected Serializer serializer;
-    protected TypeReader typeReader = new TypeReader();
     protected int recordCount = 0;
     protected SerializerContext builder;
     protected PageHeader currentPageHeader = null;
@@ -77,7 +76,7 @@ public abstract class BaseReader<T> {
             throw new SidneyException("Reader is not open.");
         }
         context.setColumnIndex(0);
-        return (T) serializer.readValue(typeReader, context);
+        return (T) serializer.readValue(context);
     }
 
     /**
