@@ -16,7 +16,10 @@
 package org.sidney.core.serde.serializer;
 
 import org.sidney.core.TypeRef;
-import org.sidney.core.serde.*;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.TypeReader;
+import org.sidney.core.serde.TypeWriter;
+import org.sidney.core.serde.WriteContext;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -59,7 +62,7 @@ public class ArraySerializer extends Serializer<Object> {
         if (arrayReader == null) {
             arrayReader = new RefArrayReader();
         }
-        contentSerializer = builder.serializer(typeRef.getComponentType(), this);
+        contentSerializer = builder.serializer(typeRef.getTypeParameters().get(0), this);
         rawClass = typeRef.getType();
     }
 

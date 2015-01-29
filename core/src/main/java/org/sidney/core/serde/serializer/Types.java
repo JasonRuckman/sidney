@@ -18,6 +18,7 @@ package org.sidney.core.serde.serializer;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.sidney.core.TypeRef;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -26,6 +27,20 @@ public class Types {
     public static TypeBindings binding(Type clazz) {
         JavaType javaType = TypeFactory.defaultInstance().constructType(clazz);
         return new TypeBindings(TypeFactory.defaultInstance(), javaType);
+    }
+
+    public static JavaType type(TypeRef typeRef) {
+        JavaType[] params = new JavaType[typeRef.getTypeParameters().size()];
+        for(int i = 0; i < params.length; i++) {
+            params[i] = type(typeRef.getTypeParameters().get(i));
+        }
+        return TypeFactory.defaultInstance().constructParametricType(
+                typeRef.getType(), params
+        );
+    }
+
+    public static TypeBindings binding(TypeRef typeRef) {
+        return new TypeBindings(TypeFactory.defaultInstance(), type(typeRef));
     }
 
     public static TypeBindings binding(Type clazz, TypeBindings parentBindings) {

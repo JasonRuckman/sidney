@@ -20,6 +20,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.sidney</groupId>
+            <artifactId>sidney-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
             <version>${scala.version}</version>

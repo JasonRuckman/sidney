@@ -10,19 +10,10 @@ import java.util.List;
 public class TypeRef {
     private final List<TypeFieldRef> fields = new ArrayList<>();
     private final List<TypeRef> typeParameters = new ArrayList<>();
-    private TypeRef componentType;
     private Class<?> type;
 
     public TypeRef(Class<?> type) {
         this.type = type;
-    }
-
-    public TypeRef getComponentType() {
-        return componentType;
-    }
-
-    public void setComponentType(TypeRef componentType) {
-        this.componentType = componentType;
     }
 
     public List<TypeFieldRef> getFields() {
@@ -31,6 +22,10 @@ public class TypeRef {
 
     public Class<?> getType() {
         return type;
+    }
+
+    public void setType(Class<?> type) {
+        this.type = type;
     }
 
     public List<TypeRef> getTypeParameters() {
@@ -45,27 +40,41 @@ public class TypeRef {
         typeParameters.add(ref);
     }
 
-    @Override
-    public String toString() {
-        return "TypeRef{" +
-                "fields=" + fields +
-                ", typeParameters=" + typeParameters +
-                ", componentType=" + componentType +
-                ", type=" + type +
-                '}';
+    public TypeFieldRef toField(Field field) {
+        TypeFieldRef ref = new TypeFieldRef(
+                getType(), field
+        );
+
+        for(TypeRef typeParam : getTypeParameters()) {
+            ref.addTypeParameter(typeParam);
+        }
+
+        for(TypeFieldRef fieldRef : getFields()) {
+            ref.addField(fieldRef);
+        }
+
+        return ref;
     }
 
     public static class TypeFieldRef extends TypeRef {
         private Field jdkField;
 
-        public TypeFieldRef(Field field) {
-            super(field.getType());
+        public TypeFieldRef(Class<?> type) {
+            super(type);
+        }
 
-            this.jdkField = field;
+        public TypeFieldRef(Class<?> type, Field field) {
+            super(type);
+
+            setJdkField(field);
         }
 
         public Field getJdkField() {
             return jdkField;
+        }
+
+        public void setJdkField(Field jdkField) {
+            this.jdkField = jdkField;
         }
     }
 }

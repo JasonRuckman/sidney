@@ -16,12 +16,12 @@
 package org.sidney.core.serde.serializer;
 
 import org.sidney.core.UnsupportedColumnTypeException;
+import org.sidney.core.io.Columns;
 import org.sidney.core.io.Encoding;
 import org.sidney.core.io.bool.BoolDecoder;
 import org.sidney.core.io.bool.BoolEncoder;
 import org.sidney.core.io.int32.Int32Decoder;
 import org.sidney.core.io.int32.Int32Encoder;
-import org.sidney.core.io.Columns;
 
 import java.util.ArrayList;
 import java.util.List;

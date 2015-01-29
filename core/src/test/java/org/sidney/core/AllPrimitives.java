@@ -46,6 +46,46 @@ public class AllPrimitives {
         this.tenth = tenth;
     }
 
+    public boolean isFirst() {
+        return first;
+    }
+
+    public int getSecond() {
+        return second;
+    }
+
+    public char getThird() {
+        return third;
+    }
+
+    public short getFourth() {
+        return fourth;
+    }
+
+    public byte getFifth() {
+        return fifth;
+    }
+
+    public long getSixth() {
+        return sixth;
+    }
+
+    public float getSeventh() {
+        return seventh;
+    }
+
+    public double getEighth() {
+        return eighth;
+    }
+
+    public byte[] getNinth() {
+        return ninth;
+    }
+
+    public String getTenth() {
+        return tenth;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

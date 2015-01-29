@@ -16,7 +16,10 @@
 package org.sidney.core.serde.serializer;
 
 import org.sidney.core.TypeRef;
-import org.sidney.core.serde.*;
+import org.sidney.core.serde.ReadContext;
+import org.sidney.core.serde.TypeReader;
+import org.sidney.core.serde.TypeWriter;
+import org.sidney.core.serde.WriteContext;
 
 import java.util.ArrayList;
 import java.util.List;

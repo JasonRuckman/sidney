@@ -19,15 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sidney.core.Bytes;
 import org.sidney.core.Registrations;
 import org.sidney.core.SidneyException;
+import org.sidney.core.TypeRef;
 import org.sidney.core.serde.serializer.Serializer;
 import org.sidney.core.serde.serializer.SerializerContext;
 
 import java.io.InputStream;
 
-public abstract class BaseReader {
+public abstract class BaseReader<T> {
     protected Registrations registrations;
     protected Class type;
-    protected Class[] typeParams;
     protected InputStream inputStream;
     protected ReadContext context;
     protected ObjectMapper json = new ObjectMapper();
@@ -38,9 +38,10 @@ public abstract class BaseReader {
     protected PageHeader currentPageHeader = null;
     protected boolean isOpen = false;
 
-    public BaseReader(Registrations registrations) {
+    public BaseReader(Registrations registrations, TypeRef typeRef) {
         this.registrations = registrations;
         this.builder = new SerializerContext(registrations);
+        this.serializer = builder.serializer(typeRef);
     }
 
     /**
@@ -64,6 +65,19 @@ public abstract class BaseReader {
         }
 
         return false;
+    }
+
+    /**
+     * Read the next item from the stream
+     *
+     * @return the next item
+     */
+    public T read() {
+        if (!isOpen) {
+            throw new SidneyException("Reader is not open.");
+        }
+        context.setColumnIndex(0);
+        return (T) serializer.readValue(typeReader, context);
     }
 
     /**

@@ -7,7 +7,7 @@ import org.sidney.core.serde.serializer.Types;
 
 import java.lang.reflect.*;
 
-public class TypeRefBuilder {
+public class JavaTypeRefBuilder {
     public static TypeRef typeRef(Type type) {
         return typeRef(type, new Class[0]);
     }
@@ -17,7 +17,7 @@ public class TypeRefBuilder {
         return buildTypeRef(type, typeParams, null, null);
     }
 
-    private static TypeRef buildTypeRef(Type type, Class[] typeParams, TypeBindings parentBindings, Field field) {
+    public static TypeRef buildTypeRef(Type type, Class[] typeParams, TypeBindings parentBindings, Field field) {
         JavaType jt;
         TypeBindings typeBindings;
         if (parentBindings == null && typeParams != null && typeParams.length > 0) {
@@ -28,7 +28,7 @@ public class TypeRefBuilder {
             jt = Types.type(type, parentBindings);
         }
 
-        TypeRef ref = (field == null) ? new TypeRef(jt.getRawClass()) : new TypeRef.TypeFieldRef(field);
+        TypeRef ref = (field == null) ? new TypeRef(jt.getRawClass()) : new TypeRef.TypeFieldRef(jt.getRawClass(), field);
         for (Field subField : Fields.getAllFields(jt.getRawClass())) {
             Type subType = subField.getGenericType();
             TypeRef subRef = buildTypeRef(subType, null, typeBindings, subField);
@@ -48,7 +48,7 @@ public class TypeRefBuilder {
                 }
             } else if (GenericArrayType.class.isAssignableFrom(type.getClass())) {
                 GenericArrayType t = (GenericArrayType) type;
-                ref.setComponentType(buildTypeRef(t.getGenericComponentType(), null, parentBindings, null));
+                ref.addTypeParameter(buildTypeRef(t.getGenericComponentType(), null, parentBindings, null));
             }
         } else {
             for(Type typeParam : typeParams) {
@@ -58,7 +58,7 @@ public class TypeRefBuilder {
 
         if(jt.isArrayType() && !GenericArrayType.class.isAssignableFrom(type.getClass())) {
             ArrayType arrType = (ArrayType)jt;
-            ref.setComponentType(buildTypeRef(arrType.getContentType().getRawClass(), null, null, null));
+            ref.addTypeParameter(buildTypeRef(arrType.getContentType().getRawClass(), null, null, null));
         }
 
         return ref;

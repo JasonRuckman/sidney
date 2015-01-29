@@ -139,23 +139,23 @@ public class BaseSid {
 
     protected <T> Writer<T> createWriter(Class type, Class... generics) {
         if (!caching) {
-            return new ObjectWriter<>(type, getConf().getRegistrations(), generics);
+            return new JavaWriter<>(type, getConf().getRegistrations(), generics);
         }
-        ObjectWriter<T> writer = (ObjectWriter<T>) getWriterCache().get(type);
+        JavaWriter<T> writer = (JavaWriter<T>) getWriterCache().get(type);
         if (writer == null) {
-            writer = new ObjectWriter<>(type, getConf().getRegistrations(), generics);
+            writer = new JavaWriter<>(type, getConf().getRegistrations(), generics);
             getWriterCache().put(type, writer);
         }
         return writer;
     }
 
-    protected <T> ObjectReader<T> createReader(Class type, Class... generics) {
+    protected <T> JavaReader<T> createReader(Class type, Class... generics) {
         if (!caching) {
-            return new ObjectReader<>(type, getConf().getRegistrations(), generics);
+            return new JavaReader<>(type, getConf().getRegistrations(), generics);
         }
-        ObjectReader<T> reader = (ObjectReader<T>) getReaderCache().get(type);
+        JavaReader<T> reader = (JavaReader<T>) getReaderCache().get(type);
         if (reader == null) {
-            reader = new ObjectReader<>(type, getConf().getRegistrations(), generics);
+            reader = new JavaReader<>(type, getConf().getRegistrations(), generics);
             getReaderCache().put(type, reader);
         }
         return reader;

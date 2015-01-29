@@ -19,18 +19,23 @@ import org.sidney.core._
 import org.sidney.core.serde.serializer.Serializer
 import org.sidney.core.serde.{Reader, Writer}
 
+import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
 class ScalaSid extends BaseSid {
+  private val conf = SidneyConf.newConf()
+
   def newWriter[T]()(implicit tag: TypeTag[T]): Writer[T] = {
-    null
+    new ScalaWriter[T](conf.getRegistrations, tag)
   }
 
   def newReader[T]()(implicit tag: TypeTag[T]): Reader[T] = {
-    null
+    new ScalaReader[T](conf.getRegistrations, tag)
   }
 
-  def register[T](serializerClass: Class[_ <: Serializer[_]])(implicit tag: TypeTag[T]) = {
-    null
+  def register[T, R <: Serializer[_]](implicit targetTag: ClassTag[T], serializerTag: ClassTag[R]) = {
+    conf.register(
+      targetTag.runtimeClass, serializerTag.runtimeClass.asInstanceOf[Class[R]]
+    )
   }
 }

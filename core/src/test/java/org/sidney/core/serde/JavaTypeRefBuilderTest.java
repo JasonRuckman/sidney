@@ -4,12 +4,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.sidney.core.NestedMap;
 import org.sidney.core.TypeRef;
-import org.sidney.core.TypeRefBuilder;
+import org.sidney.core.JavaTypeRefBuilder;
 
-public class TypeRefBuilderTest {
+public class JavaTypeRefBuilderTest {
     @Test
     public void testNestedMap() {
-        TypeRef ref = TypeRefBuilder.typeRef(NestedMap.class, new Class<?>[]{
+        TypeRef ref = JavaTypeRefBuilder.typeRef(NestedMap.class, new Class<?>[]{
                 Integer.class, Double.class
         });
 
