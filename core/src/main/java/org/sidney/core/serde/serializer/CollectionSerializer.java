@@ -50,7 +50,7 @@ public class CollectionSerializer extends Serializer<Collection> {
         if (context.writeNullMarkerAndType(collection)) {
             context.incrementColumnIndex();
             int index = context.getColumnIndex();
-            context.writeRepetitionCount(context.getColumnIndex(), collection.size());
+            context.writeRepetitionCount(collection.size());
             for (Object value : collection) {
                 contentSerializer.writeValue(value, context);
                 context.setColumnIndex(index); //rewind back to the start of the component type

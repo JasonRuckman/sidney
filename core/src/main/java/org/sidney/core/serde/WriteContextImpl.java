@@ -78,8 +78,8 @@ public class WriteContextImpl extends Context implements WriteContext {
         return true;
     }
 
-    public void writeRepetitionCount(int index, int count) {
-        this.getColumnWriter().writeRepetitionCount(index, count);
+    public void writeRepetitionCount(int count) {
+        this.getColumnWriter().writeRepetitionCount(getColumnIndex(), count);
     }
 
     @Override

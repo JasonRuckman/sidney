@@ -40,7 +40,7 @@ public class Int64EncoderBenchmarks extends BenchmarkingBase {
         longs = new long[num];
         Random random = new Random(11L);
         for (int i = 0; i < longs.length; i++) {
-            longs[i] = random.nextInt();
+            longs[i] = random.nextLong();
         }
     }
 

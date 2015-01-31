@@ -25,15 +25,32 @@ import scala.reflect.runtime.universe._
 class ScalaSid extends BaseSid {
   private val conf = SidneyConf.newConf()
 
+  /**
+   * Create new [[org.sidney.core.serde.Writer]] from type parameters
+   * @param tag type tag for the root type
+   * @tparam T root type
+   * @return a new writer, bound to the root type
+   */
   def newWriter[T]()(implicit tag: TypeTag[T]): Writer[T] = {
     new ScalaWriter[T](conf.getRegistrations, tag)
   }
 
+  /**
+   * Create new [[org.sidney.core.serde.Reader]] from type parameters
+   * @param tag type tag for the root type
+   * @tparam T root type
+   * @return a new reader, bound to the root type
+   */
   def newReader[T]()(implicit tag: TypeTag[T]): Reader[T] = {
     new ScalaReader[T](conf.getRegistrations, tag)
   }
 
-  def register[T, R <: Serializer[_]](implicit targetTag: ClassTag[T], serializerTag: ClassTag[R]) = {
+  /**
+   * Register new serializer
+   * @tparam T target type
+   * @tparam R serializer type
+   */
+  def register[T, R <: Serializer[_]](implicit targetTag: ClassTag[T], serializerTag: ClassTag[_]) = {
     conf.register(
       targetTag.runtimeClass, serializerTag.runtimeClass.asInstanceOf[Class[R]]
     )

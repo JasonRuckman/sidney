@@ -15,6 +15,7 @@
  */
 package org.sidney.core.io.int64;
 
+import org.sidney.core.Bytes;
 import org.sidney.core.Longs;
 import org.sidney.core.io.BaseDecoder;
 import org.sidney.core.io.BaseEncoder;
@@ -68,100 +69,40 @@ public class GroupVarInt {
             for (int i = 0; i < buffer.length; i++) {
                 switch (lengths[i]) {
                     case 1: {
-                        buffer[i] = Longs.zigzagDecode(readOnOneByte(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnOneByte(buf, offset));
                         break;
                     }
                     case 2: {
-                        buffer[i] = Longs.zigzagDecode(readOnTwoBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnTwoBytes(buf, offset));
                         break;
                     }
                     case 3: {
-                        buffer[i] = Longs.zigzagDecode(readOnThreeBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnThreeBytes(buf, offset));
                         break;
                     }
                     case 4: {
-                        buffer[i] = Longs.zigzagDecode(readOnFourBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnFourBytes(buf, offset));
                         break;
                     }
                     case 5: {
-                        buffer[i] = Longs.zigzagDecode(readOnFiveBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnFiveBytes(buf, offset));
                         break;
                     }
                     case 6: {
-                        buffer[i] = Longs.zigzagDecode(readOnSixBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnSixBytes(buf, offset));
                         break;
                     }
                     case 7: {
-                        buffer[i] = Longs.zigzagDecode(readOnSevenBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnSevenBytes(buf, offset));
                         break;
                     }
                     case 8: {
-                        buffer[i] = Longs.zigzagDecode(readOnEightBytes(buf, offset));
+                        buffer[i] = Longs.zigzagDecode(Bytes.readLong(buf, offset));
                         break;
                     }
                 }
                 offset += lengths[i];
             }
-        }
-
-        private long readOnOneByte(byte[] buf, int offset) {
-            return ((long) buf[offset]) & 255L;
-        }
-
-        private long readOnTwoBytes(byte[] buf, int offset) {
-            return (((buf[offset + 1] & 255L) << 8)
-                    | ((buf[offset] & 255L)));
-        }
-
-        private long readOnThreeBytes(byte[] buf, int offset) {
-            return (((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
-        }
-
-        private long readOnFourBytes(byte[] buf, int offset) {
-            return (((buf[offset + 3] & 255L) << 24)
-                    | ((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
-        }
-
-        private long readOnFiveBytes(byte[] buf, int offset) {
-            return (((buf[offset + 4] & 255L) << 32)
-                    | ((buf[offset + 3] & 255L) << 24)
-                    | ((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
-        }
-
-        private long readOnSixBytes(byte[] buf, int offset) {
-            return (((buf[offset + 5] & 255L) << 40)
-                    | ((buf[offset + 4] & 255L) << 32)
-                    | ((buf[offset + 3] & 255L) << 24)
-                    | ((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
-        }
-
-        private long readOnSevenBytes(byte[] buf, int offset) {
-            return (((buf[offset + 6] & 255L) << 48)
-                    | ((buf[offset + 5] & 255L) << 40)
-                    | ((buf[offset + 4] & 255L) << 32)
-                    | ((buf[offset + 3] & 255L) << 24)
-                    | ((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
-        }
-
-        private long readOnEightBytes(byte[] buf, int offset) {
-            return (((buf[offset + 7] & 255L) << 56)
-                    | ((buf[offset + 6] & 255L) << 48)
-                    | ((buf[offset + 5] & 255L) << 40)
-                    | ((buf[offset + 4] & 255L) << 32)
-                    | ((buf[offset + 3] & 255L) << 24)
-                    | ((buf[offset + 2] & 255L) << 16)
-                    | ((buf[offset + 1] & 255L) << 8)
-                    | (buf[offset] & 255L));
         }
 
         @Override
@@ -209,69 +150,10 @@ public class GroupVarInt {
             return Encoding.GROUPVARINT.name();
         }
 
-        private void writeOnOneByte(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-        }
-
-        private void writeOnTwoBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-        }
-
-        private void writeOnThreeBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-        }
-
-        private void writeOnFourBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-            buf[offset + 3] = (byte) (value >>> 24);
-        }
-
-        private void writeOnFiveBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-            buf[offset + 3] = (byte) (value >>> 24);
-            buf[offset + 4] = (byte) (value >>> 32);
-        }
-
-        private void writeOnSixBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-            buf[offset + 3] = (byte) (value >>> 24);
-            buf[offset + 4] = (byte) (value >>> 32);
-            buf[offset + 5] = (byte) (value >>> 40);
-        }
-
-        private void writeOnSevenBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-            buf[offset + 3] = (byte) (value >>> 24);
-            buf[offset + 4] = (byte) (value >>> 32);
-            buf[offset + 5] = (byte) (value >>> 40);
-            buf[offset + 6] = (byte) (value >>> 48);
-        }
-
-        private void writeOnEightBytes(long value, byte[] buf, int offset) {
-            buf[offset] = (byte) value;
-            buf[offset + 1] = (byte) (value >>> 8);
-            buf[offset + 2] = (byte) (value >>> 16);
-            buf[offset + 3] = (byte) (value >>> 24);
-            buf[offset + 4] = (byte) (value >>> 32);
-            buf[offset + 5] = (byte) (value >>> 40);
-            buf[offset + 6] = (byte) (value >>> 48);
-            buf[offset + 7] = (byte) (value >>> 56);
-        }
-
         private void flushBlock() {
             //zigzag encode and write prefix
             byte[] buffer = new byte[34];
+            //need two bytes to encode sizes for 4 values
             int offset = 2;
             for (int i = 0; i < block.length; i++) {
                 long value = Longs.zigzagEncode(block[i]);
@@ -298,42 +180,42 @@ public class GroupVarInt {
 
                 switch (bytes) {
                     case 1: {
-                        writeOnOneByte(value, buffer, offset);
+                        Bytes.writeLongOnOneByte(value, buffer, offset);
                         offset += 1;
                         break;
                     }
                     case 2: {
-                        writeOnTwoBytes(value, buffer, offset);
+                        Bytes.writeLongOnTwoBytes(value, buffer, offset);
                         offset += 2;
                         break;
                     }
                     case 3: {
-                        writeOnThreeBytes(value, buffer, offset);
+                        Bytes.writeLongOnThreeBytes(value, buffer, offset);
                         offset += 3;
                         break;
                     }
                     case 4: {
-                        writeOnFourBytes(value, buffer, offset);
+                        Bytes.writeLongOnFourBytes(value, buffer, offset);
                         offset += 4;
                         break;
                     }
                     case 5: {
-                        writeOnFiveBytes(value, buffer, offset);
+                        Bytes.writeLongOnFiveBytes(value, buffer, offset);
                         offset += 5;
                         break;
                     }
                     case 6: {
-                        writeOnSixBytes(value, buffer, offset);
+                        Bytes.writeLongOnSixBytes(value, buffer, offset);
                         offset += 6;
                         break;
                     }
                     case 7: {
-                        writeOnSevenBytes(value, buffer, offset);
+                        Bytes.writeLongOnSevenBytes(value, buffer, offset);
                         offset += 7;
                         break;
                     }
                     case 8: {
-                        writeOnEightBytes(value, buffer, offset);
+                        Bytes.writeLong(value, buffer, offset);
                         offset += 8;
                         break;
                     }

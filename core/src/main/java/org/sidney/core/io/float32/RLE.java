@@ -27,7 +27,7 @@ import java.io.OutputStream;
 
 public class RLE {
     private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
-    private static final Encoding RUN_SIZE_ENCODING = Encoding.BITPACKED;
+    private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
 
     public static class RLEFloat32Decoder implements Float32Decoder {
         private final Int32Decoder valueDecoder = VALUE_ENCODING.newInt32Decoder();

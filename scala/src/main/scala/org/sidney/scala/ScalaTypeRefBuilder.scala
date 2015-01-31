@@ -16,7 +16,6 @@ object ScalaTypeRefBuilder {
     val clazz = ScalaPrimitiveTypeAdapter.getJavaClassForScalaString(x, isTypeArg)
     if (clazz == null) Class.forName(x) else clazz
   }
-  val arrClass = Class.forName("scala.Array")
 
   def typeRef[T]()(implicit tag: TypeTag[T]) = {
     decompose(tag.tpe, false)
@@ -72,6 +71,7 @@ object ScalaTypeRefBuilder {
       })
     })
 
+    //scala arrays are generics instead of being component types
     if(ref.getType.getName.eq("scala.Array")) {
       //change scala arrays to java types
       val componentType = typeArgsAsRefs.head

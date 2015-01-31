@@ -24,9 +24,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
+    private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
+    private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
+
     public static class RLEInt64Decoder implements Int64Decoder {
-        private final Int64Decoder valueDecoder = Encoding.GROUPVARINT.newInt64Decoder();
-        private final Int32Decoder runSizeDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
+        private final Int64Decoder valueDecoder = VALUE_ENCODING.newInt64Decoder();
+        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
         private int runSize = 0;
         private long currentRun = 0;
 
@@ -69,8 +72,8 @@ public class RLE {
     }
 
     public static class RLEInt64Encoder implements Int64Encoder {
-        private Int64Encoder valueEncoder = Encoding.GROUPVARINT.newInt64Encoder();
-        private Int32Encoder runSizeEncoder = Encoding.DELTABITPACKINGHYBRID.newInt32Encoder();
+        private Int64Encoder valueEncoder = VALUE_ENCODING.newInt64Encoder();
+        private Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
 
         private long currentRun = 0;
         private int runSize = 0;

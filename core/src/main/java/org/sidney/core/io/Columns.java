@@ -175,10 +175,6 @@ public class Columns {
             throw new IllegalStateException();
         }
 
-        public ColumnIO getChild(int index) {
-            throw new IllegalStateException();
-        }
-
         public void writeNull() {
             definitionEncoder.writeBool(false);
         }

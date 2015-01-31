@@ -80,7 +80,7 @@ public abstract class BaseEncoder implements Encoder {
 
     protected void writeLongInternal(long value) {
         ensureCapacity(8);
-        Bytes.writeLongOn8Bytes(value, buffer, position);
+        Bytes.writeLong(value, buffer, position);
         position += 8;
     }
 }

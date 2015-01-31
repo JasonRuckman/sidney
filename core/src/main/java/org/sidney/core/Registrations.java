@@ -21,6 +21,9 @@ import org.sidney.core.serde.serializer.SerializerEntry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains custom serializer implementations
+ */
 public class Registrations {
     private List<SerializerEntry> registeredFactories = new ArrayList<>();
 

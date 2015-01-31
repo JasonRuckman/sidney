@@ -15,70 +15,121 @@
  */
 package org.sidney.core.serde;
 
-public class ReadContext extends Context {
-    private ColumnReader columnReader;
+import java.io.IOException;
+import java.io.InputStream;
 
-    public ReadContext(ColumnReader columnReader) {
-        this.columnReader = columnReader;
-    }
+public interface ReadContext {
+    /**
+     * Load all columns from the stream
+     * @param inputStream the input stream
+     */
+    void loadFromInputStream(InputStream inputStream) throws IOException;
 
-    public ColumnReader getColumnReader() {
-        return columnReader;
-    }
+    /**
+     * Read a boolean value from the column at the current index
+     * @return a boolean value
+     */
+    boolean readBoolean();
 
-    public void setColumnReader(ColumnReader columnReader) {
-        this.columnReader = columnReader;
-    }
+    /**
+     * Read an byte value from the column at the current index
+     * @return a boolean value
+     */
+    byte readByte();
 
-    public boolean readBoolean() {
-        return this.getColumnReader().readBool(this.getColumnIndex());
-    }
+    /**
+     * Read an short value from the column at the current index
+     * @return a short value
+     */
+    short readShort();
 
-    public byte readByte() {
-        return (byte) this.getColumnReader().readInt(this.getColumnIndex());
-    }
+    /**
+     * Read an char value from the column at the current index
+     * @return a char value
+     */
+    char readChar();
 
-    public short readShort() {
-        return (short) this.getColumnReader().readInt(this.getColumnIndex());
-    }
+    /**
+     * Read an int from the column at the current index
+     * @return a int value
+     */
+    int readInt();
 
-    public char readChar() {
-        return (char) this.getColumnReader().readInt(this.getColumnIndex());
-    }
+    /**
+     * Read an long from the column at the current index
+     * @return a long value
+     */
+    long readLong();
 
-    public int readInt() {
-        return this.getColumnReader().readInt(this.getColumnIndex());
-    }
+    /**
+     * Read an float from the column at the current index
+     * @return a float value
+     */
+    float readFloat();
 
-    public long readLong() {
-        return this.getColumnReader().readLong(this.getColumnIndex());
-    }
+    /**
+     * Read an double from the column at the current index
+     * @return a double value
+     */
+    double readDouble();
 
-    public float readFloat() {
-        return this.getColumnReader().readFloat(this.getColumnIndex());
-    }
+    /**
+     * Read bytes from the column at the current index
+     * @return bytes
+     */
+    byte[] readBytes();
 
-    public double readDouble() {
-        return this.getColumnReader().readDouble(this.getColumnIndex());
-    }
+    /**
+     * Read a string from the column at the current index
+     * @return string
+     */
+    String readString();
 
-    public byte[] readBytes() {
-        return this.getColumnReader().readBytes(this.getColumnIndex());
-    }
+    /**
+     * Read the null marker at the current index.  Do not call on non-nullable columns
+     * @return whether or not the next value is null
+     */
+    boolean readNullMarker();
 
-    public String readString() {
-        return this.getColumnReader().readString(this.getColumnIndex());
-    }
+    /**
+     * Read the type for a column at the current index.  Do not call on columns that do not require types.
+     * @return whether or not the next value is null
+     */
+    Class<?> readConcreteType();
 
-    public boolean readNullMarker() {
-        return this.getColumnReader().readNullMarker(this.getColumnIndex());
-    }
+    /**
+     * Read the current repetition count at the current index.
+     * @return the repetition count
+     */
+    int readRepetitionCount();
 
-    public Class<?> readConcreteType() {
-        return this.getColumnReader().readConcreteType(this.getColumnIndex(), this);
-    }
+    /**
+     * Get the current page header
+     */
+    PageHeader getPageHeader();
 
-    public int readRepetitionCount() {
-        return this.getColumnReader().readRepetitionCount(this.getColumnIndex());
-    }
+    /**
+     * Set the current page header
+     */
+    void setPageHeader(PageHeader pageHeader);
+
+    /**
+     * Set this index as the current column
+     */
+    void setColumnIndex(int newIndex);
+
+    /**
+     * Increment to the next column
+     */
+    void incrementColumnIndex();
+
+    /**
+     * Increment by multiple columns
+     */
+    void incrementColumnIndex(int size);
+
+    /**
+     * Get the current column index
+     */
+    int getColumnIndex();
 }

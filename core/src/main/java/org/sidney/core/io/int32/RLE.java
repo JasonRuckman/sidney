@@ -22,9 +22,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
+    private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
+    private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
+
     public static class RLEInt32Decoder implements Int32Decoder {
-        private final Int32Decoder valueDecoder = Encoding.DELTABITPACKINGHYBRID.newInt32Decoder();
-        private final Int32Decoder runSizeDecoder = Encoding.BITPACKED.newInt32Decoder();
+        private final Int32Decoder valueDecoder = VALUE_ENCODING.newInt32Decoder();
+        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
         private int runSize = 0;
         private int currentRun = 0;
 
@@ -67,8 +70,8 @@ public class RLE {
     }
 
     public static class RLEInt32Encoder implements Int32Encoder {
-        private final Int32Encoder valueEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
-        private final Int32Encoder runSizeEncoder = new BitPacking.BitPackingInt32Encoder();
+        private final Int32Encoder valueEncoder = VALUE_ENCODING.newInt32Encoder();
+        private final Int32Encoder runSizeEncoder = VALUE_ENCODING.newInt32Encoder();
         private int currentRun = 0;
         private int runSize = 0;
         private boolean isNewRun = true;

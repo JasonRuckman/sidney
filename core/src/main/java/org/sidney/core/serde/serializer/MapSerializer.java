@@ -52,7 +52,7 @@ public class MapSerializer extends Serializer<Map> {
 
     private void writeMap(Map map, WriteContext context) {
         if (context.writeNullMarkerAndType(map)) {
-            context.writeRepetitionCount(context.getColumnIndex(), map.size());
+            context.writeRepetitionCount(map.size());
             //bump index forward to key
             context.incrementColumnIndex();
             int valueIndex = context.getColumnIndex();

@@ -35,10 +35,13 @@ public interface Writer<T> {
      */
     void open(OutputStream outputStream);
 
+    /**
+     * Force flush this writer to the underlying stream
+     */
     void flush();
 
     /**
-     * Flush the last page and mark the writer as closed
+     * Flush the last page and mark the writer as closed, do not close underlying stream
      */
     void close();
 }

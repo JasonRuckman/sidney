@@ -79,26 +79,14 @@ public abstract class BaseDecoder implements Decoder {
 
     protected int readIntInternal() {
         require(4);
-
-        int res = ((buffer[position + 3] & 0xff) << 24)
-                | ((buffer[position + 2] & 0xff) << 16)
-                | ((buffer[position + 1] & 0xff) << 8)
-                | (buffer[position] & 0xff);
-
+        int i = Bytes.readInt(getBuffer(), getPosition());
         position += 4;
-        return res;
+        return i;
     }
 
     protected long readLongInternal() {
         require(8);
-        long l = ((((long) buffer[getPosition() + 7]) << 56)
-                | (((long) buffer[getPosition() + 6] & 0xff) << 48)
-                | (((long) buffer[getPosition() + 5] & 0xff) << 40)
-                | (((long) buffer[getPosition() + 4] & 0xff) << 32)
-                | (((long) buffer[getPosition() + 3] & 0xff) << 24)
-                | (((long) buffer[getPosition() + 2] & 0xff) << 16)
-                | (((long) buffer[getPosition() + 1] & 0xff) << 8)
-                | (((long) buffer[getPosition()] & 0xff)));
+        long l = Bytes.readLong(getBuffer(), getPosition());
         position += 8;
         return l;
     }

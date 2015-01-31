@@ -107,13 +107,13 @@ public abstract class BaseReader<T> {
             currentPageHeader = json.readValue(bytes, PageHeader.class);
             currentPageHeader.prepareForRead();
             ColumnReader reader = new ColumnReader();
-            context = new ReadContext(
+            context = new ReadContextImpl(
                 reader
             );
             builder.finish(reader);
             recordCount = currentPageHeader.getPageSize();
             context.setPageHeader(currentPageHeader);
-            context.getColumnReader().loadFromInputStream(inputStream);
+            context.loadFromInputStream(inputStream);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

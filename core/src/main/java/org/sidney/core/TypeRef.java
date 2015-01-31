@@ -16,30 +16,55 @@ public class TypeRef {
         this.type = type;
     }
 
+    /**
+     * Get a list of {@link org.sidney.core.TypeRef} that corresponds to the fields on this class
+     * @return the type refs
+     */
     public List<TypeFieldRef> getFields() {
         return fields;
     }
 
+    /**
+     * Get the raw class for this {@link org.sidney.core.TypeRef}
+     */
     public Class<?> getType() {
         return type;
     }
 
+    /**
+     * Set the raw class for this {@link org.sidney.core.TypeRef}
+     */
     public void setType(Class<?> type) {
         this.type = type;
     }
 
+    /**
+     * Get the generic type arguments for this {@link org.sidney.core.TypeRef}
+     * @return the type refs
+     */
     public List<TypeRef> getTypeParameters() {
         return typeParameters;
     }
 
+    /**
+     * Add a {@link org.sidney.core.TypeRef.TypeFieldRef}
+     * @param ref the type ref
+     */
     public void addField(TypeFieldRef ref) {
         fields.add(ref);
     }
 
+    /**
+     * Add a type parameter {@link org.sidney.core.TypeRef}
+     * @param ref the type ref
+     */
     public void addTypeParameter(TypeRef ref) {
         typeParameters.add(ref);
     }
 
+    /**
+     * Turn this type ref into a field type ref
+     */
     public TypeFieldRef toField(Field field) {
         TypeFieldRef ref = new TypeFieldRef(
                 getType(), field
