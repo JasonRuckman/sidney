@@ -29,7 +29,7 @@ import java.util.Map;
 import static org.sidney.core.Bytes.*;
 
 public abstract class BaseWriter<T> {
-    public static final int DEFAULT_PAGE_SIZE = 256;
+    public static final int DEFAULT_PAGE_SIZE = 2048;
     protected final ObjectMapper json = new ObjectMapper();
     protected final TypeRef typeRef;
     protected Registrations registrations;
