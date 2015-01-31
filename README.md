@@ -1,7 +1,7 @@
 sidney
 ======
 
-Sidney is an generic java serializer. 
+Sidney is an generic java / scala serializer. 
 
 It's named after my dog Sid.
 
@@ -13,13 +13,13 @@ Sidney works on java beans, maps, arrays and collection types, there's underlyin
 
 Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
 
-My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs.
+My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs, however Spark doesn't pass type tags to their serializer implementations so it's not possible to use Sidney in this capacity just yet.
 
 ### Algorithm Description
 
 Sidney follows some of the same conventions that Parquet does, there are definition and repetition columns, however there's slight differences. 
 
-Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will set a true bit in a compressed bitmap.  As of this instant there's only one bitmap, not a bitmap per column which would improve compression if columns had long runs of null or not null, but that's relatively easy to change and it may be configurable in the future.
+Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will set a true bit in a compressed bitmap.  Each column has its own bitmap.
 
 Repetition counts are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
@@ -102,3 +102,22 @@ Sidney supports generics, and will resolve them all the way down the object hier
   Map<Integer, Integer> out = (reader.hasNext()) ? reader.read() : null;
   reader.close();
 ```
+
+##Scala Examples: 
+
+```
+  val map = new util.HashMap[Int, Int]()
+  val baos: ByteArrayOutputStream = new ByteArrayOutputStream
+  val writer = sid.newWriter[util.Map[Int, Int]]()
+  
+  writer.open(baos)
+  writer.write(map)
+  writer.close
+  
+  val bais: ByteArrayInputStream = new ByteArrayInputStream(baos.toByteArray)
+  val reader = sid.newReader[util.Map[Int, Int]]
+  reader.open(bais)
+  val results = reader.readAll()
+```
+
+The scala implementation is more powerful as it uses type tags to do type resolution, so nested generic arguments that are not in fields are resolved.
