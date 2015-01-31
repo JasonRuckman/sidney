@@ -54,54 +54,64 @@ public class GroupVarInt {
         }
 
         private void loadNextBlock() {
-            int offset = 0;
+            buffer = new long[4];
+
             byte prefixOne = readByte();
             byte prefixTwo = readByte();
 
-            int[] lengths = new int[4];
-            buffer = new long[4];
-            lengths[0] = (prefixOne >>> 4) & 15;
-            lengths[1] = prefixOne & 15;
-            lengths[2] = (prefixTwo >>> 4) & 15;
-            lengths[3] = prefixTwo & 15;
+            int lengthOne = prefixOne & 15;
+            int lengthTwo = (prefixOne >>> 4) & 15;
+            int lengthThree = prefixTwo & 15;
+            int lengthFour = (prefixTwo >>> 4) & 15;
 
-            byte[] buf = readBytesInternal(lengths[0] + lengths[1] + lengths[2] + lengths[3]);
-            for (int i = 0; i < buffer.length; i++) {
-                switch (lengths[i]) {
-                    case 1: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnOneByte(buf, offset));
-                        break;
-                    }
-                    case 2: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnTwoBytes(buf, offset));
-                        break;
-                    }
-                    case 3: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnThreeBytes(buf, offset));
-                        break;
-                    }
-                    case 4: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnFourBytes(buf, offset));
-                        break;
-                    }
-                    case 5: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnFiveBytes(buf, offset));
-                        break;
-                    }
-                    case 6: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnSixBytes(buf, offset));
-                        break;
-                    }
-                    case 7: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLongOnSevenBytes(buf, offset));
-                        break;
-                    }
-                    case 8: {
-                        buffer[i] = Longs.zigzagDecode(Bytes.readLong(buf, offset));
-                        break;
-                    }
+            if(lengthOne > 0) {
+                buffer[0] = readLongOfLength(lengthOne, getBuffer(), getPosition());
+            }
+
+            if(lengthTwo > 0) {
+                buffer[1] = readLongOfLength(lengthTwo, getBuffer(), getPosition() + lengthOne);
+            }
+
+            if(lengthThree > 0) {
+                buffer[2] = readLongOfLength(lengthThree, getBuffer(), getPosition() + lengthOne + lengthTwo);
+            }
+
+            if(lengthFour > 0) {
+                buffer[3] = readLongOfLength(lengthFour, getBuffer(), getPosition() + lengthOne + lengthTwo + lengthThree);
+            }
+
+            incrementPosition(lengthOne + lengthTwo + lengthThree + lengthFour);
+        }
+
+        private long readLongOfLength(int length, byte[] buffer, int offset) {
+            switch (length) {
+                case 1: {
+                    return Longs.zigzagDecode(Bytes.readLongOnOneByte(buffer, offset));
                 }
-                offset += lengths[i];
+                case 2: {
+                    return Longs.zigzagDecode(Bytes.readLongOnTwoBytes(buffer, offset));
+                }
+                case 3: {
+                    return Longs.zigzagDecode(Bytes.readLongOnThreeBytes(buffer, offset));
+                }
+                case 4: {
+                    return Longs.zigzagDecode(Bytes.readLongOnFourBytes(buffer, offset));
+                }
+                case 5: {
+                    return Longs.zigzagDecode(Bytes.readLongOnFiveBytes(buffer, offset));
+                }
+                case 6: {
+                    return Longs.zigzagDecode(Bytes.readLongOnSixBytes(buffer, offset));
+                }
+                case 7: {
+                    return Longs.zigzagDecode(Bytes.readLongOnSevenBytes(buffer, offset));
+                }
+                case 8: {
+                    return Longs.zigzagDecode(Bytes.readLong(buffer, offset));
+                }
+                default: {
+                    throw new IllegalStateException("Shouldn't get here");
+                }
             }
         }
 
@@ -116,17 +126,16 @@ public class GroupVarInt {
      * Zigzag encodes integers, then variable length encodes them
      */
     public static class GroupVarInt64Encoder extends BaseEncoder implements Int64Encoder {
-        private final long[] block = new long[4];
-        private int currentIndex = 0;
-        private int num = 0;
+        private byte[] buf = new byte[34];
+        private int count = 0;
+        private int offset = 2;
 
         @Override
         public void writeLong(long value) {
-            block[currentIndex++] = value;
-            num++;
-            if (currentIndex == 4) {
+            ++count;
+            write(value);
+            if(count == 4) {
                 flushBlock();
-                num = 0;
             }
         }
 
@@ -139,9 +148,7 @@ public class GroupVarInt {
 
         @Override
         public void writeToStream(OutputStream outputStream) throws IOException {
-            if (num > 0) {
-                flushBlock();
-            }
+            flushBlock();
             super.writeToStream(outputStream);
         }
 
@@ -150,80 +157,78 @@ public class GroupVarInt {
             return Encoding.GROUPVARINT.name();
         }
 
-        private void flushBlock() {
-            //zigzag encode and write prefix
-            byte[] buffer = new byte[34];
-            //need two bytes to encode sizes for 4 values
-            int offset = 2;
-            for (int i = 0; i < block.length; i++) {
-                long value = Longs.zigzagEncode(block[i]);
-                int bytes = (int) Math.ceil((64D - Long.numberOfLeadingZeros(value)) / 8D);
-                bytes = (bytes == 0) ? 1 : bytes;
-                switch (i) {
-                    case 0: {
-                        buffer[0] = (byte) (bytes & 15);
-                        break;
-                    }
-                    case 1: {
-                        buffer[0] = (byte) ((buffer[0] << 4) | (bytes & 15));
-                        break;
-                    }
-                    case 2: {
-                        buffer[1] |= (byte) (bytes & 15);
-                        break;
-                    }
-                    case 3: {
-                        buffer[1] = (byte) ((buffer[1] << 4) | (bytes & 15));
-                        break;
-                    }
+        private void write(long value) {
+            long zigzag = Longs.zigzagEncode(value);
+            int bytes = (int) Math.ceil((64D - Long.numberOfLeadingZeros(zigzag)) / 8D);
+            switch (count) {
+                case 1: {
+                    buf[0] = (byte) (bytes & 15);
+                    break;
                 }
-
-                switch (bytes) {
-                    case 1: {
-                        Bytes.writeLongOnOneByte(value, buffer, offset);
-                        offset += 1;
-                        break;
-                    }
-                    case 2: {
-                        Bytes.writeLongOnTwoBytes(value, buffer, offset);
-                        offset += 2;
-                        break;
-                    }
-                    case 3: {
-                        Bytes.writeLongOnThreeBytes(value, buffer, offset);
-                        offset += 3;
-                        break;
-                    }
-                    case 4: {
-                        Bytes.writeLongOnFourBytes(value, buffer, offset);
-                        offset += 4;
-                        break;
-                    }
-                    case 5: {
-                        Bytes.writeLongOnFiveBytes(value, buffer, offset);
-                        offset += 5;
-                        break;
-                    }
-                    case 6: {
-                        Bytes.writeLongOnSixBytes(value, buffer, offset);
-                        offset += 6;
-                        break;
-                    }
-                    case 7: {
-                        Bytes.writeLongOnSevenBytes(value, buffer, offset);
-                        offset += 7;
-                        break;
-                    }
-                    case 8: {
-                        Bytes.writeLong(value, buffer, offset);
-                        offset += 8;
-                        break;
-                    }
+                case 2: {
+                    buf[0] = (byte) (buf[0] | (bytes & 15) << 4);
+                    break;
                 }
-                block[i] = value;
+                case 3: {
+                    buf[1] |= (byte) (bytes & 15);
+                    break;
+                }
+                case 4: {
+                    buf[1] = (byte) (buf[1] | (bytes & 15) << 4);
+                    break;
+                }
             }
-            currentIndex = 0;
-            writeBytesInternal(buffer, 0, offset);
+
+            switch (bytes) {
+                case 1: {
+                    Bytes.writeLongOnOneByte(zigzag, buf, offset);
+                    offset += 1;
+                    break;
+                }
+                case 2: {
+                    Bytes.writeLongOnTwoBytes(zigzag, buf, offset);
+                    offset += 2;
+                    break;
+                }
+                case 3: {
+                    Bytes.writeLongOnThreeBytes(zigzag, buf, offset);
+                    offset += 3;
+                    break;
+                }
+                case 4: {
+                    Bytes.writeLongOnFourBytes(zigzag, buf, offset);
+                    offset += 4;
+                    break;
+                }
+                case 5: {
+                    Bytes.writeLongOnFiveBytes(zigzag, buf, offset);
+                    offset += 5;
+                    break;
+                }
+                case 6: {
+                    Bytes.writeLongOnSixBytes(zigzag, buf, offset);
+                    offset += 6;
+                    break;
+                }
+                case 7: {
+                    Bytes.writeLongOnSevenBytes(zigzag, buf, offset);
+                    offset += 7;
+                    break;
+                }
+                case 8: {
+                    Bytes.writeLong(zigzag, buf, offset);
+                    offset += 8;
+                    break;
+                }
+            }
+        }
+
+        private void flushBlock() {
+            writeBytesInternal(buf, 0, offset);
+
+            count = 0;
+            offset = 2;
+            buf = new byte[34];
         }
     }
 }
