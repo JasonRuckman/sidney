@@ -9,9 +9,11 @@ It is heavily influenced by the [Parquet](https://github.com/apache/incubator-pa
 
 Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
 
+Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the org.sidney.core.serde.serializer.Serializer class.
+
 ### When would I use it?
 
-Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
+Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has and doesn't support nearly the wide variety of data types, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
 
 My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs, however Spark doesn't pass type tags to their serializer implementations so it's not possible to use Sidney in this capacity just yet.
 
@@ -29,7 +31,7 @@ For map and collection types (and eventually generalized to any interface type) 
 
 | Java Type       | Nullable           | Supported Encodings  
 | --------------- |:------------------:| --------------------:
-| boolean.class   | NO                 | PLAIN / BITPACKED / BITMAP (compressed with JavaEWAH)
+| boolean.class   | NO                 | PLAIN / BITPACKED / BITMAP
 | int.class       | NO                 | PLAIN / BITPACKED / DELTABITPACKEDHYBRID / RLE
 | long.class      | NO                 | PLAIN / GROUPVARINT / RLE
 | float.class     | NO                 | PLAIN / RLE
@@ -78,7 +80,7 @@ And here's how you would write and read it to Sidney:
   reader.close();
 ```
 
-Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
+Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 2048 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
 
 ### Parameterized Type Example
 
