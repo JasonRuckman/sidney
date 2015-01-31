@@ -64,27 +64,19 @@ public class GroupVarInt {
             int lengthThree = prefixTwo & 15;
             int lengthFour = (prefixTwo >>> 4) & 15;
 
-            if(lengthOne > 0) {
-                buffer[0] = readLongOfLength(lengthOne, getBuffer(), getPosition());
-            }
-
-            if(lengthTwo > 0) {
-                buffer[1] = readLongOfLength(lengthTwo, getBuffer(), getPosition() + lengthOne);
-            }
-
-            if(lengthThree > 0) {
-                buffer[2] = readLongOfLength(lengthThree, getBuffer(), getPosition() + lengthOne + lengthTwo);
-            }
-
-            if(lengthFour > 0) {
-                buffer[3] = readLongOfLength(lengthFour, getBuffer(), getPosition() + lengthOne + lengthTwo + lengthThree);
-            }
+            buffer[0] = readLongOfLength(lengthOne, getBuffer(), getPosition());
+            buffer[1] = readLongOfLength(lengthTwo, getBuffer(), getPosition() + lengthOne);
+            buffer[2] = readLongOfLength(lengthThree, getBuffer(), getPosition() + lengthOne + lengthTwo);
+            buffer[3] = readLongOfLength(lengthFour, getBuffer(), getPosition() + lengthOne + lengthTwo + lengthThree);
 
             incrementPosition(lengthOne + lengthTwo + lengthThree + lengthFour);
         }
 
         private long readLongOfLength(int length, byte[] buffer, int offset) {
             switch (length) {
+                case 0: {
+                    return 0L;
+                }
                 case 1: {
                     return Longs.zigzagDecode(Bytes.readLongOnOneByte(buffer, offset));
                 }
