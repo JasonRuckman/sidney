@@ -24,6 +24,8 @@ import org.sidney.core.serde.serializer.Serializer;
 import org.sidney.core.serde.serializer.SerializerContext;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseReader<T> {
     protected Registrations registrations;
@@ -79,6 +81,14 @@ public abstract class BaseReader<T> {
         return (T) serializer.readValue(context);
     }
 
+    public List<T> readAll() {
+        List<T> items = new ArrayList<>();
+        while (hasNext()) {
+            items.add(read());
+        }
+        return items;
+    }
+
     /**
      * Open the given {@link java.io.InputStream} for reading.
      */
@@ -98,14 +108,15 @@ public abstract class BaseReader<T> {
 
     private void loadNextPage() {
         try {
-            int size = Bytes.readIntFromStream(inputStream);
-            byte[] bytes = new byte[size];
-            int numRead = inputStream.read(bytes);
-            if (numRead < size) {
-                throw new SidneyException("Could not fully read buffer.");
+            currentPageHeader = new PageHeader();
+            currentPageHeader.setLastPage(Bytes.readBoolFromStream(inputStream));
+            currentPageHeader.setPageSize(Bytes.readIntFromStream(inputStream));
+            int mapSize = Bytes.readIntFromStream(inputStream);
+            for(int i = 0; i < mapSize; i++) {
+                Class<?> clazz = Class.forName(Bytes.readStringFromStream(inputStream));
+                int value = Bytes.readIntFromStream(inputStream);
+                currentPageHeader.getValueToClassMap().put(value, clazz);
             }
-            currentPageHeader = json.readValue(bytes, PageHeader.class);
-            currentPageHeader.prepareForRead();
             ColumnReader reader = new ColumnReader();
             context = new ReadContextImpl(
                 reader

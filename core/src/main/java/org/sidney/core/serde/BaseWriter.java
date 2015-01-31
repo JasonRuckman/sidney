@@ -24,8 +24,9 @@ import org.sidney.core.serde.serializer.SerializerContext;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
-import static org.sidney.core.Bytes.writeIntToStream;
+import static org.sidney.core.Bytes.*;
 
 public abstract class BaseWriter<T> {
     public static final int DEFAULT_PAGE_SIZE = 256;
@@ -104,15 +105,14 @@ public abstract class BaseWriter<T> {
     }
 
     private void writePage(boolean isLastPage) throws IOException {
-        context.getPageHeader().setLastPage(isLastPage);
-        context.getPageHeader().prepareForStorage();
-        context.getPageHeader().setPageSize(recordCount);
-
-        //replace
+        writeBoolToStream(isLastPage, outputStream);
+        writeIntToStream(recordCount, outputStream);
+        writeIntToStream(context.getPageHeader().getClassToValueMap().size(), outputStream);
+        for(Map.Entry<Class, Integer> entry : context.getPageHeader().getClassToValueMap().entrySet()) {
+            writeStringToStream(entry.getKey().getName(), outputStream);
+            writeIntToStream(entry.getValue(), outputStream);
+        }
         recordCount = 0;
-        byte[] bytes = json.writeValueAsBytes(context.getPageHeader());
-        writeIntToStream(bytes.length, outputStream);
-        outputStream.write(bytes);
         context.flushToOutputStream(outputStream);
     }
 }

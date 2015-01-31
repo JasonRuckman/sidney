@@ -16,6 +16,7 @@
 package org.sidney.core.serde;
 
 import java.io.InputStream;
+import java.util.List;
 
 public interface Reader<T> {
     /**
@@ -29,6 +30,12 @@ public interface Reader<T> {
      * @return the next item
      */
     T read();
+
+    /**
+     * Read all items from the stream
+     * @return all items
+     */
+    List<T> readAll();
 
     /**
      * Open the given {@link java.io.InputStream} for reading.
