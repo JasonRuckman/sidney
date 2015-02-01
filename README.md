@@ -7,7 +7,7 @@ It's named after my dog Sid.
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
-Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed it yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
+Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed all of them yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
 
 Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the org.sidney.core.serde.serializer.Serializer class.
 
@@ -15,13 +15,15 @@ Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and array
 
 Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has and doesn't support nearly the wide variety of data types, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
 
+Please consider this alpha quality code and don't use it in your production systems without some serious testing. Other serializers are far more battle-tested.
+
 My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs, however Spark doesn't pass type tags to their serializer implementations so it's not possible to use Sidney in this capacity just yet.
 
 ### Algorithm Description
 
 Sidney follows some of the same conventions that Parquet does, there are definition and repetition columns, however there's slight differences. 
 
-Sidney will descend depth first into your object tree, and when it encounters nullable fields, it will set a true bit in a compressed bitmap.  Each column has its own bitmap.
+Sidney will descend depth first into your object tree, marking null / not null in a compressed bitmap.  Each column has its own bitmap.
 
 Repetition counts are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
@@ -95,7 +97,7 @@ Sidney supports generics, and will resolve them all the way down the object hier
   
   Writer<Map<Integer, Integer>> writer = sid.newWriter(Map.class, Integer.class, Integer.class);
   writer.open(baos);
-  writer.write(one);
+  writer.write(map);
   writer.close();
   
   ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
