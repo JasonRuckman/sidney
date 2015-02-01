@@ -47,9 +47,9 @@ public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecode
                 String[] strings = new String[size];
                 Random random = new Random(11L);
                 for (int i = 0; i < size; i++) {
-                    char[] chars = new char[124];
+                    char[] chars = new char[random.nextInt(24)];
                     for (int j = 0; j < chars.length; j++) {
-                        chars[j] = (char) random.nextInt(32767);
+                        chars[j] = (char) random.nextInt(255);
                     }
                     strings[i] = new String(chars);
                 }
