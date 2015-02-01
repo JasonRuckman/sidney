@@ -77,6 +77,10 @@
                                     <pattern>com.googlecode.javaewah</pattern>
                                     <shadedPattern>org.sidney.internal.com.googlecode.javaewah</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.esotericsoftware.reflectasm</pattern>
+                                    <shadedPattern>org.sidney.internal.com.esotericsoftware.reflectasm</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
