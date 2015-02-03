@@ -1,16 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>sidney</artifactId>
-        <groupId>org.sidney</groupId>
+        <groupId>com.github.jasonruckman</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sidney-core</artifactId>
     <packaging>jar</packaging>
-
-    <name>sidney-core</name>
-    <url>http://maven.apache.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,7 +17,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.sidney</groupId>
+            <groupId>com.github.jasonruckman</groupId>
             <artifactId>sidney-bitpacking</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -72,15 +69,15 @@
                             <relocations>
                                 <relocation>
                                     <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>org.sidney.internal.com.fasterxml.jackson</shadedPattern>
+                                    <shadedPattern>com.github.jasonruckman.sidney.internal.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.googlecode.javaewah</pattern>
-                                    <shadedPattern>org.sidney.internal.com.googlecode.javaewah</shadedPattern>
+                                    <shadedPattern>com.github.jasonruckman.sidney.internal.com.googlecode.javaewah</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.esotericsoftware.reflectasm</pattern>
-                                    <shadedPattern>org.sidney.internal.com.esotericsoftware.reflectasm</shadedPattern>
+                                    <shadedPattern>com.github.jasonruckman.sidney.internal.com.esotericsoftware.reflectasm</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

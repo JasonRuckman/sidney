@@ -9,7 +9,7 @@ It is heavily influenced by the [Parquet](https://github.com/apache/incubator-pa
 
 Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed all of them yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
 
-Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the org.sidney.core.serde.serializer.Serializer class.
+Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the com.github.jasonruckman.sidney.core.serde.serializer.Serializer class.
 
 ### When would I use it?
 
