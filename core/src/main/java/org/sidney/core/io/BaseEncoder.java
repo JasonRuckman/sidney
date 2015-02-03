@@ -52,6 +52,29 @@ public abstract class BaseEncoder implements Encoder {
         outputStream.write(getBuffer(), 0, getPosition());
     }
 
+    protected void writeBooleanToBuffer(boolean value) {
+        ensureCapacity(1);
+        buffer[position++] = (byte) ((value) ? 1 : 0);
+    }
+
+    protected void writeIntToBuffer(int value) {
+        ensureCapacity(4);
+        Bytes.writeIntOn4Bytes(value, buffer, position);
+        position += 4;
+    }
+
+    protected void writeLongToBuffer(long value) {
+        ensureCapacity(8);
+        Bytes.writeLong(value, buffer, position);
+        position += 8;
+    }
+
+    protected void writeBytesToBuffer(byte[] bytes, int offset, int length) {
+        ensureCapacity(bytes.length);
+        System.arraycopy(bytes, offset, buffer, position, length);
+        position += length;
+    }
+
     protected void ensureCapacity(int bytes) {
         if (position + bytes >= buffer.length) {
             int newSize = Math.max(buffer.length * 2, (position + bytes) * 2);
@@ -59,28 +82,5 @@ public abstract class BaseEncoder implements Encoder {
             System.arraycopy(buffer, 0, newBuffer, 0, position);
             buffer = newBuffer;
         }
-    }
-
-    protected void writeBoolean(boolean value) {
-        ensureCapacity(1);
-        buffer[position++] = (byte) ((value) ? 1 : 0);
-    }
-
-    protected void writeIntInternal(int value) {
-        ensureCapacity(4);
-        Bytes.writeIntOn4Bytes(value, buffer, position);
-        position += 4;
-    }
-
-    protected void writeBytesInternal(byte[] bytes, int offset, int length) {
-        ensureCapacity(bytes.length);
-        System.arraycopy(bytes, offset, buffer, position, length);
-        position += length;
-    }
-
-    protected void writeLongInternal(long value) {
-        ensureCapacity(8);
-        Bytes.writeLong(value, buffer, position);
-        position += 8;
     }
 }

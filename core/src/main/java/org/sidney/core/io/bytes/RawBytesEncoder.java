@@ -26,11 +26,6 @@ public class RawBytesEncoder extends BaseEncoder implements BytesEncoder {
 
     @Override
     public void writeBytes(byte[] bytes, int offset, int length) {
-        writeBytesInternal(bytes, offset, length);
-    }
-
-    @Override
-    public String supportedEncoding() {
-        return Encoding.PLAIN.name();
+        writeBytesToBuffer(bytes, offset, length);
     }
 }

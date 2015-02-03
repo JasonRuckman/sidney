@@ -15,9 +15,20 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.SidneyConf;
+
 public class Context {
     private int columnIndex = 0;
     private PageHeader pageHeader;
+    private SidneyConf conf;
+
+    public Context(SidneyConf conf) {
+        this.conf = conf;
+    }
+
+    public SidneyConf getConf() {
+        return conf;
+    }
 
     public PageHeader getPageHeader() {
         return pageHeader;

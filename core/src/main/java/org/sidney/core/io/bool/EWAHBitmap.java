@@ -25,7 +25,8 @@ import java.io.*;
 
 public class EWAHBitmap {
     public static class EWAHBitmapBoolDecoder extends BaseDecoder implements BoolDecoder {
-        private EWAHCompressedBitmap bitmap;
+        private EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+
         private int index = 0;
         private int nextTrueBit = -1;
         private IntIterator intIterator;
@@ -56,18 +57,12 @@ public class EWAHBitmap {
             if(num > 0) {
                 index = 0;
                 nextTrueBit = -1;
-                bitmap = new EWAHCompressedBitmap();
                 bitmap.deserialize(new DataInputStream(inputStream));
                 intIterator = bitmap.intIterator();
                 if (intIterator.hasNext()) {
                     nextTrueBit = intIterator.next();
                 }
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.BITMAP.name();
         }
     }
 
@@ -99,7 +94,7 @@ public class EWAHBitmap {
 
         @Override
         public void reset() {
-            currentBitmap = new EWAHCompressedBitmap();
+            currentBitmap.clear();
             currentIndex = 0;
         }
 
@@ -110,11 +105,6 @@ public class EWAHBitmap {
                 DataOutputStream dos = new DataOutputStream(outputStream);
                 currentBitmap.serialize(dos);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.BITMAP.name();
         }
     }
 }

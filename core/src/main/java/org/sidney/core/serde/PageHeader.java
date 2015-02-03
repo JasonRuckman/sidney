@@ -23,23 +23,24 @@ import java.util.Map;
  * Represents data about the serialized page
  */
 public class PageHeader {
-    private Map<String, Integer> classNameToValue = new HashMap<>();
     private boolean isLastPage;
     private int pageSize;
-    private transient Map<Class, Integer> classToValueMap = new IdentityHashMap<>();
-    private transient Map<Integer, Class> valueToClassMap = new HashMap<>();
-    private transient int counter = 0;
+    private Map<Class, Integer> classToValueMap = new IdentityHashMap<>();
+    private Map<Integer, Class> valueToClassMap = new HashMap<>();
+    private int counter = 0;
 
+    /**
+     * Get the concrete type to value mapping
+     */
     public Map<Class, Integer> getClassToValueMap() {
         return classToValueMap;
     }
 
+    /**
+     * Get the value to concrete type map
+     */
     public Map<Integer, Class> getValueToClassMap() {
         return valueToClassMap;
-    }
-
-    public Map<String, Integer> getClassNameToValue() {
-        return classNameToValue;
     }
 
     /**
@@ -64,6 +65,9 @@ public class PageHeader {
         return isLastPage;
     }
 
+    /**
+     * Set this page as the last page
+     */
     public void setLastPage(boolean isLastPage) {
         this.isLastPage = isLastPage;
     }
@@ -85,18 +89,5 @@ public class PageHeader {
 
     public Class readConcreteType(int value) {
         return valueToClassMap.get(value);
-    }
-
-    public void prepareForStorage() {
-        for (Map.Entry<Class, Integer> entry : classToValueMap.entrySet()) {
-            classNameToValue.put(entry.getKey().getName(), entry.getValue());
-        }
-    }
-
-    public void prepareForRead() throws ClassNotFoundException {
-        valueToClassMap = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : classNameToValue.entrySet()) {
-            valueToClassMap.put(entry.getValue(), Class.forName(entry.getKey()));
-        }
     }
 }

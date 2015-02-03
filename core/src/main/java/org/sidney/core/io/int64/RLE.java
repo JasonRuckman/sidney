@@ -52,11 +52,6 @@ public class RLE {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.RLE.name();
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             runSize = 0;
             currentRun = 0;
@@ -96,11 +91,6 @@ public class RLE {
             for (long v : longs) {
                 writeLong(v);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.RLE.name();
         }
 
         @Override

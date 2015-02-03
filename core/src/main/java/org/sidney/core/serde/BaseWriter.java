@@ -15,12 +15,11 @@
  */
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.Registrations;
+import org.sidney.core.SidneyConf;
 import org.sidney.core.SidneyException;
 import org.sidney.core.TypeRef;
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.SerializerContext;
+import org.sidney.core.serde.serializer.SerializerContextImpl;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,29 +28,27 @@ import java.util.Map;
 import static org.sidney.core.Bytes.*;
 
 public abstract class BaseWriter<T> {
-    public static final int DEFAULT_PAGE_SIZE = 2048;
-    protected final ObjectMapper json = new ObjectMapper();
     protected final TypeRef typeRef;
-    protected Registrations registrations;
     protected OutputStream outputStream;
     protected int recordCount = 0;
-    protected WriteContext context;
-    protected SerializerContext builder;
+    protected WriteContext writeContext;
+    protected SerializerContextImpl serializerContext;
     protected boolean isOpen = false;
-    protected Serializer serializer;
+    protected Serializer rootSerializer;
+    private SidneyConf conf;
 
-    public BaseWriter(Registrations registrations, TypeRef typeRef) {
-        this.registrations = registrations;
+    public BaseWriter(SidneyConf conf, TypeRef typeRef) {
+        this.conf = conf;
         this.typeRef = typeRef;
-        this.builder = new SerializerContext(registrations);
+        this.serializerContext = new SerializerContextImpl(conf);
         ColumnWriter writer = new ColumnWriter();
-        this.serializer = builder.serializer(typeRef);
-        this.builder.finish(writer);
-        this.context = new WriteContextImpl(writer, new PageHeader());
+        this.rootSerializer = serializerContext.serializer(typeRef);
+        this.serializerContext.finish(writer);
+        this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
     }
 
-    protected WriteContext getContext() {
-        return context;
+    protected WriteContext getWriteContext() {
+        return writeContext;
     }
 
     /**
@@ -61,10 +58,10 @@ public abstract class BaseWriter<T> {
         if (!isOpen) {
             throw new SidneyException("Cannot write to a closed writer");
         }
-        context.setColumnIndex(0);
-        serializer.writeValue(value, context);
+        writeContext.setColumnIndex(0);
+        rootSerializer.writeValue(value, writeContext);
 
-        if (++recordCount == DEFAULT_PAGE_SIZE) {
+        if (++recordCount == conf.getPageSize()) {
             flush();
         }
     }
@@ -76,7 +73,7 @@ public abstract class BaseWriter<T> {
         this.outputStream = outputStream;
         this.recordCount = 0;
         this.isOpen = true;
-        this.context.setPageHeader(new PageHeader());
+        this.writeContext.setPageHeader(new PageHeader());
     }
 
     public void flush() {
@@ -98,7 +95,7 @@ public abstract class BaseWriter<T> {
     private void flushPage(boolean isLastPage) {
         try {
             writePage(isLastPage);
-            context.setPageHeader(new PageHeader());
+            writeContext.setPageHeader(new PageHeader());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -107,12 +104,12 @@ public abstract class BaseWriter<T> {
     private void writePage(boolean isLastPage) throws IOException {
         writeBoolToStream(isLastPage, outputStream);
         writeIntToStream(recordCount, outputStream);
-        writeIntToStream(context.getPageHeader().getClassToValueMap().size(), outputStream);
-        for(Map.Entry<Class, Integer> entry : context.getPageHeader().getClassToValueMap().entrySet()) {
+        writeIntToStream(writeContext.getPageHeader().getClassToValueMap().size(), outputStream);
+        for (Map.Entry<Class, Integer> entry : writeContext.getPageHeader().getClassToValueMap().entrySet()) {
             writeStringToStream(entry.getKey().getName(), outputStream);
             writeIntToStream(entry.getValue(), outputStream);
         }
         recordCount = 0;
-        context.flushToOutputStream(outputStream);
+        writeContext.flushToOutputStream(outputStream);
     }
 }

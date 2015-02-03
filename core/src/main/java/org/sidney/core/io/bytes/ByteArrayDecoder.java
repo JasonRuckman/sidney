@@ -21,12 +21,7 @@ import org.sidney.core.io.Encoding;
 public class ByteArrayDecoder extends BaseDecoder implements BytesDecoder {
     @Override
     public byte[] readBytes(int num) {
-        int length = readIntInternal();
-        return readBytesInternal(length);
-    }
-
-    @Override
-    public String supportedEncoding() {
-        return Encoding.PLAIN.name();
+        int length = readIntFromBuffer();
+        return readBytesFromBuffer(length);
     }
 }

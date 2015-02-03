@@ -96,6 +96,9 @@ public class TypeRef {
         return ref;
     }
 
+    /**
+     * A {@link org.sidney.core.TypeRef} associated with a field
+     */
     public static class TypeFieldRef extends TypeRef {
         private Field jdkField;
 

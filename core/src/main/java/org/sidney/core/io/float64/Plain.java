@@ -42,11 +42,6 @@ public class Plain {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             decoder.readFromStream(inputStream);
         }
@@ -65,11 +60,6 @@ public class Plain {
             for (double value : values) {
                 writeDouble(value);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
 
         @Override

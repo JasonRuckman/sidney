@@ -23,6 +23,9 @@ import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Serializes all array types, primitive and reference type.
+ */
 public class ArraySerializer extends Serializer<Object> {
     private static final Map<Class, Arrays.ArrayWriters.ArrayWriter> PRIMITIVE_WRITERS = new HashMap<>();
     private static final Map<Class, Arrays.ArrayReaders.ArrayReader> PRIMITIVE_READERS = new HashMap<>();

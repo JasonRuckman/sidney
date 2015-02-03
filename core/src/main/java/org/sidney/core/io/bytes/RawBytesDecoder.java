@@ -21,16 +21,11 @@ import org.sidney.core.io.Encoding;
 public class RawBytesDecoder extends BaseDecoder implements BytesDecoder {
     @Override
     public byte[] readBytes(int num) {
-        return super.readBytesInternal(num);
+        return super.readBytesFromBuffer(num);
     }
 
     @Override
-    public String supportedEncoding() {
-        return Encoding.PLAIN.name();
-    }
-
-    @Override
-    public byte readByte() {
-        return super.readByte();
+    public byte readByteFromBuffer() {
+        return super.readByteFromBuffer();
     }
 }

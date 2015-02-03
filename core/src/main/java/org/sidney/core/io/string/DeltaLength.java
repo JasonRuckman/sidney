@@ -62,11 +62,6 @@ public class DeltaLength {
             lengthDecoder.readFromStream(inputStream);
             bytesDecoder.readFromStream(inputStream);
         }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.DELTALENGTH.name();
-        }
     }
 
     public static class DeltaLengthStringEncoder implements StringEncoder {
@@ -111,11 +106,6 @@ public class DeltaLength {
         public void writeToStream(OutputStream outputStream) throws IOException {
             lengthEncoder.writeToStream(outputStream);
             bytesEncoder.writeToStream(outputStream);
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.DELTALENGTH.name();
         }
     }
 }

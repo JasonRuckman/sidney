@@ -23,21 +23,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Encodes bools as single bits, packed 64 to a long
+ */
 public class BitPacking {
     public static class BitPackingBoolDecoder extends BaseDecoder implements BoolDecoder {
         private int currentBitIndex = 0;
+        private long word = 0;
 
         @Override
         public boolean nextBool() {
-            boolean result = false;
+            boolean result = (word & (1L << currentBitIndex)) > 0;
 
-            if ((getBuffer()[getPosition()] & 1 << currentBitIndex) > 0) {
-                result = true;
-            }
-
-            if (++currentBitIndex == 8) {
-                incrementPosition(1);
-                currentBitIndex = 0;
+            if (++currentBitIndex == 32) {
+                loadNextWord();
             }
 
             return result;
@@ -53,56 +52,60 @@ public class BitPacking {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.BITPACKED.name();
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             super.readFromStream(inputStream);
+
+            loadNextWord();
+        }
+
+        private void loadNextWord() {
+            word = readLongFromBuffer();
             currentBitIndex = 0;
         }
     }
 
     public static class BitPackingBoolEncoder extends BaseEncoder implements BoolEncoder {
         private int currentBitIndex = 0;
+        private long word = 0;
 
         @Override
         public void writeBool(boolean value) {
-            ensureCapacity(1);
             if (value) {
-                getBuffer()[getPosition()] |= 1 << currentBitIndex;
+                word |= (1L << currentBitIndex);
             }
-            if (++currentBitIndex == 8) {
-                incrementPosition(1);
-                currentBitIndex = 0;
+
+            if (++currentBitIndex == 32) {
+                flushWord();
             }
         }
 
         @Override
         public void writeBools(boolean[] values) {
-            //TODO: Optimize for packing 8 at a time
             for (boolean b : values) {
                 writeBool(b);
             }
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.BITPACKED.name();
-        }
-
-        @Override
         public void reset() {
             super.reset();
+
             currentBitIndex = 0;
+            word = 0;
         }
 
         @Override
         public void writeToStream(OutputStream outputStream) throws IOException {
             //account for the current byte we are on
-            incrementPosition(1);
+            flushWord();
             super.writeToStream(outputStream);
+        }
+
+        private void flushWord() {
+            writeLongToBuffer(word);
+
+            currentBitIndex = 0;
+            word = 0;
         }
     }
 }

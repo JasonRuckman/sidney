@@ -15,101 +15,101 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.Registrations;
 import org.sidney.core.JavaTypeRefBuilder;
+import org.sidney.core.SidneyConf;
 
 public class Primitives {
     static abstract class PrimitiveWriter extends BaseWriter {
-        public PrimitiveWriter(Registrations registrations, Class<?> type) {
-            super(registrations, JavaTypeRefBuilder.typeRef(type));
+        public PrimitiveWriter(SidneyConf conf, Class<?> type) {
+            super(conf, JavaTypeRefBuilder.typeRef(type));
         }
     }
 
     public static class BoolWriter extends PrimitiveWriter {
-        public BoolWriter(Registrations registrations) {
-            super(registrations, boolean.class);
+        public BoolWriter(SidneyConf conf) {
+            super(conf, boolean.class);
         }
 
         public void writeBool(boolean value) {
-            context.writeBool(value);
+            writeContext.writeBool(value);
         }
     }
 
     public static class ByteWriter extends PrimitiveWriter {
-        public ByteWriter(Registrations registrations) {
-            super(registrations, byte.class);
+        public ByteWriter(SidneyConf conf) {
+            super(conf, byte.class);
         }
 
         public void writeByte(byte value) {
-            context.writeByte(value);
+            writeContext.writeByte(value);
         }
     }
 
     public static class CharWriter extends PrimitiveWriter {
-        public CharWriter(Registrations registrations) {
-            super(registrations, char.class);
+        public CharWriter(SidneyConf conf) {
+            super(conf, char.class);
         }
 
         public void writeChar(char value) {
-            context.writeChar(value);
+            writeContext.writeChar(value);
         }
     }
 
     public static class ShortWriter extends PrimitiveWriter {
-        public ShortWriter(Registrations registrations) {
-            super(registrations, short.class);
+        public ShortWriter(SidneyConf conf) {
+            super(conf, short.class);
         }
 
         public void writeShort(short value) {
-            context.writeShort(value);
+            writeContext.writeShort(value);
         }
     }
 
     public static class IntWriter extends PrimitiveWriter {
-        public IntWriter(Registrations registrations) {
-            super(registrations, int.class);
+        public IntWriter(SidneyConf conf) {
+            super(conf, int.class);
         }
 
         public void writeInt(int value) {
-            context.writeInt(value);
+            writeContext.writeInt(value);
         }
     }
 
     public static class LongWriter extends PrimitiveWriter {
-        public LongWriter(Registrations registrations) {
-            super(registrations, long.class);
+        public LongWriter(SidneyConf conf) {
+            super(conf, long.class);
         }
 
         public void writeLong(long value) {
-            context.writeLong(value);
+            writeContext.writeLong(value);
         }
     }
 
     public static class FloatWriter extends PrimitiveWriter {
-        public FloatWriter(Registrations registrations) {
-            super(registrations, float.class);
+        public FloatWriter(SidneyConf conf) {
+            super(conf, float.class);
         }
     }
 
     public static class DoubleWriter extends PrimitiveWriter {
-        public DoubleWriter(Registrations registrations) {
-            super(registrations, double.class);
+        public DoubleWriter(SidneyConf conf) {
+            super(conf, double.class);
         }
 
         public void writeDouble(double value) {
-            context.writeDouble(value);
+            writeContext.writeDouble(value);
         }
     }
 
     public static class PrimitiveReader extends BaseReader {
-        public PrimitiveReader(Registrations registrations, Class<?> type) {
-            super(registrations, JavaTypeRefBuilder.typeRef(type));
+        public PrimitiveReader(SidneyConf conf, Class<?> type) {
+            super(conf, JavaTypeRefBuilder.typeRef(type));
         }
     }
 
     public static class BoolReader extends PrimitiveReader {
-        public BoolReader(Registrations registrations) {
-            super(registrations, boolean.class);
+        public BoolReader(SidneyConf conf) {
+            super(conf, boolean.class);
         }
 
         public boolean readBoolean() {
@@ -118,8 +118,8 @@ public class Primitives {
     }
 
     public static class ByteReader extends PrimitiveReader {
-        public ByteReader(Registrations registrations) {
-            super(registrations, byte.class);
+        public ByteReader(SidneyConf conf) {
+            super(conf, byte.class);
         }
 
         public byte readByte() {
@@ -128,8 +128,8 @@ public class Primitives {
     }
 
     public static class CharReader extends PrimitiveReader {
-        public CharReader(Registrations registrations) {
-            super(registrations, char.class);
+        public CharReader(SidneyConf conf) {
+            super(conf, char.class);
         }
 
         public char readChar() {
@@ -138,8 +138,8 @@ public class Primitives {
     }
 
     public static class ShortReader extends PrimitiveReader {
-        public ShortReader(Registrations registrations) {
-            super(registrations, short.class);
+        public ShortReader(SidneyConf conf) {
+            super(conf, short.class);
         }
 
         public short readShort() {
@@ -148,8 +148,8 @@ public class Primitives {
     }
 
     public static class IntReader extends PrimitiveReader {
-        public IntReader(Registrations registrations) {
-            super(registrations, int.class);
+        public IntReader(SidneyConf conf) {
+            super(conf, int.class);
         }
 
         public int readInt() {
@@ -158,8 +158,8 @@ public class Primitives {
     }
 
     public static class LongReader extends PrimitiveReader {
-        public LongReader(Registrations registrations) {
-            super(registrations, long.class);
+        public LongReader(SidneyConf conf) {
+            super(conf, long.class);
         }
 
         public long readLong() {
@@ -168,8 +168,8 @@ public class Primitives {
     }
 
     public static class FloatReader extends PrimitiveReader {
-        public FloatReader(Registrations registrations) {
-            super(registrations, float.class);
+        public FloatReader(SidneyConf conf) {
+            super(conf, float.class);
         }
 
         public float readFloat() {
@@ -178,8 +178,8 @@ public class Primitives {
     }
 
     public static class DoubleReader extends PrimitiveReader {
-        public DoubleReader(Registrations registrations) {
-            super(registrations, double.class);
+        public DoubleReader(SidneyConf conf) {
+            super(conf, double.class);
         }
 
         public double readDouble() {

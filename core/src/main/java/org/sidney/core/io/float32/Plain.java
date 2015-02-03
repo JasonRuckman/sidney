@@ -44,11 +44,6 @@ public class Plain {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             int32Decoder.readFromStream(inputStream);
         }
@@ -67,11 +62,6 @@ public class Plain {
             for (float v : floats) {
                 writeFloat(v);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
 
         @Override

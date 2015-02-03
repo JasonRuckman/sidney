@@ -15,12 +15,12 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.Registrations;
 import org.sidney.core.JavaTypeRefBuilder;
+import org.sidney.core.SidneyConf;
 
 
 public class JavaWriter<T> extends BaseWriter implements Writer<T> {
-    public JavaWriter(Class type, Registrations registrations, Class[] typeParams) {
-        super(registrations, JavaTypeRefBuilder.typeRef(type, typeParams));
+    public JavaWriter(Class type, SidneyConf conf, Class[] typeParams) {
+        super(conf, JavaTypeRefBuilder.typeRef(type, typeParams));
     }
 }

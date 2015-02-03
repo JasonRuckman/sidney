@@ -15,17 +15,21 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.SidneyConf;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class WriteContextImpl extends Context implements WriteContext {
     private ColumnWriter columnWriter;
 
-    public WriteContextImpl(ColumnWriter columnWriter) {
+    public WriteContextImpl(ColumnWriter columnWriter, SidneyConf conf) {
+        super(conf);
         this.columnWriter = columnWriter;
     }
 
-    public WriteContextImpl(ColumnWriter columnWriter, PageHeader pageHeader) {
+    public WriteContextImpl(ColumnWriter columnWriter, PageHeader pageHeader, SidneyConf conf) {
+        super(conf);
         this.columnWriter = columnWriter;
         setPageHeader(pageHeader);
     }

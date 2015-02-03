@@ -15,9 +15,9 @@
  */
 package org.sidney.core.serde.serializer;
 
-public interface TypeConsumer {
+public interface SerializerFinalizer {
     /**
-     * Registers serializers in the order that they are created
+     * Calculates sub-field counts
      */
-    void consume(Serializer serializer);
+    void finish(Serializer serializer);
 }

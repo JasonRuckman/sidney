@@ -22,13 +22,8 @@ import org.sidney.core.io.Encoding;
 public class Plain {
     public static class PlainInt32Decoder extends BaseDecoder implements Int32Decoder {
         @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
-        }
-
-        @Override
         public int nextInt() {
-            return readIntInternal();
+            return readIntFromBuffer();
         }
 
         @Override
@@ -44,7 +39,7 @@ public class Plain {
     public static class PlainInt32Encoder extends BaseEncoder implements Int32Encoder {
         @Override
         public void writeInt(int value) {
-            writeIntInternal(value);
+            writeIntToBuffer(value);
         }
 
         @Override
@@ -52,11 +47,6 @@ public class Plain {
             for (int value : values) {
                 writeInt(value);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
     }
 }

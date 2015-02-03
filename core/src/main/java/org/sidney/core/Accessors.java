@@ -22,7 +22,14 @@ import java.lang.reflect.Field;
 
 public class Accessors {
     public static FieldAccessor newAccessor(Field field) {
-        return new UnsafeFieldAccessor(field);
+        return new ReflectionFieldAccessor(field);
+    }
+
+    public static FieldAccessor newAccessor(SidneyConf sidneyConf, Field field) {
+        if(sidneyConf.isUseUnsafe()) {
+            return new UnsafeFieldAccessor(field);
+        }
+        return new ReflectionFieldAccessor(field);
     }
 
     public static interface FieldAccessor {

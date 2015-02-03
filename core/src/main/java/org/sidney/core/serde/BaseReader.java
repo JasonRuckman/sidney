@@ -15,34 +15,29 @@
  */
 package org.sidney.core.serde;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sidney.core.Bytes;
-import org.sidney.core.Registrations;
-import org.sidney.core.SidneyException;
-import org.sidney.core.TypeRef;
+import org.sidney.core.*;
 import org.sidney.core.serde.serializer.Serializer;
-import org.sidney.core.serde.serializer.SerializerContext;
+import org.sidney.core.serde.serializer.SerializerContextImpl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseReader<T> {
-    protected Registrations registrations;
     protected Class type;
     protected InputStream inputStream;
     protected ReadContext context;
-    protected ObjectMapper json = new ObjectMapper();
-    protected Serializer serializer;
+    protected Serializer rootSerializer;
     protected int recordCount = 0;
-    protected SerializerContext builder;
+    protected SerializerContextImpl serializerContext;
     protected PageHeader currentPageHeader = null;
     protected boolean isOpen = false;
+    private SidneyConf conf;
 
-    public BaseReader(Registrations registrations, TypeRef typeRef) {
-        this.registrations = registrations;
-        this.builder = new SerializerContext(registrations);
-        this.serializer = builder.serializer(typeRef);
+    public BaseReader(SidneyConf conf, TypeRef typeRef) {
+        this.conf = conf;
+        this.serializerContext = new SerializerContextImpl(conf);
+        this.rootSerializer = serializerContext.serializer(typeRef);
     }
 
     /**
@@ -78,7 +73,7 @@ public abstract class BaseReader<T> {
             throw new SidneyException("Reader is not open.");
         }
         context.setColumnIndex(0);
-        return (T) serializer.readValue(context);
+        return (T) rootSerializer.readValue(context);
     }
 
     public List<T> readAll() {
@@ -112,16 +107,16 @@ public abstract class BaseReader<T> {
             currentPageHeader.setLastPage(Bytes.readBoolFromStream(inputStream));
             currentPageHeader.setPageSize(Bytes.readIntFromStream(inputStream));
             int mapSize = Bytes.readIntFromStream(inputStream);
-            for(int i = 0; i < mapSize; i++) {
+            for (int i = 0; i < mapSize; i++) {
                 Class<?> clazz = Class.forName(Bytes.readStringFromStream(inputStream));
                 int value = Bytes.readIntFromStream(inputStream);
                 currentPageHeader.getValueToClassMap().put(value, clazz);
             }
             ColumnReader reader = new ColumnReader();
             context = new ReadContextImpl(
-                reader
+                    reader, conf
             );
-            builder.finish(reader);
+            serializerContext.finish(reader);
             recordCount = currentPageHeader.getPageSize();
             context.setPageHeader(currentPageHeader);
             context.loadFromInputStream(inputStream);

@@ -22,7 +22,7 @@ import org.sidney.core.serde.serializer.ColumnOperations;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ColumnWriter extends ColumnOperations {
+class ColumnWriter extends ColumnOperations {
     public void writeBoolean(int index, boolean value) {
         Columns.ColumnIO columnIO = columnIOs.get(index);
         columnIO.writeBoolean(value);

@@ -27,8 +27,8 @@ public class Plain {
         private final Charset charset = Charset.forName("UTF-8");
 
         public String readString() {
-            int length = readIntInternal();
-            byte[] bytes = readBytesInternal(length);
+            int length = readIntFromBuffer();
+            byte[] bytes = readBytesFromBuffer(length);
             return charset.decode(ByteBuffer.wrap(bytes)).toString();
         }
 
@@ -40,11 +40,6 @@ public class Plain {
             }
             return strings;
         }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
-        }
     }
 
     public static class PlainStringEncoder extends BaseEncoder implements StringEncoder {
@@ -52,8 +47,8 @@ public class Plain {
 
         public void writeString(String s) {
             ByteBuffer bb = charset.encode(s);
-            writeIntInternal(bb.limit());
-            writeBytesInternal(bb.array(), 0, bb.limit());
+            writeIntToBuffer(bb.limit());
+            writeBytesToBuffer(bb.array(), 0, bb.limit());
         }
 
         @Override
@@ -66,11 +61,6 @@ public class Plain {
         @Override
         public void reset() {
             super.reset();
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return null;
         }
     }
 }

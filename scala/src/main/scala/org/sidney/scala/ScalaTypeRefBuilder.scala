@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.`type`.TypeBindings
 import org.sidney.core
 import org.sidney.core.TypeRef.TypeFieldRef
 import org.sidney.core.serde.serializer.Types
-import org.sidney.core.{Fields, JavaTypeRefBuilder}
+import org.sidney.core.{SidneyException, Fields, JavaTypeRefBuilder}
 
 import scala.collection.JavaConversions._
 import scala.reflect.runtime.universe._
@@ -32,11 +32,14 @@ object ScalaTypeRefBuilder {
     if (clazz == null) Class.forName(x) else clazz
   }
 
+  /**
+   * Build a typeref for a given type
+   */
   def typeRef[T]()(implicit tag: TypeTag[T]) = {
     decompose(tag.tpe, false)
   }
 
-  def decompose(t: Type, isTypeArg: Boolean): core.TypeRef = {
+  private def decompose(t: Type, isTypeArg: Boolean): core.TypeRef = {
     val typeArgs = t match {
       case TypeRef(_, _, args) => args
     }
@@ -58,8 +61,13 @@ object ScalaTypeRefBuilder {
     }).toSeq)
   }
 
-  def decompose(t : Type, sym : Symbol, typeArgs: List[Type], isTypeArg: Boolean, members : Seq[TermSymbol]): core.TypeRef = {
+  private def decompose(t : Type, sym : Symbol, typeArgs: List[Type], isTypeArg: Boolean, members : Seq[TermSymbol]): core.TypeRef = {
     val ref = new core.TypeRef(adapt(sym.fullName, isTypeArg))
+    ref.getType match {
+      case i if i.eq(classOf[Object]) || i.eq(classOf[AnyRef]) || i.eq(classOf[Any]) => {
+        throw new SidneyException("Cannot resolve type %s".format(i.getName))
+      }
+    }
     //now we have the class for the symbol, go decompose the typeargs, then go through all the fields and bind them to the type args
     var bindings: TypeBindings = null
     val typeArgsAsRefs = typeArgs.map(x => {

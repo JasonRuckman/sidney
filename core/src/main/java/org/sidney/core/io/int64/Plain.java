@@ -23,28 +23,23 @@ public class Plain {
     public static class PlainInt64Decoder extends BaseDecoder implements Int64Decoder {
         @Override
         public long nextLong() {
-            return readLongInternal();
+            return readLongFromBuffer();
         }
 
         @Override
         public long[] nextLongs(int num) {
             long[] longs = new long[num];
             for (int i = 0; i < num; i++) {
-                longs[i] = readLongInternal();
+                longs[i] = readLongFromBuffer();
             }
             return longs;
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
     }
 
     public static class PlainInt64Encoder extends BaseEncoder implements Int64Encoder {
         @Override
         public void writeLong(long value) {
-            writeLongInternal(value);
+            writeLongToBuffer(value);
         }
 
         @Override
@@ -52,11 +47,6 @@ public class Plain {
             for (long l : values) {
                 writeLong(l);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
     }
 }

@@ -52,11 +52,6 @@ public class CharAsInt {
         }
 
         @Override
-        public String supportedEncoding() {
-            return null;
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             lengthDecoder.readFromStream(inputStream);
             characterDecoder.readFromStream(inputStream);
@@ -91,11 +86,6 @@ public class CharAsInt {
             for (String str : s) {
                 writeString(str);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return null;
         }
 
         @Override

@@ -22,6 +22,9 @@ import org.sidney.core.serde.WriteContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Default serializer for non-primitive types that aren't consumed by another type
+ */
 public class BeanSerializer extends Serializer<Object> {
     private InstanceFactory instanceFactory;
     private List<Serializer> serializersAtThisLevel = new ArrayList<>();

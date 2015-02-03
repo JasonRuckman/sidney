@@ -46,8 +46,10 @@ public class FlaInsuranceRecordBenchmarks {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public FlaInsuranceRecordBenchmarks() {
+        sid.useUnsafeFieldAccess(true);
+
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
-        sid.setCaching(true);
+        sid.setReaderWriterCaching(true);
         CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setRowProcessor(processor);
         parserSettings.setHeaderExtractionEnabled(true);

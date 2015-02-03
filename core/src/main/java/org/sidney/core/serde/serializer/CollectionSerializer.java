@@ -21,6 +21,9 @@ import org.sidney.core.serde.WriteContext;
 
 import java.util.Collection;
 
+/**
+ * Serializes non-map collection types
+ */
 public class CollectionSerializer extends Serializer<Collection> {
     private Serializer contentSerializer;
     private InstanceFactoryCache cache = new InstanceFactoryCache();

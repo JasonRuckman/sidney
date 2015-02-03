@@ -16,8 +16,6 @@
 package org.sidney.core.io;
 
 import org.sidney.core.Bytes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +24,6 @@ import java.nio.BufferUnderflowException;
 public abstract class BaseDecoder implements Decoder {
     private byte[] buffer;
     private int position = 0;
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public byte[] getBuffer() {
         return buffer;
@@ -52,24 +49,21 @@ public abstract class BaseDecoder implements Decoder {
     public void readFromStream(InputStream inputStream) throws IOException {
         setPosition(0);
         int bufferSize = Bytes.readIntFromStream(inputStream);
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Expected buffer size: %s", bufferSize));
-        }
         buffer = new byte[bufferSize];
         Bytes.readFully(buffer, inputStream);
     }
 
-    protected byte readByte() {
+    protected byte readByteFromBuffer() {
         require(1);
         return buffer[position++];
     }
 
-    protected boolean readBoolean() {
+    protected boolean readBooleanFromBuffer() {
         require(1);
         return buffer[position++] > 0;
     }
 
-    protected byte[] readBytesInternal(int num) {
+    protected byte[] readBytesFromBuffer(int num) {
         require(num);
         byte[] buf = new byte[num];
         System.arraycopy(getBuffer(), getPosition(), buf, 0, num);
@@ -77,14 +71,14 @@ public abstract class BaseDecoder implements Decoder {
         return buf;
     }
 
-    protected int readIntInternal() {
+    protected int readIntFromBuffer() {
         require(4);
         int i = Bytes.readInt(getBuffer(), getPosition());
         position += 4;
         return i;
     }
 
-    protected long readLongInternal() {
+    protected long readLongFromBuffer() {
         require(8);
         long l = Bytes.readLong(getBuffer(), getPosition());
         position += 8;

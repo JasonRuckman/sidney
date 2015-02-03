@@ -15,11 +15,11 @@
  */
 package org.sidney.core.serde;
 
-import org.sidney.core.Registrations;
 import org.sidney.core.JavaTypeRefBuilder;
+import org.sidney.core.SidneyConf;
 
 public class JavaReader<T> extends BaseReader<T> implements Reader<T> {
-    public JavaReader(Class type, Registrations registrations, Class[] typeParams) {
-        super(registrations, JavaTypeRefBuilder.typeRef(type, typeParams));
+    public JavaReader(Class type, SidneyConf conf, Class[] typeParams) {
+        super(conf, JavaTypeRefBuilder.typeRef(type, typeParams));
     }
 }

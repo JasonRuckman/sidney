@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface Decoder {
+    /**
+     * Fully populate this decoder from the underlying stream
+     */
     void readFromStream(InputStream inputStream) throws IOException;
-
-    String supportedEncoding();
 }

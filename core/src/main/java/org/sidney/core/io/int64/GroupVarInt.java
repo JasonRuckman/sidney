@@ -48,16 +48,11 @@ public class GroupVarInt {
             return longs;
         }
 
-        @Override
-        public String supportedEncoding() {
-            return Encoding.GROUPVARINT.name();
-        }
-
         private void loadNextBlock() {
             buffer = new long[4];
 
-            byte prefixOne = readByte();
-            byte prefixTwo = readByte();
+            byte prefixOne = readByteFromBuffer();
+            byte prefixTwo = readByteFromBuffer();
 
             int lengthOne = prefixOne & 15;
             int lengthTwo = (prefixOne >>> 4) & 15;
@@ -144,11 +139,6 @@ public class GroupVarInt {
             super.writeToStream(outputStream);
         }
 
-        @Override
-        public String supportedEncoding() {
-            return Encoding.GROUPVARINT.name();
-        }
-
         private void write(long value) {
             long zigzag = Longs.zigzagEncode(value);
             int bytes = (int) Math.ceil((64D - Long.numberOfLeadingZeros(zigzag)) / 8D);
@@ -216,7 +206,7 @@ public class GroupVarInt {
         }
 
         private void flushBlock() {
-            writeBytesInternal(buf, 0, offset);
+            writeBytesToBuffer(buf, 0, offset);
 
             count = 0;
             offset = 2;

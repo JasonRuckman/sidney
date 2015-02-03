@@ -32,7 +32,7 @@ class ScalaSid extends BaseSid {
    * @return a new writer, bound to the root type
    */
   def newWriter[T]()(implicit tag: TypeTag[T]): Writer[T] = {
-    new ScalaWriter[T](conf.getRegistrations, tag)
+    new ScalaWriter[T](conf, tag)
   }
 
   /**
@@ -42,7 +42,7 @@ class ScalaSid extends BaseSid {
    * @return a new reader, bound to the root type
    */
   def newReader[T]()(implicit tag: TypeTag[T]): Reader[T] = {
-    new ScalaReader[T](conf.getRegistrations, tag)
+    new ScalaReader[T](conf, tag)
   }
 
   /**

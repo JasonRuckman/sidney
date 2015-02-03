@@ -50,11 +50,6 @@ public class BitPacking {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.BITPACKED.name();
-        }
-
-        @Override
         public void readFromStream(InputStream inputStream) throws IOException {
             super.readFromStream(inputStream);
 
@@ -65,8 +60,8 @@ public class BitPacking {
             currentIndex = 0;
             currentMiniBlock = new int[128];
 
-            int numValuesToRead = readIntInternal();
-            int bitWidth = readIntInternal();
+            int numValuesToRead = readIntFromBuffer();
+            int bitWidth = readIntFromBuffer();
             if (numValuesToRead > 0) {
                 int strideSize = Bytes.sizeInBytes(8, bitWidth);
                 Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);
@@ -112,11 +107,6 @@ public class BitPacking {
         }
 
         @Override
-        public String supportedEncoding() {
-            return Encoding.BITPACKED.name();
-        }
-
-        @Override
         public void writeToStream(OutputStream outputStream) throws IOException {
             flushMiniBlock();
 
@@ -125,8 +115,8 @@ public class BitPacking {
 
         private void flushMiniBlock() {
             int numToWrite = Math.max(currentIndex, 8);
-            writeIntInternal(currentIndex);
-            writeIntInternal(currentMaxBitwidth);
+            writeIntToBuffer(currentIndex);
+            writeIntToBuffer(currentMaxBitwidth);
             if (currentIndex > 0) {
                 int strideSize = Bytes.sizeInBytes(8, currentMaxBitwidth);
                 Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);

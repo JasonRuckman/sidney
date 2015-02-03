@@ -16,6 +16,10 @@
 package org.sidney.core;
 
 import org.sidney.core.serde.serializer.Serializer;
+import org.sidney.core.serde.serializer.SerializerEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Various configurations for serialization
@@ -28,10 +32,6 @@ public class SidneyConf {
 
     private SidneyConf() {
 
-    }
-
-    public static int getDefaultSidneyPageSize() {
-        return DEFAULT_SIDNEY_PAGE_SIZE;
     }
 
     /**
@@ -48,6 +48,14 @@ public class SidneyConf {
         SidneyConf c = new SidneyConf();
         c.registrations = registrations;
         return c;
+    }
+
+    public boolean isUseUnsafe() {
+        return useUnsafe;
+    }
+
+    public int getPageSize() {
+        return pageSize;
     }
 
     /**
@@ -76,5 +84,22 @@ public class SidneyConf {
 
     public Registrations getRegistrations() {
         return registrations;
+    }
+
+    /**
+     * Contains custom serializer implementations
+     */
+    public static class Registrations {
+        private List<SerializerEntry> registeredFactories = new ArrayList<>();
+
+        public List<SerializerEntry> getRegistrations() {
+            return registeredFactories;
+        }
+
+        public void register(Class type, Class<? extends Serializer> serializerFactory) {
+            registeredFactories.add(
+                    new SerializerEntry(type, serializerFactory)
+            );
+        }
     }
 }

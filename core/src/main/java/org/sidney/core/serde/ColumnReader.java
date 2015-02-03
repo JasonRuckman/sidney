@@ -22,7 +22,7 @@ import org.sidney.core.serde.serializer.ColumnOperations;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ColumnReader extends ColumnOperations {
+class ColumnReader extends ColumnOperations {
     public boolean readBool(int index) {
         return columnIOs.get(index).readBoolean();
     }

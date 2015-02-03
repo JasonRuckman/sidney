@@ -26,12 +26,7 @@ public class ByteArrayEncoder extends BaseEncoder implements BytesEncoder {
 
     @Override
     public void writeBytes(byte[] bytes, int offset, int length) {
-        writeIntInternal(length);
-        writeBytesInternal(bytes, offset, length);
-    }
-
-    @Override
-    public String supportedEncoding() {
-        return Encoding.PLAIN.name();
+        writeIntToBuffer(length);
+        writeBytesToBuffer(bytes, offset, length);
     }
 }

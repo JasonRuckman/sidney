@@ -23,28 +23,23 @@ public class Plain {
     public static class PlainBoolDecoder extends BaseDecoder implements BoolDecoder {
         @Override
         public boolean nextBool() {
-            return readBoolean();
+            return readBooleanFromBuffer();
         }
 
         @Override
         public boolean[] nextBools(int num) {
             boolean[] booleans = new boolean[num];
             for (int i = 0; i < num; i++) {
-                booleans[i] = readBoolean();
+                booleans[i] = readBooleanFromBuffer();
             }
             return booleans;
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
     }
 
     public static class PlainBoolEncoder extends BaseEncoder implements BoolEncoder {
         @Override
         public void writeBool(boolean value) {
-            writeBoolean(value);
+            writeBooleanToBuffer(value);
         }
 
         @Override
@@ -52,11 +47,6 @@ public class Plain {
             for (boolean value : values) {
                 writeBool(value);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.PLAIN.name();
         }
     }
 }

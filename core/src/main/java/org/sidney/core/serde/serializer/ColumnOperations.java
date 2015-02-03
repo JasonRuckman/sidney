@@ -26,7 +26,7 @@ import org.sidney.core.io.int32.Int32Encoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ColumnOperations implements TypeConsumer {
+public abstract class ColumnOperations implements SerializerFinalizer {
     public static final Encoding DEFINITION_ENCODING = Encoding.BITMAP;
     public static final Encoding REPETITION_ENCODING = Encoding.DELTABITPACKINGHYBRID;
 
@@ -123,7 +123,7 @@ public abstract class ColumnOperations implements TypeConsumer {
     }
 
     @Override
-    public void consume(Serializer serializer) {
+    public void finish(Serializer serializer) {
         columnIOs.addAll(columnsFor(serializer));
     }
 }

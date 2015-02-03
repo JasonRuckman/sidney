@@ -86,16 +86,11 @@ public class DeltaBitPacking {
             loadNextMiniBlock();
         }
 
-        @Override
-        public String supportedEncoding() {
-            return Encoding.DELTABITPACKINGHYBRID.name();
-        }
-
         private void loadNextMiniBlock() {
             currentIndex = 0;
-            int bitWidth = readIntInternal();
-            int minDelta = readIntInternal();
-            int numValuesToRead = readIntInternal();
+            int bitWidth = readIntFromBuffer();
+            int minDelta = readIntFromBuffer();
+            int numValuesToRead = readIntFromBuffer();
             totalValueCount -= numValuesToRead;
             int strideSize = Bytes.sizeInBytes(8, bitWidth);
             Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);
@@ -178,11 +173,6 @@ public class DeltaBitPacking {
             outputStream.write(getBuffer(), 0, getPosition());
         }
 
-        @Override
-        public String supportedEncoding() {
-            return Encoding.DELTABITPACKINGHYBRID.name();
-        }
-
         private void flushMiniBlock() {
             if (currentIndex == 0 || totalValueCount == 1) {
                 return;
@@ -196,9 +186,9 @@ public class DeltaBitPacking {
             }
 
             int numToWrite = Math.max(currentIndex, 8);
-            writeIntInternal(currentMaxBitwidth);
-            writeIntInternal(currentMinDelta);
-            writeIntInternal(currentIndex);
+            writeIntToBuffer(currentMaxBitwidth);
+            writeIntToBuffer(currentMinDelta);
+            writeIntToBuffer(currentIndex);
 
             int strideSize = Bytes.sizeInBytes(8, currentMaxBitwidth);
             Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);

@@ -63,11 +63,6 @@ public class RLE {
             return strings;
         }
 
-        @Override
-        public String supportedEncoding() {
-            return Encoding.RLE.name();
-        }
-
         private void loadNextRun() {
             currentRun = valueDecoder.readString();
             runSize = runSizeDecoder.nextInt();
@@ -98,11 +93,6 @@ public class RLE {
             for (String str : s) {
                 writeString(str);
             }
-        }
-
-        @Override
-        public String supportedEncoding() {
-            return Encoding.RLE.name();
         }
 
         private void flush() {

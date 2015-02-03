@@ -15,8 +15,6 @@
  */
 package org.sidney.scala;
 
-import org.sidney.core.serde.Type;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,21 +48,27 @@ public class ScalaPrimitiveTypeAdapter {
         );
     }
 
+    /**
+     * Check if this scala type is a java primitive
+     */
     public static boolean isJavaPrimitive(Class<?> type) {
-        for(Map.Entry<String, Types> entry : scalaNamesToJavaClasses.entrySet()) {
-            if(entry.getValue().getPrimitive().equals(type)) {
+        for (Map.Entry<String, Types> entry : scalaNamesToJavaClasses.entrySet()) {
+            if (entry.getValue().getPrimitive().equals(type)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static Class getJavaClassForScalaString(String s, Boolean isTypeArg) {
-        Types t =  scalaNamesToJavaClasses.get(s);
-        if(t == null) {
+    /**
+     * Return the java class for the given scala class string.  If this is a type arg, box it to a {@link java.lang.Integer} instead of a primitive
+     */
+    public static Class getJavaClassForScalaString(String s, boolean isTypeArg) {
+        Types t = scalaNamesToJavaClasses.get(s);
+        if (t == null) {
             return null;
         }
-        if(isTypeArg) {
+        if (isTypeArg) {
             return t.getWrapper();
         }
         return t.getPrimitive();

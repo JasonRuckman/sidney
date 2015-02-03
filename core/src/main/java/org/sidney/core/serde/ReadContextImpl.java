@@ -15,13 +15,17 @@
  */
 package org.sidney.core.serde;
 
+import org.sidney.core.SidneyConf;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ReadContextImpl extends Context implements ReadContext {
     private ColumnReader columnReader;
 
-    public ReadContextImpl(ColumnReader columnReader) {
+    public ReadContextImpl(ColumnReader columnReader, SidneyConf conf) {
+        super(conf);
+
         this.columnReader = columnReader;
     }
 

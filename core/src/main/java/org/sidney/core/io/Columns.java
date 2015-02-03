@@ -15,8 +15,6 @@
  */
 package org.sidney.core.io;
 
-import org.sidney.core.io.Decoder;
-import org.sidney.core.io.Encoder;
 import org.sidney.core.io.bool.BoolDecoder;
 import org.sidney.core.io.bool.BoolEncoder;
 import org.sidney.core.io.bytes.BytesDecoder;
