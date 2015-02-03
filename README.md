@@ -29,6 +29,29 @@ Repetition counts are encoded back to back and bitpacked into a single column.  
 
 For map and collection types (and eventually generalized to any interface type) the actual concrete type is encoded as its own column, it is RLE encoded as an int and a map of the class name to that types int value is encoded into the page header.
 
+Given an example bean:
+```
+public class VeryImportantData {
+  @Encode(Encoding.RLE)
+  private int first;
+  @Encode(Encoding.GROUPVARINT)
+  private long second;
+}
+
+public class MoreImportantData {
+  private String description;
+  private Map<String, VeryImportantData> map = new HashMap<>();
+}
+```
+
+Encoding MoreImportantData Will roughly look like this in the byte stream: 
+
+[Page_Header]
+
+[MoreImportantData:description]
+
+[HashMap.class token][map.Key : String][VeryImportantData:first][VeryImportantData:second]
+
 ### Sidney Leaf Types: 
 
 | Java Type       | Nullable           | Supported Encodings  
