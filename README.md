@@ -3,7 +3,7 @@ sidney
 
 Sidney is an generic java / scala serializer. 
 
-It's named after my dog Sid.
+It's named after my dog Sid and is a side project I did on my own time.
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
@@ -153,4 +153,4 @@ Note: No type tokens are necessary, as under the covers typetags are used to dec
 
 1. References: Sidney doesn't yet have the concept of references, if objects refer to each other, they won't be linked up when the object is read back in. 
 2. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
-3. Erasure: If you cast your tokens to objects or something else, things won't work, the type information needs to be known up front to work.
+3. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
