@@ -9,7 +9,7 @@ It is heavily influenced by the [Parquet](https://github.com/apache/incubator-pa
 
 Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed all of them yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
 
-Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the com.github.jasonruckman.sidney.core.serde.serializer.Serializer class.
+Custom serializers are possible by implementing the [Serializer](https://github.com/JasonRuckman/sidney/blob/master/core/src/main/java/com/github/jasonruckman/sidney/core/serde/serializer/Serializer.java) class.
 
 ### When would I use it?
 
@@ -147,4 +147,10 @@ Sidney supports generics, and will resolve them all the way down the object hier
   val results = reader.readAll()
 ```
 
-The scala implementation is more powerful as it uses type tags to do type resolution, so nested generic arguments that are not in fields are resolved.
+Note: No type tokens are necessary, as under the covers typetags are used to decompose the generic argument.
+
+## Notes
+
+1. References: Sidney doesn't yet have the concept of references, if objects refer to each other, they won't be linked up when the object is read back in. 
+2. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
+3. Erasure: If you cast your tokens to objects or something else, things won't work, the type information needs to be known up front to work.
