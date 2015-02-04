@@ -3,13 +3,13 @@ sidney
 
 Sidney is an generic java / scala serializer. 
 
-It's named after my dog Sid.
+It's named after my dog Sid and is a side project I did on my own time.
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
-Sidney works on java beans, maps, arrays and collection types, there's underlying support to write primitives but I haven't exposed all of them yet via the API, enums are not yet supported (but planned very soon). Generally if [Jackson](https://github.com/FasterXML/jackson-databind/) supports serializing the pojo by default, Sidney will probably be able to (Sidney uses jackson for type resolution).  The one difference is that Sidney ignores getters and setters, it reads and writes fields directly.
+Sidney works on java beans, maps, arrays and collection types and primitives, enums are not yet supported (but planned very soon). Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
 
-Currently Sidney supports POJOs, java.util.Maps, java.util.Collections and arrays.  Custom serializers are possible by implementing the com.github.jasonruckman.sidney.core.serde.serializer.Serializer class.
+Custom serializers are possible by implementing the [Serializer](https://github.com/JasonRuckman/sidney/blob/master/core/src/main/java/com/github/jasonruckman/sidney/core/serde/serializer/Serializer.java) class.
 
 ### When would I use it?
 
@@ -90,16 +90,16 @@ And here's how you would write and read it to Sidney:
 ```
   Foo foo = new Foo(1, 1.0f);
   ByteArrayOutputStream baos = new ByteArrayOutputStream();
-  
+  TypeToken<Foo> fooToken = new TypeToken<Foo>(){};
   Sid sid = new Sid();
   
-  Writer<Foo> writer = sid.newWriter(Foo.class);
+  Writer<Foo> writer = sid.newWriter(fooToken);
   writer.open(baos);
   writer.write(one);
   writer.close();
   
   ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-  Reader<Foo> reader = sid.newReader(Foo.class);
+  Reader<Foo> reader = sid.newReader(fooToken);
   reader.open(bais);
   Foo out = (reader.hasNext()) ? reader.read() : null;
   reader.close();
@@ -109,22 +109,22 @@ Closing the writer flushes to the underlying stream.  However if you are writing
 
 ### Parameterized Type Example
 
-Sidney supports generics, and will resolve them all the way down the object hierarchy.  If a field uses generic types, there is no work that needs to be done, Sidney will inspect the field and extract the types, however if one wants to use something like a map as the root level object, the types need to be passed in.
+Sidney supports generics, and will resolve them all the way down the object hierarchy.
 
 ```
   Map<Integer, Integer> map = new HashMap<>();
   map.put(1, 1);
   ByteArrayOutputStream baos = new ByteArrayOutputStream();
-  
+  TypeToken<Map<Integer, Integer>> mapToken = new TypeToken<Map<Integer, Integer>>(){};
   Sid sid = new Sid();
   
-  Writer<Map<Integer, Integer>> writer = sid.newWriter(Map.class, Integer.class, Integer.class);
+  Writer<Map<Integer, Integer>> writer = sid.newWriter(mapToken);
   writer.open(baos);
   writer.write(map);
   writer.close();
   
   ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-  Reader<Map<Integer, Integer>> reader = sid.newReader(Map.class, Integer.class, Integer.class);
+  Reader<Map<Integer, Integer>> reader = sid.newReader(mapToken);
   reader.open(bais);
   Map<Integer, Integer> out = (reader.hasNext()) ? reader.read() : null;
   reader.close();
@@ -147,4 +147,10 @@ Sidney supports generics, and will resolve them all the way down the object hier
   val results = reader.readAll()
 ```
 
-The scala implementation is more powerful as it uses type tags to do type resolution, so nested generic arguments that are not in fields are resolved.
+Note: No type tokens are necessary, as under the covers typetags are used to decompose the generic argument.
+
+## Notes
+
+1. References: Sidney doesn't yet have the concept of references, if objects refer to each other, they won't be linked up when the object is read back in. 
+2. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
+3. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
