@@ -17,10 +17,11 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.JavaTypeRefBuilder;
 import com.github.jasonruckman.sidney.core.SidneyConf;
+import com.github.jasonruckman.sidney.core.TypeToken;
 
 
 public class JavaWriter<T> extends BaseWriter implements Writer<T> {
-    public JavaWriter(Class type, SidneyConf conf, Class[] typeParams) {
-        super(conf, JavaTypeRefBuilder.typeRef(type, typeParams));
+    public JavaWriter(SidneyConf conf, TypeToken<T> token) {
+        super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
     }
 }

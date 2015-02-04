@@ -21,6 +21,7 @@ import java.util.List
 
 import com.github.jasonruckman.sidney.core.AllPrimitives
 import com.github.jasonruckman.sidney.core.serde.SerdeTestBase
+import com.github.jasonruckman.sidney.scala.ScalaSid
 import org.junit.{Assert, Test}
 
 class ScalaCollectionSerdeTest extends SerdeTestBase {

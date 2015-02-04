@@ -19,6 +19,7 @@ import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
 
 import com.github.jasonruckman.sidney.core.serde.{Reader, SerdeTestBase}
 import com.github.jasonruckman.sidney.core.{AllPrimitiveArrays, AllPrimitiveRefsArrays, AllPrimitives}
+import com.github.jasonruckman.sidney.scala.ScalaSid
 import org.junit.{Assert, Test}
 
 class ScalaArraySerdeTest extends SerdeTestBase {

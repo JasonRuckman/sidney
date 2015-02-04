@@ -15,10 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.github.jasonruckman.sidney.core.AllPrimitiveArrays;
-import com.github.jasonruckman.sidney.core.AllPrimitiveRefsArrays;
-import com.github.jasonruckman.sidney.core.AllPrimitives;
-import com.github.jasonruckman.sidney.core.Sid;
+import com.github.jasonruckman.sidney.core.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,15 +27,15 @@ public class ArraySerdeTest extends SerdeTestBase {
     public void testInts() {
         int[] ints = getDataFactory().newInts();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<int[]> writer = sid.newWriter(int[].class);
+        JavaSid sid = new JavaSid();
+        Writer<int[]> writer = sid.newWriter(new TypeToken<int[]>() {});
         writer.open(baos);
         writer.write(ints);
         writer.write(ints);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<int[]> reader = sid.newReader(int[].class);
+        Reader<int[]> reader = sid.newReader(new TypeToken<int[]>() {});
         reader.open(bais);
         int[] output = (reader.hasNext()) ? reader.read() : null;
 
@@ -52,14 +49,14 @@ public class ArraySerdeTest extends SerdeTestBase {
                 getDataFactory().newPrimitives()
         };
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<AllPrimitives[]> writer = sid.newWriter(AllPrimitives[].class);
+        JavaSid sid = new JavaSid();
+        Writer<AllPrimitives[]> writer = sid.newWriter(new TypeToken<AllPrimitives[]>() {});
         writer.open(baos);
         writer.write(primitiveses);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitives[]> reader = sid.newReader(AllPrimitives[].class);
+        Reader<AllPrimitives[]> reader = sid.newReader(new TypeToken<AllPrimitives[]>() {});
         reader.open(bais);
         AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertArrayEquals(primitiveses, output);
@@ -69,14 +66,14 @@ public class ArraySerdeTest extends SerdeTestBase {
     public void testNestedPrimitiveArrays() {
         AllPrimitiveArrays arrays = getDataFactory().newAllArrays();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<AllPrimitiveArrays> writer = sid.newWriter(AllPrimitiveArrays.class);
+        JavaSid sid = new JavaSid();
+        Writer<AllPrimitiveArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveArrays>() {});
         writer.open(baos);
         writer.write(arrays);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveArrays> reader = sid.newReader(AllPrimitiveArrays.class);
+        Reader<AllPrimitiveArrays> reader = sid.newReader(new TypeToken<AllPrimitiveArrays>() {});
         reader.open(bais);
         AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(arrays, output);
@@ -86,14 +83,14 @@ public class ArraySerdeTest extends SerdeTestBase {
     public void testPrimitiveRefArrays() {
         AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(AllPrimitiveRefsArrays.class);
+        JavaSid sid = new JavaSid();
+        Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveRefsArrays>() {});
         writer.open(baos);
         writer.write(one);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveRefsArrays> reader = sid.newReader(AllPrimitiveRefsArrays.class);
+        Reader<AllPrimitiveRefsArrays> reader = sid.newReader(new TypeToken<AllPrimitiveRefsArrays>() {});
         reader.open(bais);
         AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
         Assert.assertEquals(one, out);

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jasonruckman.sidney.core.serde;
+package com.github.jasonruckman.sidney.core;
 
-import com.github.jasonruckman.sidney.core.JavaTypeRefBuilder;
-import com.github.jasonruckman.sidney.core.SidneyConf;
-import com.github.jasonruckman.sidney.core.TypeToken;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
-public class JavaReader<T> extends BaseReader<T> implements Reader<T> {
-    public JavaReader(SidneyConf conf, TypeToken<T> token) {
-        super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
-    }
+public abstract class TypeCapture<T> {
+  /** Returns the captured type. */
+  protected Type capture() {
+    Type superclass = getClass().getGenericSuperclass();
+    return ((ParameterizedType) superclass).getActualTypeArguments()[0];
+  }
 }

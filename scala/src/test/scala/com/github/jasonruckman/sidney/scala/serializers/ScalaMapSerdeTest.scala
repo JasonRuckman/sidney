@@ -20,6 +20,7 @@ import java.util
 
 import com.github.jasonruckman.sidney.core.AllPrimitiveRefs
 import com.github.jasonruckman.sidney.core.serde.SerdeTestBase
+import com.github.jasonruckman.sidney.scala.ScalaSid
 import org.junit.{Assert, Test}
 
 class ScalaMapSerdeTest extends SerdeTestBase {

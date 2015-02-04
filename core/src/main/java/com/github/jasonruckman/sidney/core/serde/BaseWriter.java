@@ -27,13 +27,13 @@ import java.io.OutputStream;
 import java.util.Map;
 
 public abstract class BaseWriter<T> {
-    protected final TypeRef typeRef;
-    protected OutputStream outputStream;
-    protected int recordCount = 0;
-    protected WriteContext writeContext;
-    protected SerializerContextImpl serializerContext;
-    protected boolean isOpen = false;
-    protected Serializer rootSerializer;
+    private final TypeRef typeRef;
+    private OutputStream outputStream;
+    private int recordCount = 0;
+    private WriteContext writeContext;
+    private SerializerContextImpl serializerContext;
+    private boolean isOpen = false;
+    private Serializer rootSerializer;
     private SidneyConf conf;
 
     public BaseWriter(SidneyConf conf, TypeRef typeRef) {

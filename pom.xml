@@ -75,7 +75,7 @@
                 <artifactId>maven-license-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <header>src/license.txt</header>
+                    <header>LICENSE</header>
                     <strictCheck>true</strictCheck>
                     <aggregate>true</aggregate>
                     <excludes>

@@ -19,7 +19,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.jasonruckman.sidney.core.Sid;
+import com.github.jasonruckman.sidney.core.JavaSid;
+import com.github.jasonruckman.sidney.core.TypeToken;
 import com.github.jasonruckman.sidney.core.serde.Reader;
 import com.github.jasonruckman.sidney.core.serde.Writer;
 import com.univocity.parsers.common.processor.BeanListProcessor;
@@ -41,15 +42,16 @@ import java.util.zip.GZIPOutputStream;
 @Fork(1)
 public class FlaInsuranceRecordBenchmarks {
     private List<FlaInsuranceRecord> records;
-    private Sid sid = new Sid();
+    private JavaSid sid = new JavaSid();
     private Kryo kryo = new Kryo();
     private ObjectMapper objectMapper = new ObjectMapper();
+    private Writer<FlaInsuranceRecord> writer = sid.newWriter(new TypeToken<FlaInsuranceRecord>() {});
+    private Reader<FlaInsuranceRecord> reader = sid.newReader(new TypeToken<FlaInsuranceRecord>() {});
 
     public FlaInsuranceRecordBenchmarks() {
         sid.useUnsafeFieldAccess(true);
 
         BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
-        sid.setReaderWriterCaching(true);
         CsvParserSettings parserSettings = new CsvParserSettings();
         parserSettings.setRowProcessor(processor);
         parserSettings.setHeaderExtractionEnabled(true);
@@ -68,7 +70,6 @@ public class FlaInsuranceRecordBenchmarks {
     public List<FlaInsuranceRecord> sidney() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream os = new GZIPOutputStream(baos);
-        Writer<FlaInsuranceRecord> writer = sid.newWriter(FlaInsuranceRecord.class);
         writer.open(os);
         for (FlaInsuranceRecord record : records) {
             writer.write(record);
@@ -77,7 +78,6 @@ public class FlaInsuranceRecordBenchmarks {
         os.close();
 
         List<FlaInsuranceRecord> list = new ArrayList<>();
-        Reader<FlaInsuranceRecord> reader = sid.newReader(FlaInsuranceRecord.class);
         reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
 
         while (reader.hasNext()) {

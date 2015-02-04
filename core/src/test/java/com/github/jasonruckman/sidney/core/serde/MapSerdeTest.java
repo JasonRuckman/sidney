@@ -16,7 +16,8 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitiveRefs;
-import com.github.jasonruckman.sidney.core.Sid;
+import com.github.jasonruckman.sidney.core.JavaSid;
+import com.github.jasonruckman.sidney.core.TypeToken;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,9 +34,9 @@ public class MapSerdeTest extends SerdeTestBase {
             map.put(getDataFactory().newInt(), getDataFactory().newInt());
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
+        JavaSid sid = new JavaSid();
         Writer<Map<Integer, Integer>> writer = sid.newWriter(
-                Map.class, Integer.class, Integer.class
+            new TypeToken<Map<Integer, Integer>>() {}
         );
         writer.open(baos);
         writer.write(map);
@@ -43,7 +44,7 @@ public class MapSerdeTest extends SerdeTestBase {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<Map<Integer, Integer>> reader = sid.newReader(
-                Map.class, Integer.class, Integer.class
+            new TypeToken<Map<Integer, Integer>>() {}
         );
         reader.open(bais);
         Map<Integer, Integer> outMap = (reader.hasNext()) ? reader.read() : null;
@@ -54,9 +55,9 @@ public class MapSerdeTest extends SerdeTestBase {
     public void testBeanToBeanMap() {
         Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
+        JavaSid sid = new JavaSid();
         Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newWriter(
-                Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+            new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}
         );
         writer.open(baos);
         writer.write(map);
@@ -64,7 +65,7 @@ public class MapSerdeTest extends SerdeTestBase {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newReader(
-                Map.class, AllPrimitiveRefs.class, AllPrimitiveRefs.class
+            new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}
         );
         reader.open(bais);
         Map<AllPrimitiveRefs, AllPrimitiveRefs> out = (reader.hasNext()) ? reader.read() : null;

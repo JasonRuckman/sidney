@@ -16,7 +16,8 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitives;
-import com.github.jasonruckman.sidney.core.Sid;
+import com.github.jasonruckman.sidney.core.JavaSid;
+import com.github.jasonruckman.sidney.core.TypeToken;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,15 +37,15 @@ public class CollectionSerdeTest extends SerdeTestBase {
         list.add(two);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newWriter(List.class, AllPrimitives.class);
+        JavaSid sid = new JavaSid();
+        Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {});
         writer.open(baos);
         writer.write(list);
         writer.close();
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<List<AllPrimitives>> reader = sid.newReader(
-                List.class, AllPrimitives.class
+            new TypeToken<List<AllPrimitives>>() {}
         );
         reader.open(bais);
         List<AllPrimitives> output = (reader.hasNext()) ? reader.read() : null;
@@ -54,8 +55,8 @@ public class CollectionSerdeTest extends SerdeTestBase {
     @Test
     public void testManyListsOfBeans() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
-        Writer<List<AllPrimitives>> writer = sid.newWriter(List.class, AllPrimitives.class);
+        JavaSid sid = new JavaSid();
+        Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {});
         writer.open(baos);
 
         List<List<AllPrimitives>> lists = new ArrayList<>();
@@ -74,7 +75,7 @@ public class CollectionSerdeTest extends SerdeTestBase {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         Reader<List<AllPrimitives>> reader = sid.newReader(
-                List.class, AllPrimitives.class
+            new TypeToken<List<AllPrimitives>>() {}
         );
         reader.open(bais);
 

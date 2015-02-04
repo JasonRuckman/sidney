@@ -19,12 +19,8 @@ import java.lang.reflect.Modifier
 
 import com.fasterxml.jackson.databind.`type`.TypeBindings
 import com.github.jasonruckman.sidney.core
-import com.github.jasonruckman.sidney.core.TypeRef.TypeFieldRef
-import com.github.jasonruckman.sidney.core.serde.serializer.Types
-import com.github.jasonruckman.sidney.core.{SidneyException, Fields, JavaTypeRefBuilder}
-import com.github.jasonruckman.sidney.scala.ScalaPrimitiveTypeAdapter
+import com.github.jasonruckman.sidney.core.SidneyException
 
-import scala.collection.JavaConversions._
 import scala.reflect.runtime.universe._
 
 object ScalaTypeRefBuilder {
@@ -49,9 +45,9 @@ object ScalaTypeRefBuilder {
     }
 
     decompose(t, rawType, typeArgs, isTypeArg, t.members.flatMap(x => {
-      if(x.isTerm) {
+      if (x.isTerm) {
         val n = x.asTerm
-        if((n.isVal || n.isVar) && !n.isStatic) {
+        if ((n.isVal || n.isVar) && !n.isStatic) {
           Some(n)
         } else {
           None
@@ -62,7 +58,7 @@ object ScalaTypeRefBuilder {
     }).toSeq)
   }
 
-  private def decompose(t : Type, sym : Symbol, typeArgs: List[Type], isTypeArg: Boolean, members : Seq[TermSymbol]): core.TypeRef = {
+  private def decompose(t: Type, sym: Symbol, typeArgs: List[Type], isTypeArg: Boolean, members: Seq[TermSymbol]): core.TypeRef = {
     val ref = new core.TypeRef(adapt(sym.fullName, isTypeArg))
     ref.getType match {
       case i if i.eq(classOf[Object]) || i.eq(classOf[AnyRef]) || i.eq(classOf[Any]) => {
@@ -77,7 +73,7 @@ object ScalaTypeRefBuilder {
     typeArgsAsRefs.foreach(ref.addTypeParameter)
 
     val availableFields = ref.getType.getDeclaredFields.flatMap(x => {
-      if(Modifier.isStatic(x.getModifiers) || Modifier.isTransient(x.getModifiers)) {
+      if (Modifier.isStatic(x.getModifiers) || Modifier.isTransient(x.getModifiers)) {
         Some(x.getName, x)
       } else {
         None
@@ -96,7 +92,7 @@ object ScalaTypeRefBuilder {
     })
 
     //scala arrays are generics instead of being component types
-    if(ref.getType.getName.eq("scala.Array")) {
+    if (ref.getType.getName.eq("scala.Array")) {
       //change scala arrays to java types
       val componentType = typeArgsAsRefs.head
       val arr = java.lang.reflect.Array.newInstance(componentType.getType, 0).getClass
@@ -105,7 +101,7 @@ object ScalaTypeRefBuilder {
     ref
   }
 
-  private def isPrimitiveArray(t : Type, ref : com.github.jasonruckman.sidney.core.TypeRef) : Boolean = {
+  private def isPrimitiveArray(t: Type, ref: com.github.jasonruckman.sidney.core.TypeRef): Boolean = {
     val rawType = decompose(t, false)
     ScalaPrimitiveTypeAdapter.isJavaPrimitive(rawType.getType) && ref.getType.getName.eq("scala.Array")
   }

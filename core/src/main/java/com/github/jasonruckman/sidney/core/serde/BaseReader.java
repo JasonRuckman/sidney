@@ -27,20 +27,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseReader<T> {
-    protected Class type;
-    protected InputStream inputStream;
-    protected ReadContext context;
-    protected Serializer rootSerializer;
-    protected int recordCount = 0;
-    protected SerializerContextImpl serializerContext;
-    protected PageHeader currentPageHeader = null;
-    protected boolean isOpen = false;
+    private Class type;
+    private InputStream inputStream;
+    private ReadContext context;
+    private Serializer rootSerializer;
+    private int recordCount = 0;
+    private SerializerContextImpl serializerContext;
+    private PageHeader currentPageHeader = null;
+    private boolean isOpen = false;
     private SidneyConf conf;
 
     public BaseReader(SidneyConf conf, TypeRef typeRef) {
         this.conf = conf;
         this.serializerContext = new SerializerContextImpl(conf);
         this.rootSerializer = serializerContext.serializer(typeRef);
+    }
+
+    public Class getType() {
+        return type;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public ReadContext getContext() {
+        return context;
     }
 
     /**

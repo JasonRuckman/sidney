@@ -15,7 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.github.jasonruckman.sidney.core.Sid;
+import com.github.jasonruckman.sidney.core.JavaSid;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ public class JustPrimitivesTest {
     @Test
     public void testBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
+        JavaSid sid = new JavaSid();
         Primitives.ByteWriter writer = sid.newByteWriter();
         writer.open(baos);
         byte[] bytes = new byte[100];
@@ -47,7 +47,7 @@ public class JustPrimitivesTest {
     @Test
     public void testShorts() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
+        JavaSid sid = new JavaSid();
         Primitives.ShortWriter writer = sid.newShortWriter();
         writer.open(baos);
         short[] shorts = new short[100];
@@ -68,7 +68,7 @@ public class JustPrimitivesTest {
     @Test
     public void testInts() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Sid sid = new Sid();
+        JavaSid sid = new JavaSid();
         Primitives.IntWriter writer = sid.newIntWriter();
         writer.open(baos);
         int[] ints = new int[100];
