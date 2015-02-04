@@ -24,98 +24,98 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
-    private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
-    private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
+  private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
+  private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
 
-    public static class RLEInt64Decoder implements Int64Decoder {
-        private final Int64Decoder valueDecoder = VALUE_ENCODING.newInt64Decoder();
-        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
-        private int runSize = 0;
-        private long currentRun = 0;
+  public static class RLEInt64Decoder implements Int64Decoder {
+    private final Int64Decoder valueDecoder = VALUE_ENCODING.newInt64Decoder();
+    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+    private int runSize = 0;
+    private long currentRun = 0;
 
-        public long nextLong() {
-            if (runSize-- == 0) {
-                loadNextRun();
-                runSize--;
-            }
+    public long nextLong() {
+      if (runSize-- == 0) {
+        loadNextRun();
+        runSize--;
+      }
 
-            return currentRun;
-        }
-
-        @Override
-        public long[] nextLongs(int num) {
-            long[] longs = new long[num];
-            for (int i = 0; i < num; i++) {
-                longs[i] = nextLong();
-            }
-            return longs;
-        }
-
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            runSize = 0;
-            currentRun = 0;
-
-            valueDecoder.readFromStream(inputStream);
-            runSizeDecoder.readFromStream(inputStream);
-        }
-
-        private void loadNextRun() {
-            currentRun = valueDecoder.nextLong();
-            runSize = runSizeDecoder.nextInt();
-        }
+      return currentRun;
     }
 
-    public static class RLEInt64Encoder implements Int64Encoder {
-        private Int64Encoder valueEncoder = VALUE_ENCODING.newInt64Encoder();
-        private Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
-
-        private long currentRun = 0;
-        private int runSize = 0;
-        private boolean isNewRun = true;
-
-        @Override
-        public void writeLong(long value) {
-            if (isNewRun) {
-                currentRun = value;
-                isNewRun = false;
-            } else if (currentRun != value) {
-                flush();
-                currentRun = value;
-            }
-            ++runSize;
-        }
-
-        @Override
-        public void writeLongs(long[] longs) {
-            for (long v : longs) {
-                writeLong(v);
-            }
-        }
-
-        @Override
-        public void reset() {
-            valueEncoder.reset();
-            runSizeEncoder.reset();
-            isNewRun = true;
-            currentRun = 0;
-            runSize = 0;
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            flush();
-
-            valueEncoder.writeToStream(outputStream);
-            runSizeEncoder.writeToStream(outputStream);
-        }
-
-        private void flush() {
-            valueEncoder.writeLong(currentRun);
-            runSizeEncoder.writeInt(runSize);
-
-            currentRun = 0;
-            runSize = 0;
-        }
+    @Override
+    public long[] nextLongs(int num) {
+      long[] longs = new long[num];
+      for (int i = 0; i < num; i++) {
+        longs[i] = nextLong();
+      }
+      return longs;
     }
+
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      runSize = 0;
+      currentRun = 0;
+
+      valueDecoder.readFromStream(inputStream);
+      runSizeDecoder.readFromStream(inputStream);
+    }
+
+    private void loadNextRun() {
+      currentRun = valueDecoder.nextLong();
+      runSize = runSizeDecoder.nextInt();
+    }
+  }
+
+  public static class RLEInt64Encoder implements Int64Encoder {
+    private Int64Encoder valueEncoder = VALUE_ENCODING.newInt64Encoder();
+    private Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
+
+    private long currentRun = 0;
+    private int runSize = 0;
+    private boolean isNewRun = true;
+
+    @Override
+    public void writeLong(long value) {
+      if (isNewRun) {
+        currentRun = value;
+        isNewRun = false;
+      } else if (currentRun != value) {
+        flush();
+        currentRun = value;
+      }
+      ++runSize;
+    }
+
+    @Override
+    public void writeLongs(long[] longs) {
+      for (long v : longs) {
+        writeLong(v);
+      }
+    }
+
+    @Override
+    public void reset() {
+      valueEncoder.reset();
+      runSizeEncoder.reset();
+      isNewRun = true;
+      currentRun = 0;
+      runSize = 0;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      flush();
+
+      valueEncoder.writeToStream(outputStream);
+      runSizeEncoder.writeToStream(outputStream);
+    }
+
+    private void flush() {
+      valueEncoder.writeLong(currentRun);
+      runSizeEncoder.writeInt(runSize);
+
+      currentRun = 0;
+      runSize = 0;
+    }
+  }
 }

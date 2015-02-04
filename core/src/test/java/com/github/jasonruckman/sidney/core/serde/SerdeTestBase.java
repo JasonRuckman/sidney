@@ -18,13 +18,13 @@ package com.github.jasonruckman.sidney.core.serde;
 import java.util.Random;
 
 public class SerdeTestBase {
-    private final DataFactory dataFactory = new DataFactory();
+  private final DataFactory dataFactory = new DataFactory();
 
-    public DataFactory getDataFactory() {
-        return dataFactory;
-    }
+  public DataFactory getDataFactory() {
+    return dataFactory;
+  }
 
-    public Random getRandom() {
-        return dataFactory.getRandom();
-    }
+  public Random getRandom() {
+    return dataFactory.getRandom();
+  }
 }

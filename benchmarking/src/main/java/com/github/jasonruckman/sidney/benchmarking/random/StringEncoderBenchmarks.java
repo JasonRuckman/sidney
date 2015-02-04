@@ -30,47 +30,47 @@ import java.util.Random;
 @Threads(1)
 @Fork(1)
 public class StringEncoderBenchmarks extends BenchmarkingBase {
-    private final String[] strings;
-    private int num = 65536;
+  private final String[] strings;
+  private int num = 65536;
 
-    public StringEncoderBenchmarks() {
-        strings = new String[num];
-        Random random = new Random(11L);
-        for (int i = 0; i < num; i++) {
-            char[] chars = new char[124];
-            for (int j = 0; j < chars.length; j++) {
-                chars[j] = (char) random.nextInt(32767);
-            }
-            strings[i] = new String(chars);
-        }
+  public StringEncoderBenchmarks() {
+    strings = new String[num];
+    Random random = new Random(11L);
+    for (int i = 0; i < num; i++) {
+      char[] chars = new char[124];
+      for (int j = 0; j < chars.length; j++) {
+        chars[j] = (char) random.nextInt(32767);
+      }
+      strings[i] = new String(chars);
     }
+  }
 
-    @Benchmark
-    @Group("stringEncodersRandom")
-    public String[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainStringEncoder.class), getDecoder(Plain.PlainStringDecoder.class));
-    }
+  @Benchmark
+  @Group("stringEncodersRandom")
+  public String[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainStringEncoder.class), getDecoder(Plain.PlainStringDecoder.class));
+  }
 
-    @Benchmark
-    @Group("stringEncodersRandom")
-    public String[] deltaLength() throws IOException {
-        return run(getEncoder(DeltaLength.DeltaLengthStringEncoder.class), getDecoder(DeltaLength.DeltaLengthStringDecoder.class));
-    }
+  @Benchmark
+  @Group("stringEncodersRandom")
+  public String[] deltaLength() throws IOException {
+    return run(getEncoder(DeltaLength.DeltaLengthStringEncoder.class), getDecoder(DeltaLength.DeltaLengthStringDecoder.class));
+  }
 
-    @Benchmark
-    @Group("stringEncodersRandom")
-    public String[] charAsInt() throws IOException {
-        return run(getEncoder(CharAsInt.CharAsIntStringEncoder.class), getDecoder(CharAsInt.CharAsIntStringDecoder.class));
-    }
+  @Benchmark
+  @Group("stringEncodersRandom")
+  public String[] charAsInt() throws IOException {
+    return run(getEncoder(CharAsInt.CharAsIntStringEncoder.class), getDecoder(CharAsInt.CharAsIntStringDecoder.class));
+  }
 
-    private String[] run(StringEncoder encoder, StringDecoder decoder) throws IOException {
-        for (String i : strings) {
-            encoder.writeString(i);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        encoder.reset();
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.readStrings(num);
+  private String[] run(StringEncoder encoder, StringDecoder decoder) throws IOException {
+    for (String i : strings) {
+      encoder.writeString(i);
     }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    encoder.reset();
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.readStrings(num);
+  }
 }

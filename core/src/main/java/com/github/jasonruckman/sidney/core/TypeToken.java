@@ -19,17 +19,18 @@ import java.lang.reflect.Type;
 
 /**
  * For capturing type information
+ *
  * @param <T> the type you wish to be serialized
  */
 public abstract class TypeToken<T> extends TypeCapture<T> {
   private final Type type = capture();
 
-  public final Type getType() {
-    return type;
-  }
-  
   public static <R> TypeToken<R> token(Class<R> type) {
     return new ClassTypeToken<>(type);
+  }
+
+  public final Type getType() {
+    return type;
   }
 
   private static class ClassTypeToken<R> extends TypeToken<R> {

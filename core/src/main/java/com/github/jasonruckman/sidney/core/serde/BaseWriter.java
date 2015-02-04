@@ -27,88 +27,88 @@ import java.io.OutputStream;
 import java.util.Map;
 
 public abstract class BaseWriter<T> {
-    private final TypeRef typeRef;
-    private OutputStream outputStream;
-    private int recordCount = 0;
-    private WriteContext writeContext;
-    private SerializerContextImpl serializerContext;
-    private boolean isOpen = false;
-    private Serializer rootSerializer;
-    private SidneyConf conf;
+  private final TypeRef typeRef;
+  private OutputStream outputStream;
+  private int recordCount = 0;
+  private WriteContext writeContext;
+  private SerializerContextImpl serializerContext;
+  private boolean isOpen = false;
+  private Serializer rootSerializer;
+  private SidneyConf conf;
 
-    public BaseWriter(SidneyConf conf, TypeRef typeRef) {
-        this.conf = conf;
-        this.typeRef = typeRef;
-        this.serializerContext = new SerializerContextImpl(conf);
-        ColumnWriter writer = new ColumnWriter();
-        this.rootSerializer = serializerContext.serializer(typeRef);
-        this.serializerContext.finish(writer);
-        this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
+  public BaseWriter(SidneyConf conf, TypeRef typeRef) {
+    this.conf = conf;
+    this.typeRef = typeRef;
+    this.serializerContext = new SerializerContextImpl(conf);
+    ColumnWriter writer = new ColumnWriter();
+    this.rootSerializer = serializerContext.serializer(typeRef);
+    this.serializerContext.finish(writer);
+    this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
+  }
+
+  protected WriteContext getWriteContext() {
+    return writeContext;
+  }
+
+  /**
+   * Write the given value
+   */
+  public void write(T value) {
+    if (!isOpen) {
+      throw new SidneyException("Cannot write to a closed writer");
     }
+    writeContext.setColumnIndex(0);
+    rootSerializer.writeValue(value, writeContext);
 
-    protected WriteContext getWriteContext() {
-        return writeContext;
+    if (++recordCount == conf.getPageSize()) {
+      flush();
     }
+  }
 
-    /**
-     * Write the given value
-     */
-    public void write(T value) {
-        if (!isOpen) {
-            throw new SidneyException("Cannot write to a closed writer");
-        }
-        writeContext.setColumnIndex(0);
-        rootSerializer.writeValue(value, writeContext);
+  /**
+   * Open this writer against the given {@link java.io.OutputStream}
+   */
+  public void open(OutputStream outputStream) {
+    this.outputStream = outputStream;
+    this.recordCount = 0;
+    this.isOpen = true;
+    this.writeContext.setPageHeader(new PageHeader());
+  }
 
-        if (++recordCount == conf.getPageSize()) {
-            flush();
-        }
+  public void flush() {
+    flushPage(false);
+  }
+
+  /**
+   * Flush the last page and mark the writer as closed
+   */
+  public void close() {
+    flushPage(true);
+    isOpen = false;
+  }
+
+  public Class<T> getType() {
+    return (Class<T>) typeRef.getType();
+  }
+
+  private void flushPage(boolean isLastPage) {
+    try {
+      writePage(isLastPage);
+      writeContext.setPageHeader(new PageHeader());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    /**
-     * Open this writer against the given {@link java.io.OutputStream}
-     */
-    public void open(OutputStream outputStream) {
-        this.outputStream = outputStream;
-        this.recordCount = 0;
-        this.isOpen = true;
-        this.writeContext.setPageHeader(new PageHeader());
+  private void writePage(boolean isLastPage) throws IOException {
+    Bytes.writeBoolToStream(isLastPage, outputStream);
+    Bytes.writeIntToStream(recordCount, outputStream);
+    Bytes.writeIntToStream(writeContext.getPageHeader().getClassToValueMap().size(), outputStream);
+    for (Map.Entry<Class, Integer> entry : writeContext.getPageHeader().getClassToValueMap().entrySet()) {
+      Bytes.writeStringToStream(entry.getKey().getName(), outputStream);
+      Bytes.writeIntToStream(entry.getValue(), outputStream);
     }
-
-    public void flush() {
-        flushPage(false);
-    }
-
-    /**
-     * Flush the last page and mark the writer as closed
-     */
-    public void close() {
-        flushPage(true);
-        isOpen = false;
-    }
-
-    public Class<T> getType() {
-        return (Class<T>) typeRef.getType();
-    }
-
-    private void flushPage(boolean isLastPage) {
-        try {
-            writePage(isLastPage);
-            writeContext.setPageHeader(new PageHeader());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void writePage(boolean isLastPage) throws IOException {
-        Bytes.writeBoolToStream(isLastPage, outputStream);
-        Bytes.writeIntToStream(recordCount, outputStream);
-        Bytes.writeIntToStream(writeContext.getPageHeader().getClassToValueMap().size(), outputStream);
-        for (Map.Entry<Class, Integer> entry : writeContext.getPageHeader().getClassToValueMap().entrySet()) {
-            Bytes.writeStringToStream(entry.getKey().getName(), outputStream);
-            Bytes.writeIntToStream(entry.getValue(), outputStream);
-        }
-        recordCount = 0;
-        writeContext.flushToOutputStream(outputStream);
-    }
+    recordCount = 0;
+    writeContext.flushToOutputStream(outputStream);
+  }
 }

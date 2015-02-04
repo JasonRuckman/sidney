@@ -33,37 +33,37 @@ import java.util.Random;
 @Threads(1)
 @Fork(1)
 public class Int64EncoderBenchmarks extends BenchmarkingBase {
-    private final int num = 65536;
-    private final long[] longs;
+  private final int num = 65536;
+  private final long[] longs;
 
-    public Int64EncoderBenchmarks() {
-        longs = new long[num];
-        Random random = new Random(11L);
-        for (int i = 0; i < longs.length; i++) {
-            longs[i] = random.nextLong();
-        }
+  public Int64EncoderBenchmarks() {
+    longs = new long[num];
+    Random random = new Random(11L);
+    for (int i = 0; i < longs.length; i++) {
+      longs[i] = random.nextLong();
     }
+  }
 
-    @Benchmark
-    @Group("int64Encoders")
-    public long[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainInt64Encoder.class), getDecoder(Plain.PlainInt64Decoder.class));
-    }
+  @Benchmark
+  @Group("int64Encoders")
+  public long[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainInt64Encoder.class), getDecoder(Plain.PlainInt64Decoder.class));
+  }
 
-    @Benchmark
-    @Group("int64Encoders")
-    public long[] groupVarInt() throws IOException {
-        return run(getEncoder(GroupVarInt.GroupVarInt64Encoder.class), getDecoder(GroupVarInt.GroupVarInt64Decoder.class));
-    }
+  @Benchmark
+  @Group("int64Encoders")
+  public long[] groupVarInt() throws IOException {
+    return run(getEncoder(GroupVarInt.GroupVarInt64Encoder.class), getDecoder(GroupVarInt.GroupVarInt64Decoder.class));
+  }
 
-    private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {
-        for (long i : longs) {
-            encoder.writeLong(i);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        encoder.reset();
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.nextLongs(num);
+  private long[] run(Int64Encoder encoder, Int64Decoder decoder) throws IOException {
+    for (long i : longs) {
+      encoder.writeLong(i);
     }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    encoder.reset();
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.nextLongs(num);
+  }
 }

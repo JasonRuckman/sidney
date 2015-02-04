@@ -33,37 +33,37 @@ import java.util.Random;
 @Threads(1)
 @Fork(1)
 public class Float32EncoderBenchmarks extends BenchmarkingBase {
-    private final int num = 65536;
-    private final float[] floats;
+  private final int num = 65536;
+  private final float[] floats;
 
-    public Float32EncoderBenchmarks() {
-        floats = new float[num];
-        Random random = new Random(11L);
-        for (int i = 0; i < floats.length; i++) {
-            floats[i] = random.nextFloat();
-        }
+  public Float32EncoderBenchmarks() {
+    floats = new float[num];
+    Random random = new Random(11L);
+    for (int i = 0; i < floats.length; i++) {
+      floats[i] = random.nextFloat();
     }
+  }
 
-    @Benchmark
-    @Group("float32Encoders")
-    public float[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainFloat32Encoder.class), getDecoder(Plain.PlainFloat32Decoder.class));
-    }
+  @Benchmark
+  @Group("float32Encoders")
+  public float[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainFloat32Encoder.class), getDecoder(Plain.PlainFloat32Decoder.class));
+  }
 
-    @Benchmark
-    @Group("float32Encoders")
-    public float[] rle() throws IOException {
-        return run(getEncoder(RLE.RLEFloat32Encoder.class), getDecoder(RLE.RLEFloat32Decoder.class));
-    }
+  @Benchmark
+  @Group("float32Encoders")
+  public float[] rle() throws IOException {
+    return run(getEncoder(RLE.RLEFloat32Encoder.class), getDecoder(RLE.RLEFloat32Decoder.class));
+  }
 
-    private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {
-        for (float i : floats) {
-            encoder.writeFloat(i);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        encoder.reset();
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.nextFloats(num);
+  private float[] run(Float32Encoder encoder, Float32Decoder decoder) throws IOException {
+    for (float i : floats) {
+      encoder.writeFloat(i);
     }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    encoder.reset();
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.nextFloats(num);
+  }
 }

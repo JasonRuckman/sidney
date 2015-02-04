@@ -30,41 +30,41 @@ import java.util.Random;
 @Threads(1)
 @Fork(1)
 public class BoolEncoderBenchmarks extends BenchmarkingBase {
-    private final boolean[] booleans;
-    private final Random random = new Random(11L);
-    private int num = 65536;
+  private final boolean[] booleans;
+  private final Random random = new Random(11L);
+  private int num = 65536;
 
-    public BoolEncoderBenchmarks() {
-        booleans = new boolean[num];
-        for (int i = 0; i < num; i++) {
-            booleans[i] = random.nextBoolean();
-        }
+  public BoolEncoderBenchmarks() {
+    booleans = new boolean[num];
+    for (int i = 0; i < num; i++) {
+      booleans[i] = random.nextBoolean();
     }
+  }
 
-    @Benchmark
-    @Group("boolEncodingRandom")
-    public boolean[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainBoolEncoder.class), getDecoder(Plain.PlainBoolDecoder.class));
-    }
+  @Benchmark
+  @Group("boolEncodingRandom")
+  public boolean[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainBoolEncoder.class), getDecoder(Plain.PlainBoolDecoder.class));
+  }
 
-    @Benchmark
-    @Group("boolEncodingRandom")
-    public boolean[] bitmap() throws IOException {
-        return run(getEncoder(EWAHBitmap.EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmap.EWAHBitmapBoolDecoder.class));
-    }
+  @Benchmark
+  @Group("boolEncodingRandom")
+  public boolean[] bitmap() throws IOException {
+    return run(getEncoder(EWAHBitmap.EWAHBitmapBoolEncoder.class), getDecoder(EWAHBitmap.EWAHBitmapBoolDecoder.class));
+  }
 
-    @Benchmark
-    @Group("boolEncodingRandom")
-    public boolean[] bitpacking() throws IOException {
-        return run(getEncoder(BitPacking.BitPackingBoolEncoder.class), getDecoder(BitPacking.BitPackingBoolDecoder.class));
-    }
+  @Benchmark
+  @Group("boolEncodingRandom")
+  public boolean[] bitpacking() throws IOException {
+    return run(getEncoder(BitPacking.BitPackingBoolEncoder.class), getDecoder(BitPacking.BitPackingBoolDecoder.class));
+  }
 
-    private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
-        encoder.reset();
-        encoder.writeBools(booleans);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.nextBools(num);
-    }
+  private boolean[] run(BoolEncoder encoder, BoolDecoder decoder) throws IOException {
+    encoder.reset();
+    encoder.writeBools(booleans);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.nextBools(num);
+  }
 }

@@ -18,13 +18,13 @@ package com.github.jasonruckman.sidney.core.io.bytes;
 import com.github.jasonruckman.sidney.core.io.BaseDecoder;
 
 public class RawBytesDecoder extends BaseDecoder implements BytesDecoder {
-    @Override
-    public byte[] readBytes(int num) {
-        return super.readBytesFromBuffer(num);
-    }
+  @Override
+  public byte[] readBytes(int num) {
+    return super.readBytesFromBuffer(num);
+  }
 
-    @Override
-    public byte readByteFromBuffer() {
-        return super.readByteFromBuffer();
-    }
+  @Override
+  public byte readByteFromBuffer() {
+    return super.readByteFromBuffer();
+  }
 }

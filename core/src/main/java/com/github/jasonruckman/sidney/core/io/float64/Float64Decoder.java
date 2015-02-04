@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.float64;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Float64Decoder extends Decoder {
-    double nextDouble();
+  double nextDouble();
 
-    double[] nextDoubles(int num);
+  double[] nextDoubles(int num);
 }

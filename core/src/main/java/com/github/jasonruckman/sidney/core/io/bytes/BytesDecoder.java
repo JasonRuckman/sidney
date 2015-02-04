@@ -18,5 +18,5 @@ package com.github.jasonruckman.sidney.core.io.bytes;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface BytesDecoder extends Decoder {
-    byte[] readBytes(int num);
+  byte[] readBytes(int num);
 }

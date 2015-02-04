@@ -23,52 +23,52 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Plain {
-    public static class PlainFloat64Decoder implements Float64Decoder {
-        private final Int64Decoder decoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Decoder();
+  public static class PlainFloat64Decoder implements Float64Decoder {
+    private final Int64Decoder decoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Decoder();
 
-        @Override
-        public double nextDouble() {
-            return Double.longBitsToDouble(decoder.nextLong());
-        }
-
-        @Override
-        public double[] nextDoubles(int num) {
-            double[] results = new double[num];
-            for (int i = 0; i < num; i++) {
-                results[i] = nextDouble();
-            }
-            return results;
-        }
-
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            decoder.readFromStream(inputStream);
-        }
+    @Override
+    public double nextDouble() {
+      return Double.longBitsToDouble(decoder.nextLong());
     }
 
-    public static class PlainFloat64Encoder implements Float64Encoder {
-        private final Int64Encoder encoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
-
-        @Override
-        public void writeDouble(double value) {
-            encoder.writeLong(Double.doubleToLongBits(value));
-        }
-
-        @Override
-        public void writeDoubles(double[] values) {
-            for (double value : values) {
-                writeDouble(value);
-            }
-        }
-
-        @Override
-        public void reset() {
-            encoder.reset();
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            encoder.writeToStream(outputStream);
-        }
+    @Override
+    public double[] nextDoubles(int num) {
+      double[] results = new double[num];
+      for (int i = 0; i < num; i++) {
+        results[i] = nextDouble();
+      }
+      return results;
     }
+
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      decoder.readFromStream(inputStream);
+    }
+  }
+
+  public static class PlainFloat64Encoder implements Float64Encoder {
+    private final Int64Encoder encoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
+
+    @Override
+    public void writeDouble(double value) {
+      encoder.writeLong(Double.doubleToLongBits(value));
+    }
+
+    @Override
+    public void writeDoubles(double[] values) {
+      for (double value : values) {
+        writeDouble(value);
+      }
+    }
+
+    @Override
+    public void reset() {
+      encoder.reset();
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      encoder.writeToStream(outputStream);
+    }
+  }
 }

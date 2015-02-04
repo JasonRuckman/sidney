@@ -27,62 +27,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CollectionSerdeTest extends SerdeTestBase {
-    @Test
-    public void testListOfBeans() {
-        AllPrimitives one = getDataFactory().newPrimitives();
-        AllPrimitives two = getDataFactory().newPrimitives();
+  @Test
+  public void testListOfBeans() {
+    AllPrimitives one = getDataFactory().newPrimitives();
+    AllPrimitives two = getDataFactory().newPrimitives();
 
-        List<AllPrimitives> list = new ArrayList<>();
-        list.add(one);
-        list.add(two);
+    List<AllPrimitives> list = new ArrayList<>();
+    list.add(one);
+    list.add(two);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {});
-        writer.open(baos);
-        writer.write(list);
-        writer.close();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {
+    });
+    writer.open(baos);
+    writer.write(list);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<List<AllPrimitives>> reader = sid.newReader(
-            new TypeToken<List<AllPrimitives>>() {}
-        );
-        reader.open(bais);
-        List<AllPrimitives> output = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertEquals(list, output);
-    }
-
-    @Test
-    public void testManyListsOfBeans() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {});
-        writer.open(baos);
-
-        List<List<AllPrimitives>> lists = new ArrayList<>();
-        int num = 1025;
-        for (int i = 0; i < num; i++) {
-            List<AllPrimitives> primitiveses = new ArrayList<>();
-            for (int j = 0; j < getDataFactory().newByte(); j++) {
-                primitiveses.add(
-                        getDataFactory().newPrimitives()
-                );
-            }
-            writer.write(primitiveses);
-            lists.add(primitiveses);
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<List<AllPrimitives>> reader = sid.newReader(
+        new TypeToken<List<AllPrimitives>>() {
         }
-        writer.close();
+    );
+    reader.open(bais);
+    List<AllPrimitives> output = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertEquals(list, output);
+  }
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<List<AllPrimitives>> reader = sid.newReader(
-            new TypeToken<List<AllPrimitives>>() {}
+  @Test
+  public void testManyListsOfBeans() {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {
+    });
+    writer.open(baos);
+
+    List<List<AllPrimitives>> lists = new ArrayList<>();
+    int num = 1025;
+    for (int i = 0; i < num; i++) {
+      List<AllPrimitives> primitiveses = new ArrayList<>();
+      for (int j = 0; j < getDataFactory().newByte(); j++) {
+        primitiveses.add(
+            getDataFactory().newPrimitives()
         );
-        reader.open(bais);
-
-        List<List<AllPrimitives>> out = new ArrayList<>();
-        while (reader.hasNext()) {
-            out.add(reader.read());
-        }
-        Assert.assertEquals(lists, out);
+      }
+      writer.write(primitiveses);
+      lists.add(primitiveses);
     }
+    writer.close();
+
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<List<AllPrimitives>> reader = sid.newReader(
+        new TypeToken<List<AllPrimitives>>() {
+        }
+    );
+    reader.open(bais);
+
+    List<List<AllPrimitives>> out = new ArrayList<>();
+    while (reader.hasNext()) {
+      out.add(reader.read());
+    }
+    Assert.assertEquals(lists, out);
+  }
 }

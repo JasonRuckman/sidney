@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.bool;
 import com.github.jasonruckman.sidney.core.io.Encoder;
 
 public interface BoolEncoder extends Encoder {
-    void writeBool(boolean value);
+  void writeBool(boolean value);
 
-    void writeBools(boolean[] values);
+  void writeBools(boolean[] values);
 }

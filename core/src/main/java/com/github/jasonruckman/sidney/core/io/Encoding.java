@@ -42,275 +42,275 @@ import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
 import com.github.jasonruckman.sidney.core.serde.Type;
 
 public enum Encoding {
-    PLAIN {
-        @Override
-        public BoolEncoder newBoolEncoder() {
-            return new com.github.jasonruckman.sidney.core.io.bool.Plain.PlainBoolEncoder();
-        }
-
-        @Override
-        public BoolDecoder newBoolDecoder() {
-            return new com.github.jasonruckman.sidney.core.io.bool.Plain.PlainBoolDecoder();
-        }
-
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Encoder();
-        }
-
-        @Override
-        public Int32Decoder newInt32Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Decoder();
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
-        }
-
-        @Override
-        public Int64Decoder newInt64Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Decoder();
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return new Plain.PlainFloat32Encoder();
-        }
-
-        @Override
-        public Float32Decoder newFloat32Decoder() {
-            return new Plain.PlainFloat32Decoder();
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.float64.Plain.PlainFloat64Encoder();
-        }
-
-        @Override
-        public Float64Decoder newFloat64Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.float64.Plain.PlainFloat64Decoder();
-        }
-
-        @Override
-        public StringEncoder newStringEncoder() {
-            return new com.github.jasonruckman.sidney.core.io.string.Plain.PlainStringEncoder();
-        }
-
-        @Override
-        public StringDecoder newStringDecoder() {
-            return new com.github.jasonruckman.sidney.core.io.string.Plain.PlainStringDecoder();
-        }
-
-        @Override
-        public BytesEncoder newBytesEncoder() {
-            return new ByteArrayEncoder();
-        }
-
-        @Override
-        public BytesDecoder newBytesDecoder() {
-            return new ByteArrayDecoder();
-        }
-    },
-    BITPACKED {
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return new BitPacking.BitPackingInt32Encoder();
-        }
-
-        @Override
-        public Int32Decoder newInt32Decoder() {
-            return new BitPacking.BitPackingInt32Decoder();
-        }
-
-        @Override
-        public BoolEncoder newBoolEncoder() {
-            return new com.github.jasonruckman.sidney.core.io.bool.BitPacking.BitPackingBoolEncoder();
-        }
-
-        @Override
-        public BoolDecoder newBoolDecoder() {
-            return new com.github.jasonruckman.sidney.core.io.bool.BitPacking.BitPackingBoolDecoder();
-        }
-    },
-    DELTABITPACKINGHYBRID {
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return new DeltaBitPacking.DeltaBitPackingInt32Encoder();
-        }
-
-        @Override
-        public Int32Decoder newInt32Decoder() {
-            return new DeltaBitPacking.DeltaBitPackingInt32Decoder();
-        }
-    },
-    BITMAP {
-        @Override
-        public BoolEncoder newBoolEncoder() {
-            return new EWAHBitmap.EWAHBitmapBoolEncoder();
-        }
-
-        @Override
-        public BoolDecoder newBoolDecoder() {
-            return new EWAHBitmap.EWAHBitmapBoolDecoder();
-        }
-    },
-    GROUPVARINT {
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return new GroupVarInt.GroupVarInt64Encoder();
-        }
-
-        @Override
-        public Int64Decoder newInt64Decoder() {
-            return new GroupVarInt.GroupVarInt64Decoder();
-        }
-    },
-    DELTALENGTH {
-        @Override
-        public StringEncoder newStringEncoder() {
-            return new DeltaLength.DeltaLengthStringEncoder();
-        }
-
-        @Override
-        public StringDecoder newStringDecoder() {
-            return new DeltaLength.DeltaLengthStringDecoder();
-        }
-    },
-    RLE {
-        @Override
-        public Int32Encoder newInt32Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.int32.RLE.RLEInt32Encoder();
-        }
-
-        @Override
-        public Int32Decoder newInt32Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.int32.RLE.RLEInt32Decoder();
-        }
-
-        @Override
-        public Int64Encoder newInt64Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.int64.RLE.RLEInt64Encoder();
-        }
-
-        @Override
-        public Int64Decoder newInt64Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.int64.RLE.RLEInt64Decoder();
-        }
-
-        @Override
-        public Float32Encoder newFloat32Encoder() {
-            return new RLE.RLEFloat32Encoder();
-        }
-
-        @Override
-        public Float32Decoder newFloat32Decoder() {
-            return new RLE.RLEFloat32Decoder();
-        }
-
-        @Override
-        public Float64Encoder newFloat64Encoder() {
-            return new com.github.jasonruckman.sidney.core.io.float64.RLE.RLEFloat64Encoder();
-        }
-
-        @Override
-        public Float64Decoder newFloat64Decoder() {
-            return new com.github.jasonruckman.sidney.core.io.float64.RLE.RLEFloat64Decoder();
-        }
-
-        @Override
-        public StringEncoder newStringEncoder() {
-            return new com.github.jasonruckman.sidney.core.io.string.RLE.RLEStringEncoder();
-        }
-
-        @Override
-        public StringDecoder newStringDecoder() {
-            return new com.github.jasonruckman.sidney.core.io.string.RLE.RLEStringDecoder();
-        }
-    };
-
+  PLAIN {
+    @Override
     public BoolEncoder newBoolEncoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.BOOLEAN
-        );
+      return new com.github.jasonruckman.sidney.core.io.bool.Plain.PlainBoolEncoder();
     }
 
+    @Override
     public BoolDecoder newBoolDecoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.BOOLEAN
-        );
+      return new com.github.jasonruckman.sidney.core.io.bool.Plain.PlainBoolDecoder();
     }
 
+    @Override
     public Int32Encoder newInt32Encoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.INT32
-        );
+      return new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Encoder();
     }
 
+    @Override
     public Int32Decoder newInt32Decoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.INT32
-        );
+      return new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Decoder();
     }
 
+    @Override
     public Int64Encoder newInt64Encoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.INT64
-        );
+      return new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
     }
 
+    @Override
     public Int64Decoder newInt64Decoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.INT64
-        );
+      return new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Decoder();
     }
 
+    @Override
     public Float32Encoder newFloat32Encoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.FLOAT32
-        );
+      return new Plain.PlainFloat32Encoder();
     }
 
+    @Override
     public Float32Decoder newFloat32Decoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.FLOAT32
-        );
+      return new Plain.PlainFloat32Decoder();
     }
 
+    @Override
     public Float64Encoder newFloat64Encoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.FLOAT64
-        );
+      return new com.github.jasonruckman.sidney.core.io.float64.Plain.PlainFloat64Encoder();
     }
 
+    @Override
     public Float64Decoder newFloat64Decoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.FLOAT64
-        );
+      return new com.github.jasonruckman.sidney.core.io.float64.Plain.PlainFloat64Decoder();
     }
 
-    public BytesEncoder newBytesEncoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.BINARY
-        );
-    }
-
-    public BytesDecoder newBytesDecoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.BINARY
-        );
-    }
-
+    @Override
     public StringEncoder newStringEncoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.STRING
-        );
+      return new com.github.jasonruckman.sidney.core.io.string.Plain.PlainStringEncoder();
     }
 
+    @Override
     public StringDecoder newStringDecoder() {
-        throw new UnsupportedEncodingException(
-                this, Type.STRING
-        );
+      return new com.github.jasonruckman.sidney.core.io.string.Plain.PlainStringDecoder();
     }
+
+    @Override
+    public BytesEncoder newBytesEncoder() {
+      return new ByteArrayEncoder();
+    }
+
+    @Override
+    public BytesDecoder newBytesDecoder() {
+      return new ByteArrayDecoder();
+    }
+  },
+  BITPACKED {
+    @Override
+    public Int32Encoder newInt32Encoder() {
+      return new BitPacking.BitPackingInt32Encoder();
+    }
+
+    @Override
+    public Int32Decoder newInt32Decoder() {
+      return new BitPacking.BitPackingInt32Decoder();
+    }
+
+    @Override
+    public BoolEncoder newBoolEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.bool.BitPacking.BitPackingBoolEncoder();
+    }
+
+    @Override
+    public BoolDecoder newBoolDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.bool.BitPacking.BitPackingBoolDecoder();
+    }
+  },
+  DELTABITPACKINGHYBRID {
+    @Override
+    public Int32Encoder newInt32Encoder() {
+      return new DeltaBitPacking.DeltaBitPackingInt32Encoder();
+    }
+
+    @Override
+    public Int32Decoder newInt32Decoder() {
+      return new DeltaBitPacking.DeltaBitPackingInt32Decoder();
+    }
+  },
+  BITMAP {
+    @Override
+    public BoolEncoder newBoolEncoder() {
+      return new EWAHBitmap.EWAHBitmapBoolEncoder();
+    }
+
+    @Override
+    public BoolDecoder newBoolDecoder() {
+      return new EWAHBitmap.EWAHBitmapBoolDecoder();
+    }
+  },
+  GROUPVARINT {
+    @Override
+    public Int64Encoder newInt64Encoder() {
+      return new GroupVarInt.GroupVarInt64Encoder();
+    }
+
+    @Override
+    public Int64Decoder newInt64Decoder() {
+      return new GroupVarInt.GroupVarInt64Decoder();
+    }
+  },
+  DELTALENGTH {
+    @Override
+    public StringEncoder newStringEncoder() {
+      return new DeltaLength.DeltaLengthStringEncoder();
+    }
+
+    @Override
+    public StringDecoder newStringDecoder() {
+      return new DeltaLength.DeltaLengthStringDecoder();
+    }
+  },
+  RLE {
+    @Override
+    public Int32Encoder newInt32Encoder() {
+      return new com.github.jasonruckman.sidney.core.io.int32.RLE.RLEInt32Encoder();
+    }
+
+    @Override
+    public Int32Decoder newInt32Decoder() {
+      return new com.github.jasonruckman.sidney.core.io.int32.RLE.RLEInt32Decoder();
+    }
+
+    @Override
+    public Int64Encoder newInt64Encoder() {
+      return new com.github.jasonruckman.sidney.core.io.int64.RLE.RLEInt64Encoder();
+    }
+
+    @Override
+    public Int64Decoder newInt64Decoder() {
+      return new com.github.jasonruckman.sidney.core.io.int64.RLE.RLEInt64Decoder();
+    }
+
+    @Override
+    public Float32Encoder newFloat32Encoder() {
+      return new RLE.RLEFloat32Encoder();
+    }
+
+    @Override
+    public Float32Decoder newFloat32Decoder() {
+      return new RLE.RLEFloat32Decoder();
+    }
+
+    @Override
+    public Float64Encoder newFloat64Encoder() {
+      return new com.github.jasonruckman.sidney.core.io.float64.RLE.RLEFloat64Encoder();
+    }
+
+    @Override
+    public Float64Decoder newFloat64Decoder() {
+      return new com.github.jasonruckman.sidney.core.io.float64.RLE.RLEFloat64Decoder();
+    }
+
+    @Override
+    public StringEncoder newStringEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.string.RLE.RLEStringEncoder();
+    }
+
+    @Override
+    public StringDecoder newStringDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.string.RLE.RLEStringDecoder();
+    }
+  };
+
+  public BoolEncoder newBoolEncoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.BOOLEAN
+    );
+  }
+
+  public BoolDecoder newBoolDecoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.BOOLEAN
+    );
+  }
+
+  public Int32Encoder newInt32Encoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.INT32
+    );
+  }
+
+  public Int32Decoder newInt32Decoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.INT32
+    );
+  }
+
+  public Int64Encoder newInt64Encoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.INT64
+    );
+  }
+
+  public Int64Decoder newInt64Decoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.INT64
+    );
+  }
+
+  public Float32Encoder newFloat32Encoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.FLOAT32
+    );
+  }
+
+  public Float32Decoder newFloat32Decoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.FLOAT32
+    );
+  }
+
+  public Float64Encoder newFloat64Encoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.FLOAT64
+    );
+  }
+
+  public Float64Decoder newFloat64Decoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.FLOAT64
+    );
+  }
+
+  public BytesEncoder newBytesEncoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.BINARY
+    );
+  }
+
+  public BytesDecoder newBytesDecoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.BINARY
+    );
+  }
+
+  public StringEncoder newStringEncoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.STRING
+    );
+  }
+
+  public StringDecoder newStringDecoder() {
+    throw new UnsupportedEncodingException(
+        this, Type.STRING
+    );
+  }
 }

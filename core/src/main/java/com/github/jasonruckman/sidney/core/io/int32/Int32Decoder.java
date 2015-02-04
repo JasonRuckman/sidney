@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.int32;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Int32Decoder extends Decoder {
-    int nextInt();
+  int nextInt();
 
-    int[] nextInts(int num);
+  int[] nextInts(int num);
 }

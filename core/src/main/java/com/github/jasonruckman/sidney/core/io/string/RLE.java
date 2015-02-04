@@ -26,97 +26,97 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class RLE {
-    private static final Encoding RUN_SIZE_ENCODING = Encoding.DELTABITPACKINGHYBRID;
+  private static final Encoding RUN_SIZE_ENCODING = Encoding.DELTABITPACKINGHYBRID;
 
-    public static class RLEStringDecoder extends BaseDecoder implements StringDecoder {
-        private final StringDecoder valueDecoder = Encoding.PLAIN.newStringDecoder();
-        private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+  public static class RLEStringDecoder extends BaseDecoder implements StringDecoder {
+    private final StringDecoder valueDecoder = Encoding.PLAIN.newStringDecoder();
+    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
 
-        private int runSize = 0;
-        private String currentRun = null;
+    private int runSize = 0;
+    private String currentRun = null;
 
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            runSize = 0;
-            currentRun = null;
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      runSize = 0;
+      currentRun = null;
 
-            valueDecoder.readFromStream(inputStream);
-            runSizeDecoder.readFromStream(inputStream);
-        }
-
-        @Override
-        public String readString() {
-            if (runSize-- == 0) {
-                loadNextRun();
-                runSize--;
-            }
-            return currentRun;
-        }
-
-        @Override
-        public String[] readStrings(int num) {
-            String[] strings = new String[num];
-            for (int i = 0; i < num; i++) {
-                strings[i] = readString();
-            }
-            return strings;
-        }
-
-        private void loadNextRun() {
-            currentRun = valueDecoder.readString();
-            runSize = runSizeDecoder.nextInt();
-        }
+      valueDecoder.readFromStream(inputStream);
+      runSizeDecoder.readFromStream(inputStream);
     }
 
-    public static class RLEStringEncoder extends BaseEncoder implements StringEncoder {
-        private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
-        private final StringEncoder valueEncoder = new Plain.PlainStringEncoder();
-        private String currentRun = "";
-        private int runSize;
-        private boolean isNewRun = true;
-
-        @Override
-        public void writeString(String s) {
-            if (isNewRun) {
-                currentRun = s;
-                isNewRun = false;
-            } else if (!s.equals(currentRun)) {
-                flush();
-                currentRun = s;
-            }
-            ++runSize;
-        }
-
-        @Override
-        public void writeStrings(String[] s) {
-            for (String str : s) {
-                writeString(str);
-            }
-        }
-
-        private void flush() {
-            valueEncoder.writeString(currentRun);
-            runSizeEncoder.writeInt(runSize);
-
-            currentRun = "";
-            runSize = 0;
-        }
-
-        @Override
-        public void reset() {
-            valueEncoder.reset();
-            runSizeEncoder.reset();
-            currentRun = "";
-            runSize = 0;
-            isNewRun = true;
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            flush();
-
-            valueEncoder.writeToStream(outputStream);
-            runSizeEncoder.writeToStream(outputStream);
-        }
+    @Override
+    public String readString() {
+      if (runSize-- == 0) {
+        loadNextRun();
+        runSize--;
+      }
+      return currentRun;
     }
+
+    @Override
+    public String[] readStrings(int num) {
+      String[] strings = new String[num];
+      for (int i = 0; i < num; i++) {
+        strings[i] = readString();
+      }
+      return strings;
+    }
+
+    private void loadNextRun() {
+      currentRun = valueDecoder.readString();
+      runSize = runSizeDecoder.nextInt();
+    }
+  }
+
+  public static class RLEStringEncoder extends BaseEncoder implements StringEncoder {
+    private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
+    private final StringEncoder valueEncoder = new Plain.PlainStringEncoder();
+    private String currentRun = "";
+    private int runSize;
+    private boolean isNewRun = true;
+
+    @Override
+    public void writeString(String s) {
+      if (isNewRun) {
+        currentRun = s;
+        isNewRun = false;
+      } else if (!s.equals(currentRun)) {
+        flush();
+        currentRun = s;
+      }
+      ++runSize;
+    }
+
+    @Override
+    public void writeStrings(String[] s) {
+      for (String str : s) {
+        writeString(str);
+      }
+    }
+
+    private void flush() {
+      valueEncoder.writeString(currentRun);
+      runSizeEncoder.writeInt(runSize);
+
+      currentRun = "";
+      runSize = 0;
+    }
+
+    @Override
+    public void reset() {
+      valueEncoder.reset();
+      runSizeEncoder.reset();
+      currentRun = "";
+      runSize = 0;
+      isNewRun = true;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      flush();
+
+      valueEncoder.writeToStream(outputStream);
+      runSizeEncoder.writeToStream(outputStream);
+    }
+  }
 }

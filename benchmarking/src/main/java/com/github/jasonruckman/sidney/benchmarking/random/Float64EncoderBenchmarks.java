@@ -32,31 +32,31 @@ import java.util.Random;
 @Threads(1)
 @Fork(1)
 public class Float64EncoderBenchmarks extends BenchmarkingBase {
-    private final int num = 65536;
-    private final double[] doubles;
+  private final int num = 65536;
+  private final double[] doubles;
 
-    public Float64EncoderBenchmarks() {
-        doubles = new double[num];
-        Random random = new Random(11L);
-        for (int i = 0; i < doubles.length; i++) {
-            doubles[i] = random.nextDouble();
-        }
+  public Float64EncoderBenchmarks() {
+    doubles = new double[num];
+    Random random = new Random(11L);
+    for (int i = 0; i < doubles.length; i++) {
+      doubles[i] = random.nextDouble();
     }
+  }
 
-    @Benchmark
-    @Group("float64Encoders")
-    public double[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainFloat64Encoder.class), getDecoder(Plain.PlainFloat64Decoder.class));
-    }
+  @Benchmark
+  @Group("float64Encoders")
+  public double[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainFloat64Encoder.class), getDecoder(Plain.PlainFloat64Decoder.class));
+  }
 
-    private double[] run(Float64Encoder encoder, Float64Decoder decoder) throws IOException {
-        for (double i : doubles) {
-            encoder.writeDouble(i);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        encoder.reset();
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.nextDoubles(num);
+  private double[] run(Float64Encoder encoder, Float64Decoder decoder) throws IOException {
+    for (double i : doubles) {
+      encoder.writeDouble(i);
     }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    encoder.reset();
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.nextDoubles(num);
+  }
 }

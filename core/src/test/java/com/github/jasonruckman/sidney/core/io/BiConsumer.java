@@ -16,5 +16,5 @@
 package com.github.jasonruckman.sidney.core.io;
 
 public interface BiConsumer<T, R> {
-    void accept(T first, R second);
+  void accept(T first, R second);
 }

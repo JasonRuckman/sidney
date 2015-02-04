@@ -18,6 +18,6 @@ package com.github.jasonruckman.sidney.bitpacking;
 
 public interface Int32BytePackerFactory {
 
-    Int32BytePacker newBytePacker(int width);
+  Int32BytePacker newBytePacker(int width);
 
 }

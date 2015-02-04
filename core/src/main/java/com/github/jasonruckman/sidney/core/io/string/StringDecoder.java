@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.string;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface StringDecoder extends Decoder {
-    String readString();
+  String readString();
 
-    String[] readStrings(int num);
+  String[] readStrings(int num);
 }

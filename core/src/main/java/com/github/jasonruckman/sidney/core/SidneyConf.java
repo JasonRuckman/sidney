@@ -25,81 +25,81 @@ import java.util.List;
  * Various configurations for serialization
  */
 public class SidneyConf {
-    public static final int DEFAULT_SIDNEY_PAGE_SIZE = 1024;
-    private Registrations registrations = new Registrations();
-    private boolean useUnsafe = true;
-    private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
+  public static final int DEFAULT_SIDNEY_PAGE_SIZE = 1024;
+  private Registrations registrations = new Registrations();
+  private boolean useUnsafe = true;
+  private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
 
-    private SidneyConf() {
+  private SidneyConf() {
 
+  }
+
+  /**
+   * Create a new configuration
+   */
+  public static SidneyConf newConf() {
+    return new SidneyConf();
+  }
+
+  /**
+   * Create a new configuration with given registrations
+   */
+  public static SidneyConf newConf(Registrations registrations) {
+    SidneyConf c = new SidneyConf();
+    c.registrations = registrations;
+    return c;
+  }
+
+  public boolean isUseUnsafe() {
+    return useUnsafe;
+  }
+
+  public int getPageSize() {
+    return pageSize;
+  }
+
+  /**
+   * Set whether or not to use unsafe accessors when accessing fields. Defaults to true
+   */
+  public SidneyConf useUnsafe(boolean useUnsafe) {
+    this.useUnsafe = useUnsafe;
+    return this;
+  }
+
+  /**
+   * Set page size that sidney will use to break up large numbers of objects
+   */
+  public SidneyConf pageSize(int pageSize) {
+    this.pageSize = pageSize;
+    return this;
+  }
+
+  /**
+   * Register a {@link com.github.jasonruckman.sidney.core.serde.serializer.Serializer} that will handle instances of the given type, but not subclasses
+   */
+  public SidneyConf register(Class type, Class<? extends Serializer> serializerClass) {
+    registrations.register(type, serializerClass);
+    return this;
+  }
+
+  public Registrations getRegistrations() {
+    return registrations;
+  }
+
+  /**
+   * Contains custom serializer implementations
+   */
+  public static class Registrations {
+    private List<SerializerEntry> registeredFactories = new ArrayList<>();
+
+    public List<SerializerEntry> getRegistrations() {
+      return registeredFactories;
     }
 
-    /**
-     * Create a new configuration
-     */
-    public static SidneyConf newConf() {
-        return new SidneyConf();
+    public void register(Class type, Class<? extends Serializer> serializerFactory) {
+      registeredFactories.add(
+          new SerializerEntry(type, serializerFactory)
+      );
     }
-
-    /**
-     * Create a new configuration with given registrations
-     */
-    public static SidneyConf newConf(Registrations registrations) {
-        SidneyConf c = new SidneyConf();
-        c.registrations = registrations;
-        return c;
-    }
-
-    public boolean isUseUnsafe() {
-        return useUnsafe;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    /**
-     * Set whether or not to use unsafe accessors when accessing fields. Defaults to true
-     */
-    public SidneyConf useUnsafe(boolean useUnsafe) {
-        this.useUnsafe = useUnsafe;
-        return this;
-    }
-
-    /**
-     * Set page size that sidney will use to break up large numbers of objects
-     */
-    public SidneyConf pageSize(int pageSize) {
-        this.pageSize = pageSize;
-        return this;
-    }
-
-    /**
-     * Register a {@link com.github.jasonruckman.sidney.core.serde.serializer.Serializer} that will handle instances of the given type, but not subclasses
-     */
-    public SidneyConf register(Class type, Class<? extends Serializer> serializerClass) {
-        registrations.register(type, serializerClass);
-        return this;
-    }
-
-    public Registrations getRegistrations() {
-        return registrations;
-    }
-
-    /**
-     * Contains custom serializer implementations
-     */
-    public static class Registrations {
-        private List<SerializerEntry> registeredFactories = new ArrayList<>();
-
-        public List<SerializerEntry> getRegistrations() {
-            return registeredFactories;
-        }
-
-        public void register(Class type, Class<? extends Serializer> serializerFactory) {
-            registeredFactories.add(
-                    new SerializerEntry(type, serializerFactory)
-            );
-        }
-    }
+  }
 }

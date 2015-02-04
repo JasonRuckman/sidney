@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core;
 import com.github.jasonruckman.sidney.core.serde.Type;
 
 public class UnsupportedColumnTypeException extends SidneyException {
-    public UnsupportedColumnTypeException(Type type) {
-        super(String.format("Cannot create column for type %s", type));
-    }
+  public UnsupportedColumnTypeException(Type type) {
+    super(String.format("Cannot create column for type %s", type));
+  }
 }

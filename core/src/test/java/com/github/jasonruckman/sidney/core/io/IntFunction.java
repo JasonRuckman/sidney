@@ -16,5 +16,5 @@
 package com.github.jasonruckman.sidney.core.io;
 
 public interface IntFunction<T> {
-    T apply(int value);
+  T apply(int value);
 }

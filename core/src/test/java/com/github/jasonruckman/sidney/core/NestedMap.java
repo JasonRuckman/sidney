@@ -18,37 +18,37 @@ package com.github.jasonruckman.sidney.core;
 import java.util.Map;
 
 public class NestedMap<X, Y> {
-    private Map<X, Y> map;
+  private Map<X, Y> map;
 
-    public Map<X, Y> getMap() {
-        return map;
-    }
+  public Map<X, Y> getMap() {
+    return map;
+  }
 
-    public void setMap(Map<X, Y> map) {
-        this.map = map;
-    }
+  public void setMap(Map<X, Y> map) {
+    this.map = map;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-        NestedMap nestedMap = (NestedMap) o;
+    NestedMap nestedMap = (NestedMap) o;
 
-        if (map != null ? !map.equals(nestedMap.map) : nestedMap.map != null) return false;
+    if (map != null ? !map.equals(nestedMap.map) : nestedMap.map != null) return false;
 
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public int hashCode() {
-        return map != null ? map.hashCode() : 0;
-    }
+  @Override
+  public int hashCode() {
+    return map != null ? map.hashCode() : 0;
+  }
 
-    @Override
-    public String toString() {
-        return "NestedMap{" +
-                "map=" + map +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "NestedMap{" +
+        "map=" + map +
+        '}';
+  }
 }

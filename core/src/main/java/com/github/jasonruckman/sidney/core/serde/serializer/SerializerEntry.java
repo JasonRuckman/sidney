@@ -16,19 +16,19 @@
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
 public class SerializerEntry {
-    private Class type;
-    private Class<? extends Serializer> serializerType;
+  private Class type;
+  private Class<? extends Serializer> serializerType;
 
-    public SerializerEntry(Class type, Class<? extends Serializer> serializerType) {
-        this.type = type;
-        this.serializerType = serializerType;
-    }
+  public SerializerEntry(Class type, Class<? extends Serializer> serializerType) {
+    this.type = type;
+    this.serializerType = serializerType;
+  }
 
-    public Class getType() {
-        return type;
-    }
+  public Class getType() {
+    return type;
+  }
 
-    public Class<? extends Serializer> getSerializerType() {
-        return serializerType;
-    }
+  public Class<? extends Serializer> getSerializerType() {
+    return serializerType;
+  }
 }

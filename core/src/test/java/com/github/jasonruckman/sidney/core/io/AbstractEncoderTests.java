@@ -28,98 +28,98 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
-    private Logger logger = LoggerFactory.getLogger(getRunningClass());
+  private Logger logger = LoggerFactory.getLogger(getRunningClass());
 
-    protected abstract BiConsumer<E, T> encodingFunction();
+  protected abstract BiConsumer<E, T> encodingFunction();
 
-    protected abstract IntFunction<T> dataSupplier();
+  protected abstract IntFunction<T> dataSupplier();
 
-    protected abstract BiConsumer<D, T> consumeAndAssert();
+  protected abstract BiConsumer<D, T> consumeAndAssert();
 
-    protected abstract List<EncoderDecoderPair<E, D>> pairs();
+  protected abstract List<EncoderDecoderPair<E, D>> pairs();
 
-    protected abstract Class getRunningClass();
+  protected abstract Class getRunningClass();
 
-    @Test
-    public void runAll() {
-        for (EncoderDecoderPair<E, D> pair : pairs()) {
-            logger.info(
-                    String.format(
-                            "Testing %s with %s.",
-                            pair.getEncoder().getClass(),
-                            pair.getDecoder().getClass()
-                    )
-            );
-            try {
-                for (int i = 0; i < 8; i++) {
-                    logAndRun(pair, i);
-                }
-
-                for (int i = 8; i < 500000; i += 65536) {
-                    logAndRun(pair, i);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+  @Test
+  public void runAll() {
+    for (EncoderDecoderPair<E, D> pair : pairs()) {
+      logger.info(
+          String.format(
+              "Testing %s with %s.",
+              pair.getEncoder().getClass(),
+              pair.getDecoder().getClass()
+          )
+      );
+      try {
+        for (int i = 0; i < 8; i++) {
+          logAndRun(pair, i);
         }
-    }
 
-    @Test
-    public void runAllWithCompression() {
-        for (EncoderDecoderPair<E, D> pair : pairs()) {
-            logger.info(
-                    String.format(
-                            "Testing %s with %s.",
-                            pair.getEncoder().getClass(),
-                            pair.getDecoder().getClass()
-                    )
-            );
-            try {
-                for (int i = 0; i < 8; i++) {
-                    logAndRunWithCompression(pair, i);
-                }
-
-                for (int i = 8; i < 500000; i += 65536) {
-                    logAndRunWithCompression(pair, i);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        for (int i = 8; i < 500000; i += 65536) {
+          logAndRun(pair, i);
         }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
+  }
 
-    private void logAndRunWithCompression(EncoderDecoderPair<E, D> pair, int size) throws IOException {
-        pair.getEncoder().reset();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gos = new GZIPOutputStream(baos);
-        T t = dataSupplier().apply(size);
-        encodingFunction().accept(pair.getEncoder(), t);
-        pair.getEncoder().writeToStream(gos);
+  @Test
+  public void runAllWithCompression() {
+    for (EncoderDecoderPair<E, D> pair : pairs()) {
+      logger.info(
+          String.format(
+              "Testing %s with %s.",
+              pair.getEncoder().getClass(),
+              pair.getDecoder().getClass()
+          )
+      );
+      try {
+        for (int i = 0; i < 8; i++) {
+          logAndRunWithCompression(pair, i);
+        }
 
-        gos.close();
-        baos.close();
-
-        byte[] bytes = baos.toByteArray();
-        logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-        pair.getDecoder().readFromStream(new GZIPInputStream(
-                        new ByteArrayInputStream(bytes))
-        );
-        consumeAndAssert().accept(pair.getDecoder(), t);
+        for (int i = 8; i < 500000; i += 65536) {
+          logAndRunWithCompression(pair, i);
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
+  }
 
-    private void logAndRun(EncoderDecoderPair<E, D> pair, int size) throws IOException {
-        pair.getEncoder().reset();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        logger.debug(String.format("Testing size %s", size));
-        T t = dataSupplier().apply(size);
-        encodingFunction().accept(pair.getEncoder(), t);
-        pair.getEncoder().writeToStream(baos);
+  private void logAndRunWithCompression(EncoderDecoderPair<E, D> pair, int size) throws IOException {
+    pair.getEncoder().reset();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream gos = new GZIPOutputStream(baos);
+    T t = dataSupplier().apply(size);
+    encodingFunction().accept(pair.getEncoder(), t);
+    pair.getEncoder().writeToStream(gos);
 
-        baos.close();
+    gos.close();
+    baos.close();
 
-        byte[] bytes = baos.toByteArray();
-        logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
-        pair.getDecoder().readFromStream(new ByteArrayInputStream(bytes));
-        consumeAndAssert().accept(pair.getDecoder(), t);
-    }
+    byte[] bytes = baos.toByteArray();
+    logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
+    pair.getDecoder().readFromStream(new GZIPInputStream(
+            new ByteArrayInputStream(bytes))
+    );
+    consumeAndAssert().accept(pair.getDecoder(), t);
+  }
+
+  private void logAndRun(EncoderDecoderPair<E, D> pair, int size) throws IOException {
+    pair.getEncoder().reset();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    logger.debug(String.format("Testing size %s", size));
+    T t = dataSupplier().apply(size);
+    encodingFunction().accept(pair.getEncoder(), t);
+    pair.getEncoder().writeToStream(baos);
+
+    baos.close();
+
+    byte[] bytes = baos.toByteArray();
+    logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
+    pair.getDecoder().readFromStream(new ByteArrayInputStream(bytes));
+    consumeAndAssert().accept(pair.getDecoder(), t);
+  }
 }

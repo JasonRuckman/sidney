@@ -19,123 +19,142 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface WriteContext {
-    /**
-     * Write bool to current column
-     * @param value
-     */
-    void writeBool(boolean value);
+  /**
+   * Write bool to current column
+   *
+   * @param value
+   */
+  void writeBool(boolean value);
 
-    /**
-     * Write byte to current column
-     * @param value the byte
-     */
-    void writeByte(byte value);
+  /**
+   * Write byte to current column
+   *
+   * @param value the byte
+   */
+  void writeByte(byte value);
 
-    /**
-     * Write char to current column
-     * @param value the char
-     */
-    void writeChar(char value);
+  /**
+   * Write char to current column
+   *
+   * @param value the char
+   */
+  void writeChar(char value);
 
-    /**
-     * Write short to current column
-     * @param value the short
-     */
-    void writeShort(short value);
+  /**
+   * Write short to current column
+   *
+   * @param value the short
+   */
+  void writeShort(short value);
 
-    /**
-     * Write int to current column
-     * @param value the int
-     */
-    void writeInt(int value);
+  /**
+   * Write int to current column
+   *
+   * @param value the int
+   */
+  void writeInt(int value);
 
-    /**
-     * Write long to current column
-     * @param value the long
-     */
-    void writeLong(long value);
+  /**
+   * Write long to current column
+   *
+   * @param value the long
+   */
+  void writeLong(long value);
 
-    /**
-     * Write float to current column
-     * @param value the float
-     */
-    void writeFloat(float value);
+  /**
+   * Write float to current column
+   *
+   * @param value the float
+   */
+  void writeFloat(float value);
 
-    /**
-     * Write double to current column
-     * @param value the double
-     */
-    void writeDouble(double value);
+  /**
+   * Write double to current column
+   *
+   * @param value the double
+   */
+  void writeDouble(double value);
 
-    /**
-     * Write bytes to current column
-     * @param value the bytes
-     */
-    void writeBytes(byte[] value);
+  /**
+   * Write bytes to current column
+   *
+   * @param value the bytes
+   */
+  void writeBytes(byte[] value);
 
-    /**
-     * Write string to current column
-     * @param value the string
-     */
-    void writeString(String value);
+  /**
+   * Write string to current column
+   *
+   * @param value the string
+   */
+  void writeString(String value);
 
-    /**
-     * If the value is null, write a null marker
-     * @return if the value is not null
-     */
-    <T> boolean writeNullMarker(T value);
+  /**
+   * If the value is null, write a null marker
+   *
+   * @return if the value is not null
+   */
+  <T> boolean writeNullMarker(T value);
 
-    /**
-     * If the value is null, write a null marker, also write the concrete type
-     * @return if the value is not null
-     */
-    <T> boolean writeNullMarkerAndType(T value);
+  /**
+   * If the value is null, write a null marker, also write the concrete type
+   *
+   * @return if the value is not null
+   */
+  <T> boolean writeNullMarkerAndType(T value);
 
-    /**
-     * Write the repetition count to the current column
-     * @param count the repetition count
-     */
-    void writeRepetitionCount(int count);
+  /**
+   * Write the repetition count to the current column
+   *
+   * @param count the repetition count
+   */
+  void writeRepetitionCount(int count);
 
-    /**
-     * Get the current column index
-     * @return the current column index
-     */
-    int getColumnIndex();
+  /**
+   * Get the current column index
+   *
+   * @return the current column index
+   */
+  int getColumnIndex();
 
-    /**
-     * Set the column index to a given value
-     * @param index the new value
-     */
-    void setColumnIndex(int index);
+  /**
+   * Set the column index to a given value
+   *
+   * @param index the new value
+   */
+  void setColumnIndex(int index);
 
-    /**
-     * Increment the column index by one
-     */
-    void incrementColumnIndex();
+  /**
+   * Increment the column index by one
+   */
+  void incrementColumnIndex();
 
-    /**
-     * Increment the column index by a given amount
-     * @param size size to increment by
-     */
-    void incrementColumnIndex(int size);
+  /**
+   * Increment the column index by a given amount
+   *
+   * @param size size to increment by
+   */
+  void incrementColumnIndex(int size);
 
-    /**
-     * Get the current page header
-     * @return the current page header
-     */
-    PageHeader getPageHeader();
+  /**
+   * Get the current page header
+   *
+   * @return the current page header
+   */
+  PageHeader getPageHeader();
 
-    /**
-     * Set the current page header
-     * @param pageHeader the new page header
-     */
-    void setPageHeader(PageHeader pageHeader);
+  /**
+   * Set the current page header
+   *
+   * @param pageHeader the new page header
+   */
+  void setPageHeader(PageHeader pageHeader);
 
-    /**
-     * Flush all columns to the output stream
-     * @param outputStream the output stream
-     * @throws IOException
-     */
-    void flushToOutputStream(OutputStream outputStream) throws IOException;
+  /**
+   * Flush all columns to the output stream
+   *
+   * @param outputStream the output stream
+   * @throws IOException
+   */
+  void flushToOutputStream(OutputStream outputStream) throws IOException;
 }

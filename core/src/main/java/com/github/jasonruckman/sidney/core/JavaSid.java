@@ -19,23 +19,23 @@ import com.github.jasonruckman.sidney.core.serde.Reader;
 import com.github.jasonruckman.sidney.core.serde.Writer;
 
 public class JavaSid extends BaseSid {
-    /**
-     * Creates a new {@link com.github.jasonruckman.sidney.core.serde.Writer} for the given type token
-     *
-     * @param token a token capturing the type
-     * @return a new {@link com.github.jasonruckman.sidney.core.serde.Writer} bound to the given type
-     */
-    public <T> Writer<T> newWriter(TypeToken<T> token) {
-        return createWriter(token);
-    }
+  /**
+   * Creates a new {@link com.github.jasonruckman.sidney.core.serde.Writer} for the given type token
+   *
+   * @param token a token capturing the type
+   * @return a new {@link com.github.jasonruckman.sidney.core.serde.Writer} bound to the given type
+   */
+  public <T> Writer<T> newWriter(TypeToken<T> token) {
+    return createWriter(token);
+  }
 
-    /**
-     * Creates a new {@link com.github.jasonruckman.sidney.core.serde.Reader} for the given type
-     *
-     * @param token a token capturing the type
-     * @return a new {@link com.github.jasonruckman.sidney.core.serde.Reader} bound to the given type
-     */
-    public <T> Reader<T> newReader(TypeToken<T> token) {
-        return createReader(token);
-    }
+  /**
+   * Creates a new {@link com.github.jasonruckman.sidney.core.serde.Reader} for the given type
+   *
+   * @param token a token capturing the type
+   * @return a new {@link com.github.jasonruckman.sidney.core.serde.Reader} bound to the given type
+   */
+  public <T> Reader<T> newReader(TypeToken<T> token) {
+    return createReader(token);
+  }
 }

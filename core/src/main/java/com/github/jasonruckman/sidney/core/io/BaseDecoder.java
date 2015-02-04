@@ -22,72 +22,72 @@ import java.io.InputStream;
 import java.nio.BufferUnderflowException;
 
 public abstract class BaseDecoder implements Decoder {
-    private byte[] buffer;
-    private int position = 0;
+  private byte[] buffer;
+  private int position = 0;
 
-    public byte[] getBuffer() {
-        return buffer;
-    }
+  public byte[] getBuffer() {
+    return buffer;
+  }
 
-    public void setBuffer(byte[] buffer) {
-        this.buffer = buffer;
-    }
+  public void setBuffer(byte[] buffer) {
+    this.buffer = buffer;
+  }
 
-    public int getPosition() {
-        return position;
-    }
+  public int getPosition() {
+    return position;
+  }
 
-    public void setPosition(int position) {
-        this.position = position;
-    }
+  public void setPosition(int position) {
+    this.position = position;
+  }
 
-    public void incrementPosition(int size) {
-        position += size;
-    }
+  public void incrementPosition(int size) {
+    position += size;
+  }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-        setPosition(0);
-        int bufferSize = Bytes.readIntFromStream(inputStream);
-        buffer = new byte[bufferSize];
-        Bytes.readFully(buffer, inputStream);
-    }
+  @Override
+  public void readFromStream(InputStream inputStream) throws IOException {
+    setPosition(0);
+    int bufferSize = Bytes.readIntFromStream(inputStream);
+    buffer = new byte[bufferSize];
+    Bytes.readFully(buffer, inputStream);
+  }
 
-    protected byte readByteFromBuffer() {
-        require(1);
-        return buffer[position++];
-    }
+  protected byte readByteFromBuffer() {
+    require(1);
+    return buffer[position++];
+  }
 
-    protected boolean readBooleanFromBuffer() {
-        require(1);
-        return buffer[position++] > 0;
-    }
+  protected boolean readBooleanFromBuffer() {
+    require(1);
+    return buffer[position++] > 0;
+  }
 
-    protected byte[] readBytesFromBuffer(int num) {
-        require(num);
-        byte[] buf = new byte[num];
-        System.arraycopy(getBuffer(), getPosition(), buf, 0, num);
-        incrementPosition(num);
-        return buf;
-    }
+  protected byte[] readBytesFromBuffer(int num) {
+    require(num);
+    byte[] buf = new byte[num];
+    System.arraycopy(getBuffer(), getPosition(), buf, 0, num);
+    incrementPosition(num);
+    return buf;
+  }
 
-    protected int readIntFromBuffer() {
-        require(4);
-        int i = Bytes.readInt(getBuffer(), getPosition());
-        position += 4;
-        return i;
-    }
+  protected int readIntFromBuffer() {
+    require(4);
+    int i = Bytes.readInt(getBuffer(), getPosition());
+    position += 4;
+    return i;
+  }
 
-    protected long readLongFromBuffer() {
-        require(8);
-        long l = Bytes.readLong(getBuffer(), getPosition());
-        position += 8;
-        return l;
-    }
+  protected long readLongFromBuffer() {
+    require(8);
+    long l = Bytes.readLong(getBuffer(), getPosition());
+    position += 8;
+    return l;
+  }
 
-    private void require(int size) {
-        if (position + size > buffer.length) {
-            throw new BufferUnderflowException();
-        }
+  private void require(int size) {
+    if (position + size > buffer.length) {
+      throw new BufferUnderflowException();
     }
+  }
 }

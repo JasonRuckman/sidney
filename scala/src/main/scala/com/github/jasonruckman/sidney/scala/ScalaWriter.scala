@@ -20,6 +20,6 @@ import com.github.jasonruckman.sidney.core.serde.{BaseWriter, Writer}
 
 import scala.reflect.runtime.universe._
 
-class ScalaWriter[T](conf : SidneyConf, tag : TypeTag[T])
+class ScalaWriter[T](conf: SidneyConf, tag: TypeTag[T])
   extends BaseWriter[T](conf, ScalaTypeRefBuilder.typeRef[T]()(tag)) with Writer[T] {
 }

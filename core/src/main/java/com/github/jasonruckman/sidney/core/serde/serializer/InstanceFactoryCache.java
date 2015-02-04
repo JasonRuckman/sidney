@@ -22,25 +22,25 @@ import java.util.Map;
  * Simple cache for creating new instances that remembers the previous type created for quick lookup
  */
 class InstanceFactoryCache {
-    private Class lastClass;
-    private InstanceFactory lastFactory;
-    private Map<Class, InstanceFactory> factories = new HashMap<>();
+  private Class lastClass;
+  private InstanceFactory lastFactory;
+  private Map<Class, InstanceFactory> factories = new HashMap<>();
 
-    /**
-     * Create a new instance of {@param type}, must have a default constructor
-     */
-    public Object newInstance(Class type) {
-        if (type == lastClass) {
-            return lastFactory.newInstance();
-        }
-
-        lastFactory = factories.get(type);
-        lastClass = type;
-
-        if (lastFactory == null) {
-            lastFactory = new InstanceFactory(type);
-            factories.put(type, lastFactory);
-        }
-        return lastFactory.newInstance();
+  /**
+   * Create a new instance of {@param type}, must have a default constructor
+   */
+  public Object newInstance(Class type) {
+    if (type == lastClass) {
+      return lastFactory.newInstance();
     }
+
+    lastFactory = factories.get(type);
+    lastClass = type;
+
+    if (lastFactory == null) {
+      lastFactory = new InstanceFactory(type);
+      factories.put(type, lastFactory);
+    }
+    return lastFactory.newInstance();
+  }
 }

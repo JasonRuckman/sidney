@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.int32;
 import com.github.jasonruckman.sidney.core.io.Encoder;
 
 public interface Int32Encoder extends Encoder {
-    void writeInt(int value);
+  void writeInt(int value);
 
-    void writeInts(int[] values);
+  void writeInts(int[] values);
 }

@@ -19,31 +19,34 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface Reader<T> {
-    /**
-     * Check for new items
-     * @return whether there are more items
-     */
-    boolean hasNext();
+  /**
+   * Check for new items
+   *
+   * @return whether there are more items
+   */
+  boolean hasNext();
 
-    /**
-     * Read the next item from the stream
-     * @return the next item
-     */
-    T read();
+  /**
+   * Read the next item from the stream
+   *
+   * @return the next item
+   */
+  T read();
 
-    /**
-     * Read all items from the stream
-     * @return all items
-     */
-    List<T> readAll();
+  /**
+   * Read all items from the stream
+   *
+   * @return all items
+   */
+  List<T> readAll();
 
-    /**
-     * Open the given {@link java.io.InputStream} for reading.
-     */
-    void open(InputStream inputStream);
+  /**
+   * Open the given {@link java.io.InputStream} for reading.
+   */
+  void open(InputStream inputStream);
 
-    /**
-     * Marks this reader as closed, does not close the underlying stream
-     */
-    void close();
+  /**
+   * Marks this reader as closed, does not close the underlying stream
+   */
+  void close();
 }

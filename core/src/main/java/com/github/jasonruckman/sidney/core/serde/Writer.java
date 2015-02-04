@@ -18,30 +18,30 @@ package com.github.jasonruckman.sidney.core.serde;
 import java.io.OutputStream;
 
 public interface Writer<T> {
-    /**
-     * Get the root type of this writer
-     *
-     * @return the root type
-     */
-    public Class<T> getType();
+  /**
+   * Get the root type of this writer
+   *
+   * @return the root type
+   */
+  public Class<T> getType();
 
-    /**
-     * Write the given value
-     */
-    void write(T value);
+  /**
+   * Write the given value
+   */
+  void write(T value);
 
-    /**
-     * Open this writer against the given {@link java.io.OutputStream}
-     */
-    void open(OutputStream outputStream);
+  /**
+   * Open this writer against the given {@link java.io.OutputStream}
+   */
+  void open(OutputStream outputStream);
 
-    /**
-     * Force flush this writer to the underlying stream
-     */
-    void flush();
+  /**
+   * Force flush this writer to the underlying stream
+   */
+  void flush();
 
-    /**
-     * Flush the last page and mark the writer as closed, do not close underlying stream
-     */
-    void close();
+  /**
+   * Flush the last page and mark the writer as closed, do not close underlying stream
+   */
+  void close();
 }

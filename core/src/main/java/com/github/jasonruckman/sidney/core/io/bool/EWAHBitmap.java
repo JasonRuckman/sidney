@@ -23,87 +23,87 @@ import com.googlecode.javaewah.IntIterator;
 import java.io.*;
 
 public class EWAHBitmap {
-    public static class EWAHBitmapBoolDecoder extends BaseDecoder implements BoolDecoder {
-        private EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
+  public static class EWAHBitmapBoolDecoder extends BaseDecoder implements BoolDecoder {
+    private EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
 
-        private int index = 0;
-        private int nextTrueBit = -1;
-        private IntIterator intIterator;
+    private int index = 0;
+    private int nextTrueBit = -1;
+    private IntIterator intIterator;
 
-        @Override
-        public boolean nextBool() {
-            if (index++ == nextTrueBit) {
-                if (intIterator.hasNext()) {
-                    nextTrueBit = intIterator.next();
-                }
-                return true;
-            }
-            return false;
+    @Override
+    public boolean nextBool() {
+      if (index++ == nextTrueBit) {
+        if (intIterator.hasNext()) {
+          nextTrueBit = intIterator.next();
         }
-
-        @Override
-        public boolean[] nextBools(int num) {
-            boolean[] booleans = new boolean[num];
-            for (int i = 0; i < num; i++) {
-                booleans[i] = nextBool();
-            }
-            return booleans;
-        }
-
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            int num = Bytes.readIntFromStream(inputStream);
-            if(num > 0) {
-                index = 0;
-                nextTrueBit = -1;
-                bitmap.deserialize(new DataInputStream(inputStream));
-                intIterator = bitmap.intIterator();
-                if (intIterator.hasNext()) {
-                    nextTrueBit = intIterator.next();
-                }
-            }
-        }
+        return true;
+      }
+      return false;
     }
 
-    /**
-     * Encodes booleans into a compressed bitmap.
-     */
-    public static class EWAHBitmapBoolEncoder implements BoolEncoder {
-        private EWAHCompressedBitmap currentBitmap;
-        private int currentIndex = 0;
-
-        public EWAHBitmapBoolEncoder() {
-            currentBitmap = new EWAHCompressedBitmap();
-        }
-
-        @Override
-        public void writeBool(boolean value) {
-            if (value) {
-                currentBitmap.set(currentIndex);
-            }
-            ++currentIndex;
-        }
-
-        @Override
-        public void writeBools(boolean[] values) {
-            for (boolean value : values) {
-                writeBool(value);
-            }
-        }
-
-        @Override
-        public void reset() {
-            currentBitmap.clear();
-            currentIndex = 0;
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            Bytes.writeIntToStream(currentIndex, outputStream);
-            if(currentIndex > 0) {
-                DataOutputStream dos = new DataOutputStream(outputStream);
-                currentBitmap.serialize(dos);
-            }
-        }
+    @Override
+    public boolean[] nextBools(int num) {
+      boolean[] booleans = new boolean[num];
+      for (int i = 0; i < num; i++) {
+        booleans[i] = nextBool();
+      }
+      return booleans;
     }
+
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      int num = Bytes.readIntFromStream(inputStream);
+      if (num > 0) {
+        index = 0;
+        nextTrueBit = -1;
+        bitmap.deserialize(new DataInputStream(inputStream));
+        intIterator = bitmap.intIterator();
+        if (intIterator.hasNext()) {
+          nextTrueBit = intIterator.next();
+        }
+      }
+    }
+  }
+
+  /**
+   * Encodes booleans into a compressed bitmap.
+   */
+  public static class EWAHBitmapBoolEncoder implements BoolEncoder {
+    private EWAHCompressedBitmap currentBitmap;
+    private int currentIndex = 0;
+
+    public EWAHBitmapBoolEncoder() {
+      currentBitmap = new EWAHCompressedBitmap();
+    }
+
+    @Override
+    public void writeBool(boolean value) {
+      if (value) {
+        currentBitmap.set(currentIndex);
+      }
+      ++currentIndex;
+    }
+
+    @Override
+    public void writeBools(boolean[] values) {
+      for (boolean value : values) {
+        writeBool(value);
+      }
+    }
+
+    @Override
+    public void reset() {
+      currentBitmap.clear();
+      currentIndex = 0;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      Bytes.writeIntToStream(currentIndex, outputStream);
+      if (currentIndex > 0) {
+        DataOutputStream dos = new DataOutputStream(outputStream);
+        currentBitmap.serialize(dos);
+      }
+    }
+  }
 }

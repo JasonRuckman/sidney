@@ -26,85 +26,85 @@ import java.io.OutputStream;
  * Encodes bools as single bits, packed 64 to a long
  */
 public class BitPacking {
-    public static class BitPackingBoolDecoder extends BaseDecoder implements BoolDecoder {
-        private int currentBitIndex = 0;
-        private long word = 0;
+  public static class BitPackingBoolDecoder extends BaseDecoder implements BoolDecoder {
+    private int currentBitIndex = 0;
+    private long word = 0;
 
-        @Override
-        public boolean nextBool() {
-            boolean result = (word & (1L << currentBitIndex)) > 0;
+    @Override
+    public boolean nextBool() {
+      boolean result = (word & (1L << currentBitIndex)) > 0;
 
-            if (++currentBitIndex == 32) {
-                loadNextWord();
-            }
+      if (++currentBitIndex == 32) {
+        loadNextWord();
+      }
 
-            return result;
-        }
-
-        @Override
-        public boolean[] nextBools(int num) {
-            boolean[] booleans = new boolean[num];
-            for (int i = 0; i < num; i++) {
-                booleans[i] = nextBool();
-            }
-            return booleans;
-        }
-
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            super.readFromStream(inputStream);
-
-            loadNextWord();
-        }
-
-        private void loadNextWord() {
-            word = readLongFromBuffer();
-            currentBitIndex = 0;
-        }
+      return result;
     }
 
-    public static class BitPackingBoolEncoder extends BaseEncoder implements BoolEncoder {
-        private int currentBitIndex = 0;
-        private long word = 0;
-
-        @Override
-        public void writeBool(boolean value) {
-            if (value) {
-                word |= (1L << currentBitIndex);
-            }
-
-            if (++currentBitIndex == 32) {
-                flushWord();
-            }
-        }
-
-        @Override
-        public void writeBools(boolean[] values) {
-            for (boolean b : values) {
-                writeBool(b);
-            }
-        }
-
-        @Override
-        public void reset() {
-            super.reset();
-
-            currentBitIndex = 0;
-            word = 0;
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            //account for the current byte we are on
-            flushWord();
-            super.writeToStream(outputStream);
-        }
-
-        private void flushWord() {
-            writeLongToBuffer(word);
-
-            currentBitIndex = 0;
-            word = 0;
-        }
+    @Override
+    public boolean[] nextBools(int num) {
+      boolean[] booleans = new boolean[num];
+      for (int i = 0; i < num; i++) {
+        booleans[i] = nextBool();
+      }
+      return booleans;
     }
+
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      super.readFromStream(inputStream);
+
+      loadNextWord();
+    }
+
+    private void loadNextWord() {
+      word = readLongFromBuffer();
+      currentBitIndex = 0;
+    }
+  }
+
+  public static class BitPackingBoolEncoder extends BaseEncoder implements BoolEncoder {
+    private int currentBitIndex = 0;
+    private long word = 0;
+
+    @Override
+    public void writeBool(boolean value) {
+      if (value) {
+        word |= (1L << currentBitIndex);
+      }
+
+      if (++currentBitIndex == 32) {
+        flushWord();
+      }
+    }
+
+    @Override
+    public void writeBools(boolean[] values) {
+      for (boolean b : values) {
+        writeBool(b);
+      }
+    }
+
+    @Override
+    public void reset() {
+      super.reset();
+
+      currentBitIndex = 0;
+      word = 0;
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      //account for the current byte we are on
+      flushWord();
+      super.writeToStream(outputStream);
+    }
+
+    private void flushWord() {
+      writeLongToBuffer(word);
+
+      currentBitIndex = 0;
+      word = 0;
+    }
+  }
 }

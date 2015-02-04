@@ -19,7 +19,7 @@ import com.github.jasonruckman.sidney.core.io.Encoding;
 import com.github.jasonruckman.sidney.core.serde.Type;
 
 public class UnsupportedEncodingException extends SidneyException {
-    public UnsupportedEncodingException(Encoding encoding, Type type) {
-        super(String.format("Encoding %s is not supported for type %s", encoding, type));
-    }
+  public UnsupportedEncodingException(Encoding encoding, Type type) {
+    super(String.format("Encoding %s is not supported for type %s", encoding, type));
+  }
 }

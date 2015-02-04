@@ -23,76 +23,84 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 public class ArraySerdeTest extends SerdeTestBase {
-    @Test
-    public void testInts() {
-        int[] ints = getDataFactory().newInts();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<int[]> writer = sid.newWriter(new TypeToken<int[]>() {});
-        writer.open(baos);
-        writer.write(ints);
-        writer.write(ints);
-        writer.close();
+  @Test
+  public void testInts() {
+    int[] ints = getDataFactory().newInts();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<int[]> writer = sid.newWriter(new TypeToken<int[]>() {
+    });
+    writer.open(baos);
+    writer.write(ints);
+    writer.write(ints);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<int[]> reader = sid.newReader(new TypeToken<int[]>() {});
-        reader.open(bais);
-        int[] output = (reader.hasNext()) ? reader.read() : null;
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<int[]> reader = sid.newReader(new TypeToken<int[]>() {
+    });
+    reader.open(bais);
+    int[] output = (reader.hasNext()) ? reader.read() : null;
 
-        Assert.assertArrayEquals(ints, output);
-    }
+    Assert.assertArrayEquals(ints, output);
+  }
 
-    @Test
-    public void testArrayOfBeans() {
-        AllPrimitives[] primitiveses = new AllPrimitives[]{
-                getDataFactory().newPrimitives(),
-                getDataFactory().newPrimitives()
-        };
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<AllPrimitives[]> writer = sid.newWriter(new TypeToken<AllPrimitives[]>() {});
-        writer.open(baos);
-        writer.write(primitiveses);
-        writer.close();
+  @Test
+  public void testArrayOfBeans() {
+    AllPrimitives[] primitiveses = new AllPrimitives[]{
+        getDataFactory().newPrimitives(),
+        getDataFactory().newPrimitives()
+    };
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<AllPrimitives[]> writer = sid.newWriter(new TypeToken<AllPrimitives[]>() {
+    });
+    writer.open(baos);
+    writer.write(primitiveses);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitives[]> reader = sid.newReader(new TypeToken<AllPrimitives[]>() {});
-        reader.open(bais);
-        AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertArrayEquals(primitiveses, output);
-    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<AllPrimitives[]> reader = sid.newReader(new TypeToken<AllPrimitives[]>() {
+    });
+    reader.open(bais);
+    AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertArrayEquals(primitiveses, output);
+  }
 
-    @Test
-    public void testNestedPrimitiveArrays() {
-        AllPrimitiveArrays arrays = getDataFactory().newAllArrays();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<AllPrimitiveArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveArrays>() {});
-        writer.open(baos);
-        writer.write(arrays);
-        writer.close();
+  @Test
+  public void testNestedPrimitiveArrays() {
+    AllPrimitiveArrays arrays = getDataFactory().newAllArrays();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<AllPrimitiveArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveArrays>() {
+    });
+    writer.open(baos);
+    writer.write(arrays);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveArrays> reader = sid.newReader(new TypeToken<AllPrimitiveArrays>() {});
-        reader.open(bais);
-        AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertEquals(arrays, output);
-    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<AllPrimitiveArrays> reader = sid.newReader(new TypeToken<AllPrimitiveArrays>() {
+    });
+    reader.open(bais);
+    AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertEquals(arrays, output);
+  }
 
-    @Test
-    public void testPrimitiveRefArrays() {
-        AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveRefsArrays>() {});
-        writer.open(baos);
-        writer.write(one);
-        writer.close();
+  @Test
+  public void testPrimitiveRefArrays() {
+    AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveRefsArrays>() {
+    });
+    writer.open(baos);
+    writer.write(one);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<AllPrimitiveRefsArrays> reader = sid.newReader(new TypeToken<AllPrimitiveRefsArrays>() {});
-        reader.open(bais);
-        AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertEquals(one, out);
-    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<AllPrimitiveRefsArrays> reader = sid.newReader(new TypeToken<AllPrimitiveRefsArrays>() {
+    });
+    reader.open(bais);
+    AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertEquals(one, out);
+  }
 }

@@ -18,20 +18,20 @@ package com.github.jasonruckman.sidney.core.serde.serializer;
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 
 public class InstanceFactory {
-    private ConstructorAccess access;
+  private ConstructorAccess access;
 
-    public InstanceFactory(Class type) {
-        access = ConstructorAccess.get(type);
-    }
+  public InstanceFactory(Class type) {
+    access = ConstructorAccess.get(type);
+  }
 
-    /**
-     * Create a new instance of the given type using the default constructor
-     */
-    public Object newInstance() {
-        try {
-            return access.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+  /**
+   * Create a new instance of the given type using the default constructor
+   */
+  public Object newInstance() {
+    try {
+      return access.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
+  }
 }

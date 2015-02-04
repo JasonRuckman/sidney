@@ -19,7 +19,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public abstract class TypeCapture<T> {
-  /** Returns the captured type. */
+  /**
+   * Returns the captured type.
+   */
   protected Type capture() {
     Type superclass = getClass().getGenericSuperclass();
     return ((ParameterizedType) superclass).getActualTypeArguments()[0];

@@ -18,14 +18,14 @@ package com.github.jasonruckman.sidney.core.io.bytes;
 import com.github.jasonruckman.sidney.core.io.BaseEncoder;
 
 public class ByteArrayEncoder extends BaseEncoder implements BytesEncoder {
-    @Override
-    public void writeBytes(byte[] bytes) {
-        writeBytes(bytes, 0, bytes.length);
-    }
+  @Override
+  public void writeBytes(byte[] bytes) {
+    writeBytes(bytes, 0, bytes.length);
+  }
 
-    @Override
-    public void writeBytes(byte[] bytes, int offset, int length) {
-        writeIntToBuffer(length);
-        writeBytesToBuffer(bytes, offset, length);
-    }
+  @Override
+  public void writeBytes(byte[] bytes, int offset, int length) {
+    writeIntToBuffer(length);
+    writeBytesToBuffer(bytes, offset, length);
+  }
 }

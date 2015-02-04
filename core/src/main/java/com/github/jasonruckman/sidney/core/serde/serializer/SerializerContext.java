@@ -18,21 +18,23 @@ package com.github.jasonruckman.sidney.core.serde.serializer;
 import com.github.jasonruckman.sidney.core.TypeRef;
 
 public interface SerializerContext {
-    /**
-     * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef}
-     * @param typeRef the type ref
-     * @param <T> type of serializer
-     * @return an initialized serializer
-     */
-    <T> Serializer<T> serializer(TypeRef typeRef);
+  /**
+   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef}
+   *
+   * @param typeRef the type ref
+   * @param <T>     type of serializer
+   * @return an initialized serializer
+   */
+  <T> Serializer<T> serializer(TypeRef typeRef);
 
-    /**
-     * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef} with the given {@link Serializer} as a parent.
-     * Unless you are the root serializer, this is the call to use for custom serialization
-     * @param typeRef the type ref
-     * @param parent type of serializer
-     * @param <T> type of serializer
-     * @return an initialized serializer with the given {@link Serializer} as the parent.
-     */
-    <T> Serializer<T> serializer(TypeRef typeRef, Serializer parent);
+  /**
+   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef} with the given {@link Serializer} as a parent.
+   * Unless you are the root serializer, this is the call to use for custom serialization
+   *
+   * @param typeRef the type ref
+   * @param parent  type of serializer
+   * @param <T>     type of serializer
+   * @return an initialized serializer with the given {@link Serializer} as the parent.
+   */
+  <T> Serializer<T> serializer(TypeRef typeRef, Serializer parent);
 }

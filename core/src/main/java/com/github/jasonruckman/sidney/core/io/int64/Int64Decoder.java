@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.int64;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Int64Decoder extends Decoder {
-    long nextLong();
+  long nextLong();
 
-    long[] nextLongs(int num);
+  long[] nextLongs(int num);
 }

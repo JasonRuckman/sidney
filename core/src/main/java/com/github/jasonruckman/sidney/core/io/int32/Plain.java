@@ -19,33 +19,33 @@ import com.github.jasonruckman.sidney.core.io.BaseDecoder;
 import com.github.jasonruckman.sidney.core.io.BaseEncoder;
 
 public class Plain {
-    public static class PlainInt32Decoder extends BaseDecoder implements Int32Decoder {
-        @Override
-        public int nextInt() {
-            return readIntFromBuffer();
-        }
-
-        @Override
-        public int[] nextInts(int num) {
-            int[] results = new int[num];
-            for (int i = 0; i < num; i++) {
-                results[i] = nextInt();
-            }
-            return results;
-        }
+  public static class PlainInt32Decoder extends BaseDecoder implements Int32Decoder {
+    @Override
+    public int nextInt() {
+      return readIntFromBuffer();
     }
 
-    public static class PlainInt32Encoder extends BaseEncoder implements Int32Encoder {
-        @Override
-        public void writeInt(int value) {
-            writeIntToBuffer(value);
-        }
-
-        @Override
-        public void writeInts(int[] values) {
-            for (int value : values) {
-                writeInt(value);
-            }
-        }
+    @Override
+    public int[] nextInts(int num) {
+      int[] results = new int[num];
+      for (int i = 0; i < num; i++) {
+        results[i] = nextInt();
+      }
+      return results;
     }
+  }
+
+  public static class PlainInt32Encoder extends BaseEncoder implements Int32Encoder {
+    @Override
+    public void writeInt(int value) {
+      writeIntToBuffer(value);
+    }
+
+    @Override
+    public void writeInts(int[] values) {
+      for (int value : values) {
+        writeInt(value);
+      }
+    }
+  }
 }

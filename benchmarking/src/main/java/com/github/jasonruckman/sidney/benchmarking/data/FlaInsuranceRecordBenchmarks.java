@@ -41,85 +41,87 @@ import java.util.zip.GZIPOutputStream;
 @Threads(1)
 @Fork(1)
 public class FlaInsuranceRecordBenchmarks {
-    private List<FlaInsuranceRecord> records;
-    private JavaSid sid = new JavaSid();
-    private Kryo kryo = new Kryo();
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private Writer<FlaInsuranceRecord> writer = sid.newWriter(new TypeToken<FlaInsuranceRecord>() {});
-    private Reader<FlaInsuranceRecord> reader = sid.newReader(new TypeToken<FlaInsuranceRecord>() {});
+  private List<FlaInsuranceRecord> records;
+  private JavaSid sid = new JavaSid();
+  private Kryo kryo = new Kryo();
+  private ObjectMapper objectMapper = new ObjectMapper();
+  private Writer<FlaInsuranceRecord> writer = sid.newWriter(new TypeToken<FlaInsuranceRecord>() {
+  });
+  private Reader<FlaInsuranceRecord> reader = sid.newReader(new TypeToken<FlaInsuranceRecord>() {
+  });
 
-    public FlaInsuranceRecordBenchmarks() {
-        sid.useUnsafeFieldAccess(true);
+  public FlaInsuranceRecordBenchmarks() {
+    sid.useUnsafeFieldAccess(true);
 
-        BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
-        CsvParserSettings parserSettings = new CsvParserSettings();
-        parserSettings.setRowProcessor(processor);
-        parserSettings.setHeaderExtractionEnabled(true);
-        CsvFormat format = new CsvFormat();
-        format.setDelimiter(',');
-        format.setLineSeparator("\n");
-        parserSettings.setFormat(format);
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("FL_insurance_sample.csv");
-        CsvParser parser = new CsvParser(parserSettings);
-        parser.parse(new InputStreamReader(inputStream));
-        records = processor.getBeans();
+    BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
+    CsvParserSettings parserSettings = new CsvParserSettings();
+    parserSettings.setRowProcessor(processor);
+    parserSettings.setHeaderExtractionEnabled(true);
+    CsvFormat format = new CsvFormat();
+    format.setDelimiter(',');
+    format.setLineSeparator("\n");
+    parserSettings.setFormat(format);
+    InputStream inputStream = ClassLoader.getSystemResourceAsStream("FL_insurance_sample.csv");
+    CsvParser parser = new CsvParser(parserSettings);
+    parser.parse(new InputStreamReader(inputStream));
+    records = processor.getBeans();
+  }
+
+  @Benchmark
+  @Group("data")
+  public List<FlaInsuranceRecord> sidney() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream os = new GZIPOutputStream(baos);
+    writer.open(os);
+    for (FlaInsuranceRecord record : records) {
+      writer.write(record);
     }
+    writer.close();
+    os.close();
 
-    @Benchmark
-    @Group("data")
-    public List<FlaInsuranceRecord> sidney() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream os = new GZIPOutputStream(baos);
-        writer.open(os);
-        for (FlaInsuranceRecord record : records) {
-            writer.write(record);
-        }
-        writer.close();
-        os.close();
+    List<FlaInsuranceRecord> list = new ArrayList<>();
+    reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
 
-        List<FlaInsuranceRecord> list = new ArrayList<>();
-        reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
-
-        while (reader.hasNext()) {
-            list.add(reader.read());
-        }
-        return list;
+    while (reader.hasNext()) {
+      list.add(reader.read());
     }
+    return list;
+  }
 
-    @Benchmark
-    @Group("data")
-    public List<FlaInsuranceRecord> kryo() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gzos = new GZIPOutputStream(baos);
-        Output output = new Output(gzos);
-        kryo.writeObject(output, records);
-        output.close();
-        gzos.close();
+  @Benchmark
+  @Group("data")
+  public List<FlaInsuranceRecord> kryo() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream gzos = new GZIPOutputStream(baos);
+    Output output = new Output(gzos);
+    kryo.writeObject(output, records);
+    output.close();
+    gzos.close();
 
-        InputStream inputStream = new BufferedInputStream(
-                new GZIPInputStream(
-                        new ByteArrayInputStream(baos.toByteArray())
-                )
-        );
+    InputStream inputStream = new BufferedInputStream(
+        new GZIPInputStream(
+            new ByteArrayInputStream(baos.toByteArray())
+        )
+    );
 
-        Input input = new Input(inputStream);
-        return kryo.readObject(input, ArrayList.class);
-    }
+    Input input = new Input(inputStream);
+    return kryo.readObject(input, ArrayList.class);
+  }
 
-    @Benchmark
-    @Group("data")
-    public List<FlaInsuranceRecord> jackson() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gzos = new GZIPOutputStream(baos);
-        objectMapper.writeValue(gzos, records);
-        gzos.close();
+  @Benchmark
+  @Group("data")
+  public List<FlaInsuranceRecord> jackson() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream gzos = new GZIPOutputStream(baos);
+    objectMapper.writeValue(gzos, records);
+    gzos.close();
 
-        InputStream inputStream = new BufferedInputStream(
-                new GZIPInputStream(
-                        new ByteArrayInputStream(baos.toByteArray())
-                )
-        );
+    InputStream inputStream = new BufferedInputStream(
+        new GZIPInputStream(
+            new ByteArrayInputStream(baos.toByteArray())
+        )
+    );
 
-        return objectMapper.readValue(inputStream, ArrayList.class);
-    }
+    return objectMapper.readValue(inputStream, ArrayList.class);
+  }
 }

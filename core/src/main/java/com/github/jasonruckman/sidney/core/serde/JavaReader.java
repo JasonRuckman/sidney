@@ -20,7 +20,7 @@ import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.TypeToken;
 
 public class JavaReader<T> extends BaseReader<T> implements Reader<T> {
-    public JavaReader(SidneyConf conf, TypeToken<T> token) {
-        super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
-    }
+  public JavaReader(SidneyConf conf, TypeToken<T> token) {
+    super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
+  }
 }

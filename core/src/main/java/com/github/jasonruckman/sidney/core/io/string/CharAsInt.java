@@ -29,75 +29,75 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 
 public class CharAsInt {
-    public static class CharAsIntStringDecoder extends BaseDecoder implements StringDecoder {
-        private final Int32Decoder lengthDecoder = new DeltaBitPacking.DeltaBitPackingInt32Decoder();
-        private final Int32Decoder characterDecoder = new DeltaBitPacking.DeltaBitPackingInt32Decoder();
+  public static class CharAsIntStringDecoder extends BaseDecoder implements StringDecoder {
+    private final Int32Decoder lengthDecoder = new DeltaBitPacking.DeltaBitPackingInt32Decoder();
+    private final Int32Decoder characterDecoder = new DeltaBitPacking.DeltaBitPackingInt32Decoder();
 
-        @Override
-        public String readString() {
-            char[] arr = new char[lengthDecoder.nextInt()];
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = (char) characterDecoder.nextInt();
-            }
-            return new String(arr);
-        }
-
-        @Override
-        public String[] readStrings(int num) {
-            String[] strings = new String[num];
-            for (int i = 0; i < num; i++) {
-                strings[i] = readString();
-            }
-            return strings;
-        }
-
-        @Override
-        public void readFromStream(InputStream inputStream) throws IOException {
-            lengthDecoder.readFromStream(inputStream);
-            characterDecoder.readFromStream(inputStream);
-        }
+    @Override
+    public String readString() {
+      char[] arr = new char[lengthDecoder.nextInt()];
+      for (int i = 0; i < arr.length; i++) {
+        arr[i] = (char) characterDecoder.nextInt();
+      }
+      return new String(arr);
     }
 
-    //Special sort of encoder that is efficient on text with characters that have high unicode values, since it delta / bitpacks the values
-    public static class CharAsIntStringEncoder extends BaseEncoder implements StringEncoder {
-        private Accessors.FieldAccessor charArrayField;
-        private Int32Encoder lengthEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
-        private Int32Encoder charEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
-
-        public CharAsIntStringEncoder() {
-            for (Field field : Fields.getAllFieldsNoPrimitiveFilter(String.class)) {
-                if (field.getName().equals("value")) {
-                    charArrayField = Accessors.newAccessor(field);
-                    break;
-                }
-            }
-        }
-
-        public void writeString(String s) {
-            char[] arr = (char[]) charArrayField.get(s);
-            lengthEncoder.writeInt(s.length());
-            for (char c : arr) {
-                charEncoder.writeInt(c);
-            }
-        }
-
-        @Override
-        public void writeStrings(String[] s) {
-            for (String str : s) {
-                writeString(str);
-            }
-        }
-
-        @Override
-        public void reset() {
-            lengthEncoder.reset();
-            charEncoder.reset();
-        }
-
-        @Override
-        public void writeToStream(OutputStream outputStream) throws IOException {
-            lengthEncoder.writeToStream(outputStream);
-            charEncoder.writeToStream(outputStream);
-        }
+    @Override
+    public String[] readStrings(int num) {
+      String[] strings = new String[num];
+      for (int i = 0; i < num; i++) {
+        strings[i] = readString();
+      }
+      return strings;
     }
+
+    @Override
+    public void readFromStream(InputStream inputStream) throws IOException {
+      lengthDecoder.readFromStream(inputStream);
+      characterDecoder.readFromStream(inputStream);
+    }
+  }
+
+  //Special sort of encoder that is efficient on text with characters that have high unicode values, since it delta / bitpacks the values
+  public static class CharAsIntStringEncoder extends BaseEncoder implements StringEncoder {
+    private Accessors.FieldAccessor charArrayField;
+    private Int32Encoder lengthEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
+    private Int32Encoder charEncoder = new DeltaBitPacking.DeltaBitPackingInt32Encoder();
+
+    public CharAsIntStringEncoder() {
+      for (Field field : Fields.getAllFieldsNoPrimitiveFilter(String.class)) {
+        if (field.getName().equals("value")) {
+          charArrayField = Accessors.newAccessor(field);
+          break;
+        }
+      }
+    }
+
+    public void writeString(String s) {
+      char[] arr = (char[]) charArrayField.get(s);
+      lengthEncoder.writeInt(s.length());
+      for (char c : arr) {
+        charEncoder.writeInt(c);
+      }
+    }
+
+    @Override
+    public void writeStrings(String[] s) {
+      for (String str : s) {
+        writeString(str);
+      }
+    }
+
+    @Override
+    public void reset() {
+      lengthEncoder.reset();
+      charEncoder.reset();
+    }
+
+    @Override
+    public void writeToStream(OutputStream outputStream) throws IOException {
+      lengthEncoder.writeToStream(outputStream);
+      charEncoder.writeToStream(outputStream);
+    }
+  }
 }

@@ -41,6 +41,19 @@ class ScalaArraySerdeTest extends SerdeTestBase {
     arrayEquals(ints, output)
   }
 
+  private def arrayEquals[T](left: Array[T], right: Array[T]) = {
+    if (left != right || left.length != right.length) {
+      false
+    } else {
+      var len = left.length
+      var counter = 0
+      while (counter < len) {
+        Assert.assertEquals(left(counter), right(counter))
+        counter += 1
+      }
+    }
+  }
+
   @Test
   def testArrayOfBeans() {
     val primitiveses = Array[AllPrimitives](getDataFactory.newPrimitives, getDataFactory.newPrimitives)
@@ -99,18 +112,5 @@ class ScalaArraySerdeTest extends SerdeTestBase {
     reader.open(bais)
     val out = if (reader.hasNext) reader.read else null
     Assert.assertEquals(one, out)
-  }
-
-  private def arrayEquals[T](left : Array[T], right : Array[T]) = {
-    if(left != right || left.length != right.length) {
-      false
-    } else {
-      var len = left.length
-      var counter = 0
-      while (counter < len) {
-        Assert.assertEquals(left(counter), right(counter))
-        counter += 1
-      }
-    }
   }
 }

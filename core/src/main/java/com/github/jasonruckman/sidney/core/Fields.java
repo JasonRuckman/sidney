@@ -24,55 +24,55 @@ import java.util.List;
  * Utility methods for resolving classes and fields
  */
 public class Fields {
-    /**
-     * Returns fields for a {@link Class} and all its super types. Ignores transient or static fields. Fields from the top of the object hierarchy will be added first
-     *
-     * @param type
-     * @return list of valid fields
-     */
-    public static List<Field> getAllFields(Class type) {
-        List<Field> fields = new ArrayList<>();
+  /**
+   * Returns fields for a {@link Class} and all its super types. Ignores transient or static fields. Fields from the top of the object hierarchy will be added first
+   *
+   * @param type
+   * @return list of valid fields
+   */
+  public static List<Field> getAllFields(Class type) {
+    List<Field> fields = new ArrayList<>();
 
-        Field[] declaredFields = type.getDeclaredFields();
+    Field[] declaredFields = type.getDeclaredFields();
 
-        if (type.getSuperclass() != null) {
-            fields.addAll(getAllFields(type.getSuperclass()));
-        }
-
-        for (Field f : declaredFields) {
-            if (Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
-                continue;
-            }
-            fields.add(f);
-        }
-
-        return fields;
+    if (type.getSuperclass() != null) {
+      fields.addAll(getAllFields(type.getSuperclass()));
     }
 
-    public static List<Field> getAllFieldsNoPrimitiveFilter(Class type) {
-        List<Field> fields = new ArrayList<>();
-
-        Field[] declaredFields = type.getDeclaredFields();
-
-        if (type.getSuperclass() != null) {
-            fields.addAll(getAllFields(type.getSuperclass()));
-        }
-
-        for (Field f : declaredFields) {
-            if (Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
-                continue;
-            }
-            fields.add(f);
-        }
-
-        return fields;
+    for (Field f : declaredFields) {
+      if (Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
+        continue;
+      }
+      fields.add(f);
     }
 
-    public static Field getFieldByName(Class containingType, String fieldName) {
-        try {
-            return containingType.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+    return fields;
+  }
+
+  public static List<Field> getAllFieldsNoPrimitiveFilter(Class type) {
+    List<Field> fields = new ArrayList<>();
+
+    Field[] declaredFields = type.getDeclaredFields();
+
+    if (type.getSuperclass() != null) {
+      fields.addAll(getAllFields(type.getSuperclass()));
     }
+
+    for (Field f : declaredFields) {
+      if (Modifier.isStatic(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
+        continue;
+      }
+      fields.add(f);
+    }
+
+    return fields;
+  }
+
+  public static Field getFieldByName(Class containingType, String fieldName) {
+    try {
+      return containingType.getDeclaredField(fieldName);
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

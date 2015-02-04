@@ -16,9 +16,7 @@
 package com.github.jasonruckman.sidney.scala.serializers
 
 class NestedScalaArrays[T >: Null] {
-  var nested : T = null
-
-  def canEqual(other: Any): Boolean = other.isInstanceOf[NestedScalaArrays[_]]
+  var nested: T = null
 
   override def equals(other: Any): Boolean = other match {
     case that: NestedScalaArrays[_] =>
@@ -26,6 +24,8 @@ class NestedScalaArrays[T >: Null] {
         nested == that.nested
     case _ => false
   }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[NestedScalaArrays[_]]
 
   override def hashCode(): Int = {
     val state = Seq(nested)

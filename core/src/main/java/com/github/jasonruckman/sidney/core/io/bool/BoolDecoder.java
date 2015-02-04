@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.bool;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface BoolDecoder extends Decoder {
-    boolean nextBool();
+  boolean nextBool();
 
-    boolean[] nextBools(int num);
+  boolean[] nextBools(int num);
 }

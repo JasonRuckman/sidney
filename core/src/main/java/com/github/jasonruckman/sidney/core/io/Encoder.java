@@ -19,13 +19,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface Encoder {
-    /**
-     * Reset this encoder to its initial state
-     */
-    void reset();
+  /**
+   * Reset this encoder to its initial state
+   */
+  void reset();
 
-    /**
-     * Flush this encoder to the given {@link java.io.OutputStream}
-     */
-    void writeToStream(OutputStream outputStream) throws IOException;
+  /**
+   * Flush this encoder to the given {@link java.io.OutputStream}
+   */
+  void writeToStream(OutputStream outputStream) throws IOException;
 }

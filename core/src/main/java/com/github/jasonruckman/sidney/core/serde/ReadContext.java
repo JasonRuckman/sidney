@@ -19,117 +19,131 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public interface ReadContext {
-    /**
-     * Load all columns from the stream
-     * @param inputStream the input stream
-     */
-    void loadFromInputStream(InputStream inputStream) throws IOException;
+  /**
+   * Load all columns from the stream
+   *
+   * @param inputStream the input stream
+   */
+  void loadFromInputStream(InputStream inputStream) throws IOException;
 
-    /**
-     * Read a boolean value from the column at the current index
-     * @return a boolean value
-     */
-    boolean readBoolean();
+  /**
+   * Read a boolean value from the column at the current index
+   *
+   * @return a boolean value
+   */
+  boolean readBoolean();
 
-    /**
-     * Read an byte value from the column at the current index
-     * @return a boolean value
-     */
-    byte readByte();
+  /**
+   * Read an byte value from the column at the current index
+   *
+   * @return a boolean value
+   */
+  byte readByte();
 
-    /**
-     * Read an short value from the column at the current index
-     * @return a short value
-     */
-    short readShort();
+  /**
+   * Read an short value from the column at the current index
+   *
+   * @return a short value
+   */
+  short readShort();
 
-    /**
-     * Read an char value from the column at the current index
-     * @return a char value
-     */
-    char readChar();
+  /**
+   * Read an char value from the column at the current index
+   *
+   * @return a char value
+   */
+  char readChar();
 
-    /**
-     * Read an int from the column at the current index
-     * @return a int value
-     */
-    int readInt();
+  /**
+   * Read an int from the column at the current index
+   *
+   * @return a int value
+   */
+  int readInt();
 
-    /**
-     * Read an long from the column at the current index
-     * @return a long value
-     */
-    long readLong();
+  /**
+   * Read an long from the column at the current index
+   *
+   * @return a long value
+   */
+  long readLong();
 
-    /**
-     * Read an float from the column at the current index
-     * @return a float value
-     */
-    float readFloat();
+  /**
+   * Read an float from the column at the current index
+   *
+   * @return a float value
+   */
+  float readFloat();
 
-    /**
-     * Read an double from the column at the current index
-     * @return a double value
-     */
-    double readDouble();
+  /**
+   * Read an double from the column at the current index
+   *
+   * @return a double value
+   */
+  double readDouble();
 
-    /**
-     * Read bytes from the column at the current index
-     * @return bytes
-     */
-    byte[] readBytes();
+  /**
+   * Read bytes from the column at the current index
+   *
+   * @return bytes
+   */
+  byte[] readBytes();
 
-    /**
-     * Read a string from the column at the current index
-     * @return string
-     */
-    String readString();
+  /**
+   * Read a string from the column at the current index
+   *
+   * @return string
+   */
+  String readString();
 
-    /**
-     * Read the null marker at the current index.  Do not call on non-nullable columns
-     * @return whether or not the next value is null
-     */
-    boolean readNullMarker();
+  /**
+   * Read the null marker at the current index.  Do not call on non-nullable columns
+   *
+   * @return whether or not the next value is null
+   */
+  boolean readNullMarker();
 
-    /**
-     * Read the type for a column at the current index.  Do not call on columns that do not require types.
-     * @return whether or not the next value is null
-     */
-    Class<?> readConcreteType();
+  /**
+   * Read the type for a column at the current index.  Do not call on columns that do not require types.
+   *
+   * @return whether or not the next value is null
+   */
+  Class<?> readConcreteType();
 
-    /**
-     * Read the current repetition count at the current index.
-     * @return the repetition count
-     */
-    int readRepetitionCount();
+  /**
+   * Read the current repetition count at the current index.
+   *
+   * @return the repetition count
+   */
+  int readRepetitionCount();
 
-    /**
-     * Get the current page header
-     */
-    PageHeader getPageHeader();
+  /**
+   * Get the current page header
+   */
+  PageHeader getPageHeader();
 
-    /**
-     * Set the current page header
-     */
-    void setPageHeader(PageHeader pageHeader);
+  /**
+   * Set the current page header
+   */
+  void setPageHeader(PageHeader pageHeader);
 
-    /**
-     * Set this index as the current column
-     */
-    void setColumnIndex(int newIndex);
+  /**
+   * Increment to the next column
+   */
+  void incrementColumnIndex();
 
-    /**
-     * Increment to the next column
-     */
-    void incrementColumnIndex();
+  /**
+   * Increment by multiple columns
+   */
+  void incrementColumnIndex(int size);
 
-    /**
-     * Increment by multiple columns
-     */
-    void incrementColumnIndex(int size);
+  /**
+   * Get the current column index
+   */
+  int getColumnIndex();
 
-    /**
-     * Get the current column index
-     */
-    int getColumnIndex();
+  /**
+   * Set this index as the current column
+   */
+  void setColumnIndex(int newIndex);
 }

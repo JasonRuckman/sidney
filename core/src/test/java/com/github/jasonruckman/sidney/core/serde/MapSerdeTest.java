@@ -27,48 +27,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapSerdeTest extends SerdeTestBase {
-    @Test
-    public void testIntToIntMap() {
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < getRandom().nextInt(128); i++) {
-            map.put(getDataFactory().newInt(), getDataFactory().newInt());
+  @Test
+  public void testIntToIntMap() {
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < getRandom().nextInt(128); i++) {
+      map.put(getDataFactory().newInt(), getDataFactory().newInt());
+    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<Map<Integer, Integer>> writer = sid.newWriter(
+        new TypeToken<Map<Integer, Integer>>() {
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<Map<Integer, Integer>> writer = sid.newWriter(
-            new TypeToken<Map<Integer, Integer>>() {}
-        );
-        writer.open(baos);
-        writer.write(map);
-        writer.close();
+    );
+    writer.open(baos);
+    writer.write(map);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<Map<Integer, Integer>> reader = sid.newReader(
-            new TypeToken<Map<Integer, Integer>>() {}
-        );
-        reader.open(bais);
-        Map<Integer, Integer> outMap = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertEquals(map, outMap);
-    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<Map<Integer, Integer>> reader = sid.newReader(
+        new TypeToken<Map<Integer, Integer>>() {
+        }
+    );
+    reader.open(bais);
+    Map<Integer, Integer> outMap = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertEquals(map, outMap);
+  }
 
-    @Test
-    public void testBeanToBeanMap() {
-        Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JavaSid sid = new JavaSid();
-        Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newWriter(
-            new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}
-        );
-        writer.open(baos);
-        writer.write(map);
-        writer.close();
+  @Test
+  public void testBeanToBeanMap() {
+    Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    JavaSid sid = new JavaSid();
+    Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newWriter(
+        new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+        }
+    );
+    writer.open(baos);
+    writer.write(map);
+    writer.close();
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newReader(
-            new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}
-        );
-        reader.open(bais);
-        Map<AllPrimitiveRefs, AllPrimitiveRefs> out = (reader.hasNext()) ? reader.read() : null;
-        Assert.assertEquals(map, out);
-    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newReader(
+        new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+        }
+    );
+    reader.open(bais);
+    Map<AllPrimitiveRefs, AllPrimitiveRefs> out = (reader.hasNext()) ? reader.read() : null;
+    Assert.assertEquals(map, out);
+  }
 }

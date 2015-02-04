@@ -18,43 +18,43 @@ package com.github.jasonruckman.sidney.core.serde;
 import com.github.jasonruckman.sidney.core.SidneyConf;
 
 public class Context {
-    private int columnIndex = 0;
-    private PageHeader pageHeader;
-    private SidneyConf conf;
+  private int columnIndex = 0;
+  private PageHeader pageHeader;
+  private SidneyConf conf;
 
-    public Context(SidneyConf conf) {
-        this.conf = conf;
-    }
+  public Context(SidneyConf conf) {
+    this.conf = conf;
+  }
 
-    public SidneyConf getConf() {
-        return conf;
-    }
+  public SidneyConf getConf() {
+    return conf;
+  }
 
-    public PageHeader getPageHeader() {
-        return pageHeader;
-    }
+  public PageHeader getPageHeader() {
+    return pageHeader;
+  }
 
-    public void setPageHeader(PageHeader pageHeader) {
-        this.pageHeader = pageHeader;
-    }
+  public void setPageHeader(PageHeader pageHeader) {
+    this.pageHeader = pageHeader;
+  }
 
-    public int getColumnIndex() {
-        return columnIndex;
-    }
+  public int getColumnIndex() {
+    return columnIndex;
+  }
 
-    public void setColumnIndex(int columnIndex) {
-        this.columnIndex = columnIndex;
-    }
+  public void setColumnIndex(int columnIndex) {
+    this.columnIndex = columnIndex;
+  }
 
-    public void incrementColumnIndex() {
-        ++columnIndex;
-    }
+  public void incrementColumnIndex() {
+    ++columnIndex;
+  }
 
-    public void incrementColumnIndex(int size) {
-        columnIndex += size;
-    }
+  public void incrementColumnIndex(int size) {
+    columnIndex += size;
+  }
 
-    public void resetColumnIndex() {
-        columnIndex = 0;
-    }
+  public void resetColumnIndex() {
+    columnIndex = 0;
+  }
 }

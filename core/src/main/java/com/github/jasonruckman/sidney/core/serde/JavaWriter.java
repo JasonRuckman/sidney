@@ -21,7 +21,7 @@ import com.github.jasonruckman.sidney.core.TypeToken;
 
 
 public class JavaWriter<T> extends BaseWriter implements Writer<T> {
-    public JavaWriter(SidneyConf conf, TypeToken<T> token) {
-        super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
-    }
+  public JavaWriter(SidneyConf conf, TypeToken<T> token) {
+    super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
+  }
 }

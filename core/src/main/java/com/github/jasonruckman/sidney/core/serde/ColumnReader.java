@@ -23,54 +23,54 @@ import java.io.IOException;
 import java.io.InputStream;
 
 class ColumnReader extends ColumnOperations {
-    public boolean readBool(int index) {
-        return columnIOs.get(index).readBoolean();
-    }
+  public boolean readBool(int index) {
+    return columnIOs.get(index).readBoolean();
+  }
 
-    public int readInt(int index) {
-        return columnIOs.get(index).readInt();
-    }
+  public int readInt(int index) {
+    return columnIOs.get(index).readInt();
+  }
 
-    public long readLong(int index) {
-        return columnIOs.get(index).readLong();
-    }
+  public long readLong(int index) {
+    return columnIOs.get(index).readLong();
+  }
 
-    public float readFloat(int index) {
-        return columnIOs.get(index).readFloat();
-    }
+  public float readFloat(int index) {
+    return columnIOs.get(index).readFloat();
+  }
 
-    public double readDouble(int index) {
-        return columnIOs.get(index).readDouble();
-    }
+  public double readDouble(int index) {
+    return columnIOs.get(index).readDouble();
+  }
 
-    public String readString(int index) {
-        return columnIOs.get(index).readString();
-    }
+  public String readString(int index) {
+    return columnIOs.get(index).readString();
+  }
 
-    public byte[] readBytes(int index) {
-        return columnIOs.get(index).readBytes();
-    }
+  public byte[] readBytes(int index) {
+    return columnIOs.get(index).readBytes();
+  }
 
-    public boolean readNullMarker(int index) {
-        return columnIOs.get(index).readNullMarker();
-    }
+  public boolean readNullMarker(int index) {
+    return columnIOs.get(index).readNullMarker();
+  }
 
-    public int readRepetitionCount(int index) {
-        return columnIOs.get(index).readRepetitionCount();
-    }
+  public int readRepetitionCount(int index) {
+    return columnIOs.get(index).readRepetitionCount();
+  }
 
-    public Class readConcreteType(int index, ReadContext context) {
-        return columnIOs.get(index).readConcreteType(context);
-    }
+  public Class readConcreteType(int index, ReadContext context) {
+    return columnIOs.get(index).readConcreteType(context);
+  }
 
-    public void loadFromInputStream(InputStream inputStream) throws IOException {
-        for (Columns.ColumnIO columnIO : columnIOs) {
-            columnIO.getDefinitionDecoder().readFromStream(inputStream);
-            columnIO.getRepetitionDecoder().readFromStream(inputStream);
+  public void loadFromInputStream(InputStream inputStream) throws IOException {
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getDefinitionDecoder().readFromStream(inputStream);
+      columnIO.getRepetitionDecoder().readFromStream(inputStream);
 
-            for (Decoder decoder : columnIO.getDecoders()) {
-                decoder.readFromStream(inputStream);
-            }
-        }
+      for (Decoder decoder : columnIO.getDecoders()) {
+        decoder.readFromStream(inputStream);
+      }
     }
+  }
 }

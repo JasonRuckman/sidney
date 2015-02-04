@@ -18,48 +18,48 @@ package com.github.jasonruckman.sidney.core.serde;
 import com.github.jasonruckman.sidney.core.io.Encoding;
 
 public enum Type {
-    BOOLEAN {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.BITPACKED;
-        }
-    },
-    INT32 {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.PLAIN;
-        }
-    },
-    INT64 {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.PLAIN;
-        }
-    },
-    FLOAT32 {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.PLAIN;
-        }
-    },
-    FLOAT64 {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.PLAIN;
-        }
-    },
-    STRING {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.DELTALENGTH;
-        }
-    },
-    BINARY {
-        @Override
-        public Encoding defaultEncoding() {
-            return Encoding.PLAIN;
-        }
-    };
+  BOOLEAN {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.BITPACKED;
+    }
+  },
+  INT32 {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  },
+  INT64 {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  },
+  FLOAT32 {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  },
+  FLOAT64 {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  },
+  STRING {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.DELTALENGTH;
+    }
+  },
+  BINARY {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  };
 
-    public abstract Encoding defaultEncoding();
+  public abstract Encoding defaultEncoding();
 }

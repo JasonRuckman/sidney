@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.float32;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Float32Decoder extends Decoder {
-    float nextFloat();
+  float nextFloat();
 
-    float[] nextFloats(int num);
+  float[] nextFloats(int num);
 }

@@ -25,5 +25,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Encode {
-    Encoding value() default Encoding.PLAIN;
+  Encoding value() default Encoding.PLAIN;
 }

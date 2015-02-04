@@ -18,7 +18,7 @@ package com.github.jasonruckman.sidney.core.io.bytes;
 import com.github.jasonruckman.sidney.core.io.Encoder;
 
 public interface BytesEncoder extends Encoder {
-    void writeBytes(byte[] bytes);
+  void writeBytes(byte[] bytes);
 
-    void writeBytes(byte[] bytes, int offset, int length);
+  void writeBytes(byte[] bytes, int offset, int length);
 }

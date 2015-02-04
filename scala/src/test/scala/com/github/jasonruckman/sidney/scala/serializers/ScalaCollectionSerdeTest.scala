@@ -26,6 +26,7 @@ import org.junit.{Assert, Test}
 
 class ScalaCollectionSerdeTest extends SerdeTestBase {
   private val sid = new ScalaSid
+
   @Test
   def testListOfBeans() {
     val one: AllPrimitives = getDataFactory.newPrimitives

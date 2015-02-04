@@ -18,9 +18,9 @@ package com.github.jasonruckman.sidney.core.io.bytes;
 import com.github.jasonruckman.sidney.core.io.BaseDecoder;
 
 public class ByteArrayDecoder extends BaseDecoder implements BytesDecoder {
-    @Override
-    public byte[] readBytes(int num) {
-        int length = readIntFromBuffer();
-        return readBytesFromBuffer(length);
-    }
+  @Override
+  public byte[] readBytes(int num) {
+    int length = readIntFromBuffer();
+    return readBytesFromBuffer(length);
+  }
 }

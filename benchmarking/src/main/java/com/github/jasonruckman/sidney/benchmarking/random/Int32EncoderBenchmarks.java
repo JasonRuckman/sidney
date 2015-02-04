@@ -29,43 +29,43 @@ import java.util.Random;
 @Measurement(iterations = 2)
 @Fork(1)
 public class Int32EncoderBenchmarks extends BenchmarkingBase {
-    private final int[] ints;
-    private int num = 65536;
+  private final int[] ints;
+  private int num = 65536;
 
-    public Int32EncoderBenchmarks() {
-        ints = new int[num];
-        Random random = new Random(11L);
-        for (int i = 0; i < ints.length; i++) {
-            ints[i] = random.nextInt(65536);
-        }
+  public Int32EncoderBenchmarks() {
+    ints = new int[num];
+    Random random = new Random(11L);
+    for (int i = 0; i < ints.length; i++) {
+      ints[i] = random.nextInt(65536);
     }
+  }
 
-    @Benchmark
-    @Group("intEncoders")
-    public int[] deltaBitPackingHybrid() throws IOException {
-        return run(getEncoder(DeltaBitPacking.DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPacking.DeltaBitPackingInt32Decoder.class));
-    }
+  @Benchmark
+  @Group("intEncoders")
+  public int[] deltaBitPackingHybrid() throws IOException {
+    return run(getEncoder(DeltaBitPacking.DeltaBitPackingInt32Encoder.class), getDecoder(DeltaBitPacking.DeltaBitPackingInt32Decoder.class));
+  }
 
-    @Benchmark
-    @Group("intEncoders")
-    public int[] plain() throws IOException {
-        return run(getEncoder(Plain.PlainInt32Encoder.class), getDecoder(Plain.PlainInt32Decoder.class));
-    }
+  @Benchmark
+  @Group("intEncoders")
+  public int[] plain() throws IOException {
+    return run(getEncoder(Plain.PlainInt32Encoder.class), getDecoder(Plain.PlainInt32Decoder.class));
+  }
 
-    @Benchmark
-    @Group("intEncoders")
-    public int[] bitpacking() throws IOException {
-        return run(getEncoder(BitPacking.BitPackingInt32Encoder.class), getDecoder(BitPacking.BitPackingInt32Decoder.class));
-    }
+  @Benchmark
+  @Group("intEncoders")
+  public int[] bitpacking() throws IOException {
+    return run(getEncoder(BitPacking.BitPackingInt32Encoder.class), getDecoder(BitPacking.BitPackingInt32Decoder.class));
+  }
 
-    private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {
-        for (int i : ints) {
-            encoder.writeInt(i);
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        encoder.writeToStream(baos);
-        encoder.reset();
-        decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
-        return decoder.nextInts(num);
+  private int[] run(Int32Encoder encoder, Int32Decoder decoder) throws IOException {
+    for (int i : ints) {
+      encoder.writeInt(i);
     }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    encoder.writeToStream(baos);
+    encoder.reset();
+    decoder.readFromStream(new ByteArrayInputStream(baos.toByteArray()));
+    return decoder.nextInts(num);
+  }
 }

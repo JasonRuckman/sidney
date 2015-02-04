@@ -58,7 +58,7 @@ class ScalaMapSerdeTest extends SerdeTestBase {
     val bais: ByteArrayInputStream = new ByteArrayInputStream(baos.toByteArray)
     val reader = sid.newReader[java.util.Map[AllPrimitiveRefs, AllPrimitiveRefs]]()
     reader.open(bais)
-    val out= if ((reader.hasNext)) reader.read else null
+    val out = if ((reader.hasNext)) reader.read else null
     Assert.assertEquals(map, out)
   }
 }

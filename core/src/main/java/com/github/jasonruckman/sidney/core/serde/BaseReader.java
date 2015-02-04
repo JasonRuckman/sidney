@@ -27,116 +27,116 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseReader<T> {
-    private Class type;
-    private InputStream inputStream;
-    private ReadContext context;
-    private Serializer rootSerializer;
-    private int recordCount = 0;
-    private SerializerContextImpl serializerContext;
-    private PageHeader currentPageHeader = null;
-    private boolean isOpen = false;
-    private SidneyConf conf;
+  private Class type;
+  private InputStream inputStream;
+  private ReadContext context;
+  private Serializer rootSerializer;
+  private int recordCount = 0;
+  private SerializerContextImpl serializerContext;
+  private PageHeader currentPageHeader = null;
+  private boolean isOpen = false;
+  private SidneyConf conf;
 
-    public BaseReader(SidneyConf conf, TypeRef typeRef) {
-        this.conf = conf;
-        this.serializerContext = new SerializerContextImpl(conf);
-        this.rootSerializer = serializerContext.serializer(typeRef);
+  public BaseReader(SidneyConf conf, TypeRef typeRef) {
+    this.conf = conf;
+    this.serializerContext = new SerializerContextImpl(conf);
+    this.rootSerializer = serializerContext.serializer(typeRef);
+  }
+
+  public Class getType() {
+    return type;
+  }
+
+  public InputStream getInputStream() {
+    return inputStream;
+  }
+
+  public ReadContext getContext() {
+    return context;
+  }
+
+  /**
+   * Check for new items
+   *
+   * @return whether there are more items
+   */
+  public boolean hasNext() {
+    if (currentPageHeader == null) {
+      loadNextPage();
+      return hasNext();
     }
 
-    public Class getType() {
-        return type;
+    if (recordCount-- > 0) {
+      return true;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    if (!currentPageHeader.isLastPage()) {
+      loadNextPage();
+      return hasNext();
     }
 
-    public ReadContext getContext() {
-        return context;
+    return false;
+  }
+
+  /**
+   * Read the next item from the stream
+   *
+   * @return the next item
+   */
+  public T read() {
+    if (!isOpen) {
+      throw new SidneyException("Reader is not open.");
     }
+    context.setColumnIndex(0);
+    return (T) rootSerializer.readValue(context);
+  }
 
-    /**
-     * Check for new items
-     *
-     * @return whether there are more items
-     */
-    public boolean hasNext() {
-        if (currentPageHeader == null) {
-            loadNextPage();
-            return hasNext();
-        }
-
-        if (recordCount-- > 0) {
-            return true;
-        }
-
-        if (!currentPageHeader.isLastPage()) {
-            loadNextPage();
-            return hasNext();
-        }
-
-        return false;
+  public List<T> readAll() {
+    List<T> items = new ArrayList<>();
+    while (hasNext()) {
+      items.add(read());
     }
+    return items;
+  }
 
-    /**
-     * Read the next item from the stream
-     *
-     * @return the next item
-     */
-    public T read() {
-        if (!isOpen) {
-            throw new SidneyException("Reader is not open.");
-        }
-        context.setColumnIndex(0);
-        return (T) rootSerializer.readValue(context);
-    }
+  /**
+   * Open the given {@link java.io.InputStream} for reading.
+   */
+  public void open(InputStream inputStream) {
+    this.inputStream = inputStream;
+    this.recordCount = 0;
+    this.isOpen = true;
+  }
 
-    public List<T> readAll() {
-        List<T> items = new ArrayList<>();
-        while (hasNext()) {
-            items.add(read());
-        }
-        return items;
-    }
+  /**
+   * Marks this reader as closed
+   */
+  public void close() {
+    inputStream = null;
+    isOpen = false;
+  }
 
-    /**
-     * Open the given {@link java.io.InputStream} for reading.
-     */
-    public void open(InputStream inputStream) {
-        this.inputStream = inputStream;
-        this.recordCount = 0;
-        this.isOpen = true;
+  private void loadNextPage() {
+    try {
+      currentPageHeader = new PageHeader();
+      currentPageHeader.setLastPage(Bytes.readBoolFromStream(inputStream));
+      currentPageHeader.setPageSize(Bytes.readIntFromStream(inputStream));
+      int mapSize = Bytes.readIntFromStream(inputStream);
+      for (int i = 0; i < mapSize; i++) {
+        Class<?> clazz = Class.forName(Bytes.readStringFromStream(inputStream));
+        int value = Bytes.readIntFromStream(inputStream);
+        currentPageHeader.getValueToClassMap().put(value, clazz);
+      }
+      ColumnReader reader = new ColumnReader();
+      context = new ReadContextImpl(
+          reader, conf
+      );
+      serializerContext.finish(reader);
+      recordCount = currentPageHeader.getPageSize();
+      context.setPageHeader(currentPageHeader);
+      context.loadFromInputStream(inputStream);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-
-    /**
-     * Marks this reader as closed
-     */
-    public void close() {
-        inputStream = null;
-        isOpen = false;
-    }
-
-    private void loadNextPage() {
-        try {
-            currentPageHeader = new PageHeader();
-            currentPageHeader.setLastPage(Bytes.readBoolFromStream(inputStream));
-            currentPageHeader.setPageSize(Bytes.readIntFromStream(inputStream));
-            int mapSize = Bytes.readIntFromStream(inputStream);
-            for (int i = 0; i < mapSize; i++) {
-                Class<?> clazz = Class.forName(Bytes.readStringFromStream(inputStream));
-                int value = Bytes.readIntFromStream(inputStream);
-                currentPageHeader.getValueToClassMap().put(value, clazz);
-            }
-            ColumnReader reader = new ColumnReader();
-            context = new ReadContextImpl(
-                    reader, conf
-            );
-            serializerContext.finish(reader);
-            recordCount = currentPageHeader.getPageSize();
-            context.setPageHeader(currentPageHeader);
-            context.loadFromInputStream(inputStream);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+  }
 }

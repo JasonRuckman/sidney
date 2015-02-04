@@ -16,7 +16,7 @@
 package com.github.jasonruckman.sidney.core;
 
 public class SidneyException extends RuntimeException {
-    public SidneyException(String message) {
-        super(message);
-    }
+  public SidneyException(String message) {
+    super(message);
+  }
 }

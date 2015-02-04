@@ -16,8 +16,8 @@
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
 public interface SerializerFinalizer {
-    /**
-     * Calculates sub-field counts
-     */
-    void finish(Serializer serializer);
+  /**
+   * Calculates sub-field counts
+   */
+  void finish(Serializer serializer);
 }
