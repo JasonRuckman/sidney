@@ -5,7 +5,7 @@ Sidney is an generic java / scala serializer.
 
 It's named after my dog Sid and is a side project I did on my own time.
 
-It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is more flexible and efficient on smaller numbers of objects.  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
+It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is much more flexible and efficient on smaller numbers of objects (not to mention being far more battletested).  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
 Sidney works on java beans, maps, arrays and collection types and primitives, enums are not yet supported (but planned very soon). Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
 
@@ -13,7 +13,7 @@ Custom serializers are possible by implementing the [Serializer](https://github.
 
 ### When would I use it?
 
-Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has and doesn't support nearly the wide variety of data types, however for certain data shapes, the ability to orient your data by column to make it more friendly to a compressor, or to use more appropriate encodings can result in drastic speedups.  Sidney may be an appropriate choice when you are serializing many objects that have similarities in their values.
+Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has and doesn't support nearly the wide variety of data types, however for certain data shapes, Sidney will make your data friendlier to a compressor and can reduce data size and improve speed.
 
 Please consider this alpha quality code and don't use it in your production systems without some serious testing. Other serializers are far more battle-tested.
 
@@ -114,7 +114,7 @@ Sidney supports generics, and will resolve them all the way down the object hier
   map.put(1, 1);
   ByteArrayOutputStream baos = new ByteArrayOutputStream();
   TypeToken<Map<Integer, Integer>> mapToken = new TypeToken<Map<Integer, Integer>>(){};
-  Sid sid = new Sid();
+  JavaSid sid = new JavaSid();
   
   Writer<Map<Integer, Integer>> writer = sid.newWriter(mapToken);
   writer.open(baos);
