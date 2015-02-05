@@ -3,7 +3,7 @@ sidney
 
 Sidney is an generic java / scala serializer. 
 
-It's named after my dog Sid and is a side project I did on my own time.
+It's named after my dog Sid and is a side project I did on my own time.  It is very much still a work in progress. Please submit any bugs you have as issues and I'll try and get them taken care of ASAP.
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is much more flexible and efficient on smaller numbers of objects (not to mention being far more battletested).  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
@@ -13,9 +13,9 @@ Custom serializers are possible by implementing the [Serializer](https://github.
 
 ### When would I use it?
 
-Sidney is very new, and hasn't had nearly the amount of work put into it that something like [Kryo](https://github.com/EsotericSoftware/kryo) has and doesn't support nearly the wide variety of data types, however for certain data shapes, Sidney will make your data friendlier to a compressor and can reduce data size and improve speed.
+Sidney is very new, and hasn't had nearly the amount of work put into it that something like the very excellent [Kryo](https://github.com/EsotericSoftware/kryo) library has and doesn't support nearly the wide variety of data types, however for certain data shapes, Sidney can make your data friendlier to a compressor and can reduce data size and improve speed.
 
-Please consider this alpha quality code and don't use it in your production systems without some serious testing. Other serializers are far more battle-tested.
+Please consider this pre-alpha quality code and don't use it in your production systems without some serious testing. Other serializers are far more battle-tested.
 
 My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs, however Spark doesn't pass type tags to their serializer implementations so it's not possible to use Sidney in this capacity just yet.
 
@@ -62,7 +62,7 @@ Encoding MoreImportantData Will roughly look like this in the byte stream:
 | float.class     | NO                 | PLAIN / RLE
 | double.class    | NO                 | PLAIN / RLE
 | byte[].class    | YES                | PLAIN
-| String.class    | YES                | PLAIN / DELTALENGTH / CHARASINT
+| String.class    | YES                | PLAIN / DELTALENGTH / RLE
 
 All of (byte.class, short.class, char.class) are encoded as ints, so int encodings apply to them.
 
