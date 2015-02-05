@@ -105,7 +105,7 @@ And here's how you would write and read it to Sidney:
   reader.close();
 ```
 
-Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 2048 (soon to be configurable) flushing them as needed and the .close() will flush the last page.
+Closing the writer flushes to the underlying stream.  However if you are writing many objects, Sidney will write them out in pages of 1024 (configurable) flushing them as needed and the .close() will flush the last page.
 
 ### Parameterized Type Example
 
@@ -154,6 +154,7 @@ Note: No type tokens are necessary, as under the covers typetags are used to dec
 1. References: Sidney doesn't yet have the concept of references, if objects refer to each other, they won't be linked up when the object is read back in. 
 2. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
 3. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
+4. ClassLoading: There's an outstanding issue to allow classloaders to be passed in, but nothing at present.
 
 ## Maven
 
