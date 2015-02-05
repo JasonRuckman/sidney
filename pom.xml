@@ -8,6 +8,10 @@
   <packaging>pom</packaging>
   <version>0.1-SNAPSHOT</version>
 
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Sidney: A columnar serializer.</description>
+  <url>https://github.com/JasonRuckman/sidney</url>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -25,6 +29,7 @@
   <properties>
     <junit.version>4.11</junit.version>
     <slfj.version>1.7.7</slfj.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencyManagement>
@@ -90,6 +95,17 @@
   </build>
 
   <scm>
-    <developerConnection>scm:git:git://github.com/JasonRuckman/sidney</developerConnection>
+    <url>https://github.com/kevinsawicki/github-maven-example</url>
+    <connection>scm:git:git://github.com/jasonruckman/sidney.git</connection>
+    <developerConnection>scm:git:git@github.com:jasonruckman/sidney.git</developerConnection>
   </scm>
+
+  <developers>
+    <developer>
+      <email>jason.ruckman@gmail.com</email>
+      <name>Jason Ruckman</name>
+      <url>https://github.com/jasonruckman</url>
+      <id>jasonruckman</id>
+    </developer>
+  </developers>
 </project>

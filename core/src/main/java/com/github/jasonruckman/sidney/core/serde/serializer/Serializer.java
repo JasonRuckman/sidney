@@ -44,9 +44,9 @@ public abstract class Serializer<T> {
   public abstract void consume(TypeRef typeRef, SerializerContext context);
 
   /**
-   * Fully consume {@param value}
-   * The {@link com.github.jasonruckman.sidney.core.serde.WriteContext#getColumnIndex()} on {@param context} must be incremented to the number of fields + subfields + 1 after the value is consumed
-   * For example, if {@param value} is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
+   * Fully consume a value
+   * The {@link com.github.jasonruckman.sidney.core.serde.WriteContext#getColumnIndex()} on context must be incremented to the number of fields + subfields + 1 after the value is consumed
+   * For example, if value is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
    * and one more to advance into the next field
    */
   public abstract void writeValue(Object value, WriteContext context);
