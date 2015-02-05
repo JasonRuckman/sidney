@@ -23,11 +23,11 @@ My original use case was for serializing [Spark](https://github.com/apache/spark
 
 Sidney follows some of the same conventions that Parquet does, there are definition and repetition columns, however there's slight differences. 
 
-Sidney will descend depth first into your object tree, marking null / not null in a compressed bitmap.  Each column has its own bitmap.
+Sidney will descend depth first into your object tree, marking null / not null in a compressed bitmap (unless its a primitive leaf, which are non-nullable).  Each column has its own bitmap.
 
 Repetition counts are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
-For map and collection types (and eventually generalized to any interface type) the actual concrete type is encoded as its own column, it is RLE encoded as an int and a map of the class name to that types int value is encoded into the page header.
+For map and collection types (and eventually generalized to any interface type) the actual concrete type is encoded as its own int column, it is RLE encoded and a map of the class name to that types int value is encoded into the page header.
 
 Given an example bean:
 ```
@@ -67,8 +67,6 @@ Encoding MoreImportantData Will roughly look like this in the byte stream:
 All of (byte.class, short.class, char.class) are encoded as ints, so int encodings apply to them.
 
 For the reference implementations of the primitive types, the same encodings apply, but they are nullable.
-
-Generics are supported, and they will be respected even if they are inherited and the correct column type will be chosen. You may pass in parameter types into your writer and readers as well.
 
 ### Bean Example
 
