@@ -128,7 +128,7 @@
   </build>
 
   <scm>
-    <url>https://github.com/kevinsawicki/github-maven-example</url>
+    <url>https://github.com/jasonruckman/sidney</url>
     <connection>scm:git:git://github.com/jasonruckman/sidney.git</connection>
     <developerConnection>scm:git:git@github.com:jasonruckman/sidney.git</developerConnection>
   </scm>
