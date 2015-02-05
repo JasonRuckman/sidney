@@ -131,6 +131,7 @@ Sidney supports generics, and will resolve them all the way down the object hier
 ##Scala Examples: 
 
 ```
+  val sid = new ScalaSid
   val map = new util.HashMap[Int, Int]()
   val baos: ByteArrayOutputStream = new ByteArrayOutputStream
   val writer = sid.newWriter[util.Map[Int, Int]]()
