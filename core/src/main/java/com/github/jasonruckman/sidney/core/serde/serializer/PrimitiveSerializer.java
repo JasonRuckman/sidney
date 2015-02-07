@@ -22,6 +22,7 @@ import com.github.jasonruckman.sidney.core.io.Encoding;
 import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.Type;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.serde.Writer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +89,7 @@ public class PrimitiveSerializer extends Serializer {
     TYPES.put(Double.class, Type.FLOAT64);
     TYPES.put(byte[].class, Type.BINARY);
     TYPES.put(String.class, Type.STRING);
+    TYPES.put(Enum.class, Type.INT32);
   }
 
   protected PrimitiveWriters.PrimitiveWriter writer;
@@ -97,13 +99,32 @@ public class PrimitiveSerializer extends Serializer {
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
-    writer = WRITERS.get(typeRef.getType());
-    reader = READERS.get(typeRef.getType());
     if (typeRef instanceof TypeRef.TypeFieldRef &&
         ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class) != null) {
       encoding = ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class).value();
     }
+
     rawClass = typeRef.getType();
+
+    if(typeRef.getType().isEnum()) {
+      writer = new PrimitiveWriters.EnumWriter();
+      reader = new PrimitiveReaders.EnumPrimitiveReader(typeRef.getType().getEnumConstants());
+      return;
+    }
+
+    for(Map.Entry<Class, PrimitiveWriters.PrimitiveWriter> entry : WRITERS.entrySet()) {
+      if(entry.getKey().isAssignableFrom(typeRef.getType())) {
+        writer = entry.getValue();
+        break;
+      }
+    }
+
+    for(Map.Entry<Class, PrimitiveReaders.PrimitiveReader> entry : READERS.entrySet()) {
+      if(entry.getKey().isAssignableFrom(typeRef.getType())) {
+        reader = entry.getValue();
+        break;
+      }
+    }
   }
 
   @Override
@@ -131,7 +152,12 @@ public class PrimitiveSerializer extends Serializer {
   }
 
   public Type getType() {
-    return TYPES.get(rawClass);
+    for(Map.Entry<Class, Type> entry : TYPES.entrySet()) {
+      if(entry.getKey().isAssignableFrom(rawClass)) {
+        return entry.getValue();
+      }
+    }
+    throw new IllegalStateException("Could not find type for class: " + rawClass);
   }
 
   public Encoding getEncoding() {
@@ -371,6 +397,18 @@ public class PrimitiveSerializer extends Serializer {
         context.writeDouble(value);
       }
     }
+
+    static class EnumWriter extends PrimitiveWriter {
+      @Override
+      public void writeValue(Object value, WriteContext context) {
+        context.writeInt(((Enum) value).ordinal());
+      }
+
+      @Override
+      public void writeFromField(Object parent, WriteContext context, Accessors.FieldAccessor accessor) {
+        writeValue(accessor.get(parent), context);
+      }
+    }
   }
 
   public static class PrimitiveReaders {
@@ -517,6 +555,19 @@ public class PrimitiveSerializer extends Serializer {
       @Override
       public Object readValue(ReadContext context) {
         return context.readDouble();
+      }
+    }
+
+    public static class EnumPrimitiveReader extends PrimitiveReader {
+      private Object[] values;
+
+      public EnumPrimitiveReader(Object[] values) {
+        this.values = values;
+      }
+
+      @Override
+      public Object readValue(ReadContext context) {
+        return values[context.readInt()];
       }
     }
   }
