@@ -16,8 +16,9 @@
 package com.github.jasonruckman.sidney.core;
 
 public class InheritedAllPrimitives extends AllPrimitives {
-  public InheritedAllPrimitives(boolean first, int second, char third, short fourth, byte fifth, long sixth, float seventh, double eighth, byte[] ninth, String tenth) {
-    super(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth);
+  public InheritedAllPrimitives(boolean first, int second, char third, short fourth, byte fifth,
+                                long sixth, float seventh, double eighth, byte[] ninth, String tenth, SomeEnum e) {
+    super(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, e);
   }
 
   public InheritedAllPrimitives() {
