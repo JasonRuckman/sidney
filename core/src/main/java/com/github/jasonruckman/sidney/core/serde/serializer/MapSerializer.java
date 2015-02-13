@@ -21,7 +21,7 @@ import com.github.jasonruckman.sidney.core.serde.WriteContext;
 
 import java.util.Map;
 
-public class MapSerializer extends Serializer<Map> {
+public class MapSerializer<T extends Map> extends Serializer<T> {
   private Serializer keySerializer;
   private Serializer valueSerializer;
   private InstanceFactoryCache cache = new InstanceFactoryCache();
@@ -36,12 +36,12 @@ public class MapSerializer extends Serializer<Map> {
   }
 
   @Override
-  public void writeValue(Object value, WriteContext context) {
-    writeMap((Map) value, context);
+  public void writeValue(T value, WriteContext context) {
+    writeMap(value, context);
   }
 
   @Override
-  public Object readValue(ReadContext context) {
+  public T readValue(ReadContext context) {
     return readMap(context);
   }
 
@@ -50,7 +50,7 @@ public class MapSerializer extends Serializer<Map> {
     return true;
   }
 
-  private void writeMap(Map map, WriteContext context) {
+  private void writeMap(T map, WriteContext context) {
     if (context.shouldWriteValue(map)) {
       context.writeConcreteType(map.getClass());
       context.writeRepetitionCount(map.size());
@@ -68,9 +68,9 @@ public class MapSerializer extends Serializer<Map> {
     }
   }
 
-  private Map readMap(ReadContext context) {
+  private T readMap(ReadContext context) {
     if (context.shouldReadValue()) {
-      Map map = (Map) cache.newInstance(context.readConcreteType());
+      T map = (T) cache.newInstance(context.readConcreteType());
       int size = context.readRepetitionCount();
       context.incrementColumnIndex();
       int idx = context.getColumnIndex();
