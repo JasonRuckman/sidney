@@ -27,7 +27,7 @@ import com.github.jasonruckman.sidney.core.serde.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PrimitiveSerializer extends Serializer {
+public class PrimitiveSerializer<T> extends Serializer<T> {
   private static final Map<Class, PrimitiveWriters.PrimitiveWriter> WRITERS = new HashMap<>();
   private static final Map<Class, Type> TYPES = new HashMap<>();
   private static final Map<Class, PrimitiveReaders.PrimitiveReader> READERS = new HashMap<>();
@@ -128,7 +128,7 @@ public class PrimitiveSerializer extends Serializer {
   }
 
   @Override
-  public void writeValue(Object value, WriteContext context) {
+  public void writeValue(T value, WriteContext context) {
     if (context.shouldWriteValue(value)) {
       writer.writeValue(value, context);
     }
@@ -136,11 +136,11 @@ public class PrimitiveSerializer extends Serializer {
   }
 
   @Override
-  public Object readValue(ReadContext context) {
+  public T readValue(ReadContext context) {
     if (context.shouldReadValue()) {
       Object value = reader.readValue(context);
       context.incrementColumnIndex();
-      return value;
+      return (T) value;
     }
     context.incrementColumnIndex();
     return null;

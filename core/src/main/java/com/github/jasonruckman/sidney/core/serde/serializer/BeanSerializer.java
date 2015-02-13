@@ -25,8 +25,8 @@ import java.util.List;
 /**
  * Default serializer for non-primitive types that aren't consumed by another type
  */
-public class BeanSerializer extends Serializer<Object> {
-  private InstanceFactory instanceFactory;
+public class BeanSerializer<T> extends Serializer<T> {
+  private InstanceFactory<T> instanceFactory;
   private List<Serializer> serializersAtThisLevel = new ArrayList<>();
 
   @Override
@@ -35,16 +35,16 @@ public class BeanSerializer extends Serializer<Object> {
       Serializer fieldSerializer = context.serializer(fieldRef, this);
       serializersAtThisLevel.add(fieldSerializer);
     }
-    instanceFactory = new InstanceFactory(typeRef.getType());
+    instanceFactory = new InstanceFactory<>((Class<T>)typeRef.getType());
   }
 
   @Override
-  public void writeValue(Object value, WriteContext context) {
+  public void writeValue(T value, WriteContext context) {
     writeBean(value, context);
   }
 
   @Override
-  public Object readValue(ReadContext context) {
+  public T readValue(ReadContext context) {
     return readBean(context);
   }
 
@@ -53,7 +53,7 @@ public class BeanSerializer extends Serializer<Object> {
     return false;
   }
 
-  private void writeBean(Object value, WriteContext context) {
+  private void writeBean(T value, WriteContext context) {
     if (context.shouldWriteValue(value)) {
       //advance into fields
       context.incrementColumnIndex();
@@ -65,9 +65,9 @@ public class BeanSerializer extends Serializer<Object> {
     }
   }
 
-  private Object readBean(ReadContext context) {
+  private T readBean(ReadContext context) {
     if (context.shouldReadValue()) {
-      Object bean = instanceFactory.newInstance();
+      T bean = instanceFactory.newInstance();
       context.incrementColumnIndex();
       for (Serializer handler : serializersAtThisLevel) {
         handler.readIntoField(bean, context);

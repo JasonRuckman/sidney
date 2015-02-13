@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
  * Serializes non-map collection types
  */
-public class CollectionSerializer extends Serializer<Collection> {
+public class CollectionSerializer<T extends Collection> extends Serializer<T> {
   private Serializer contentSerializer;
   private InstanceFactoryCache cache = new InstanceFactoryCache();
 
@@ -35,12 +35,12 @@ public class CollectionSerializer extends Serializer<Collection> {
   }
 
   @Override
-  public void writeValue(Object value, WriteContext context) {
+  public void writeValue(T value, WriteContext context) {
     writeCollection((Collection) value, context);
   }
 
   @Override
-  public Object readValue(ReadContext context) {
+  public T readValue(ReadContext context) {
     return readCollection(context);
   }
 
@@ -65,9 +65,9 @@ public class CollectionSerializer extends Serializer<Collection> {
     }
   }
 
-  private Collection readCollection(ReadContext context) {
+  private T readCollection(ReadContext context) {
     if (context.shouldReadValue()) {
-      Collection c = (Collection) cache.newInstance(context.readConcreteType());
+      T c = (T) cache.newInstance(context.readConcreteType());
       context.incrementColumnIndex();
       int count = context.readRepetitionCount();
       int valueIndex = context.getColumnIndex();

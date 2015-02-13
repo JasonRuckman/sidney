@@ -49,14 +49,14 @@ public abstract class Serializer<T> {
    * For example, if value is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
    * and one more to advance into the next field
    */
-  public abstract void writeValue(Object value, WriteContext context);
+  public abstract void writeValue(T value, WriteContext context);
 
   /**
    * Fully consume a field value from the parent, parent is guaranteed to be non-null
    * Follow the same incrementing rules as {@link #writeValue}
    */
   public void writeFromField(Object parent, WriteContext context) {
-    writeValue(getAccessor().get(parent), context);
+    writeValue((T)getAccessor().get(parent), context);
   }
 
   /**
@@ -65,7 +65,7 @@ public abstract class Serializer<T> {
    *
    * @return a fully materialized value
    */
-  public abstract Object readValue(ReadContext context);
+  public abstract T readValue(ReadContext context);
 
   /**
    * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
