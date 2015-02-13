@@ -157,7 +157,7 @@ public class PrimitiveSerializer extends Serializer {
         return entry.getValue();
       }
     }
-    throw new IllegalStateException("Could not find type for class: " + rawClass);
+    throw new IllegalStateException();
   }
 
   public Encoding getEncoding() {
