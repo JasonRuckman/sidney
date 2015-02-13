@@ -143,7 +143,7 @@ public class PrimitiveSerializer extends Serializer {
       return value;
     }
     context.incrementColumnIndex();
-    return value;
+    return null;
   }
 
   @Override
