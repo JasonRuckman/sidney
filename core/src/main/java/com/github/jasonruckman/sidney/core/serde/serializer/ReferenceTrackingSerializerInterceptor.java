@@ -69,8 +69,9 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
     int definition = c.getColumnReader().readDefinition(c.getColumnIndex());
     //the object value is in the high bits
     if(definition == 0) {
+      int reference = references.nextCounter();
       Object value = delegate.readValue(c);
-      references.addReference(value);
+      references.addReference(value, reference);
       return value;
     }
     c.incrementColumnIndex(delegate.getNumFieldsToIncrementBy());

@@ -31,12 +31,16 @@ public class References {
 
   private int counter = 1;
 
+  public int nextCounter() {
+    return counter++;
+  }
+
   /**
    * Add this value to reference tracking
    * @param value a value to track
    */
-  public void addReference(Object value) {
-    valueToObject.put(value, counter++);
+  public void addReference(Object value, int reference) {
+    valueToObject.put(value, reference);
   }
 
   /**
