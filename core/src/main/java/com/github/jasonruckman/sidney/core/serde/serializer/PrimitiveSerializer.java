@@ -137,9 +137,10 @@ public class PrimitiveSerializer extends Serializer {
 
   @Override
   public Object readValue(ReadContext context) {
-    Object value = null;
     if (context.shouldReadValue()) {
-      value = reader.readValue(context);
+      Object value = reader.readValue(context);
+      context.incrementColumnIndex();
+      return value;
     }
     context.incrementColumnIndex();
     return value;
