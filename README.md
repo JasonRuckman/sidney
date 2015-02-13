@@ -159,7 +159,9 @@ Sidney as of 0.1.2 supports references, so an object getting serialized multiple
 Versions: 
 
 0.1.2: 
+
 [Object References](https://github.com/JasonRuckman/sidney/issues/10)
+
 [Enum Support](https://github.com/JasonRuckman/sidney/issues/7)
 
 ## Maven
