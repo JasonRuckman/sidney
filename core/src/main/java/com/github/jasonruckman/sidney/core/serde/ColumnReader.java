@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
+import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.io.Columns;
 import com.github.jasonruckman.sidney.core.io.Decoder;
 import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
@@ -22,7 +23,13 @@ import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 import java.io.IOException;
 import java.io.InputStream;
 
-class ColumnReader extends ColumnOperations {
+public class ColumnReader extends ColumnOperations {
+  private final SidneyConf conf;
+
+  public ColumnReader(SidneyConf conf) {
+    this.conf = conf;
+  }
+
   public boolean readBool(int index) {
     return columnIOs.get(index).readBoolean();
   }
@@ -63,14 +70,22 @@ class ColumnReader extends ColumnOperations {
     return columnIOs.get(index).readConcreteType(context);
   }
 
+  public int readDefinition(int index) {
+    return columnIOs.get(index).readDefinition();
+  }
+
   public void loadFromInputStream(InputStream inputStream) throws IOException {
     for (Columns.ColumnIO columnIO : columnIOs) {
-      columnIO.getDefinitionDecoder().readFromStream(inputStream);
-      columnIO.getRepetitionDecoder().readFromStream(inputStream);
+      columnIO.getEncoding().readFromStream(inputStream);
 
       for (Decoder decoder : columnIO.getDecoders()) {
         decoder.readFromStream(inputStream);
       }
     }
+  }
+
+  @Override
+  public SidneyConf getConf() {
+    return conf;
   }
 }

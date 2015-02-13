@@ -15,9 +15,12 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
+import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.UnsupportedColumnTypeException;
 import com.github.jasonruckman.sidney.core.io.Columns;
+import com.github.jasonruckman.sidney.core.io.DefaultDefRepEncoding;
 import com.github.jasonruckman.sidney.core.io.Encoding;
+import com.github.jasonruckman.sidney.core.io.ReferenceCheckingDefRepEncoding;
 import com.github.jasonruckman.sidney.core.io.bool.BoolDecoder;
 import com.github.jasonruckman.sidney.core.io.bool.BoolEncoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
@@ -27,10 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ColumnOperations implements SerializerFinalizer {
-  public static final Encoding DEFINITION_ENCODING = Encoding.BITMAP;
-  public static final Encoding REPETITION_ENCODING = Encoding.DELTABITPACKINGHYBRID;
-
+  public static final Encoding INT_DEFINITION_ENCODING = Encoding.BITPACKED;
+  public static final Encoding BOOL_DEFINITION_ENCODING = Encoding.BITMAP;
+  public static final Encoding REPETITION_ENCODING = Encoding.BITPACKED;
   protected final List<Columns.ColumnIO> columnIOs = new ArrayList<>();
+
+  public abstract SidneyConf getConf();
 
   private List<Columns.ColumnIO> columnsFor(Serializer serializer) {
     List<Columns.ColumnIO> columns = new ArrayList<>();
@@ -48,16 +53,20 @@ public abstract class ColumnOperations implements SerializerFinalizer {
     columns.add(columnIO);
 
     for (Columns.ColumnIO co : columns) {
-      BoolEncoder definitionEncoder = DEFINITION_ENCODING.newBoolEncoder();
-      BoolDecoder definitionDecoder = DEFINITION_ENCODING.newBoolDecoder();
+      BoolEncoder definitionEncoder = BOOL_DEFINITION_ENCODING.newBoolEncoder();
+      BoolDecoder definitionDecoder = BOOL_DEFINITION_ENCODING.newBoolDecoder();
 
       Int32Encoder repetitionEncoder = REPETITION_ENCODING.newInt32Encoder();
       Int32Decoder repetitionDecoder = REPETITION_ENCODING.newInt32Decoder();
 
-      co.setDefinitionEncoder(definitionEncoder);
-      co.setRepetitionEncoder(repetitionEncoder);
-      co.setDefinitionDecoder(definitionDecoder);
-      co.setRepetitionDecoder(repetitionDecoder);
+      if (getConf().isReferenceTrackingEnabled()) {
+        co.setEncoding(new ReferenceCheckingDefRepEncoding(repetitionEncoder, repetitionDecoder,
+                INT_DEFINITION_ENCODING.newInt32Encoder(),
+                INT_DEFINITION_ENCODING.newInt32Decoder(), definitionDecoder, definitionEncoder)
+        );
+      } else {
+        co.setEncoding(new DefaultDefRepEncoding(repetitionEncoder, repetitionDecoder, definitionEncoder, definitionDecoder));
+      }
     }
 
     return columns;
@@ -112,6 +121,13 @@ public abstract class ColumnOperations implements SerializerFinalizer {
         columnIO = new Columns.StringColumnIO(
             typeHandler.getEncoding().newStringEncoder(),
             typeHandler.getEncoding().newStringDecoder()
+        );
+        break;
+      }
+      case ENUM: {
+        columnIO = new Columns.IntColumnIO(
+            typeHandler.getEncoding().newInt32Encoder(),
+            typeHandler.getEncoding().newInt32Decoder()
         );
         break;
       }

@@ -43,16 +43,36 @@ import java.util.zip.GZIPOutputStream;
 public class FlaInsuranceRecordBenchmarks {
   private List<FlaInsuranceRecord> records;
   private JavaSid sid = new JavaSid();
-  private Kryo kryo = new Kryo();
-  private ObjectMapper objectMapper = new ObjectMapper();
-  private Writer<FlaInsuranceRecord> writer = sid.newWriter(new TypeToken<FlaInsuranceRecord>() {
-  });
-  private Reader<FlaInsuranceRecord> reader = sid.newReader(new TypeToken<FlaInsuranceRecord>() {
-  });
+  private ThreadLocal<Writer<FlaInsuranceRecord>> writerLocal = new ThreadLocal<Writer<FlaInsuranceRecord>>() {
+    @Override
+    protected Writer<FlaInsuranceRecord> initialValue() {
+      return sid.newWriter(new TypeToken<FlaInsuranceRecord>() {});
+    }
+  };
+  private ThreadLocal<Reader<FlaInsuranceRecord>> readerLocal = new ThreadLocal<Reader<FlaInsuranceRecord>>() {
+    @Override
+    protected Reader<FlaInsuranceRecord> initialValue() {
+      return sid.newReader(new TypeToken<FlaInsuranceRecord>() {});
+    }
+  };
+  private ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
+    @Override
+    protected Kryo initialValue() {
+      Kryo kryo = new Kryo();
+      kryo.setReferences(true);
+      return kryo;
+    }
+  };
+  private ThreadLocal<ObjectMapper> jacksonLocal = new ThreadLocal<ObjectMapper>() {
+    @Override
+    protected ObjectMapper initialValue() {
+      return new ObjectMapper();
+    }
+  };
 
   public FlaInsuranceRecordBenchmarks() {
     sid.useUnsafeFieldAccess(true);
-
+    sid.setReferences(true);
     BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
     CsvParserSettings parserSettings = new CsvParserSettings();
     parserSettings.setRowProcessor(processor);
@@ -70,6 +90,9 @@ public class FlaInsuranceRecordBenchmarks {
   @Benchmark
   @Group("data")
   public List<FlaInsuranceRecord> sidney() throws IOException {
+    Writer<FlaInsuranceRecord> writer = writerLocal.get();
+    Reader<FlaInsuranceRecord> reader = readerLocal.get();
+
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     OutputStream os = new GZIPOutputStream(baos);
     writer.open(os);
@@ -79,18 +102,16 @@ public class FlaInsuranceRecordBenchmarks {
     writer.close();
     os.close();
 
-    List<FlaInsuranceRecord> list = new ArrayList<>();
-    reader.open(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()))));
-
-    while (reader.hasNext()) {
-      list.add(reader.read());
-    }
+    reader.open(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray())));
+    List<FlaInsuranceRecord> list = reader.readAll();
+    reader.close();
     return list;
   }
 
   @Benchmark
   @Group("data")
   public List<FlaInsuranceRecord> kryo() throws IOException {
+    Kryo kryo = kryoLocal.get();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     OutputStream gzos = new GZIPOutputStream(baos);
     Output output = new Output(gzos);
@@ -98,19 +119,18 @@ public class FlaInsuranceRecordBenchmarks {
     output.close();
     gzos.close();
 
-    InputStream inputStream = new BufferedInputStream(
+    InputStream inputStream =
         new GZIPInputStream(
             new ByteArrayInputStream(baos.toByteArray())
-        )
-    );
+        );
 
-    Input input = new Input(inputStream);
-    return kryo.readObject(input, ArrayList.class);
+    return kryo.readObject(new Input(inputStream), ArrayList.class);
   }
 
   @Benchmark
   @Group("data")
   public List<FlaInsuranceRecord> jackson() throws IOException {
+    ObjectMapper objectMapper = jacksonLocal.get();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     OutputStream gzos = new GZIPOutputStream(baos);
     objectMapper.writeValue(gzos, records);

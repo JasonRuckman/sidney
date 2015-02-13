@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jasonruckman.sidney.core.io;
+package com.github.jasonruckman.sidney.core.serde;
 
-public interface IntFunction<T> {
-  T apply(int value);
+import com.github.jasonruckman.sidney.core.SidneyConf;
+
+public class ReferenceTrackingWriteContext extends WriteContextImpl {
+  public ReferenceTrackingWriteContext(ColumnWriter columnWriter, SidneyConf conf) {
+    super(columnWriter, conf);
+  }
+
+  public ReferenceTrackingWriteContext(ColumnWriter columnWriter, PageHeader pageHeader, SidneyConf conf) {
+    super(columnWriter, pageHeader, conf);
+  }
+
+  @Override
+  public <T> boolean shouldWriteValue(T value) {
+    return true;
+  }
 }

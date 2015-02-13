@@ -22,7 +22,7 @@ public abstract class TypeCapture<T> {
   /**
    * Returns the captured type.
    */
-  protected Type capture() {
+  protected final Type capture() {
     Type superclass = getClass().getGenericSuperclass();
     return ((ParameterizedType) superclass).getActualTypeArguments()[0];
   }

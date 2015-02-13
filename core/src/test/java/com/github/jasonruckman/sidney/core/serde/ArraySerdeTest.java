@@ -21,86 +21,66 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
-public class ArraySerdeTest extends SerdeTestBase {
+public class ArraySerdeTest extends ObjSerdeTest {
   @Test
-  public void testInts() {
-    int[] ints = getDataFactory().newInts();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<int[]> writer = sid.newWriter(new TypeToken<int[]>() {
+  public void testInts() throws IOException {
+    runTest(new TypeToken<int[]>() {
+    }, NUM_TO_RUN, new Supplier<int[]>() {
+      @Override
+      public int[] apply() {
+        return getDataFactory().newInts();
+      }
+    }, new Comparator<int[]>() {
+      @Override
+      public int compare(int[] o1, int[] o2) {
+        return (Arrays.equals(o1, o2)) ? 0 : -1 ;
+      }
     });
-    writer.open(baos);
-    writer.write(ints);
-    writer.write(ints);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<int[]> reader = sid.newReader(new TypeToken<int[]>() {
-    });
-    reader.open(bais);
-    int[] output = (reader.hasNext()) ? reader.read() : null;
-
-    Assert.assertArrayEquals(ints, output);
   }
 
   @Test
-  public void testArrayOfBeans() {
-    AllPrimitives[] primitiveses = new AllPrimitives[]{
-        getDataFactory().newPrimitives(),
-        getDataFactory().newPrimitives()
-    };
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<AllPrimitives[]> writer = sid.newWriter(new TypeToken<AllPrimitives[]>() {
+  public void testArrayOfBeans() throws IOException {
+    runTest(new TypeToken<AllPrimitives[]>() {
+    }, NUM_TO_RUN, new Supplier<AllPrimitives[]>() {
+      @Override
+      public AllPrimitives[] apply() {
+        AllPrimitives[] primitiveses = new AllPrimitives[getRandom().nextInt(25)];
+        for (int i = 0; i < primitiveses.length; i++) {
+          primitiveses[i] = getDataFactory().newPrimitives();
+        }
+        return primitiveses;
+      }
+    }, new Comparator<AllPrimitives[]>() {
+      @Override
+      public int compare(AllPrimitives[] o1, AllPrimitives[] o2) {
+        return (Arrays.equals(o1, o2)) ? 0 : -1 ;
+      }
     });
-    writer.open(baos);
-    writer.write(primitiveses);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<AllPrimitives[]> reader = sid.newReader(new TypeToken<AllPrimitives[]>() {
-    });
-    reader.open(bais);
-    AllPrimitives[] output = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertArrayEquals(primitiveses, output);
   }
 
   @Test
-  public void testNestedPrimitiveArrays() {
-    AllPrimitiveArrays arrays = getDataFactory().newAllArrays();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<AllPrimitiveArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveArrays>() {
+  public void testNestedPrimitiveArrays() throws IOException {
+    runTest(new TypeToken<AllPrimitiveArrays>() {
+    }, NUM_TO_RUN, new Supplier<AllPrimitiveArrays>() {
+      @Override
+      public AllPrimitiveArrays apply() {
+        return getDataFactory().newAllArrays();
+      }
     });
-    writer.open(baos);
-    writer.write(arrays);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<AllPrimitiveArrays> reader = sid.newReader(new TypeToken<AllPrimitiveArrays>() {
-    });
-    reader.open(bais);
-    AllPrimitiveArrays output = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertEquals(arrays, output);
   }
 
   @Test
-  public void testPrimitiveRefArrays() {
-    AllPrimitiveRefsArrays one = getDataFactory().newAllPrimitiveRefArrays();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<AllPrimitiveRefsArrays> writer = sid.newWriter(new TypeToken<AllPrimitiveRefsArrays>() {
+  public void testPrimitiveRefArrays() throws IOException {
+    runTest(new TypeToken<AllPrimitiveRefsArrays>() {
+    }, NUM_TO_RUN, new Supplier<AllPrimitiveRefsArrays>() {
+      @Override
+      public AllPrimitiveRefsArrays apply() {
+        return getDataFactory().newAllPrimitiveRefArrays();
+      }
     });
-    writer.open(baos);
-    writer.write(one);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<AllPrimitiveRefsArrays> reader = sid.newReader(new TypeToken<AllPrimitiveRefsArrays>() {
-    });
-    reader.open(bais);
-    AllPrimitiveRefsArrays out = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertEquals(one, out);
   }
 }

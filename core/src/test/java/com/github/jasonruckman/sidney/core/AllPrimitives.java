@@ -28,12 +28,14 @@ public class AllPrimitives {
   private double eighth;
   private byte[] ninth;
   private String tenth;
+  private SomeEnum eleventh;
 
   public AllPrimitives() {
 
   }
 
-  public AllPrimitives(boolean first, int second, char third, short fourth, byte fifth, long sixth, float seventh, double eighth, byte[] ninth, String tenth) {
+  public AllPrimitives(boolean first, int second, char third, short fourth, byte fifth, long sixth,
+                       float seventh, double eighth, byte[] ninth, String tenth, SomeEnum eleventh) {
     this.first = first;
     this.second = second;
     this.third = third;
@@ -44,6 +46,7 @@ public class AllPrimitives {
     this.eighth = eighth;
     this.ninth = ninth;
     this.tenth = tenth;
+    this.eleventh = eleventh;
   }
 
   public boolean isFirst() {
@@ -139,5 +142,11 @@ public class AllPrimitives {
         ", ninth=" + Arrays.toString(ninth) +
         ", tenth='" + tenth + '\'' +
         '}';
+  }
+
+  public static enum SomeEnum {
+    FIRST,
+    SECOND,
+    THIRD
   }
 }

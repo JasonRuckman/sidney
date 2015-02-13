@@ -15,17 +15,6 @@
  */
 package com.github.jasonruckman.sidney.core;
 
-import java.lang.reflect.Type;
-
-/**
- * For capturing type information
- *
- * @param <T> the type you wish to be serialized
- */
-public abstract class TypeToken<T> extends TypeCapture<T> {
-  private final Type type = capture();
-
-  public final Type getType() {
-    return type;
-  }
+public interface IntFunction<T> {
+  T apply(int value);
 }

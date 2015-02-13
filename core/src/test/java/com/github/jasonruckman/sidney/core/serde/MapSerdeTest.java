@@ -17,62 +17,44 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitiveRefs;
 import com.github.jasonruckman.sidney.core.JavaSid;
+import com.github.jasonruckman.sidney.core.Supplier;
 import com.github.jasonruckman.sidney.core.TypeToken;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapSerdeTest extends SerdeTestBase {
+public class MapSerdeTest extends ObjSerdeTest {
   @Test
-  public void testIntToIntMap() {
-    Map<Integer, Integer> map = new HashMap<>();
-    for (int i = 0; i < getRandom().nextInt(128); i++) {
-      map.put(getDataFactory().newInt(), getDataFactory().newInt());
-    }
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<Map<Integer, Integer>> writer = sid.newWriter(
-        new TypeToken<Map<Integer, Integer>>() {
+  public void testIntToIntMap() throws IOException {
+    runTest(new TypeToken<Map<Integer, Integer>>() {
+    }, NUM_TO_RUN, new Supplier<Map<Integer, Integer>>() {
+      @Override
+      public Map<Integer, Integer> apply() {
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < getRandom().nextInt(256); i++) {
+          map.put(getRandom().nextInt(), getRandom().nextInt());
         }
-    );
-    writer.open(baos);
-    writer.write(map);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<Map<Integer, Integer>> reader = sid.newReader(
-        new TypeToken<Map<Integer, Integer>>() {
-        }
-    );
-    reader.open(bais);
-    Map<Integer, Integer> outMap = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertEquals(map, outMap);
+        return map;
+      }
+    });
   }
 
   @Test
-  public void testBeanToBeanMap() {
-    Map<AllPrimitiveRefs, AllPrimitiveRefs> map = getDataFactory().newMaps();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<Map<AllPrimitiveRefs, AllPrimitiveRefs>> writer = sid.newWriter(
-        new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+  public void testBeanToBeanMap() throws IOException {
+    runTest(new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}, NUM_TO_RUN, new Supplier<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+      @Override
+      public Map<AllPrimitiveRefs, AllPrimitiveRefs> apply() {
+        Map<AllPrimitiveRefs, AllPrimitiveRefs> map = new HashMap<>();
+        for(int i = 0; i < getRandom().nextInt(256); i++) {
+          map.put(getDataFactory().newPrimitiveRefs(), getDataFactory().newPrimitiveRefs());
         }
-    );
-    writer.open(baos);
-    writer.write(map);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<Map<AllPrimitiveRefs, AllPrimitiveRefs>> reader = sid.newReader(
-        new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
-        }
-    );
-    reader.open(bais);
-    Map<AllPrimitiveRefs, AllPrimitiveRefs> out = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertEquals(map, out);
+        return map;
+      }
+    });
   }
 }

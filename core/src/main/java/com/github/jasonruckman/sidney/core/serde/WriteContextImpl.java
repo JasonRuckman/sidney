@@ -78,7 +78,7 @@ public class WriteContextImpl extends Context implements WriteContext {
     this.getColumnWriter().writeString(this.getColumnIndex(), value);
   }
 
-  public <T> boolean writeNullMarker(T value) {
+  public <T> boolean shouldWriteValue(T value) {
     if (value == null) {
       this.getColumnWriter().writeNull(this.getColumnIndex());
       return false;
@@ -87,14 +87,8 @@ public class WriteContextImpl extends Context implements WriteContext {
     return true;
   }
 
-  public <T> boolean writeNullMarkerAndType(T value) {
-    if (value == null) {
-      this.getColumnWriter().writeNull(this.getColumnIndex());
-      return false;
-    }
-    this.getColumnWriter().writeNotNull(this.getColumnIndex());
-    this.getColumnWriter().writeConcreteType(value.getClass(), this.getColumnIndex(), this);
-    return true;
+  public void writeConcreteType(Class<?> type) {
+    this.getColumnWriter().writeConcreteType(type, this.getColumnIndex(), this);
   }
 
   public void writeRepetitionCount(int count) {
@@ -105,6 +99,7 @@ public class WriteContextImpl extends Context implements WriteContext {
   public void flushToOutputStream(OutputStream outputStream) throws IOException {
     this.getColumnWriter().flushToOutputStream(outputStream);
   }
+
 
   private void writeIntLike(int value) {
     this.getColumnWriter().writeInt(this.getColumnIndex(), value);

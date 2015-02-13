@@ -17,76 +17,29 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitives;
 import com.github.jasonruckman.sidney.core.JavaSid;
+import com.github.jasonruckman.sidney.core.Supplier;
 import com.github.jasonruckman.sidney.core.TypeToken;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectionSerdeTest extends SerdeTestBase {
+public class CollectionSerdeTest extends ObjSerdeTest {
   @Test
-  public void testListOfBeans() {
-    AllPrimitives one = getDataFactory().newPrimitives();
-    AllPrimitives two = getDataFactory().newPrimitives();
-
-    List<AllPrimitives> list = new ArrayList<>();
-    list.add(one);
-    list.add(two);
-
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {
-    });
-    writer.open(baos);
-    writer.write(list);
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<List<AllPrimitives>> reader = sid.newReader(
-        new TypeToken<List<AllPrimitives>>() {
+  public void testListOfBeans() throws IOException {
+    runTest(new TypeToken<List<AllPrimitives>>() {}, NUM_TO_RUN, new Supplier<List<AllPrimitives>>() {
+      @Override
+      public List<AllPrimitives> apply() {
+        List<AllPrimitives> list = new ArrayList<>();
+        for(int i = 0; i < getRandom().nextInt(256); i++) {
+          list.add(getDataFactory().newPrimitives());
         }
-    );
-    reader.open(bais);
-    List<AllPrimitives> output = (reader.hasNext()) ? reader.read() : null;
-    Assert.assertEquals(list, output);
-  }
-
-  @Test
-  public void testManyListsOfBeans() {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    JavaSid sid = new JavaSid();
-    Writer<List<AllPrimitives>> writer = sid.newWriter(new TypeToken<List<AllPrimitives>>() {
-    });
-    writer.open(baos);
-
-    List<List<AllPrimitives>> lists = new ArrayList<>();
-    int num = 1025;
-    for (int i = 0; i < num; i++) {
-      List<AllPrimitives> primitiveses = new ArrayList<>();
-      for (int j = 0; j < getDataFactory().newByte(); j++) {
-        primitiveses.add(
-            getDataFactory().newPrimitives()
-        );
+        return list;
       }
-      writer.write(primitiveses);
-      lists.add(primitiveses);
-    }
-    writer.close();
-
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Reader<List<AllPrimitives>> reader = sid.newReader(
-        new TypeToken<List<AllPrimitives>>() {
-        }
-    );
-    reader.open(bais);
-
-    List<List<AllPrimitives>> out = new ArrayList<>();
-    while (reader.hasNext()) {
-      out.add(reader.read());
-    }
-    Assert.assertEquals(lists, out);
+    });
   }
 }

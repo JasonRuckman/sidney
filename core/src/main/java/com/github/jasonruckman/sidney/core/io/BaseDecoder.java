@@ -15,11 +15,10 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
-import com.github.jasonruckman.sidney.core.Bytes;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.BufferUnderflowException;
+import static com.github.jasonruckman.sidney.core.Bytes.*;
 
 public abstract class BaseDecoder implements Decoder {
   private byte[] buffer;
@@ -48,9 +47,9 @@ public abstract class BaseDecoder implements Decoder {
   @Override
   public void readFromStream(InputStream inputStream) throws IOException {
     setPosition(0);
-    int bufferSize = Bytes.readIntFromStream(inputStream);
+    int bufferSize = readIntFromStream(inputStream);
     buffer = new byte[bufferSize];
-    Bytes.readFully(buffer, inputStream);
+    readFully(buffer, inputStream);
   }
 
   protected byte readByteFromBuffer() {
@@ -73,14 +72,14 @@ public abstract class BaseDecoder implements Decoder {
 
   protected int readIntFromBuffer() {
     require(4);
-    int i = Bytes.readInt(getBuffer(), getPosition());
+    int i = readInt(getBuffer(), getPosition());
     position += 4;
     return i;
   }
 
   protected long readLongFromBuffer() {
     require(8);
-    long l = Bytes.readLong(getBuffer(), getPosition());
+    long l = readLong(getBuffer(), getPosition());
     position += 8;
     return l;
   }

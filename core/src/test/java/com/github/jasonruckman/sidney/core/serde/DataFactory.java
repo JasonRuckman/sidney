@@ -196,9 +196,13 @@ public class DataFactory {
     return maybeMakeNull(bytes);
   }
 
+  public AllPrimitives.SomeEnum newEnum() {
+    return AllPrimitives.SomeEnum.values()[random.nextInt(2)];
+  }
+
   public AllPrimitives newPrimitives() {
     return maybeMakeNull(new AllPrimitives(
-        newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString()
+        newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString(), newEnum()
     ));
   }
 
@@ -210,7 +214,7 @@ public class DataFactory {
 
   public InheritedAllPrimitives newInheritedAllPrimitives() {
     return maybeMakeNull(new InheritedAllPrimitives(
-        newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString()
+        newBool(), newInt(), newChar(), newShort(), newByte(), newLong(), newFloat(), newDouble(), newBytes(), newString(), newEnum()
     ));
   }
 
