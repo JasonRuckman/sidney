@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
+import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Encoder;
 import com.github.jasonruckman.sidney.core.io.float32.Plain;

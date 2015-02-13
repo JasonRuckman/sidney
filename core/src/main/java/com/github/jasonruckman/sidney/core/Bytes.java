@@ -195,15 +195,12 @@ public class Bytes {
   }
 
   public static void readFully(byte[] buffer, InputStream is) throws IOException {
-    int numLeft = buffer.length;
-    int offset = 0;
-    while (numLeft > 0) {
-      int numRead = is.read(buffer, offset, numLeft);
-      if (numRead == -1) {
+    int n = 0;
+    while (n < buffer.length) {
+      int count = is.read(buffer, n, buffer.length - n);
+      if (count < 0)
         throw new EOFException();
-      }
-      numLeft -= numRead;
-      offset += numRead;
+      n += count;
     }
   }
 }

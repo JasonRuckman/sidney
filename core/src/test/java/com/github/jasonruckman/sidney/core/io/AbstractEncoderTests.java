@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
+import com.github.jasonruckman.sidney.core.IntFunction;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

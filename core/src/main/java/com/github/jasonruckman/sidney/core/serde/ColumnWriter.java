@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
+import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.io.Columns;
 import com.github.jasonruckman.sidney.core.io.Encoder;
 import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
@@ -22,7 +23,13 @@ import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 import java.io.IOException;
 import java.io.OutputStream;
 
-class ColumnWriter extends ColumnOperations {
+public class ColumnWriter extends ColumnOperations {
+  private final SidneyConf conf;
+
+  public ColumnWriter(SidneyConf conf) {
+    this.conf = conf;
+  }
+
   public void writeBoolean(int index, boolean value) {
     Columns.ColumnIO columnIO = columnIOs.get(index);
     columnIO.writeBoolean(value);
@@ -66,6 +73,10 @@ class ColumnWriter extends ColumnOperations {
     columnIOs.get(index).writeNull();
   }
 
+  public void writeDefinition(int index, int definition) {
+    columnIOs.get(index).writeDefinition(definition);
+  }
+
   public void writeRepetitionCount(int index, int value) {
     columnIOs.get(index).writeRepetitionCount(value);
   }
@@ -76,25 +87,17 @@ class ColumnWriter extends ColumnOperations {
 
   public void flushToOutputStream(OutputStream outputStream) throws IOException {
     for (Columns.ColumnIO columnIO : columnIOs) {
-      columnIO.getDefinitionEncoder().writeToStream(outputStream);
-      columnIO.getRepetitionEncoder().writeToStream(outputStream);
-
+      columnIO.getEncoding().writeToStream(outputStream);
+      columnIO.getEncoding().reset();
       for (Encoder encoder : columnIO.getEncoders()) {
         encoder.writeToStream(outputStream);
-      }
-    }
-
-    reset();
-  }
-
-  public void reset() {
-    for (Columns.ColumnIO columnIO : columnIOs) {
-      columnIO.getDefinitionEncoder().reset();
-      columnIO.getRepetitionEncoder().reset();
-
-      for (Encoder encoder : columnIO.getEncoders()) {
         encoder.reset();
       }
     }
+  }
+
+  @Override
+  public SidneyConf getConf() {
+    return conf;
   }
 }

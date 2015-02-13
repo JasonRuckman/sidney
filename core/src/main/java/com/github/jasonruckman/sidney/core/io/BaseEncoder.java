@@ -70,7 +70,7 @@ public abstract class BaseEncoder implements Encoder {
   }
 
   protected void writeBytesToBuffer(byte[] bytes, int offset, int length) {
-    ensureCapacity(bytes.length);
+    ensureCapacity(length);
     System.arraycopy(bytes, offset, buffer, position, length);
     position += length;
   }

@@ -100,41 +100,14 @@ public class Columns {
 
   public static class ColumnIO {
     private static final List EMPTY = new ArrayList<>();
-    private BoolEncoder definitionEncoder;
-    private Int32Encoder repetitionEncoder;
-    private BoolDecoder definitionDecoder;
-    private Int32Decoder repetitionDecoder;
+    private DefRepEncoding encoding;
 
-    public BoolEncoder getDefinitionEncoder() {
-      return definitionEncoder;
+    public DefRepEncoding getEncoding() {
+      return encoding;
     }
 
-    public void setDefinitionEncoder(BoolEncoder definitionEncoder) {
-      this.definitionEncoder = definitionEncoder;
-    }
-
-    public Int32Encoder getRepetitionEncoder() {
-      return repetitionEncoder;
-    }
-
-    public void setRepetitionEncoder(Int32Encoder repetitionEncoder) {
-      this.repetitionEncoder = repetitionEncoder;
-    }
-
-    public BoolDecoder getDefinitionDecoder() {
-      return definitionDecoder;
-    }
-
-    public void setDefinitionDecoder(BoolDecoder definitionDecoder) {
-      this.definitionDecoder = definitionDecoder;
-    }
-
-    public Int32Decoder getRepetitionDecoder() {
-      return repetitionDecoder;
-    }
-
-    public void setRepetitionDecoder(Int32Decoder repetitionDecoder) {
-      this.repetitionDecoder = repetitionDecoder;
+    public void setEncoding(DefRepEncoding encoding) {
+      this.encoding = encoding;
     }
 
     public void writeBoolean(boolean value) {
@@ -166,7 +139,7 @@ public class Columns {
     }
 
     public void writeNotNull() {
-      definitionEncoder.writeBool(true);
+      encoding.writeNullMarker(true);
     }
 
     public void writeConcreteType(Class<?> type, WriteContext context) {
@@ -174,11 +147,15 @@ public class Columns {
     }
 
     public void writeNull() {
-      definitionEncoder.writeBool(false);
+      encoding.writeNullMarker(false);
     }
 
     public void writeRepetitionCount(int value) {
-      repetitionEncoder.writeInt(value);
+      encoding.writeRepetitionCount(value);
+    }
+
+    public void writeDefinition(int definition) {
+      encoding.writeDefinition(definition);
     }
 
     public boolean readBoolean() {
@@ -210,15 +187,19 @@ public class Columns {
     }
 
     public boolean readNullMarker() {
-      return definitionDecoder.nextBool();
+      return encoding.readNullMarker();
     }
 
     public int readRepetitionCount() {
-      return repetitionDecoder.nextInt();
+      return encoding.readRepetitionCount();
     }
 
     public Class readConcreteType(ReadContext context) {
       throw new IllegalStateException();
+    }
+
+    public int readDefinition() {
+      return encoding.readDefinition();
     }
 
     public List<Encoder> getEncoders() {
