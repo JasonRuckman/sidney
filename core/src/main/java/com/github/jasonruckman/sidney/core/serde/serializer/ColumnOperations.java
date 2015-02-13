@@ -124,6 +124,13 @@ public abstract class ColumnOperations implements SerializerFinalizer {
         );
         break;
       }
+      case ENUM: {
+        columnIO = new Columns.IntColumnIO(
+            typeHandler.getEncoding().newInt32Encoder(),
+            typeHandler.getEncoding().newInt32Decoder()
+        );
+        break;
+      }
       default: {
         throw new UnsupportedColumnTypeException(typeHandler.getType());
       }
