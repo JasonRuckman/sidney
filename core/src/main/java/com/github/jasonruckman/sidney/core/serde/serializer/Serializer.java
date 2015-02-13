@@ -91,7 +91,7 @@ public abstract class Serializer<T> {
    *
    * @return the accessor
    */
-  protected final Accessors.FieldAccessor getAccessor() {
+  protected Accessors.FieldAccessor getAccessor() {
     return accessor;
   }
 

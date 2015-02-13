@@ -94,14 +94,12 @@ public interface WriteContext {
    *
    * @return if the value is not null
    */
-  <T> boolean writeNullMarker(T value);
+  <T> boolean shouldWriteValue(T value);
 
   /**
-   * If the value is null, write a null marker, also write the concrete type
-   *
-   * @return if the value is not null
+   * Write the concrete type
    */
-  <T> boolean writeNullMarkerAndType(T value);
+  void writeConcreteType(Class<?> type);
 
   /**
    * Write the repetition count to the current column

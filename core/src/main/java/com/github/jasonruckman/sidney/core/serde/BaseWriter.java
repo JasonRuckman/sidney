@@ -35,15 +35,20 @@ public abstract class BaseWriter<T> {
   private boolean isOpen = false;
   private Serializer rootSerializer;
   private SidneyConf conf;
+  private References references = new References();
 
   public BaseWriter(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
     this.typeRef = typeRef;
-    this.serializerContext = new SerializerContextImpl(conf);
-    ColumnWriter writer = new ColumnWriter();
+    this.serializerContext = new SerializerContextImpl(conf, references);
+    ColumnWriter writer = new ColumnWriter(conf);
     this.rootSerializer = serializerContext.serializer(typeRef);
     this.serializerContext.finish(writer);
-    this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
+    if (conf.isReferenceTrackingEnabled()) {
+      this.writeContext = new ReferenceTrackingWriteContext(writer, new PageHeader(), conf);
+    } else {
+      this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
+    }
   }
 
   protected WriteContext getWriteContext() {
@@ -69,6 +74,10 @@ public abstract class BaseWriter<T> {
    * Open this writer against the given {@link java.io.OutputStream}
    */
   public void open(OutputStream outputStream) {
+    if(conf.isReferenceTrackingEnabled()) {
+      references.clear();
+    }
+
     this.outputStream = outputStream;
     this.recordCount = 0;
     this.isOpen = true;

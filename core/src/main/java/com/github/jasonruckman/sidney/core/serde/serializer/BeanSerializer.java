@@ -54,7 +54,7 @@ public class BeanSerializer extends Serializer<Object> {
   }
 
   private void writeBean(Object value, WriteContext context) {
-    if (context.writeNullMarker(value)) {
+    if (context.shouldWriteValue(value)) {
       //advance into fields
       context.incrementColumnIndex();
       for (Serializer handler : serializersAtThisLevel) {
@@ -66,7 +66,7 @@ public class BeanSerializer extends Serializer<Object> {
   }
 
   private Object readBean(ReadContext context) {
-    if (context.readNullMarker()) {
+    if (context.shouldReadValue()) {
       Object bean = instanceFactory.newInstance();
       context.incrementColumnIndex();
       for (Serializer handler : serializersAtThisLevel) {

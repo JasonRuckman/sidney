@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jasonruckman.sidney.core;
+package com.github.jasonruckman.sidney.core.serde;
 
-import java.lang.reflect.Type;
+import com.github.jasonruckman.sidney.core.SidneyConf;
 
 /**
- * For capturing type information
- *
- * @param <T> the type you wish to be serialized
+ * A read context that peeks at null markers, checks if it needs to pull a reference, otherwise delegates
  */
-public abstract class TypeToken<T> extends TypeCapture<T> {
-  private final Type type = capture();
+public class ReferenceTrackingReadContext extends ReadContextImpl {
+  public ReferenceTrackingReadContext(ColumnReader columnReader, SidneyConf conf) {
+    super(columnReader, conf);
+  }
 
-  public final Type getType() {
-    return type;
+  @Override
+  public boolean shouldReadValue() {
+    return true;
+  }
+
+  public boolean readNullMarker() {
+    return getColumnReader().readNullMarker(getColumnIndex());
   }
 }

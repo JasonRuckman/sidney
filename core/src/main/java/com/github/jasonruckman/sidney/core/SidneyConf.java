@@ -28,6 +28,7 @@ public class SidneyConf {
   public static final int DEFAULT_SIDNEY_PAGE_SIZE = 1024;
   private Registrations registrations = new Registrations();
   private boolean useUnsafe = true;
+  private boolean referenceTrackingEnabled = false;
   private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
 
   private SidneyConf() {
@@ -48,6 +49,14 @@ public class SidneyConf {
     SidneyConf c = new SidneyConf();
     c.registrations = registrations;
     return c;
+  }
+
+  public boolean isReferenceTrackingEnabled() {
+    return referenceTrackingEnabled;
+  }
+
+  public void setReferenceTrackingEnabled(boolean referenceTrackingEnabled) {
+    this.referenceTrackingEnabled = referenceTrackingEnabled;
   }
 
   public boolean isUseUnsafe() {

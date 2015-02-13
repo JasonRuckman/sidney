@@ -51,7 +51,8 @@ public class MapSerializer extends Serializer<Map> {
   }
 
   private void writeMap(Map map, WriteContext context) {
-    if (context.writeNullMarkerAndType(map)) {
+    if (context.shouldWriteValue(map)) {
+      context.writeConcreteType(map.getClass());
       context.writeRepetitionCount(map.size());
       //bump index forward to key
       context.incrementColumnIndex();
@@ -63,12 +64,12 @@ public class MapSerializer extends Serializer<Map> {
         valueSerializer.writeValue(entry.getValue(), context);
       }
     } else {
-      context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
+      context.incrementColumnIndex(getNumFieldsToIncrementBy());
     }
   }
 
   private Map readMap(ReadContext context) {
-    if (context.readNullMarker()) {
+    if (context.shouldReadValue()) {
       Map map = (Map) cache.newInstance(context.readConcreteType());
       int size = context.readRepetitionCount();
       context.incrementColumnIndex();
@@ -79,7 +80,7 @@ public class MapSerializer extends Serializer<Map> {
       }
       return map;
     }
-    context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
+    context.incrementColumnIndex(getNumFieldsToIncrementBy());
     return null;
   }
 }
