@@ -5,7 +5,7 @@
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney</artifactId>
   <packaging>pom</packaging>
-  <version>0.1.2</version>
+  <version>0.1.3-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Sidney: A columnar serializer.</description>
@@ -130,7 +130,7 @@
     <url>https://github.com/jasonruckman/sidney</url>
     <connection>scm:git:git://github.com/jasonruckman/sidney.git</connection>
     <developerConnection>scm:git:git@github.com:jasonruckman/sidney.git</developerConnection>
-    <tag>sidney-0.1.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
