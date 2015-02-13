@@ -7,7 +7,7 @@ It's named after my dog Sid and is a side project I did on my own time.  It is v
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is much more flexible and efficient on smaller numbers of objects (not to mention being far more battletested).  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
-Sidney works on java beans, maps, arrays and collection types and primitives, enums are not yet supported (but planned very soon). Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
+Sidney works on java beans, maps, arrays and collection types and primitives, as well as enums. Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
 
 Custom serializers are possible by implementing the [Serializer](https://github.com/JasonRuckman/sidney/blob/master/core/src/main/java/com/github/jasonruckman/sidney/core/serde/serializer/Serializer.java) class.
 
@@ -64,7 +64,7 @@ Encoding MoreImportantData Will roughly look like this in the byte stream:
 | byte[].class    | YES                | PLAIN
 | String.class    | YES                | PLAIN / DELTALENGTH / RLE
 
-All of (byte.class, short.class, char.class) are encoded as ints, so int encodings apply to them.
+All of (byte.class, short.class, char.class, enums) are encoded as ints, so int encodings apply to them.
 
 For the reference implementations of the primitive types, the same encodings apply, but they are nullable.
 
@@ -148,12 +148,19 @@ Sidney supports generics, and will resolve them all the way down the object hier
 
 Note: No type tokens are necessary, as under the covers typetags are used to decompose the generic argument.
 
+Sidney as of 0.1.2 supports references, so an object getting serialized multiple types will be serialized with a reference and reconstructed on load. 
+
 ## Notes
 
-1. References: Sidney doesn't yet have the concept of references, if objects refer to each other, they won't be linked up when the object is read back in. 
-2. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
-3. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
-4. ClassLoading: There's an outstanding issue to allow classloaders to be passed in, but nothing at present.
+1. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
+2. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
+3. ClassLoading: There's an outstanding issue to allow classloaders to be passed in, but nothing at present.
+
+Versions: 
+
+0.1.2: 
+[Object References](https://github.com/JasonRuckman/sidney/issues/10)
+[Enum Support](https://github.com/JasonRuckman/sidney/issues/7)
 
 ## Maven
 
@@ -162,7 +169,7 @@ Core:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-core</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 Scala: 
@@ -170,6 +177,6 @@ Scala:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-scala</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
