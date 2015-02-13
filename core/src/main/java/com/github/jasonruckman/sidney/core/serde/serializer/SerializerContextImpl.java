@@ -19,6 +19,8 @@ import com.github.jasonruckman.sidney.core.Accessors;
 import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.SidneyException;
 import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.References;
+import com.github.jasonruckman.sidney.core.serde.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +32,11 @@ public class SerializerContextImpl implements SerializerContext {
   private final List<Serializer> serializers = new ArrayList<>();
   private SidneyConf.Registrations registrations;
   private SidneyConf conf;
+  private References references;
 
-  public SerializerContextImpl(SidneyConf conf) {
+  public SerializerContextImpl(SidneyConf conf, References references) {
     this.conf = conf;
+    this.references = references;
     registrations = conf.getRegistrations();
 
     addCustomFactories();
@@ -110,6 +114,17 @@ public class SerializerContextImpl implements SerializerContext {
       ));
     }
     serializer.consume(typeRef, this);
+
+    if(conf.isReferenceTrackingEnabled()) {
+      if(serializer instanceof PrimitiveSerializer) {
+        Type t = ((PrimitiveSerializer) serializer).getType();
+        if(t == Type.BINARY || t == Type.STRING || t == Type.ENUM) {
+          serializer = new ReferenceTrackingSerializerInterceptor<>(serializer, references);
+        }
+      } else {
+        serializer = new ReferenceTrackingSerializerInterceptor<>(serializer, references);
+      }
+    }
 
     if (parent != null) {
       parent.addNumFieldsToIncrementBy(serializer.getNumFieldsToIncrementBy());

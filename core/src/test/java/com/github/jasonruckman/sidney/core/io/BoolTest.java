@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
+import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.bool.*;
 
 import java.util.Arrays;

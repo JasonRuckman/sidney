@@ -59,6 +59,12 @@ public enum Type {
     public Encoding defaultEncoding() {
       return Encoding.PLAIN;
     }
+  },
+  ENUM {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
   };
 
   public abstract Encoding defaultEncoding();

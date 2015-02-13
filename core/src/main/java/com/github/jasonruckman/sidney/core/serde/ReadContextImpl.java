@@ -33,10 +33,6 @@ public class ReadContextImpl extends Context implements ReadContext {
     return columnReader;
   }
 
-  public void setColumnReader(ColumnReader columnReader) {
-    this.columnReader = columnReader;
-  }
-
   @Override
   public void loadFromInputStream(InputStream inputStream) throws IOException {
     columnReader.loadFromInputStream(inputStream);
@@ -82,7 +78,7 @@ public class ReadContextImpl extends Context implements ReadContext {
     return this.getColumnReader().readString(this.getColumnIndex());
   }
 
-  public boolean readNullMarker() {
+  public boolean shouldReadValue() {
     return this.getColumnReader().readNullMarker(this.getColumnIndex());
   }
 

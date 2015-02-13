@@ -101,7 +101,7 @@ public interface ReadContext {
    *
    * @return whether or not the next value is null
    */
-  boolean readNullMarker();
+  boolean shouldReadValue();
 
   /**
    * Read the type for a column at the current index.  Do not call on columns that do not require types.

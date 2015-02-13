@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
+import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Decoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Encoder;
 import com.github.jasonruckman.sidney.core.io.float64.Plain;

@@ -89,7 +89,7 @@ public class PrimitiveSerializer extends Serializer {
     TYPES.put(Double.class, Type.FLOAT64);
     TYPES.put(byte[].class, Type.BINARY);
     TYPES.put(String.class, Type.STRING);
-    TYPES.put(Enum.class, Type.INT32);
+    TYPES.put(Enum.class, Type.ENUM);
   }
 
   protected PrimitiveWriters.PrimitiveWriter writer;
@@ -129,7 +129,7 @@ public class PrimitiveSerializer extends Serializer {
 
   @Override
   public void writeValue(Object value, WriteContext context) {
-    if (context.writeNullMarker(value)) {
+    if (context.shouldWriteValue(value)) {
       writer.writeValue(value, context);
     }
     context.incrementColumnIndex();
@@ -137,7 +137,7 @@ public class PrimitiveSerializer extends Serializer {
 
   @Override
   public Object readValue(ReadContext context) {
-    if (context.readNullMarker()) {
+    if (context.shouldReadValue()) {
       Object value = reader.readValue(context);
       context.incrementColumnIndex();
       return value;

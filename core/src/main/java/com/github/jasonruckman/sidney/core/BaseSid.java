@@ -143,6 +143,14 @@ public class BaseSid {
     this.conf.useUnsafe(useUnsafe);
   }
 
+  /**
+   * Set whether or not Sidney will track references and relink them on deserialization.  Carries a performance penalty. Off by default
+   * @param enabled whether or not to track references
+   */
+  public void setReferences(boolean enabled) {
+    conf.setReferenceTrackingEnabled(enabled);
+  }
+
   public void addSerializer(Class type, Class<? extends Serializer> serializerType) {
     getConf().getRegistrations().register(
         type, serializerType

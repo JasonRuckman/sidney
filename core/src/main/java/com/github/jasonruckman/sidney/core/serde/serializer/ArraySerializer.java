@@ -83,7 +83,7 @@ public class ArraySerializer extends Serializer<Object> {
   }
 
   private void writeArray(Object array, WriteContext context) {
-    if (context.writeNullMarker(array)) {
+    if (context.shouldWriteValue(array)) {
       context.writeRepetitionCount(Array.getLength(array));
       //bump to component column
       context.incrementColumnIndex();
@@ -95,7 +95,7 @@ public class ArraySerializer extends Serializer<Object> {
   }
 
   private Object readArray(ReadContext context) {
-    if (context.readNullMarker()) {
+    if (context.shouldReadValue()) {
       int arraySize = context.readRepetitionCount();
       Object array = Array.newInstance(rawClass.getComponentType(), arraySize);
       context.incrementColumnIndex();

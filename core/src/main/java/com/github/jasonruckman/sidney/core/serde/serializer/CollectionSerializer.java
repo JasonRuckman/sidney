@@ -50,7 +50,8 @@ public class CollectionSerializer extends Serializer<Collection> {
   }
 
   private void writeCollection(Collection collection, WriteContext context) {
-    if (context.writeNullMarkerAndType(collection)) {
+    if (context.shouldWriteValue(collection)) {
+      context.writeConcreteType(collection.getClass());
       context.incrementColumnIndex();
       int index = context.getColumnIndex();
       context.writeRepetitionCount(collection.size());
@@ -60,12 +61,12 @@ public class CollectionSerializer extends Serializer<Collection> {
       }
       context.incrementColumnIndex();
     } else {
-      context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
+      context.incrementColumnIndex(getNumFieldsToIncrementBy());
     }
   }
 
   private Collection readCollection(ReadContext context) {
-    if (context.readNullMarker()) {
+    if (context.shouldReadValue()) {
       Collection c = (Collection) cache.newInstance(context.readConcreteType());
       context.incrementColumnIndex();
       int count = context.readRepetitionCount();
@@ -77,7 +78,7 @@ public class CollectionSerializer extends Serializer<Collection> {
       context.incrementColumnIndex();
       return c;
     }
-    context.incrementColumnIndex(getNumFieldsToIncrementBy() + 1);
+    context.incrementColumnIndex(getNumFieldsToIncrementBy());
     return null;
   }
 }

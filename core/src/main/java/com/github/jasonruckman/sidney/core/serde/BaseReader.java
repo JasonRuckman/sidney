@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseReader<T> {
-  private Class type;
   private InputStream inputStream;
   private ReadContext context;
   private Serializer rootSerializer;
@@ -36,15 +35,12 @@ public abstract class BaseReader<T> {
   private PageHeader currentPageHeader = null;
   private boolean isOpen = false;
   private SidneyConf conf;
+  private References references = new References();
 
   public BaseReader(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
-    this.serializerContext = new SerializerContextImpl(conf);
+    this.serializerContext = new SerializerContextImpl(conf, references);
     this.rootSerializer = serializerContext.serializer(typeRef);
-  }
-
-  public Class getType() {
-    return type;
   }
 
   public InputStream getInputStream() {
@@ -103,9 +99,12 @@ public abstract class BaseReader<T> {
    * Open the given {@link java.io.InputStream} for reading.
    */
   public void open(InputStream inputStream) {
+    if(conf.isReferenceTrackingEnabled()) {
+      references.clear();
+    }
     this.inputStream = inputStream;
-    this.recordCount = 0;
-    this.isOpen = true;
+    recordCount = 0;
+    isOpen = true;
   }
 
   /**
@@ -113,6 +112,7 @@ public abstract class BaseReader<T> {
    */
   public void close() {
     inputStream = null;
+    currentPageHeader = null;
     isOpen = false;
   }
 
@@ -127,16 +127,20 @@ public abstract class BaseReader<T> {
         int value = Bytes.readIntFromStream(inputStream);
         currentPageHeader.getValueToClassMap().put(value, clazz);
       }
-      ColumnReader reader = new ColumnReader();
-      context = new ReadContextImpl(
-          reader, conf
-      );
+      ColumnReader reader = new ColumnReader(conf);
+      if(conf.isReferenceTrackingEnabled()) {
+        context = new ReferenceTrackingReadContext(reader, conf);
+      } else {
+        context = new ReadContextImpl(
+            reader, conf
+        );
+      }
       serializerContext.finish(reader);
       recordCount = currentPageHeader.getPageSize();
       context.setPageHeader(currentPageHeader);
       context.loadFromInputStream(inputStream);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new SidneyException(e);
     }
   }
 }
