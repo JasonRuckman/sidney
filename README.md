@@ -150,6 +150,65 @@ Note: No type tokens are necessary, as under the covers typetags are used to dec
 
 Sidney as of 0.1.2 supports references, so an object getting serialized multiple types will be serialized with a reference and reconstructed on load. 
 
+Implementing a custom serializer: 
+
+```
+public class BitSetSerializer extends Serializer<BitSet> {
+  private Primitives.IntSerializer sizeSerializer;
+  private Primitives.BooleanSerializer bitsSerializer;
+
+  @Override
+  public void consume(TypeRef typeRef, SerializerContext context) {
+    sizeSerializer = context.intSerializer();
+    bitsSerializer = context.boolSerializer();
+  }
+
+  @Override
+  public void writeValue(BitSet value, WriteContext context) {
+    int length = value.length();
+    sizeSerializer.writeInt(length, context);
+    for(int i = 0; i < length; i++) {
+      bitsSerializer.writeBoolean(value.get(i), context);
+    }
+  }
+
+  @Override
+  public BitSet readValue(ReadContext context) {
+    BitSet bitSet = new BitSet();
+    int length = sizeSerializer.readInt(context);
+    for(int i = 0; i < length; i++) {
+      if(bitsSerializer.readBoolean(context)) {
+        bitSet.set(i);
+      }
+    }
+    return bitSet;
+  }
+}
+```
+
+The consume function is the entry point into the serializer, use it to construct any sub serializers you need.  Make sure you ask for them from the context, or else things won't work (under the hood its tracking column ordinals and binding them to serializers). 
+
+No null checks are necessary, they are handled by the framework, your serializer will only be called if the value is not null (both on read and on write). 
+
+## Other supported types
+
+[BitSet](http://docs.oracle.com/javase/7/docs/api/java/util/BitSet.html)
+[UUID](http://docs.oracle.com/javase/7/docs/api/java/util/UUID.html)
+[Date](https://docs.oracle.com/javase/6/docs/api/java/util/Date.html)
+
+Are available in the standard package.
+
+## Extensions
+
+[JodaTime](http://joda-time.sourceforge.net/apidocs/org/joda/time/DateTime.html) is available in the ext-common package.
+
+### Guava
+
+Support for guava [UnsignedInteger](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/primitives/UnsignedInteger.html) and [UnsignedLong](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/primitives/UnsignedLong.html) is available in the ext-guava package. 
+Support for [ImmutableList](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/ImmutableList.html) and [Multimaps](http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/collect/Multimap.html) are also available.  Immutable multimaps are not yet supported.
+
+### Common
+
 ## Notes
 
 1. Circular Types / Data: Sidney doesn't resolve circular references either in the data, or in the type structure and will most likely get into an infinite loop and stackoverflow.
@@ -166,12 +225,14 @@ Versions:
 
 ## Maven
 
+Sidney is available on Maven Central.
+
 Core: 
 ```
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-core</artifactId>
-  <version>0.1.2</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 Scala: 
@@ -179,6 +240,22 @@ Scala:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-scala</artifactId>
-  <version>0.1.2</version>
+  <version>0.2.0</version>
+</dependency>
+```
+Extensions:
+```
+<dependency>
+  <groupId>com.github.jasonruckman</groupId>
+  <artifactId>sidney-ext-common</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
+Guava: 
+```
+<dependency>
+  <groupId>com.github.jasonruckman</groupId>
+  <artifactId>sidney-ext-guava</artifactId>
+  <version>0.2.0</version>
 </dependency>
 ```
