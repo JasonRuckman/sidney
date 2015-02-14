@@ -16,23 +16,22 @@
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
 import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.InstanceFactoryCache;
 import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
 
 import java.util.Map;
 
-public class MapSerializer<T extends Map> extends Serializer<T> {
-  private Serializer keySerializer;
-  private Serializer valueSerializer;
-  private InstanceFactoryCache cache = new InstanceFactoryCache();
+public class MapSerializer<K, V, T extends Map<K, V>> extends Serializer<T> {
+  private Serializer<K> keySerializer;
+  private Serializer<V> valueSerializer;
+  private InstanceFactoryCache cache;
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
     keySerializer = context.serializer(typeRef.getTypeParameters().get(0), this);
     valueSerializer = context.serializer(typeRef.getTypeParameters().get(1), this);
-
-    addNumFieldsToIncrementBy(keySerializer.getNumFieldsToIncrementBy());
-    addNumFieldsToIncrementBy(valueSerializer.getNumFieldsToIncrementBy());
+    cache = new InstanceFactoryCache(getFactories());
   }
 
   @Override
@@ -51,36 +50,20 @@ public class MapSerializer<T extends Map> extends Serializer<T> {
   }
 
   private void writeMap(T map, WriteContext context) {
-    if (context.shouldWriteValue(map)) {
-      context.writeConcreteType(map.getClass());
-      context.writeRepetitionCount(map.size());
-      //bump index forward to key
-      context.incrementColumnIndex();
-      int valueIndex = context.getColumnIndex();
-      for (Object e : map.entrySet()) {
-        context.setColumnIndex(valueIndex); //for each entry, make sure we are starting at the root
-        Map.Entry entry = (Map.Entry) e;
-        keySerializer.writeValue(entry.getKey(), context);
-        valueSerializer.writeValue(entry.getValue(), context);
-      }
-    } else {
-      context.incrementColumnIndex(getNumFieldsToIncrementBy());
+    context.getMeta().writeConcreteType(map.getClass());
+    context.getMeta().writeRepetitionCount(map.size());
+    for (Map.Entry<K, V> e : map.entrySet()) {
+      keySerializer.writeValue(e.getKey(), context);
+      valueSerializer.writeValue(e.getValue(), context);
     }
   }
 
   private T readMap(ReadContext context) {
-    if (context.shouldReadValue()) {
-      T map = (T) cache.newInstance(context.readConcreteType());
-      int size = context.readRepetitionCount();
-      context.incrementColumnIndex();
-      int idx = context.getColumnIndex();
-      for (int i = 0; i < size; i++) {
-        context.setColumnIndex(idx);
-        map.put(keySerializer.readValue(context), valueSerializer.readValue(context));
-      }
-      return map;
+    T map = (T) cache.newInstance(context.getMeta().readConcreteType());
+    int size = context.getMeta().readRepetitionCount();
+    for (int i = 0; i < size; i++) {
+      map.put(keySerializer.readValue(context), valueSerializer.readValue(context));
     }
-    context.incrementColumnIndex(getNumFieldsToIncrementBy());
-    return null;
+    return map;
   }
 }

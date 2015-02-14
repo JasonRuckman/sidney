@@ -27,7 +27,7 @@ public class JustPrimitivesTest {
   public void testBytes() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     JavaSid sid = new JavaSid();
-    Primitives.ByteWriter writer = sid.newByteWriter();
+    BaseWriter.ByteWriter writer = sid.newByteWriter();
     writer.open(baos);
     byte[] bytes = new byte[100];
     for (int i = 0; i < bytes.length; i++) {
@@ -36,7 +36,7 @@ public class JustPrimitivesTest {
     }
     writer.close();
     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Primitives.ByteReader reader = sid.newByteReader();
+    BaseReader.ByteReader reader = sid.newByteReader();
     reader.open(bais);
     int counter = 0;
     while (reader.hasNext()) {
@@ -48,7 +48,7 @@ public class JustPrimitivesTest {
   public void testShorts() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     JavaSid sid = new JavaSid();
-    Primitives.ShortWriter writer = sid.newShortWriter();
+    BaseWriter.ShortWriter writer = sid.newShortWriter();
     writer.open(baos);
     short[] shorts = new short[100];
     for (int i = 0; i < shorts.length; i++) {
@@ -57,7 +57,7 @@ public class JustPrimitivesTest {
     }
     writer.close();
     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Primitives.ShortReader reader = sid.newShortReader();
+    BaseReader.ShortReader reader = sid.newShortReader();
     reader.open(bais);
     int counter = 0;
     while (reader.hasNext()) {
@@ -69,7 +69,7 @@ public class JustPrimitivesTest {
   public void testInts() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     JavaSid sid = new JavaSid();
-    Primitives.IntWriter writer = sid.newIntWriter();
+    BaseWriter.IntWriter writer = sid.newIntWriter();
     writer.open(baos);
     int[] ints = new int[100];
     for (int i = 0; i < ints.length; i++) {
@@ -78,7 +78,7 @@ public class JustPrimitivesTest {
     }
     writer.close();
     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    Primitives.IntReader reader = sid.newIntReader();
+    BaseReader.IntReader reader = sid.newIntReader();
     reader.open(bais);
     int counter = 0;
     while (reader.hasNext()) {

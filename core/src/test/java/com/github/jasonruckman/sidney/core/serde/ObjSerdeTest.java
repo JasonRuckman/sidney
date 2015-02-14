@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.JavaSid;
 import com.github.jasonruckman.sidney.core.Supplier;
+import com.github.jasonruckman.sidney.core.TestUtils;
 import com.github.jasonruckman.sidney.core.TypeToken;
 
 import java.io.ByteArrayInputStream;
@@ -90,5 +91,9 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
         throw new AssertionError(String.format("Expected: %s \nActual: %s", left, right));
       }
     }
+  }
+
+  protected <T> T maybeMakeNull(T value) {
+    return TestUtils.maybeMakeNull(value);
   }
 }

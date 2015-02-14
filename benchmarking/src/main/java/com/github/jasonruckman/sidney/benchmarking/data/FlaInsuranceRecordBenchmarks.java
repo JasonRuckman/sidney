@@ -59,7 +59,6 @@ public class FlaInsuranceRecordBenchmarks {
     @Override
     protected Kryo initialValue() {
       Kryo kryo = new Kryo();
-      kryo.setReferences(true);
       return kryo;
     }
   };
@@ -72,7 +71,6 @@ public class FlaInsuranceRecordBenchmarks {
 
   public FlaInsuranceRecordBenchmarks() {
     sid.useUnsafeFieldAccess(true);
-    sid.setReferences(true);
     BeanListProcessor<FlaInsuranceRecord> processor = new BeanListProcessor<>(FlaInsuranceRecord.class);
     CsvParserSettings parserSettings = new CsvParserSettings();
     parserSettings.setRowProcessor(processor);

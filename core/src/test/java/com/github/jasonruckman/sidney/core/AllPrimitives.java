@@ -15,10 +15,13 @@
  */
 package com.github.jasonruckman.sidney.core;
 
+import com.github.jasonruckman.sidney.core.io.Encoding;
+
 import java.util.Arrays;
 
 public class AllPrimitives {
   private boolean first;
+  @Encode(Encoding.BITPACKED)
   private int second;
   private char third;
   private short fourth;

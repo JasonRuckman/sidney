@@ -23,6 +23,8 @@
     <module>bitpacking</module>
     <module>benchmarking</module>
     <module>scala</module>
+    <module>ext-common</module>
+    <module>ext-guava</module>
   </modules>
 
   <properties>

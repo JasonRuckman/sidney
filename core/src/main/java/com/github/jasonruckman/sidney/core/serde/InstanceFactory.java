@@ -13,25 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jasonruckman.sidney.core.serde.serializer;
+package com.github.jasonruckman.sidney.core.serde;
 
-import com.esotericsoftware.reflectasm.ConstructorAccess;
-
-public class InstanceFactory<T> {
-  private ConstructorAccess<T> access;
-
-  public InstanceFactory(Class<T> type) {
-    access = ConstructorAccess.get(type);
-  }
-
-  /**
-   * Create a new instance of the given type using the default constructor
-   */
-  public T newInstance() {
-    try {
-      return access.newInstance();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+public interface InstanceFactory<T> {
+  public T newInstance();
 }

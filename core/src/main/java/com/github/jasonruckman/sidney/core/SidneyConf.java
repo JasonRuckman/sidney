@@ -15,11 +15,14 @@
  */
 package com.github.jasonruckman.sidney.core;
 
+import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerEntry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Various configurations for serialization
@@ -86,8 +89,13 @@ public class SidneyConf {
   /**
    * Register a {@link com.github.jasonruckman.sidney.core.serde.serializer.Serializer} that will handle instances of the given type, but not subclasses
    */
-  public SidneyConf register(Class type, Class<? extends Serializer> serializerClass) {
+  public <T, R extends Serializer<T>> SidneyConf register(Class<T> type, Class<R> serializerClass) {
     registrations.register(type, serializerClass);
+    return this;
+  }
+
+  public <T> SidneyConf register(Class<T> type, InstanceFactory<T> factory) {
+    registrations.registerFactory(type, factory);
     return this;
   }
 
@@ -100,15 +108,24 @@ public class SidneyConf {
    */
   public static class Registrations {
     private List<SerializerEntry> registeredFactories = new ArrayList<>();
+    private Map<Class, InstanceFactory> instanceFactories = new HashMap<>();
+
+    public Map<Class, InstanceFactory> getInstanceFactories() {
+      return instanceFactories;
+    }
 
     public List<SerializerEntry> getRegistrations() {
       return registeredFactories;
     }
 
-    public void register(Class type, Class<? extends Serializer> serializerFactory) {
+    public <T, R extends Serializer<T>> void register(Class<T> type, Class<R> serializerFactory) {
       registeredFactories.add(
           new SerializerEntry(type, serializerFactory)
       );
+    }
+
+    public <T> void registerFactory(Class<T> type, InstanceFactory<T> factory) {
+      instanceFactories.put(type, factory);
     }
   }
 }

@@ -97,18 +97,6 @@ public interface WriteContext {
   <T> boolean shouldWriteValue(T value);
 
   /**
-   * Write the concrete type
-   */
-  void writeConcreteType(Class<?> type);
-
-  /**
-   * Write the repetition count to the current column
-   *
-   * @param count the repetition count
-   */
-  void writeRepetitionCount(int count);
-
-  /**
    * Get the current column index
    *
    * @return the current column index
@@ -155,4 +143,20 @@ public interface WriteContext {
    * @throws IOException
    */
   void flushToOutputStream(OutputStream outputStream) throws IOException;
+
+  Meta getMeta();
+
+  public interface Meta {
+    /**
+     * Write the concrete type
+     */
+    void writeConcreteType(Class<?> type);
+
+    /**
+     * Write the repetition count to the current column
+     *
+     * @param count the repetition count
+     */
+    void writeRepetitionCount(int count);
+  }
 }

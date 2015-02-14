@@ -16,30 +16,24 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.SidneyConf;
+import com.github.jasonruckman.sidney.core.io.Columns;
+import com.github.jasonruckman.sidney.core.io.Encoder;
+import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class WriteContextImpl extends Context implements WriteContext {
-  private ColumnWriter columnWriter;
+public class WriteContextImpl extends ColumnOperations implements WriteContext {
+  private final Meta meta;
 
-  public WriteContextImpl(ColumnWriter columnWriter, SidneyConf conf) {
+  public WriteContextImpl(PageHeader pageHeader, SidneyConf conf) {
     super(conf);
-    this.columnWriter = columnWriter;
-  }
-
-  public WriteContextImpl(ColumnWriter columnWriter, PageHeader pageHeader, SidneyConf conf) {
-    super(conf);
-    this.columnWriter = columnWriter;
     setPageHeader(pageHeader);
-  }
-
-  public ColumnWriter getColumnWriter() {
-    return columnWriter;
+    meta = new WriteMetaImpl(this);
   }
 
   public void writeBool(boolean value) {
-    this.getColumnWriter().writeBoolean(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeBoolean(value);
   }
 
   public void writeByte(byte value) {
@@ -59,49 +53,68 @@ public class WriteContextImpl extends Context implements WriteContext {
   }
 
   public void writeLong(long value) {
-    this.getColumnWriter().writeLong(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeLong(value);
   }
 
   public void writeFloat(float value) {
-    this.getColumnWriter().writeFloat(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeFloat(value);
   }
 
   public void writeDouble(double value) {
-    this.getColumnWriter().writeDouble(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeDouble(value);
   }
 
   public void writeBytes(byte[] value) {
-    this.getColumnWriter().writeBytes(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeBytes(value);
   }
 
   public void writeString(String value) {
-    this.getColumnWriter().writeString(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeString(value);
   }
 
   public <T> boolean shouldWriteValue(T value) {
     if (value == null) {
-      this.getColumnWriter().writeNull(this.getColumnIndex());
+      columnIOs.get(getColumnIndex()).writeNull();
       return false;
     }
-    this.getColumnWriter().writeNotNull(this.getColumnIndex());
+    columnIOs.get(getColumnIndex()).writeNotNull();
     return true;
   }
 
-  public void writeConcreteType(Class<?> type) {
-    this.getColumnWriter().writeConcreteType(type, this.getColumnIndex(), this);
+  public void writeNotNull() {
+    columnIOs.get(getColumnIndex()).writeNotNull();
   }
 
-  public void writeRepetitionCount(int count) {
-    this.getColumnWriter().writeRepetitionCount(getColumnIndex(), count);
+  public void writeNull() {
+    columnIOs.get(getColumnIndex()).writeNull();
+  }
+
+  public void writeDefinition(int definition) {
+    columnIOs.get(getColumnIndex()).writeDefinition(definition);
   }
 
   @Override
   public void flushToOutputStream(OutputStream outputStream) throws IOException {
-    this.getColumnWriter().flushToOutputStream(outputStream);
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().writeToStream(outputStream);
+      columnIO.getEncoding().reset();
+      for (Encoder encoder : columnIO.getEncoders()) {
+        encoder.writeToStream(outputStream);
+        encoder.reset();
+      }
+    }
   }
 
+  @Override
+  public Meta getMeta() {
+    return meta;
+  }
+
+  Columns.ColumnIO column(int pos) {
+    return columnIOs.get(pos);
+  }
 
   private void writeIntLike(int value) {
-    this.getColumnWriter().writeInt(this.getColumnIndex(), value);
+    columnIOs.get(getColumnIndex()).writeInt(value);
   }
 }
