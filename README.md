@@ -215,13 +215,21 @@ Support for [ImmutableList](http://docs.guava-libraries.googlecode.com/git/javad
 2. Erasure: If you cast your tokens to objects or something else, or nest them in generic types, things won't work, the type information needs to be known up front to work. The exception is in the scala api, where the typetags will be propagated. 
 3. ClassLoading: There's an outstanding issue to allow classloaders to be passed in, but nothing at present.
 
-Versions: 
+## Versions: 
 
-0.1.2: 
+### 0.1.2: 
+
+[Enum Support](https://github.com/JasonRuckman/sidney/issues/7)
 
 [Object References](https://github.com/JasonRuckman/sidney/issues/10)
 
-[Enum Support](https://github.com/JasonRuckman/sidney/issues/7)
+### 0.2.0
+
+[Guava Support](https://github.com/JasonRuckman/sidney/issues/16)
+
+[Jdk Classes Support](https://github.com/JasonRuckman/sidney/issues/17)
+
+[Serializer API](https://github.com/JasonRuckman/sidney/issues/18)
 
 ## Maven
 
