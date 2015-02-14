@@ -15,12 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.github.jasonruckman.sidney.core.Bytes;
-import com.github.jasonruckman.sidney.core.SidneyConf;
-import com.github.jasonruckman.sidney.core.SidneyException;
-import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.*;
+import com.github.jasonruckman.sidney.core.serde.serializer.PrimitiveSerializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContextImpl;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ public abstract class BaseReader<T> {
   private boolean isOpen = false;
   private SidneyConf conf;
   private References references = new References();
-
   public BaseReader(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
     this.serializerContext = new SerializerContextImpl(conf, references);
@@ -116,6 +114,10 @@ public abstract class BaseReader<T> {
     isOpen = false;
   }
 
+  protected Serializer getRootSerializer() {
+    return rootSerializer;
+  }
+
   private void loadNextPage() {
     try {
       currentPageHeader = new PageHeader();
@@ -127,20 +129,120 @@ public abstract class BaseReader<T> {
         int value = Bytes.readIntFromStream(inputStream);
         currentPageHeader.getValueToClassMap().put(value, clazz);
       }
-      ColumnReader reader = new ColumnReader(conf);
       if(conf.isReferenceTrackingEnabled()) {
-        context = new ReferenceTrackingReadContext(reader, conf);
+        context = new ReferenceTrackingReadContext(conf);
       } else {
         context = new ReadContextImpl(
-            reader, conf
+            conf
         );
       }
-      serializerContext.finish(reader);
+      serializerContext.finish((ReadContextImpl)context);
       recordCount = currentPageHeader.getPageSize();
       context.setPageHeader(currentPageHeader);
       context.loadFromInputStream(inputStream);
     } catch (Exception e) {
       throw new SidneyException(e);
+    }
+  }
+
+  public static class PrimitiveReader<T extends PrimitiveSerializer> extends BaseReader {
+    private T serializer;
+
+    public PrimitiveReader(SidneyConf conf, Class<?> type) {
+      super(conf, JavaTypeRefBuilder.typeRef(type));
+      serializer = (T)getRootSerializer();
+    }
+
+    public T getSerializer() {
+      return serializer;
+    }
+  }
+
+  public static class BoolReader extends PrimitiveReader<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.BooleanSerializer> {
+    public BoolReader(SidneyConf conf) {
+      super(conf, boolean.class);
+    }
+
+    public boolean readBoolean() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readBoolean(getContext());
+    }
+  }
+
+  public static class ByteReader extends PrimitiveReader<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.ByteSerializer> {
+    public ByteReader(SidneyConf conf) {
+      super(conf, byte.class);
+    }
+
+    public byte readByte() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readByte(getContext());
+    }
+  }
+
+  public static class CharReader extends PrimitiveReader<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.CharSerializer> {
+    public CharReader(SidneyConf conf) {
+      super(conf, char.class);
+    }
+
+    public char readChar() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readChar(getContext());
+    }
+  }
+
+  public static class ShortReader extends PrimitiveReader<Primitives.ShortSerializer> {
+    public ShortReader(SidneyConf conf) {
+      super(conf, short.class);
+    }
+
+    public short readShort() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readShort(getContext());
+    }
+  }
+
+  public static class IntReader extends PrimitiveReader<Primitives.IntSerializer> {
+    public IntReader(SidneyConf conf) {
+      super(conf, int.class);
+    }
+
+    public int readInt() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readInt(getContext());
+    }
+  }
+
+  public static class LongReader extends PrimitiveReader<Primitives.LongSerializer> {
+    public LongReader(SidneyConf conf) {
+      super(conf, long.class);
+    }
+
+    public long readLong() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readLong(getContext());
+    }
+  }
+
+  public static class FloatReader extends PrimitiveReader<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.FloatSerializer> {
+    public FloatReader(SidneyConf conf) {
+      super(conf, float.class);
+    }
+
+    public float readFloat() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readFloat(getContext());
+    }
+  }
+
+  public static class DoubleReader extends PrimitiveReader<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.DoubleSerializer> {
+    public DoubleReader(SidneyConf conf) {
+      super(conf, double.class);
+    }
+
+    public double readDouble() {
+      getContext().setColumnIndex(0);
+      return getSerializer().readDouble(getContext());
     }
   }
 }

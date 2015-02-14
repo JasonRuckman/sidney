@@ -25,22 +25,25 @@ import com.github.jasonruckman.sidney.core.io.bool.BoolDecoder;
 import com.github.jasonruckman.sidney.core.io.bool.BoolEncoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
+import com.github.jasonruckman.sidney.core.serde.Context;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ColumnOperations implements SerializerFinalizer {
+public abstract class ColumnOperations extends Context implements SerializerFinalizer {
   public static final Encoding INT_DEFINITION_ENCODING = Encoding.BITPACKED;
   public static final Encoding BOOL_DEFINITION_ENCODING = Encoding.BITMAP;
   public static final Encoding REPETITION_ENCODING = Encoding.BITPACKED;
   protected final List<Columns.ColumnIO> columnIOs = new ArrayList<>();
 
-  public abstract SidneyConf getConf();
+  public ColumnOperations(SidneyConf conf) {
+    super(conf);
+  }
 
   private List<Columns.ColumnIO> columnsFor(Serializer serializer) {
     List<Columns.ColumnIO> columns = new ArrayList<>();
     Columns.ColumnIO columnIO = null;
-    if (serializer instanceof PrimitiveSerializer) {
+    if (PrimitiveSerializer.class.isAssignableFrom(serializer.getClass())) {
       PrimitiveSerializer primitiveTypeHandler = (PrimitiveSerializer) serializer;
       columnIO = createPrimitiveIO(primitiveTypeHandler);
     } else {

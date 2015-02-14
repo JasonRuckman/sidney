@@ -40,19 +40,18 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
   public void writeValue(T value, WriteContext context) {
     ReferenceTrackingWriteContext c = (ReferenceTrackingWriteContext) context;
     if(value != null) {
-      c.getColumnWriter().writeNotNull(c.getColumnIndex());
+      c.writeNotNull();
+      context.setColumnIndex(delegate.startIndex());
       int def = references.trackObject(value);
       if(def > 0) {
         //we wrote a reference, write the definition out and bump past this serializer
-        c.getColumnWriter().writeDefinition(c.getColumnIndex(), def);
-        c.incrementColumnIndex(delegate.getNumFieldsToIncrementBy());
+        c.writeDefinition(def);
       } else {
-        c.getColumnWriter().writeDefinition(c.getColumnIndex(), def);
+        c.writeDefinition(def);
         delegate.writeValue(value, context);
       }
     } else {
-      c.getColumnWriter().writeNull(c.getColumnIndex());
-      c.incrementColumnIndex(delegate.getNumFieldsToIncrementBy());
+      c.writeNull();
     }
   }
 
@@ -62,11 +61,12 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
     boolean isNotNull = c.readNullMarker();
 
     if(!isNotNull) {
-      context.incrementColumnIndex(delegate.getNumFieldsToIncrementBy());
       return null;
     }
 
-    int definition = c.getColumnReader().readDefinition(c.getColumnIndex());
+    context.setColumnIndex(delegate.startIndex());
+
+    int definition = c.readDefinition();
     //the object value is in the high bits
     if(definition == 0) {
       int reference = references.nextCounter();
@@ -74,7 +74,6 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
       references.addReference(value, reference);
       return value;
     }
-    c.incrementColumnIndex(delegate.getNumFieldsToIncrementBy());
     return (T) references.getReference(definition);
   }
 

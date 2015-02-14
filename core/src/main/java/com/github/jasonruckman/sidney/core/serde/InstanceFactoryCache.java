@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jasonruckman.sidney.core.serde.serializer;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.github.jasonruckman.sidney.core.serde;
 
 /**
  * Simple cache for creating new instances that remembers the previous type created for quick lookup
  */
-class InstanceFactoryCache {
+public class InstanceFactoryCache {
   private Class lastClass;
   private InstanceFactory lastFactory;
-  private Map<Class, InstanceFactory> factories = new HashMap<>();
+  private Factories factories;
+
+  public InstanceFactoryCache(Factories factories) {
+    this.factories = factories;
+  }
 
   /**
    * Create a new instance of {@param type}, must have a default constructor
    */
-  public Object newInstance(Class type) {
+  public <T> T newInstance(Class<T> type) {
     if (type == lastClass) {
-      return lastFactory.newInstance();
+      return (T) lastFactory.newInstance();
     }
 
     lastFactory = factories.get(type);
     lastClass = type;
 
-    if (lastFactory == null) {
-      lastFactory = new InstanceFactory(type);
-      factories.put(type, lastFactory);
-    }
-    return lastFactory.newInstance();
+    return (T) lastFactory.newInstance();
   }
 }

@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static com.github.jasonruckman.sidney.core.TestUtils.*;
+
 public class DataFactory {
   private final Random random = new Random(11L);
 
@@ -262,12 +264,5 @@ public class DataFactory {
       );
     }
     return maybeMakeNull(map);
-  }
-
-  private <T> T maybeMakeNull(T value) {
-    if (random.nextInt(10) < 4) {
-      return null;
-    }
-    return value;
   }
 }

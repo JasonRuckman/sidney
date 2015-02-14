@@ -16,6 +16,7 @@
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
 import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
 import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
 
@@ -27,15 +28,15 @@ import java.util.List;
  */
 public class BeanSerializer<T> extends Serializer<T> {
   private InstanceFactory<T> instanceFactory;
-  private List<Serializer> serializersAtThisLevel = new ArrayList<>();
+  private List<Serializer> fieldSerializers = new ArrayList<>();
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
     for (TypeRef.TypeFieldRef fieldRef : typeRef.getFields()) {
       Serializer fieldSerializer = context.serializer(fieldRef, this);
-      serializersAtThisLevel.add(fieldSerializer);
+      fieldSerializers.add(fieldSerializer);
     }
-    instanceFactory = new InstanceFactory<>((Class<T>)typeRef.getType());
+    instanceFactory = getFactories().get(typeRef.getType());
   }
 
   @Override
@@ -48,34 +49,17 @@ public class BeanSerializer<T> extends Serializer<T> {
     return readBean(context);
   }
 
-  @Override
-  public boolean requiresTypeColumn() {
-    return false;
-  }
-
   private void writeBean(T value, WriteContext context) {
-    if (context.shouldWriteValue(value)) {
-      //advance into fields
-      context.incrementColumnIndex();
-      for (Serializer handler : serializersAtThisLevel) {
-        handler.writeFromField(value, context);
-      }
-    } else {
-      context.incrementColumnIndex(getNumFieldsToIncrementBy());
+    for (Serializer serializer : fieldSerializers) {
+      serializer.writeFromField(value, context);
     }
   }
 
   private T readBean(ReadContext context) {
-    if (context.shouldReadValue()) {
-      T bean = instanceFactory.newInstance();
-      context.incrementColumnIndex();
-      for (Serializer handler : serializersAtThisLevel) {
-        handler.readIntoField(bean, context);
-      }
-      return bean;
-    } else {
-      context.incrementColumnIndex(getNumFieldsToIncrementBy());
+    T bean = instanceFactory.newInstance();
+    for (Serializer handler : fieldSerializers) {
+      handler.readIntoField(bean, context);
     }
-    return null;
+    return bean;
   }
 }

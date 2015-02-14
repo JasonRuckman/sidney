@@ -40,6 +40,15 @@ public class TypeRef {
     return fields;
   }
 
+  public TypeFieldRef field(String fieldName) {
+    for(TypeFieldRef ref : fields) {
+      if(ref.getJdkField().getName().equals(fieldName)) {
+        return ref;
+      }
+    }
+    return null;
+  }
+
   /**
    * Get the raw class for this {@link TypeRef}
    */
@@ -98,6 +107,17 @@ public class TypeRef {
     }
 
     return ref;
+  }
+
+  /**
+   * Get the type parameter at the given ordinal
+   */
+  public TypeRef param(int ordinal) {
+    return getTypeParameters().get(ordinal);
+  }
+
+  public static TypeRef makeRef(Class<?> type) {
+    return new TypeRef(type);
   }
 
   @Override
@@ -165,6 +185,13 @@ public class TypeRef {
       int result = super.hashCode();
       result = 31 * result + (jdkField != null ? jdkField.hashCode() : 0);
       return result;
+    }
+
+    @Override
+    public String toString() {
+      return "TypeFieldRef{" +
+          "jdkField=" + jdkField +
+          '}';
     }
   }
 }

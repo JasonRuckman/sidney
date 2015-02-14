@@ -18,12 +18,8 @@ package com.github.jasonruckman.sidney.core.serde;
 import com.github.jasonruckman.sidney.core.SidneyConf;
 
 public class ReferenceTrackingWriteContext extends WriteContextImpl {
-  public ReferenceTrackingWriteContext(ColumnWriter columnWriter, SidneyConf conf) {
-    super(columnWriter, conf);
-  }
-
-  public ReferenceTrackingWriteContext(ColumnWriter columnWriter, PageHeader pageHeader, SidneyConf conf) {
-    super(columnWriter, pageHeader, conf);
+  public ReferenceTrackingWriteContext(PageHeader pageHeader, SidneyConf conf) {
+    super(pageHeader, conf);
   }
 
   @Override
