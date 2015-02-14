@@ -21,8 +21,8 @@ import com.github.jasonruckman.sidney.core.SidneyConf;
  * A read context that peeks at null markers, checks if it needs to pull a reference, otherwise delegates
  */
 public class ReferenceTrackingReadContext extends ReadContextImpl {
-  public ReferenceTrackingReadContext(ColumnReader columnReader, SidneyConf conf) {
-    super(columnReader, conf);
+  public ReferenceTrackingReadContext(SidneyConf conf) {
+    super(conf);
   }
 
   @Override
@@ -31,6 +31,6 @@ public class ReferenceTrackingReadContext extends ReadContextImpl {
   }
 
   public boolean readNullMarker() {
-    return getColumnReader().readNullMarker(getColumnIndex());
+    return super.shouldReadValue();
   }
 }

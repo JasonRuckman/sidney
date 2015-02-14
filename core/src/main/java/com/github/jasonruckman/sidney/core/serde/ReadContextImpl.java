@@ -16,77 +16,87 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.SidneyConf;
+import com.github.jasonruckman.sidney.core.io.Columns;
+import com.github.jasonruckman.sidney.core.io.Decoder;
+import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ReadContextImpl extends Context implements ReadContext {
-  private ColumnReader columnReader;
+public class ReadContextImpl extends ColumnOperations implements ReadContext {
+  private final Meta meta;
 
-  public ReadContextImpl(ColumnReader columnReader, SidneyConf conf) {
+  public ReadContextImpl(SidneyConf conf) {
     super(conf);
 
-    this.columnReader = columnReader;
-  }
-
-  public ColumnReader getColumnReader() {
-    return columnReader;
+    meta = new ReadMetaImpl(this);
   }
 
   @Override
   public void loadFromInputStream(InputStream inputStream) throws IOException {
-    columnReader.loadFromInputStream(inputStream);
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().readFromStream(inputStream);
+
+      for (Decoder decoder : columnIO.getDecoders()) {
+        decoder.readFromStream(inputStream);
+      }
+    }
   }
 
   public boolean readBoolean() {
-    return this.getColumnReader().readBool(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readBoolean();
   }
 
   public byte readByte() {
-    return (byte) this.getColumnReader().readInt(this.getColumnIndex());
+    return (byte) columnIOs.get(getColumnIndex()).readInt();
   }
 
   public short readShort() {
-    return (short) this.getColumnReader().readInt(this.getColumnIndex());
+    return (short) columnIOs.get(getColumnIndex()).readInt();
   }
 
   public char readChar() {
-    return (char) this.getColumnReader().readInt(this.getColumnIndex());
+    return (char) columnIOs.get(getColumnIndex()).readInt();
   }
 
   public int readInt() {
-    return this.getColumnReader().readInt(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readInt();
   }
 
   public long readLong() {
-    return this.getColumnReader().readLong(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readLong();
   }
 
   public float readFloat() {
-    return this.getColumnReader().readFloat(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readFloat();
   }
 
   public double readDouble() {
-    return this.getColumnReader().readDouble(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readDouble();
   }
 
   public byte[] readBytes() {
-    return this.getColumnReader().readBytes(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readBytes();
   }
 
   public String readString() {
-    return this.getColumnReader().readString(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readString();
   }
 
   public boolean shouldReadValue() {
-    return this.getColumnReader().readNullMarker(this.getColumnIndex());
+    return columnIOs.get(getColumnIndex()).readNullMarker();
   }
 
-  public Class<?> readConcreteType() {
-    return this.getColumnReader().readConcreteType(this.getColumnIndex(), this);
+  @Override
+  public Meta getMeta() {
+    return meta;
   }
 
-  public int readRepetitionCount() {
-    return this.getColumnReader().readRepetitionCount(this.getColumnIndex());
+  public int readDefinition() {
+    return columnIOs.get(getColumnIndex()).readDefinition();
+  }
+
+  Columns.ColumnIO column(int pos) {
+    return columnIOs.get(pos);
   }
 }

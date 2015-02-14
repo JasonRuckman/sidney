@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.serde.serializer;
 
 import com.github.jasonruckman.sidney.core.Accessors;
 import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Factories;
 import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
 
@@ -24,18 +25,13 @@ import com.github.jasonruckman.sidney.core.serde.WriteContext;
  * Handles serializing a given type, is responsible for decomposing that type and constructing sub serializers if necessary
  */
 public abstract class Serializer<T> {
-  private int numFieldsToIncrementBy = 1;
+  private int startIndex;
+  private Factories factories;
+
   private Accessors.FieldAccessor accessor;
 
   public Serializer() {
 
-  }
-
-  /**
-   * Indicates the number of fields to increment by if this value is null, includes all subfields + 1
-   */
-  public int getNumFieldsToIncrementBy() {
-    return numFieldsToIncrementBy;
   }
 
   /**
@@ -49,14 +45,14 @@ public abstract class Serializer<T> {
    * For example, if value is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
    * and one more to advance into the next field
    */
-  public abstract void writeValue(Object value, WriteContext context);
+  public abstract void writeValue(T value, WriteContext context);
 
   /**
    * Fully consume a field value from the parent, parent is guaranteed to be non-null
    * Follow the same incrementing rules as {@link #writeValue}
    */
   public void writeFromField(Object parent, WriteContext context) {
-    writeValue(getAccessor().get(parent), context);
+    writeValue((T) getAccessor().get(parent), context);
   }
 
   /**
@@ -65,7 +61,7 @@ public abstract class Serializer<T> {
    *
    * @return a fully materialized value
    */
-  public abstract Object readValue(ReadContext context);
+  public abstract T readValue(ReadContext context);
 
   /**
    * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
@@ -80,10 +76,8 @@ public abstract class Serializer<T> {
    *
    * @return whether or not a type column is required
    */
-  public abstract boolean requiresTypeColumn();
-
-  void addNumFieldsToIncrementBy(int num) {
-    numFieldsToIncrementBy += num;
+  public boolean requiresTypeColumn() {
+    return false;
   }
 
   /**
@@ -97,5 +91,24 @@ public abstract class Serializer<T> {
 
   public void setAccessor(Accessors.FieldAccessor accessor) {
     this.accessor = accessor;
+  }
+
+  /**
+   * Get the index where this serializer starts
+   */
+  public int startIndex() {
+    return startIndex;
+  }
+
+  void setStartIndex(int startIndex) {
+    this.startIndex = startIndex;
+  }
+
+  protected Factories getFactories() {
+   return factories;
+  }
+
+  void setFactories(Factories factories) {
+    this.factories = factories;
   }
 }

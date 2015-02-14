@@ -15,12 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.github.jasonruckman.sidney.core.Bytes;
-import com.github.jasonruckman.sidney.core.SidneyConf;
-import com.github.jasonruckman.sidney.core.SidneyException;
-import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.*;
+import com.github.jasonruckman.sidney.core.serde.serializer.PrimitiveSerializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContextImpl;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,19 +35,22 @@ public abstract class BaseWriter<T> {
   private Serializer rootSerializer;
   private SidneyConf conf;
   private References references = new References();
-
   public BaseWriter(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
     this.typeRef = typeRef;
     this.serializerContext = new SerializerContextImpl(conf, references);
-    ColumnWriter writer = new ColumnWriter(conf);
     this.rootSerializer = serializerContext.serializer(typeRef);
-    this.serializerContext.finish(writer);
     if (conf.isReferenceTrackingEnabled()) {
-      this.writeContext = new ReferenceTrackingWriteContext(writer, new PageHeader(), conf);
+      this.writeContext = new ReferenceTrackingWriteContext(new PageHeader(), conf);
     } else {
-      this.writeContext = new WriteContextImpl(writer, new PageHeader(), conf);
+      this.writeContext = new WriteContextImpl(new PageHeader(), conf);
     }
+
+    this.serializerContext.finish((WriteContextImpl)writeContext);
+  }
+
+  protected Serializer getRootSerializer() {
+    return rootSerializer;
   }
 
   protected WriteContext getWriteContext() {
@@ -119,5 +121,106 @@ public abstract class BaseWriter<T> {
     }
     recordCount = 0;
     writeContext.flushToOutputStream(outputStream);
+  }
+
+  public static class ByteWriter extends PrimitiveWriter<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.ByteSerializer> {
+    public ByteWriter(SidneyConf conf) {
+      super(conf, byte.class);
+    }
+
+    public void writeByte(byte value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeByte(value, getWriteContext());
+    }
+  }
+
+  public static class CharWriter extends PrimitiveWriter<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.CharSerializer> {
+    public CharWriter(SidneyConf conf) {
+      super(conf, char.class);
+    }
+
+    public void writeChar(char value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeChar(value, getWriteContext());
+    }
+  }
+
+  public static class ShortWriter extends PrimitiveWriter<Primitives.ShortSerializer> {
+    public ShortWriter(SidneyConf conf) {
+      super(conf, short.class);
+    }
+
+    public void writeShort(short value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeShort(value, getWriteContext());
+    }
+  }
+
+  public static class IntWriter extends PrimitiveWriter<Primitives.IntSerializer> {
+    public IntWriter(SidneyConf conf) {
+      super(conf, int.class);
+    }
+
+    public void writeInt(int value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeInt(value, getWriteContext());
+    }
+  }
+
+  public static class LongWriter extends PrimitiveWriter<Primitives.LongSerializer> {
+    public LongWriter(SidneyConf conf) {
+      super(conf, long.class);
+    }
+
+    public void writeLong(long value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeLong(value, getWriteContext());
+    }
+  }
+
+  public static class FloatWriter extends PrimitiveWriter<com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives.FloatSerializer> {
+    public FloatWriter(SidneyConf conf) {
+      super(conf, float.class);
+    }
+
+    public void writeFloat(float value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeFloat(value, getWriteContext());
+    }
+  }
+
+  public static class DoubleWriter extends PrimitiveWriter<Primitives.DoubleSerializer> {
+    public DoubleWriter(SidneyConf conf) {
+      super(conf, double.class);
+    }
+
+    public void writeDouble(double value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeDouble(value, getWriteContext());
+    }
+  }
+
+  static abstract class PrimitiveWriter<T extends PrimitiveSerializer> extends BaseWriter {
+    private T serializer;
+
+    public PrimitiveWriter(SidneyConf conf, Class<?> type) {
+      super(conf, JavaTypeRefBuilder.typeRef(type));
+      serializer = (T) getRootSerializer();
+    }
+
+    public T getSerializer() {
+      return serializer;
+    }
+  }
+
+  public static class BoolWriter extends PrimitiveWriter<Primitives.BooleanSerializer> {
+    public BoolWriter(SidneyConf conf) {
+      super(conf, boolean.class);
+    }
+
+    public void writeBool(boolean value) {
+      getWriteContext().setColumnIndex(0);
+      getSerializer().writeBoolean(value, getWriteContext());
+    }
   }
 }

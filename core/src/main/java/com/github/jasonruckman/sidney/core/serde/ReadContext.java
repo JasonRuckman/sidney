@@ -104,20 +104,6 @@ public interface ReadContext {
   boolean shouldReadValue();
 
   /**
-   * Read the type for a column at the current index.  Do not call on columns that do not require types.
-   *
-   * @return whether or not the next value is null
-   */
-  Class<?> readConcreteType();
-
-  /**
-   * Read the current repetition count at the current index.
-   *
-   * @return the repetition count
-   */
-  int readRepetitionCount();
-
-  /**
    * Get the current page header
    */
   PageHeader getPageHeader();
@@ -146,4 +132,22 @@ public interface ReadContext {
    * Set this index as the current column
    */
   void setColumnIndex(int newIndex);
+
+  Meta getMeta();
+
+  public interface Meta {
+    /**
+     * Read the type for a column at the current index.  Do not call on columns that do not require types.
+     *
+     * @return whether or not the next value is null
+     */
+    Class<?> readConcreteType();
+
+    /**
+     * Read the current repetition count at the current index.
+     *
+     * @return the repetition count
+     */
+    int readRepetitionCount();
+  }
 }

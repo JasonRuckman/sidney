@@ -15,10 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core;
 
-import com.github.jasonruckman.sidney.core.serde.JavaReader;
-import com.github.jasonruckman.sidney.core.serde.JavaWriter;
-import com.github.jasonruckman.sidney.core.serde.Primitives;
-import com.github.jasonruckman.sidney.core.serde.Writer;
+import com.github.jasonruckman.sidney.core.serde.*;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 
 public class BaseSid {
@@ -27,113 +24,113 @@ public class BaseSid {
   /**
    * Creates a new writer for writing primitive bools
    */
-  public Primitives.BoolWriter newBoolWriter() {
-    return new Primitives.BoolWriter(conf);
+  public BaseWriter.BoolWriter newBoolWriter() {
+    return new BaseWriter.BoolWriter(conf);
   }
 
   /**
    * Creates a new reader for reading primitive bools
    */
-  public Primitives.BoolReader newBoolReader() {
-    return new Primitives.BoolReader(conf);
+  public BaseReader.BoolReader newBoolReader() {
+    return new BaseReader.BoolReader(conf);
   }
 
   /**
    * Creates a new writer for writing primitive bytes
    */
-  public Primitives.ByteWriter newByteWriter() {
-    return new Primitives.ByteWriter(conf);
+  public BaseWriter.ByteWriter newByteWriter() {
+    return new BaseWriter.ByteWriter(conf);
   }
 
   /**
    * Creates a new reader for reading primitive bytes
    */
-  public Primitives.ByteReader newByteReader() {
-    return new Primitives.ByteReader(conf);
+  public BaseReader.ByteReader newByteReader() {
+    return new BaseReader.ByteReader(conf);
   }
 
   /**
    * Creates a new writer for writing primitive chars
    */
-  public Primitives.CharWriter newCharWriter() {
-    return new Primitives.CharWriter(conf);
+  public BaseWriter.CharWriter newCharWriter() {
+    return new BaseWriter.CharWriter(conf);
   }
 
   /**
    * Creates a new reader for reading primitive chars
    */
-  public Primitives.CharReader newCharReader() {
-    return new Primitives.CharReader(conf);
+  public BaseReader.CharReader newCharReader() {
+    return new BaseReader.CharReader(conf);
   }
 
   /**
    * Creates a new writer for writing primitive shorts
    */
-  public Primitives.ShortWriter newShortWriter() {
-    return new Primitives.ShortWriter(conf);
+  public BaseWriter.ShortWriter newShortWriter() {
+    return new BaseWriter.ShortWriter(conf);
   }
 
   /**
    * Creates a new reader for reading primitive shorts
    */
-  public Primitives.ShortReader newShortReader() {
-    return new Primitives.ShortReader(getConf());
+  public BaseReader.ShortReader newShortReader() {
+    return new BaseReader.ShortReader(getConf());
   }
 
   /**
    * Creates a new writer for writing primitive ints
    */
-  public Primitives.IntWriter newIntWriter() {
-    return new Primitives.IntWriter(getConf());
+  public BaseWriter.IntWriter newIntWriter() {
+    return new BaseWriter.IntWriter(getConf());
   }
 
   /**
    * Creates a new reader for reading primitive ints
    */
-  public Primitives.IntReader newIntReader() {
-    return new Primitives.IntReader(getConf());
+  public BaseReader.IntReader newIntReader() {
+    return new BaseReader.IntReader(getConf());
   }
 
   /**
    * Creates a new writer for writing primitive longs
    */
-  public Primitives.LongWriter newLongWriter() {
-    return new Primitives.LongWriter(getConf());
+  public BaseWriter.LongWriter newLongWriter() {
+    return new BaseWriter.LongWriter(getConf());
   }
 
   /**
    * Creates a new reader for reading primitive longs
    */
-  public Primitives.LongReader newLongReader() {
-    return new Primitives.LongReader(getConf());
+  public BaseReader.LongReader newLongReader() {
+    return new BaseReader.LongReader(getConf());
   }
 
   /**
    * Creates a new writer for writing primitive floats
    */
-  public Primitives.FloatWriter newFloatWriter() {
-    return new Primitives.FloatWriter(getConf());
+  public BaseWriter.FloatWriter newFloatWriter() {
+    return new BaseWriter.FloatWriter(getConf());
   }
 
   /**
    * Creates a new reader for reading primitive floats
    */
-  public Primitives.FloatReader newFloatReader() {
-    return new Primitives.FloatReader(getConf());
+  public BaseReader.FloatReader newFloatReader() {
+    return new BaseReader.FloatReader(getConf());
   }
 
   /**
    * Creates a new writer for writing primitive doubles
    */
-  public Primitives.DoubleWriter newDoubleWriter() {
-    return new Primitives.DoubleWriter(getConf());
+  public BaseWriter.DoubleWriter newDoubleWriter() {
+    return new BaseWriter.DoubleWriter(getConf());
   }
 
   /**
    * Creates a new reader for reading primitive doubles
    */
-  public Primitives.DoubleReader newDoubleReader() {
-    return new Primitives.DoubleReader(getConf());
+  public BaseReader.DoubleReader newDoubleReader() {
+    return new BaseReader.DoubleReader(getConf());
   }
 
   /**
@@ -151,10 +148,20 @@ public class BaseSid {
     conf.setReferenceTrackingEnabled(enabled);
   }
 
-  public void addSerializer(Class type, Class<? extends Serializer> serializerType) {
+  /**
+   * Register a custom serializer.  Note order of added serializers matters, and the first serializer added that matches a type will be used
+   */
+  public <T, R extends Serializer<T>> void addSerializer(Class<T> type, Class<R> serializerType) {
     getConf().getRegistrations().register(
         type, serializerType
     );
+  }
+
+  /**
+   * Register a instance factory.  Only one instance factory per type is allowed, any others will be overwritten.
+   */
+  public <T, R extends InstanceFactory<T>> void addInstanceFactory(Class<T> type, R instanceFactory) {
+    getConf().getRegistrations().registerFactory(type, instanceFactory);
   }
 
   protected <T> Writer<T> createWriter(TypeToken<T> token) {

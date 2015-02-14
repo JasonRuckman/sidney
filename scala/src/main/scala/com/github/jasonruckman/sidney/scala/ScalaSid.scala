@@ -16,7 +16,7 @@
 package com.github.jasonruckman.sidney.scala
 
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer
-import com.github.jasonruckman.sidney.core.serde.{Reader, Writer}
+import com.github.jasonruckman.sidney.core.serde.{InstanceFactory, Reader, Writer}
 import com.github.jasonruckman.sidney.core.{BaseSid, SidneyConf}
 
 import scala.reflect.ClassTag
@@ -50,9 +50,13 @@ class ScalaSid extends BaseSid {
    * @tparam T target type
    * @tparam R serializer type
    */
-  def register[T, R <: Serializer[_]](implicit targetTag: ClassTag[T], serializerTag: ClassTag[_]) = {
+  def register[T, R <: Serializer[T]](implicit targetTag: ClassTag[T], serializerTag: ClassTag[R]) = {
     conf.register(
-      targetTag.runtimeClass, serializerTag.runtimeClass.asInstanceOf[Class[R]]
+      targetTag.runtimeClass.asInstanceOf[Class[T]], serializerTag.runtimeClass.asInstanceOf[Class[R]]
     )
+  }
+
+  def register[T, R <: InstanceFactory[T]](factory : R)(implicit targetTag : ClassTag[T]) = {
+    conf.register(targetTag.runtimeClass.asInstanceOf[Class[T]], factory)
   }
 }
