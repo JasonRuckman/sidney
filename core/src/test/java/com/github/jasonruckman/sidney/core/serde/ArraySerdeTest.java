@@ -16,11 +16,8 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.*;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -37,7 +34,7 @@ public class ArraySerdeTest extends ObjSerdeTest {
     }, new Comparator<int[]>() {
       @Override
       public int compare(int[] o1, int[] o2) {
-        return (Arrays.equals(o1, o2)) ? 0 : -1 ;
+        return (Arrays.equals(o1, o2)) ? 0 : -1;
       }
     });
   }
@@ -57,7 +54,7 @@ public class ArraySerdeTest extends ObjSerdeTest {
     }, new Comparator<AllPrimitives[]>() {
       @Override
       public int compare(AllPrimitives[] o1, AllPrimitives[] o2) {
-        return (Arrays.equals(o1, o2)) ? 0 : -1 ;
+        return (Arrays.equals(o1, o2)) ? 0 : -1;
       }
     });
   }

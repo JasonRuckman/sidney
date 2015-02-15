@@ -73,4 +73,18 @@ public class AllPrimitiveRefsArrays {
     result = 31 * result + (doubles != null ? Arrays.hashCode(doubles) : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "AllPrimitiveRefsArrays{" +
+        "booleans=" + Arrays.toString(booleans) +
+        ", bytes=" + Arrays.toString(bytes) +
+        ", shorts=" + Arrays.toString(shorts) +
+        ", characters=" + Arrays.toString(characters) +
+        ", ints=" + Arrays.toString(ints) +
+        ", longs=" + Arrays.toString(longs) +
+        ", floats=" + Arrays.toString(floats) +
+        ", doubles=" + Arrays.toString(doubles) +
+        '}';
+  }
 }

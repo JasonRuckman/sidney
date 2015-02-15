@@ -16,14 +16,10 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitives;
-import com.github.jasonruckman.sidney.core.JavaSid;
 import com.github.jasonruckman.sidney.core.Supplier;
 import com.github.jasonruckman.sidney.core.TypeToken;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +27,12 @@ import java.util.List;
 public class CollectionSerdeTest extends ObjSerdeTest {
   @Test
   public void testListOfBeans() throws IOException {
-    runTest(new TypeToken<List<AllPrimitives>>() {}, NUM_TO_RUN, new Supplier<List<AllPrimitives>>() {
+    runTest(new TypeToken<List<AllPrimitives>>() {
+    }, NUM_TO_RUN, new Supplier<List<AllPrimitives>>() {
       @Override
       public List<AllPrimitives> apply() {
         List<AllPrimitives> list = new ArrayList<>();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
           list.add(getDataFactory().newPrimitives());
         }
         return list;

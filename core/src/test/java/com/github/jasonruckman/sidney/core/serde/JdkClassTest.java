@@ -54,8 +54,8 @@ public class JdkClassTest extends ObjSerdeTest {
       @Override
       public BitSet apply() {
         BitSet bitSet = new BitSet();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
-          if(getRandom().nextBoolean()) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
+          if (getRandom().nextBoolean()) {
             bitSet.set(i);
           }
         }

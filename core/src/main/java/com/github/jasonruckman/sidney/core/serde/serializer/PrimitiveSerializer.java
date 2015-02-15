@@ -36,15 +36,13 @@ public abstract class PrimitiveSerializer<T> extends Serializer<T> {
     return getType().defaultEncoding();
   }
 
-  public void overrideEncoding(Encoding encoding) {
-    this.encoding = encoding;
-  }
-
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
     if (typeRef instanceof TypeRef.TypeFieldRef &&
         ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class) != null) {
       encoding = ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class).value();
+    } else {
+      encoding = context.conf().defaultEncoding(getType());
     }
   }
 }

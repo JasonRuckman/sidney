@@ -15,6 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core;
 
+import com.github.jasonruckman.sidney.core.io.Encoding;
 import com.github.jasonruckman.sidney.core.serde.*;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 
@@ -142,6 +143,7 @@ public class BaseSid {
 
   /**
    * Set whether or not Sidney will track references and relink them on deserialization.  Carries a performance penalty. Off by default
+   *
    * @param enabled whether or not to track references
    */
   public void setReferences(boolean enabled) {
@@ -162,6 +164,10 @@ public class BaseSid {
    */
   public <T, R extends InstanceFactory<T>> void addInstanceFactory(Class<T> type, R instanceFactory) {
     getConf().getRegistrations().registerFactory(type, instanceFactory);
+  }
+
+  public void overrideDefaultEncoding(Type type, Encoding encoding) {
+    getConf().overrideDefaultEncoding(type, encoding);
   }
 
   protected <T> Writer<T> createWriter(TypeToken<T> token) {

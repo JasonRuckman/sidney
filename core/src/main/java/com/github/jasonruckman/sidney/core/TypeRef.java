@@ -31,6 +31,10 @@ public class TypeRef {
     this.type = type;
   }
 
+  public static TypeRef makeRef(Class<?> type) {
+    return new TypeRef(type);
+  }
+
   /**
    * Get a list of {@link TypeRef} that corresponds to the fields on this class
    *
@@ -41,8 +45,8 @@ public class TypeRef {
   }
 
   public TypeFieldRef field(String fieldName) {
-    for(TypeFieldRef ref : fields) {
-      if(ref.getJdkField().getName().equals(fieldName)) {
+    for (TypeFieldRef ref : fields) {
+      if (ref.getJdkField().getName().equals(fieldName)) {
         return ref;
       }
     }
@@ -114,10 +118,6 @@ public class TypeRef {
    */
   public TypeRef param(int ordinal) {
     return getTypeParameters().get(ordinal);
-  }
-
-  public static TypeRef makeRef(Class<?> type) {
-    return new TypeRef(type);
   }
 
   @Override

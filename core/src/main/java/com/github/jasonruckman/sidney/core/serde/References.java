@@ -15,12 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.carrotsearch.hppc.*;
-import sun.misc.Unsafe;
-
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import com.carrotsearch.hppc.ObjectIntMap;
+import com.carrotsearch.hppc.ObjectIntOpenIdentityHashMap;
 
 /**
  * A class for tracking references and generating values for them
@@ -37,6 +33,7 @@ public class References {
 
   /**
    * Add this value to reference tracking
+   *
    * @param value a value to track
    */
   public void addReference(Object value, int reference) {
@@ -45,12 +42,13 @@ public class References {
 
   /**
    * Adds this value to reference tracking if it doesn't exist, otherwise returns the value for it
+   *
    * @param value a value to track
    * @return zero if not found, a positive value otherwise
    */
   public int trackObject(Object value) {
     int val = objectToValue.get(value);
-    if(val == 0) {
+    if (val == 0) {
       objectToValue.put(value, counter++);
     }
     return val;
@@ -58,6 +56,7 @@ public class References {
 
   /**
    * Get the value for this reference
+   *
    * @param reference a int reference
    * @return a value
    */
@@ -79,7 +78,7 @@ public class References {
     private int length = 0;
 
     public void put(Object value, int reference) {
-      if(reference >= arr.length) {
+      if (reference >= arr.length) {
         resize(reference);
       }
       length++;

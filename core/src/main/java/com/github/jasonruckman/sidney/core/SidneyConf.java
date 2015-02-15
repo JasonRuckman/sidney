@@ -15,7 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core;
 
+import com.github.jasonruckman.sidney.core.io.Encoding;
 import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
+import com.github.jasonruckman.sidney.core.serde.Type;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerEntry;
 
@@ -33,6 +35,7 @@ public class SidneyConf {
   private boolean useUnsafe = true;
   private boolean referenceTrackingEnabled = false;
   private int pageSize = DEFAULT_SIDNEY_PAGE_SIZE;
+  private Map<Type, Encoding> defaultEncodings = new HashMap<>();
 
   private SidneyConf() {
 
@@ -97,6 +100,14 @@ public class SidneyConf {
   public <T> SidneyConf register(Class<T> type, InstanceFactory<T> factory) {
     registrations.registerFactory(type, factory);
     return this;
+  }
+
+  public Encoding defaultEncoding(Type type) {
+    return defaultEncodings.get(type);
+  }
+
+  public void overrideDefaultEncoding(Type type, Encoding encoding) {
+    defaultEncodings.put(type, encoding);
   }
 
   public Registrations getRegistrations() {

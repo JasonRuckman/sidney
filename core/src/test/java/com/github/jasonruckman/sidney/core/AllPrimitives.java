@@ -107,6 +107,7 @@ public class AllPrimitives {
     if (Float.compare(that.seventh, seventh) != 0) return false;
     if (sixth != that.sixth) return false;
     if (third != that.third) return false;
+    if (eleventh != that.eleventh) return false;
     if (!Arrays.equals(ninth, that.ninth)) return false;
     if (tenth != null ? !tenth.equals(that.tenth) : that.tenth != null) return false;
 
@@ -128,6 +129,7 @@ public class AllPrimitives {
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     result = 31 * result + (ninth != null ? Arrays.hashCode(ninth) : 0);
     result = 31 * result + (tenth != null ? tenth.hashCode() : 0);
+    result = 31 * result + (eleventh != null ? eleventh.hashCode() : 0);
     return result;
   }
 
@@ -144,12 +146,7 @@ public class AllPrimitives {
         ", eighth=" + eighth +
         ", ninth=" + Arrays.toString(ninth) +
         ", tenth='" + tenth + '\'' +
+        ", eleventh=" + eleventh +
         '}';
-  }
-
-  public static enum SomeEnum {
-    FIRST,
-    SECOND,
-    THIRD
   }
 }

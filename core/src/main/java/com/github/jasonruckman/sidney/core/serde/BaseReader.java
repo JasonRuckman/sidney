@@ -35,6 +35,7 @@ public abstract class BaseReader<T> {
   private boolean isOpen = false;
   private SidneyConf conf;
   private References references = new References();
+
   public BaseReader(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
     this.serializerContext = new SerializerContextImpl(conf, references);
@@ -97,7 +98,7 @@ public abstract class BaseReader<T> {
    * Open the given {@link java.io.InputStream} for reading.
    */
   public void open(InputStream inputStream) {
-    if(conf.isReferenceTrackingEnabled()) {
+    if (conf.isReferenceTrackingEnabled()) {
       references.clear();
     }
     this.inputStream = inputStream;
@@ -129,14 +130,14 @@ public abstract class BaseReader<T> {
         int value = Bytes.readIntFromStream(inputStream);
         currentPageHeader.getValueToClassMap().put(value, clazz);
       }
-      if(conf.isReferenceTrackingEnabled()) {
+      if (conf.isReferenceTrackingEnabled()) {
         context = new ReferenceTrackingReadContext(conf);
       } else {
         context = new ReadContextImpl(
             conf
         );
       }
-      serializerContext.finish((ReadContextImpl)context);
+      serializerContext.finish((ReadContextImpl) context);
       recordCount = currentPageHeader.getPageSize();
       context.setPageHeader(currentPageHeader);
       context.loadFromInputStream(inputStream);
@@ -150,7 +151,7 @@ public abstract class BaseReader<T> {
 
     public PrimitiveReader(SidneyConf conf, Class<?> type) {
       super(conf, JavaTypeRefBuilder.typeRef(type));
-      serializer = (T)getRootSerializer();
+      serializer = (T) getRootSerializer();
     }
 
     public T getSerializer() {

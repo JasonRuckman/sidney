@@ -39,11 +39,11 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
   @Override
   public void writeValue(T value, WriteContext context) {
     ReferenceTrackingWriteContext c = (ReferenceTrackingWriteContext) context;
-    if(value != null) {
+    if (value != null) {
       c.writeNotNull();
       context.setColumnIndex(delegate.startIndex());
       int def = references.trackObject(value);
-      if(def > 0) {
+      if (def > 0) {
         //we wrote a reference, write the definition out and bump past this serializer
         c.writeDefinition(def);
       } else {
@@ -57,10 +57,10 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
 
   @Override
   public T readValue(ReadContext context) {
-    ReferenceTrackingReadContext c = (ReferenceTrackingReadContext)context;
+    ReferenceTrackingReadContext c = (ReferenceTrackingReadContext) context;
     boolean isNotNull = c.readNullMarker();
 
-    if(!isNotNull) {
+    if (!isNotNull) {
       return null;
     }
 
@@ -68,7 +68,7 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
 
     int definition = c.readDefinition();
     //the object value is in the high bits
-    if(definition == 0) {
+    if (definition == 0) {
       int reference = references.nextCounter();
       T value = delegate.readValue(c);
       references.addReference(value, reference);

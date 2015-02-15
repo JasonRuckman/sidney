@@ -105,7 +105,7 @@ public abstract class Serializer<T> {
   }
 
   protected Factories getFactories() {
-   return factories;
+    return factories;
   }
 
   void setFactories(Factories factories) {

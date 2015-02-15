@@ -16,14 +16,10 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitiveRefs;
-import com.github.jasonruckman.sidney.core.JavaSid;
 import com.github.jasonruckman.sidney.core.Supplier;
 import com.github.jasonruckman.sidney.core.TypeToken;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +32,7 @@ public class MapSerdeTest extends ObjSerdeTest {
       @Override
       public Map<Integer, Integer> apply() {
         Map<Integer, Integer> map = new HashMap<>();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
           map.put(getRandom().nextInt(), getRandom().nextInt());
         }
         return map;
@@ -46,11 +42,12 @@ public class MapSerdeTest extends ObjSerdeTest {
 
   @Test
   public void testBeanToBeanMap() throws IOException {
-    runTest(new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {}, NUM_TO_RUN, new Supplier<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+    runTest(new TypeToken<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
+    }, NUM_TO_RUN, new Supplier<Map<AllPrimitiveRefs, AllPrimitiveRefs>>() {
       @Override
       public Map<AllPrimitiveRefs, AllPrimitiveRefs> apply() {
         Map<AllPrimitiveRefs, AllPrimitiveRefs> map = new HashMap<>();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
           map.put(getDataFactory().newPrimitiveRefs(), getDataFactory().newPrimitiveRefs());
         }
         return map;

@@ -31,9 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ColumnOperations extends Context implements SerializerFinalizer {
-  public static final Encoding INT_DEFINITION_ENCODING = Encoding.BITPACKED;
+  public static final Encoding INT_DEFINITION_ENCODING = Encoding.DELTABITPACKINGHYBRID;
   public static final Encoding BOOL_DEFINITION_ENCODING = Encoding.BITMAP;
   public static final Encoding REPETITION_ENCODING = Encoding.BITPACKED;
+
   protected final List<Columns.ColumnIO> columnIOs = new ArrayList<>();
 
   public ColumnOperations(SidneyConf conf) {
@@ -55,17 +56,21 @@ public abstract class ColumnOperations extends Context implements SerializerFina
     }
     columns.add(columnIO);
 
+    BoolEncoder definitionEncoder = BOOL_DEFINITION_ENCODING.newBoolEncoder();
+    BoolDecoder definitionDecoder = BOOL_DEFINITION_ENCODING.newBoolDecoder();
+
+
+    Int32Encoder repetitionEncoder = REPETITION_ENCODING.newInt32Encoder();
+    Int32Decoder repetitionDecoder = REPETITION_ENCODING.newInt32Decoder();
+
+    Int32Encoder intDefinitionEncoder = INT_DEFINITION_ENCODING.newInt32Encoder();
+    Int32Decoder intDefinitionDecoder = INT_DEFINITION_ENCODING.newInt32Decoder();
+
     for (Columns.ColumnIO co : columns) {
-      BoolEncoder definitionEncoder = BOOL_DEFINITION_ENCODING.newBoolEncoder();
-      BoolDecoder definitionDecoder = BOOL_DEFINITION_ENCODING.newBoolDecoder();
-
-      Int32Encoder repetitionEncoder = REPETITION_ENCODING.newInt32Encoder();
-      Int32Decoder repetitionDecoder = REPETITION_ENCODING.newInt32Decoder();
-
       if (getConf().isReferenceTrackingEnabled()) {
         co.setEncoding(new ReferenceCheckingDefRepEncoding(repetitionEncoder, repetitionDecoder,
-                INT_DEFINITION_ENCODING.newInt32Encoder(),
-                INT_DEFINITION_ENCODING.newInt32Decoder(), definitionDecoder, definitionEncoder)
+                intDefinitionEncoder,
+                intDefinitionDecoder, definitionDecoder, definitionEncoder)
         );
       } else {
         co.setEncoding(new DefaultDefRepEncoding(repetitionEncoder, repetitionDecoder, definitionEncoder, definitionDecoder));

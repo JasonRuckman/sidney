@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,8 @@ import java.util.zip.GZIPOutputStream;
 public class ReferenceTrackingTest extends ObjSerdeTest {
   @Test
   public void testSimpleReferences() throws IOException {
-    runTest(new TypeToken<AllPrimitives>() {}, 5000, new Supplier<AllPrimitives>() {
+    runTest(new TypeToken<AllPrimitives>() {
+    }, 5000, new Supplier<AllPrimitives>() {
       @Override
       public AllPrimitives apply() {
         return getDataFactory().newPrimitives();
@@ -48,7 +48,8 @@ public class ReferenceTrackingTest extends ObjSerdeTest {
     JavaSid sid = new JavaSid();
     sid.setReferences(true);
 
-    Writer<Map<Integer, AllPrimitives>> mapWriter = sid.newWriter(new TypeToken<Map<Integer, AllPrimitives>>() {});
+    Writer<Map<Integer, AllPrimitives>> mapWriter = sid.newWriter(new TypeToken<Map<Integer, AllPrimitives>>() {
+    });
 
     AllPrimitives record = getDataFactory().newPrimitives();
     while (record == null) {
@@ -65,7 +66,8 @@ public class ReferenceTrackingTest extends ObjSerdeTest {
     gos.close();
 
     InputStream bais = new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray()));
-    Reader<Map<Integer, AllPrimitives>> mapReader = sid.newReader(new TypeToken<Map<Integer, AllPrimitives>>() {});
+    Reader<Map<Integer, AllPrimitives>> mapReader = sid.newReader(new TypeToken<Map<Integer, AllPrimitives>>() {
+    });
     mapReader.open(bais);
 
     List<Map<Integer, AllPrimitives>> list = mapReader.readAll();

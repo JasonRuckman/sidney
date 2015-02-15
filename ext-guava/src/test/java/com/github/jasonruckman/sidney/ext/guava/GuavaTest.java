@@ -35,7 +35,7 @@ public class GuavaTest extends ObjSerdeTest {
       @Override
       public ImmutableList<Integer> apply() {
         ImmutableList.Builder<Integer> builder = ImmutableList.builder();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
           builder.add(i);
         }
         return builder.build();
@@ -50,8 +50,8 @@ public class GuavaTest extends ObjSerdeTest {
       @Override
       public Multimap<Integer, Integer> apply() {
         Multimap<Integer, Integer> map = ArrayListMultimap.create();
-        for(int i = 0; i < getRandom().nextInt(256); i++) {
-          for(int j = 0; j < getRandom().nextInt(5); j++) {
+        for (int i = 0; i < getRandom().nextInt(256); i++) {
+          for (int j = 0; j < getRandom().nextInt(5); j++) {
             map.put(i, j);
           }
         }
