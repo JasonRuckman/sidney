@@ -39,13 +39,21 @@ public abstract class DefRepEncoding {
     repetitionEncoder.writeInt(count);
   }
 
-  public void readFromStream(InputStream inputStream) throws IOException {
+  public void readRepetitionsFromStream(InputStream inputStream) throws IOException {
     repetitionDecoder.readFromStream(inputStream);
   }
 
-  public void writeToStream(OutputStream outputStream) throws IOException {
+  public abstract void readDefinitionsFromStream(InputStream inputStream) throws IOException;
+
+  public abstract void readNullMarkersFromStream(InputStream inputStream) throws IOException;
+
+  public void writeRepetitionsToStream(OutputStream outputStream) throws IOException {
     repetitionEncoder.writeToStream(outputStream);
   }
+
+  public abstract void writeDefinitionsToStream(OutputStream outputStream) throws IOException;
+
+  public abstract void writeNullMarkersToStream(OutputStream outputStream) throws IOException;
 
   public void writeNullMarker(boolean value) {
     throw new IllegalStateException();

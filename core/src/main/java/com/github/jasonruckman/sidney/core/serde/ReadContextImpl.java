@@ -18,6 +18,7 @@ package com.github.jasonruckman.sidney.core.serde;
 import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.io.Columns;
 import com.github.jasonruckman.sidney.core.io.Decoder;
+import com.github.jasonruckman.sidney.core.io.Encoder;
 import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 
 import java.io.IOException;
@@ -35,8 +36,19 @@ public class ReadContextImpl extends ColumnOperations implements ReadContext {
   @Override
   public void loadFromInputStream(InputStream inputStream) throws IOException {
     for (Columns.ColumnIO columnIO : columnIOs) {
-      columnIO.getEncoding().readFromStream(inputStream);
+      columnIO.getEncoding().readDefinitionsFromStream(inputStream);
+    }
 
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().readNullMarkersFromStream(inputStream);
+    }
+
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().readRepetitionsFromStream(inputStream);
+    }
+
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().reset();
       for (Decoder decoder : columnIO.getDecoders()) {
         decoder.readFromStream(inputStream);
       }

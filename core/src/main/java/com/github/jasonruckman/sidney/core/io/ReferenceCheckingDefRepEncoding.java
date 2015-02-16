@@ -42,17 +42,23 @@ public class ReferenceCheckingDefRepEncoding extends DefRepEncoding {
   }
 
   @Override
-  public void readFromStream(InputStream inputStream) throws IOException {
+  public void readDefinitionsFromStream(InputStream inputStream) throws IOException {
     definitionDecoder.readFromStream(inputStream);
-    nullDecoder.readFromStream(inputStream);
-    super.readFromStream(inputStream);
   }
 
   @Override
-  public void writeToStream(OutputStream outputStream) throws IOException {
+  public void readNullMarkersFromStream(InputStream inputStream) throws IOException {
+    nullDecoder.readFromStream(inputStream);
+  }
+
+  @Override
+  public void writeDefinitionsToStream(OutputStream outputStream) throws IOException {
     definitionEncoder.writeToStream(outputStream);
+  }
+
+  @Override
+  public void writeNullMarkersToStream(OutputStream outputStream) throws IOException {
     nullEncoder.writeToStream(outputStream);
-    super.writeToStream(outputStream);
   }
 
   @Override

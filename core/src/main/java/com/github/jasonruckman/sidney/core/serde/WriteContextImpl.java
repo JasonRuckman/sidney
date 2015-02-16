@@ -96,7 +96,18 @@ public class WriteContextImpl extends ColumnOperations implements WriteContext {
   @Override
   public void flushToOutputStream(OutputStream outputStream) throws IOException {
     for (Columns.ColumnIO columnIO : columnIOs) {
-      columnIO.getEncoding().writeToStream(outputStream);
+      columnIO.getEncoding().writeDefinitionsToStream(outputStream);
+    }
+
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().writeNullMarkersToStream(outputStream);
+    }
+
+    for (Columns.ColumnIO columnIO : columnIOs) {
+      columnIO.getEncoding().writeRepetitionsToStream(outputStream);
+    }
+
+    for (Columns.ColumnIO columnIO : columnIOs) {
       columnIO.getEncoding().reset();
       for (Encoder encoder : columnIO.getEncoders()) {
         encoder.writeToStream(outputStream);
