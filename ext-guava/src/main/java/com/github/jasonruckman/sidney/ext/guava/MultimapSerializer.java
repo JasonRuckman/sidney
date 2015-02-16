@@ -32,13 +32,11 @@ import java.util.Map;
 public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   private Serializer<K> keySerializer;
   private Serializer<V> valueSerializer;
-  private Primitives.IntSerializer sizeSerializer;
   private InstanceFactoryCache cache;
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
     keySerializer = context.serializer(typeRef.param(0));
-    sizeSerializer = context.intSerializer();
     valueSerializer = context.serializer(typeRef.param(1));
     cache = new InstanceFactoryCache(getFactories());
   }
@@ -51,7 +49,7 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
     for (Map.Entry<K, Collection<V>> entry : map.entrySet()) {
       keySerializer.writeValue(entry.getKey(), context);
       //can't use the defaults here, because its an inner class
-      sizeSerializer.writeInt(entry.getValue().size(), context);
+      context.getMeta().writeRepetitionCount(entry.getValue().size());
       for (V v : entry.getValue()) {
         valueSerializer.writeValue(v, context);
       }
@@ -64,7 +62,7 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
     int num = context.getMeta().readRepetitionCount();
     for (int i = 0; i < num; i++) {
       K key = keySerializer.readValue(context);
-      int size = sizeSerializer.readInt(context);
+      int size = context.getMeta().readRepetitionCount();
       for (int j = 0; j < size; j++) {
         multimap.put(key, valueSerializer.readValue(context));
       }
