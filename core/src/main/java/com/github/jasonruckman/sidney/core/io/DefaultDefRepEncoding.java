@@ -39,15 +39,23 @@ public class DefaultDefRepEncoding extends DefRepEncoding {
   }
 
   @Override
-  public void readFromStream(InputStream inputStream) throws IOException {
+  public void readDefinitionsFromStream(InputStream inputStream) throws IOException {
     definitionDecoder.readFromStream(inputStream);
-    super.readFromStream(inputStream);
   }
 
   @Override
-  public void writeToStream(OutputStream outputStream) throws IOException {
+  public void readNullMarkersFromStream(InputStream inputStream) throws IOException {
+
+  }
+
+  @Override
+  public void writeDefinitionsToStream(OutputStream outputStream) throws IOException {
     definitionEncoder.writeToStream(outputStream);
-    super.writeToStream(outputStream);
+  }
+
+  @Override
+  public void writeNullMarkersToStream(OutputStream outputStream) throws IOException {
+
   }
 
   @Override
