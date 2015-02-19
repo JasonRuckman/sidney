@@ -45,13 +45,15 @@ public class AllPrimitiveArrays {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    AllPrimitiveArrays arrays = (AllPrimitiveArrays) o;
+    AllPrimitiveArrays that = (AllPrimitiveArrays) o;
 
-    if (!Arrays.equals(booleans, arrays.booleans)) return false;
-    if (!Arrays.equals(doubles, arrays.doubles)) return false;
-    if (!Arrays.equals(floats, arrays.floats)) return false;
-    if (!Arrays.equals(ints, arrays.ints)) return false;
-    if (!Arrays.equals(longs, arrays.longs)) return false;
+    if (!Arrays.equals(booleans, that.booleans)) return false;
+    if (!Arrays.equals(chars, that.chars)) return false;
+    if (!Arrays.equals(doubles, that.doubles)) return false;
+    if (!Arrays.equals(floats, that.floats)) return false;
+    if (!Arrays.equals(ints, that.ints)) return false;
+    if (!Arrays.equals(longs, that.longs)) return false;
+    if (!Arrays.equals(shorts, that.shorts)) return false;
 
     return true;
   }
@@ -59,6 +61,8 @@ public class AllPrimitiveArrays {
   @Override
   public int hashCode() {
     int result = booleans != null ? Arrays.hashCode(booleans) : 0;
+    result = 31 * result + (shorts != null ? Arrays.hashCode(shorts) : 0);
+    result = 31 * result + (chars != null ? Arrays.hashCode(chars) : 0);
     result = 31 * result + (ints != null ? Arrays.hashCode(ints) : 0);
     result = 31 * result + (longs != null ? Arrays.hashCode(longs) : 0);
     result = 31 * result + (floats != null ? Arrays.hashCode(floats) : 0);

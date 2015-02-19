@@ -29,9 +29,9 @@ public class DefaultDefRepEncoding extends DefRepEncoding {
   private final BoolDecoder definitionDecoder;
 
   public DefaultDefRepEncoding(Int32Encoder repetitionEncoder,
-                                  Int32Decoder repetitionDecoder,
-                                  BoolEncoder definitionEncoder,
-                                  BoolDecoder definitionDecoder) {
+                               Int32Decoder repetitionDecoder,
+                               BoolEncoder definitionEncoder,
+                               BoolDecoder definitionDecoder) {
     super(repetitionEncoder, repetitionDecoder);
 
     this.definitionEncoder = definitionEncoder;

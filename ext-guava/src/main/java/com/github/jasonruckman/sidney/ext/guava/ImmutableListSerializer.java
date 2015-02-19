@@ -20,7 +20,6 @@ import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 import com.google.common.collect.ImmutableList;
 
 public class ImmutableListSerializer<T> extends Serializer<ImmutableList<T>> {
@@ -34,7 +33,7 @@ public class ImmutableListSerializer<T> extends Serializer<ImmutableList<T>> {
   @Override
   public void writeValue(ImmutableList<T> value, WriteContext context) {
     context.getMeta().writeRepetitionCount(value.size());
-    for(T o : value) {
+    for (T o : value) {
       contentSerializer.writeValue(o, context);
     }
   }
@@ -43,7 +42,7 @@ public class ImmutableListSerializer<T> extends Serializer<ImmutableList<T>> {
   public ImmutableList<T> readValue(ReadContext context) {
     int size = context.getMeta().readRepetitionCount();
     ImmutableList.Builder<T> builder = ImmutableList.builder();
-    for(int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       builder.add(contentSerializer.readValue(context));
     }
     return builder.build();

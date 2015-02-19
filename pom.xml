@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.jasonruckman</groupId>
@@ -20,17 +21,18 @@
 
   <modules>
     <module>core</module>
-    <module>bitpacking</module>
-    <module>benchmarking</module>
     <module>scala</module>
     <module>ext-common</module>
     <module>ext-guava</module>
+    <module>ext-generator</module>
+    <module>ext-benchmarks</module>
   </modules>
 
   <properties>
     <junit.version>4.11</junit.version>
     <slfj.version>1.7.7</slfj.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jackson.version>2.4.4</jackson.version>
   </properties>
 
   <dependencyManagement>
@@ -51,6 +53,16 @@
         <artifactId>slf4j-simple</artifactId>
         <version>${slfj.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>18.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -64,7 +76,7 @@
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
-  
+
   <build>
     <plugins>
       <plugin>

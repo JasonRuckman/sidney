@@ -16,19 +16,15 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.*;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BeanSerdeTest extends ObjSerdeTest {
   @Test
   public void testPrimitivesBean() throws IOException {
-    runTest(new TypeToken<AllPrimitives>() {}, NUM_TO_RUN, new Supplier<AllPrimitives>() {
+    runTest(new TypeToken<AllPrimitives>() {
+    }, NUM_TO_RUN, new Supplier<AllPrimitives>() {
       @Override
       public AllPrimitives apply() {
         return getDataFactory().newPrimitives();
@@ -38,7 +34,8 @@ public class BeanSerdeTest extends ObjSerdeTest {
 
   @Test
   public void testPrimitiveRefsBean() throws IOException {
-    runTest(new TypeToken<AllPrimitiveRefs>(){}, NUM_TO_RUN, new Supplier<AllPrimitiveRefs>() {
+    runTest(new TypeToken<AllPrimitiveRefs>() {
+    }, NUM_TO_RUN, new Supplier<AllPrimitiveRefs>() {
       @Override
       public AllPrimitiveRefs apply() {
         return getDataFactory().newPrimitiveRefs();

@@ -64,6 +64,7 @@ object ScalaTypeRefBuilder {
       case i if i.eq(classOf[Object]) || i.eq(classOf[AnyRef]) || i.eq(classOf[Any]) => {
         throw new SidneyException("Cannot resolve type %s".format(i.getName))
       }
+      case _ =>
     }
     //now we have the class for the symbol, go decompose the typeargs, then go through all the fields and bind them to the type args
     var bindings: TypeBindings = null
@@ -73,7 +74,7 @@ object ScalaTypeRefBuilder {
     typeArgsAsRefs.foreach(ref.addTypeParameter)
 
     val availableFields = ref.getType.getDeclaredFields.flatMap(x => {
-      if (Modifier.isStatic(x.getModifiers) || Modifier.isTransient(x.getModifiers)) {
+      if (!Modifier.isStatic(x.getModifiers) && !Modifier.isTransient(x.getModifiers)) {
         Some(x.getName, x)
       } else {
         None

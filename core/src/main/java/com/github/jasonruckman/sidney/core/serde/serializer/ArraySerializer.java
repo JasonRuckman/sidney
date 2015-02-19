@@ -18,7 +18,6 @@ package com.github.jasonruckman.sidney.core.serde.serializer;
 import com.github.jasonruckman.sidney.core.TypeRef;
 import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -30,6 +29,10 @@ import java.util.Map;
 public class ArraySerializer extends Serializer<Object> {
   private final Map<Class, ArrayWriter> PRIMITIVE_WRITERS = new HashMap<>();
   private final Map<Class, ArrayReader> PRIMITIVE_READERS = new HashMap<>();
+  private Serializer contentSerializer;
+  private ArrayWriter arrayWriter;
+  private ArrayReader arrayReader;
+  private Class<?> rawClass;
 
   public ArraySerializer() {
     PRIMITIVE_WRITERS.put(boolean[].class, new BoolArrayWriter());
@@ -48,10 +51,6 @@ public class ArraySerializer extends Serializer<Object> {
     PRIMITIVE_READERS.put(float[].class, new FloatArrayReader());
     PRIMITIVE_READERS.put(double[].class, new DoubleArrayReader());
   }
-  private Serializer contentSerializer;
-  private ArrayWriter arrayWriter;
-  private ArrayReader arrayReader;
-  private Class<?> rawClass;
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
@@ -87,12 +86,15 @@ public class ArraySerializer extends Serializer<Object> {
     arrayReader.readValue(context, array);
     return array;
   }
-  
+
   public abstract interface ArrayReader<T> {
     void readValue(ReadContext context, T newArray);
   }
 
 
+  interface ArrayWriter<T> {
+    void writeArray(T value, WriteContext context);
+  }
 
   class BoolArrayReader implements ArrayReader<boolean[]> {
     @Override
@@ -164,10 +166,6 @@ public class ArraySerializer extends Serializer<Object> {
     }
   }
 
-  interface ArrayWriter<T> {
-    void writeArray(T value, WriteContext context);
-  }
-  
   class BoolArrayWriter implements ArrayWriter<boolean[]> {
     @Override
     public void writeArray(boolean[] value, WriteContext context) {
@@ -237,7 +235,7 @@ public class ArraySerializer extends Serializer<Object> {
       }
     }
   }
-    
+
 
   private class RefArrayWriter implements ArrayWriter<Object[]> {
     @Override

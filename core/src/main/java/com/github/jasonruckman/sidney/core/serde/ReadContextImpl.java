@@ -18,7 +18,6 @@ package com.github.jasonruckman.sidney.core.serde;
 import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.io.Columns;
 import com.github.jasonruckman.sidney.core.io.Decoder;
-import com.github.jasonruckman.sidney.core.io.Encoder;
 import com.github.jasonruckman.sidney.core.serde.serializer.ColumnOperations;
 
 import java.io.IOException;

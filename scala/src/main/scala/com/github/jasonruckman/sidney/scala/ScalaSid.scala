@@ -56,7 +56,7 @@ class ScalaSid extends BaseSid {
     )
   }
 
-  def register[T, R <: InstanceFactory[T]](factory : R)(implicit targetTag : ClassTag[T]) = {
+  def register[T, R <: InstanceFactory[T]](factory: R)(implicit targetTag: ClassTag[T]) = {
     conf.register(targetTag.runtimeClass.asInstanceOf[Class[T]], factory)
   }
 }

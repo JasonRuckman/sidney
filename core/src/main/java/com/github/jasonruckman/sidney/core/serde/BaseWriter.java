@@ -35,6 +35,7 @@ public abstract class BaseWriter<T> {
   private Serializer rootSerializer;
   private SidneyConf conf;
   private References references = new References();
+
   public BaseWriter(SidneyConf conf, TypeRef typeRef) {
     this.conf = conf;
     this.typeRef = typeRef;
@@ -46,7 +47,7 @@ public abstract class BaseWriter<T> {
       this.writeContext = new WriteContextImpl(new PageHeader(), conf);
     }
 
-    this.serializerContext.finish((WriteContextImpl)writeContext);
+    this.serializerContext.finish((WriteContextImpl) writeContext);
   }
 
   protected Serializer getRootSerializer() {
@@ -76,7 +77,7 @@ public abstract class BaseWriter<T> {
    * Open this writer against the given {@link java.io.OutputStream}
    */
   public void open(OutputStream outputStream) {
-    if(conf.isReferenceTrackingEnabled()) {
+    if (conf.isReferenceTrackingEnabled()) {
       references.clear();
     }
 

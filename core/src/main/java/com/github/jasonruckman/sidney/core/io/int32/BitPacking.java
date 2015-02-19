@@ -15,9 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core.io.int32;
 
-import com.github.jasonruckman.sidney.bitpacking.Int32BytePacker;
-import com.github.jasonruckman.sidney.bitpacking.Packers;
 import com.github.jasonruckman.sidney.core.Bytes;
+import com.github.jasonruckman.sidney.core.bitpacking.Int32BytePacker;
+import com.github.jasonruckman.sidney.core.bitpacking.Packers;
 import com.github.jasonruckman.sidney.core.io.BaseDecoder;
 import com.github.jasonruckman.sidney.core.io.BaseEncoder;
 

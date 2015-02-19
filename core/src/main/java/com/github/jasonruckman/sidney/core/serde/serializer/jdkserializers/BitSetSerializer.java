@@ -35,7 +35,7 @@ public class BitSetSerializer extends Serializer<BitSet> {
   public void writeValue(BitSet value, WriteContext context) {
     int length = value.length();
     context.getMeta().writeRepetitionCount(length);
-    for(int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
       bitsSerializer.writeBoolean(value.get(i), context);
     }
   }
@@ -44,8 +44,8 @@ public class BitSetSerializer extends Serializer<BitSet> {
   public BitSet readValue(ReadContext context) {
     BitSet bitSet = new BitSet();
     int length = context.getMeta().readRepetitionCount();
-    for(int i = 0; i < length; i++) {
-      if(bitsSerializer.readBoolean(context)) {
+    for (int i = 0; i < length; i++) {
+      if (bitsSerializer.readBoolean(context)) {
         bitSet.set(i);
       }
     }

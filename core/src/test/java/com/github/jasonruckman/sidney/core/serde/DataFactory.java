@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static com.github.jasonruckman.sidney.core.TestUtils.*;
+import static com.github.jasonruckman.sidney.core.TestUtils.maybeMakeNull;
 
 public class DataFactory {
   private final Random random = new Random(11L);
@@ -198,8 +198,8 @@ public class DataFactory {
     return maybeMakeNull(bytes);
   }
 
-  public AllPrimitives.SomeEnum newEnum() {
-    return AllPrimitives.SomeEnum.values()[random.nextInt(2)];
+  public SomeEnum newEnum() {
+    return SomeEnum.values()[random.nextInt(2)];
   }
 
   public AllPrimitives newPrimitives() {

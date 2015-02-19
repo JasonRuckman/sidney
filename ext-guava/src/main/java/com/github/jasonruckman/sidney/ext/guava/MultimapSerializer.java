@@ -23,7 +23,6 @@ import com.github.jasonruckman.sidney.core.serde.ReadContext;
 import com.github.jasonruckman.sidney.core.serde.WriteContext;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 import com.google.common.collect.*;
 
 import java.util.Collection;
@@ -33,6 +32,40 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   private Serializer<K> keySerializer;
   private Serializer<V> valueSerializer;
   private InstanceFactoryCache cache;
+
+  public static void registerMaps(BaseSid sid) {
+    sid.addSerializer(Multimap.class, MultimapSerializer.class);
+    sid.addInstanceFactory(ArrayListMultimap.class, new InstanceFactory<ArrayListMultimap>() {
+      @Override
+      public ArrayListMultimap newInstance() {
+        return ArrayListMultimap.create();
+      }
+    });
+    sid.addInstanceFactory(LinkedListMultimap.class, new InstanceFactory<LinkedListMultimap>() {
+      @Override
+      public LinkedListMultimap newInstance() {
+        return LinkedListMultimap.create();
+      }
+    });
+    sid.addInstanceFactory(LinkedHashMultimap.class, new InstanceFactory<LinkedHashMultimap>() {
+      @Override
+      public LinkedHashMultimap newInstance() {
+        return LinkedHashMultimap.create();
+      }
+    });
+    sid.addInstanceFactory(TreeMultimap.class, new InstanceFactory<TreeMultimap>() {
+      @Override
+      public TreeMultimap newInstance() {
+        return TreeMultimap.create();
+      }
+    });
+    sid.addInstanceFactory(HashMultimap.class, new InstanceFactory<HashMultimap>() {
+      @Override
+      public HashMultimap newInstance() {
+        return HashMultimap.create();
+      }
+    });
+  }
 
   @Override
   public void consume(TypeRef typeRef, SerializerContext context) {
@@ -73,39 +106,5 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   @Override
   public boolean requiresTypeColumn() {
     return true;
-  }
-
-  public static void registerMaps(BaseSid sid) {
-    sid.addSerializer(Multimap.class, MultimapSerializer.class);
-    sid.addInstanceFactory(ArrayListMultimap.class, new InstanceFactory<ArrayListMultimap>() {
-      @Override
-      public ArrayListMultimap newInstance() {
-        return ArrayListMultimap.create();
-      }
-    });
-    sid.addInstanceFactory(LinkedListMultimap.class, new InstanceFactory<LinkedListMultimap>() {
-      @Override
-      public LinkedListMultimap newInstance() {
-        return LinkedListMultimap.create();
-      }
-    });
-    sid.addInstanceFactory(LinkedHashMultimap.class, new InstanceFactory<LinkedHashMultimap>() {
-      @Override
-      public LinkedHashMultimap newInstance() {
-        return LinkedHashMultimap.create();
-      }
-    });
-    sid.addInstanceFactory(TreeMultimap.class, new InstanceFactory<TreeMultimap>() {
-      @Override
-      public TreeMultimap newInstance() {
-        return TreeMultimap.create();
-      }
-    });
-    sid.addInstanceFactory(HashMultimap.class, new InstanceFactory<HashMultimap>() {
-      @Override
-      public HashMultimap newInstance() {
-        return HashMultimap.create();
-      }
-    });
   }
 }

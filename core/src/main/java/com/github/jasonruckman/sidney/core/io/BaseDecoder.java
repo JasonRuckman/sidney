@@ -18,6 +18,7 @@ package com.github.jasonruckman.sidney.core.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.BufferUnderflowException;
+
 import static com.github.jasonruckman.sidney.core.Bytes.*;
 
 public abstract class BaseDecoder implements Decoder {

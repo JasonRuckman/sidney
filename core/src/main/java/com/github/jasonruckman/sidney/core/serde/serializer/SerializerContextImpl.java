@@ -20,11 +20,12 @@ import com.github.jasonruckman.sidney.core.SidneyConf;
 import com.github.jasonruckman.sidney.core.SidneyException;
 import com.github.jasonruckman.sidney.core.TypeRef;
 import com.github.jasonruckman.sidney.core.serde.Factories;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
 import com.github.jasonruckman.sidney.core.serde.References;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.*;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.BitSetSerializer;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.DateSerializer;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.UUIDSerializer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class SerializerContextImpl implements SerializerContext {
@@ -49,7 +50,6 @@ public class SerializerContextImpl implements SerializerContext {
     addEntry(Collection.class, CollectionSerializer.class);
     addEntry(Map.class, MapSerializer.class);
     addEntry(Object.class, BeanSerializer.class);
-
   }
 
   private void addCustomFactories() {
@@ -107,7 +107,7 @@ public class SerializerContextImpl implements SerializerContext {
     for (SerializerEntry entry : entries) {
       if (entry.getType() == clazz || entry.getType().isAssignableFrom(clazz)) {
         try {
-          serializer = (Serializer<T>)entry.getSerializerType().getConstructor().newInstance();
+          serializer = (Serializer<T>) entry.getSerializerType().getConstructor().newInstance();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
@@ -129,16 +129,16 @@ public class SerializerContextImpl implements SerializerContext {
     serializer.setFactories(factories);
     serializer.consume(typeRef, this);
 
-    if(PrimitiveSerializer.class.isAssignableFrom(serializer.getClass())) {
-      if(((PrimitiveSerializer) serializer).intercept()) {
-        if(conf.isReferenceTrackingEnabled()) {
+    if (PrimitiveSerializer.class.isAssignableFrom(serializer.getClass())) {
+      if (((PrimitiveSerializer) serializer).intercept()) {
+        if (conf.isReferenceTrackingEnabled()) {
           serializer = new ReferenceTrackingSerializerInterceptor<>(serializer, references);
         } else {
           serializer = new SerializerInterceptor<>(serializer);
         }
       }
     } else {
-      if(conf.isReferenceTrackingEnabled()) {
+      if (conf.isReferenceTrackingEnabled()) {
         serializer = new ReferenceTrackingSerializerInterceptor<>(serializer, references);
       } else {
         serializer = new SerializerInterceptor<>(serializer);
@@ -150,12 +150,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.BooleanSerializer boolSerializer() {
-    return (Primitives.BooleanSerializer) (Serializer)serializer(TypeRef.makeRef(boolean.class));
+    return (Primitives.BooleanSerializer) (Serializer) serializer(TypeRef.makeRef(boolean.class));
   }
 
   @Override
   public Primitives.BooleanSerializer boolSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.BooleanSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.BooleanSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -170,12 +170,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.ByteSerializer byteSerializer() {
-    return (Primitives.ByteSerializer)(Serializer)serializer(TypeRef.makeRef(byte.class));
+    return (Primitives.ByteSerializer) (Serializer) serializer(TypeRef.makeRef(byte.class));
   }
 
   @Override
   public Primitives.ByteSerializer byteSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.ByteSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.ByteSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -190,12 +190,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.CharSerializer charSerializer() {
-    return (Primitives.CharSerializer)(Serializer)serializer(TypeRef.makeRef(char.class));
+    return (Primitives.CharSerializer) (Serializer) serializer(TypeRef.makeRef(char.class));
   }
 
   @Override
   public Primitives.CharSerializer charSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.CharSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.CharSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -210,12 +210,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.ShortSerializer shortSerializer() {
-    return (Primitives.ShortSerializer)(Serializer)serializer(TypeRef.makeRef(short.class));
+    return (Primitives.ShortSerializer) (Serializer) serializer(TypeRef.makeRef(short.class));
   }
 
   @Override
   public Primitives.ShortSerializer shortSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.ShortSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.ShortSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -230,12 +230,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.IntSerializer intSerializer() {
-    return (Primitives.IntSerializer)(Serializer)serializer(TypeRef.makeRef(int.class));
+    return (Primitives.IntSerializer) (Serializer) serializer(TypeRef.makeRef(int.class));
   }
 
   @Override
   public Primitives.IntSerializer intSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.IntSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.IntSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -250,12 +250,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.LongSerializer longSerializer() {
-    return (Primitives.LongSerializer)(Serializer)serializer(TypeRef.makeRef(long.class));
+    return (Primitives.LongSerializer) (Serializer) serializer(TypeRef.makeRef(long.class));
   }
 
   @Override
   public Primitives.LongSerializer longSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.LongSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.LongSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -270,12 +270,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.FloatSerializer floatSerializer() {
-    return (Primitives.FloatSerializer)(Serializer)serializer(TypeRef.makeRef(float.class));
+    return (Primitives.FloatSerializer) (Serializer) serializer(TypeRef.makeRef(float.class));
   }
 
   @Override
   public Primitives.FloatSerializer floatSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.FloatSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.FloatSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -290,12 +290,12 @@ public class SerializerContextImpl implements SerializerContext {
 
   @Override
   public Primitives.DoubleSerializer doubleSerializer() {
-    return (Primitives.DoubleSerializer)(Serializer)serializer(TypeRef.makeRef(double.class));
+    return (Primitives.DoubleSerializer) (Serializer) serializer(TypeRef.makeRef(double.class));
   }
 
   @Override
   public Primitives.DoubleSerializer doubleSerializer(TypeRef.TypeFieldRef fieldRef) {
-    return (Primitives.DoubleSerializer)(Serializer)serializer(fieldRef);
+    return (Primitives.DoubleSerializer) (Serializer) serializer(fieldRef);
   }
 
   @Override
@@ -326,6 +326,11 @@ public class SerializerContextImpl implements SerializerContext {
   @Override
   public Serializer<byte[]> binarySerializer(TypeRef.TypeFieldRef fieldRef) {
     return serializer(fieldRef);
+  }
+
+  @Override
+  public SidneyConf conf() {
+    return conf;
   }
 
   public void finish(SerializerFinalizer consumer) {

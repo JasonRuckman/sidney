@@ -229,6 +229,10 @@ Support for [ImmutableList](http://docs.guava-libraries.googlecode.com/git/javad
 
 [Serializer API](https://github.com/JasonRuckman/sidney/issues/18)
 
+### 0.2.1
+
+[Benchmarks / Data Generator API](https://github.com/JasonRuckman/sidney/issues/23)
+
 ## Maven
 
 Sidney is available on Maven Central.
@@ -238,7 +242,7 @@ Core:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-core</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
 </dependency>
 ```
 Scala: 
@@ -246,7 +250,7 @@ Scala:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-scala</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
 </dependency>
 ```
 Extensions:
@@ -254,7 +258,7 @@ Extensions:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-ext-common</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
 </dependency>
 ```
 Guava: 
@@ -262,6 +266,6 @@ Guava:
 <dependency>
   <groupId>com.github.jasonruckman</groupId>
   <artifactId>sidney-ext-guava</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
 </dependency>
 ```
