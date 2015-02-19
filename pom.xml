@@ -110,7 +110,7 @@
           <aggregate>true</aggregate>
           <excludes>
             <exclude>**/README</exclude>
-            <exclude>bitpacking/**</exclude>
+            <exclude>core/src/main/java/com/github/jasonruckman/sidney/core/bitpacking/**</exclude>
             <exclude>src/main/resources/**</exclude>
           </excludes>
         </configuration>
