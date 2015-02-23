@@ -23,18 +23,17 @@ import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Encoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Decoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Encoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.string.StringDecoder;
 import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.OutputStream;
 
 public class Columns {
   public static class BoolColumnIO extends ColumnIO {
@@ -48,7 +47,7 @@ public class Columns {
 
     @Override
     public void writeBoolean(boolean value) {
-      this.encoder.writeBool(value);
+      this.encoder.writeBool(value, getColumnOutput());
     }
 
     @Override
@@ -57,13 +56,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -78,7 +77,7 @@ public class Columns {
 
     @Override
     public void writeBytes(byte[] bytes) {
-      this.encoder.writeBytes(bytes);
+      this.encoder.writeBytes(bytes, getColumnOutput());
     }
 
     @Override
@@ -88,25 +87,96 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
-  public static class ColumnIO {
-    private static final List EMPTY = new ArrayList<>();
-    private DefRepEncoding encoding;
+  public abstract static class ColumnIO {
+    private MetaEncoding encoding;
+    private Output columnOutput;
+    private Output repetitionOutput;
+    private Output definitionOutput;
+    private Output referencesOutput;
+    private Input columnInput;
+    private Input repetitionInput;
+    private Input definitionInput;
+    private Input referencesInput;
 
-    public DefRepEncoding getEncoding() {
+    public Input getColumnInput() {
+      return columnInput;
+    }
+
+    public void setColumnInput(Input columnInput) {
+      this.columnInput = columnInput;
+    }
+
+    public Input getRepetitionInput() {
+      return repetitionInput;
+    }
+
+    public void setRepetitionInput(Input repetitionInput) {
+      this.repetitionInput = repetitionInput;
+    }
+
+    public Input getDefinitionInput() {
+      return definitionInput;
+    }
+
+    public void setDefinitionInput(Input definitionInput) {
+      this.definitionInput = definitionInput;
+    }
+
+    public Input getReferencesInput() {
+      return referencesInput;
+    }
+
+    public void setReferencesInput(Input referencesInput) {
+      this.referencesInput = referencesInput;
+    }
+
+    public Output getColumnOutput() {
+      return columnOutput;
+    }
+
+    public void setColumnOutput(Output columnOutput) {
+      this.columnOutput = columnOutput;
+    }
+
+    public Output getRepetitionOutput() {
+      return repetitionOutput;
+    }
+
+    public void setRepetitionOutput(Output repetitionOutput) {
+      this.repetitionOutput = repetitionOutput;
+    }
+
+    public Output getDefinitionOutput() {
+      return definitionOutput;
+    }
+
+    public void setDefinitionOutput(Output definitionOutput) {
+      this.definitionOutput = definitionOutput;
+    }
+
+    public Output getReferencesOutput() {
+      return referencesOutput;
+    }
+
+    public void setReferencesOutput(Output referencesOutput) {
+      this.referencesOutput = referencesOutput;
+    }
+
+    public MetaEncoding getEncoding() {
       return encoding;
     }
 
-    public void setEncoding(DefRepEncoding encoding) {
+    public void setEncoding(MetaEncoding encoding) {
       this.encoding = encoding;
     }
 
@@ -139,23 +209,23 @@ public class Columns {
     }
 
     public void writeNotNull() {
-      encoding.writeNullMarker(true);
+      encoding.writeNullMarker(true, getDefinitionOutput());
     }
 
-    public void writeConcreteType(Class<?> type, WriteContext context) {
+    public void writeConcreteType(Class<?> type, Contexts.WriteContext context) {
       throw new IllegalStateException();
     }
 
     public void writeNull() {
-      encoding.writeNullMarker(false);
+      encoding.writeNullMarker(false, getDefinitionOutput());
     }
 
     public void writeRepetitionCount(int value) {
-      encoding.writeRepetitionCount(value);
+      encoding.writeRepetitionCount(value, getRepetitionOutput());
     }
 
-    public void writeDefinition(int definition) {
-      encoding.writeDefinition(definition);
+    public void writeReference(int definition) {
+      encoding.writeDefinition(definition, getReferencesOutput());
     }
 
     public boolean readBoolean() {
@@ -194,7 +264,7 @@ public class Columns {
       return encoding.readRepetitionCount();
     }
 
-    public Class readConcreteType(ReadContext context) {
+    public Class readConcreteType(Contexts.ReadContext context) {
       throw new IllegalStateException();
     }
 
@@ -202,12 +272,20 @@ public class Columns {
       return encoding.readDefinition();
     }
 
-    public List<Encoder> getEncoders() {
-      return EMPTY;
+    public Encoder getEncoder() {
+      return null;
     }
 
-    public List<Decoder> getDecoders() {
-      return EMPTY;
+    public Decoder getDecoder() {
+      return null;
+    }
+
+    public boolean shouldLoadColumn() {
+      return getDecoder() != null;
+    }
+
+    public boolean shouldLoadReferences() {
+      return getEncoding() instanceof ReferencesMetaEncoding;
     }
   }
 
@@ -222,7 +300,7 @@ public class Columns {
 
     @Override
     public void writeDouble(double value) {
-      encoder.writeDouble(value);
+      encoder.writeDouble(value, getColumnOutput());
     }
 
     @Override
@@ -231,13 +309,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -252,7 +330,7 @@ public class Columns {
 
     @Override
     public void writeFloat(float value) {
-      encoder.writeFloat(value);
+      encoder.writeFloat(value, getColumnOutput());
     }
 
     @Override
@@ -261,13 +339,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -282,7 +360,7 @@ public class Columns {
 
     @Override
     public void writeInt(int value) {
-      encoder.writeInt(value);
+      encoder.writeInt(value, getColumnOutput());
     }
 
     @Override
@@ -291,13 +369,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -312,7 +390,7 @@ public class Columns {
 
     @Override
     public void writeLong(long value) {
-      encoder.writeLong(value);
+      encoder.writeLong(value, getColumnOutput());
     }
 
     @Override
@@ -321,13 +399,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -342,7 +420,7 @@ public class Columns {
 
     @Override
     public void writeString(String value) {
-      encoder.writeString(value);
+      encoder.writeString(value, getColumnOutput());
     }
 
     @Override
@@ -351,13 +429,13 @@ public class Columns {
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) encoder);
+    public Encoder getEncoder() {
+      return encoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) decoder);
+    public Decoder getDecoder() {
+      return decoder;
     }
   }
 
@@ -371,23 +449,23 @@ public class Columns {
     }
 
     @Override
-    public void writeConcreteType(Class<?> type, WriteContext context) {
-      concreteTypeEncoder.writeInt(context.getPageHeader().valueForType(type));
+    public void writeConcreteType(Class<?> type, Contexts.WriteContext context) {
+      concreteTypeEncoder.writeInt(context.getPageHeader().valueForType(type), getColumnOutput());
     }
 
     @Override
-    public Class readConcreteType(ReadContext context) {
+    public Class readConcreteType(Contexts.ReadContext context) {
       return context.getPageHeader().readConcreteType(concreteTypeDecoder.nextInt());
     }
 
     @Override
-    public List<Encoder> getEncoders() {
-      return Arrays.asList((Encoder) concreteTypeEncoder);
+    public Encoder getEncoder() {
+      return concreteTypeEncoder;
     }
 
     @Override
-    public List<Decoder> getDecoders() {
-      return Arrays.asList((Decoder) concreteTypeDecoder);
+    public Decoder getDecoder() {
+      return concreteTypeDecoder;
     }
   }
 }

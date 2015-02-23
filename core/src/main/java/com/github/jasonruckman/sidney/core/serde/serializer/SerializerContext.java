@@ -15,13 +15,13 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.SidneyConf;
-import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.Configuration;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
 import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
 
 public interface SerializerContext {
   /**
-   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef}
+   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.type.TypeRef}
    *
    * @param typeRef the type ref
    * @param <T>     type of serializer
@@ -30,7 +30,7 @@ public interface SerializerContext {
   <T> Serializer<T> serializer(TypeRef typeRef);
 
   /**
-   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.TypeRef} with the given {@link Serializer} as a parent.
+   * Create a new serializer given a {@link com.github.jasonruckman.sidney.core.type.TypeRef} with the given {@link Serializer} as a parent.
    * Unless you are the root serializer, this is the call to use for custom serialization
    *
    * @param typeRef the type ref
@@ -112,5 +112,5 @@ public interface SerializerContext {
 
   Serializer<byte[]> binarySerializer(TypeRef.TypeFieldRef fieldRef);
 
-  SidneyConf conf();
+  Configuration conf();
 }

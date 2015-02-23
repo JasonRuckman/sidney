@@ -265,4 +265,10 @@ public class DataFactory {
     }
     return maybeMakeNull(map);
   }
+
+  public SimpleBean newSimpleBean() {
+    SimpleBean bean = new SimpleBean();
+    bean.setFirst(newInt());
+    return bean;
+  }
 }

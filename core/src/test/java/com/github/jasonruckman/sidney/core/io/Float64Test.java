@@ -20,6 +20,7 @@ import com.github.jasonruckman.sidney.core.io.float64.Float64Decoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Encoder;
 import com.github.jasonruckman.sidney.core.io.float64.Plain;
 import com.github.jasonruckman.sidney.core.io.float64.RLE;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -33,12 +34,12 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
   );
 
   @Override
-  protected BiConsumer<Float64Encoder, double[]> encodingFunction() {
-    return new BiConsumer<Float64Encoder, double[]>() {
+  protected TriConsumer<Output, Float64Encoder, double[]> encodingFunction() {
+    return new TriConsumer<Output, Float64Encoder, double[]>() {
       @Override
-      public void accept(Float64Encoder encoder, double[] nums) {
+      public void accept(Output output, Float64Encoder encoder, double[] nums) {
         for (double num : nums) {
-          encoder.writeDouble(num);
+          encoder.writeDouble(num, output);
         }
       }
     };

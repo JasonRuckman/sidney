@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 
@@ -28,19 +27,19 @@ public class UUIDSerializer extends Serializer<UUID> {
   private Primitives.LongSerializer leastSig;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     mostSig = context.longSerializer();
     leastSig = context.longSerializer();
   }
 
   @Override
-  public void writeValue(UUID value, WriteContext context) {
+  public void writeValue(UUID value, Contexts.WriteContext context) {
     mostSig.writeLong(value.getMostSignificantBits(), context);
     leastSig.writeLong(value.getLeastSignificantBits(), context);
   }
 
   @Override
-  public UUID readValue(ReadContext context) {
+  public UUID readValue(Contexts.ReadContext context) {
     return new UUID(mostSig.readLong(context), leastSig.readLong(context));
   }
 }

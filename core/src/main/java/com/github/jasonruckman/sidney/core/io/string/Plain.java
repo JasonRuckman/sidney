@@ -15,20 +15,16 @@
  */
 package com.github.jasonruckman.sidney.core.io.string;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainStringDecoder extends BaseDecoder implements StringDecoder {
-    private final Charset charset = Charset.forName("UTF-8");
+  public static class PlainStringDecoder implements StringDecoder {
+    private Input input;
 
     public String readString() {
-      int length = readIntFromBuffer();
-      byte[] bytes = readBytesFromBuffer(length);
-      return charset.decode(ByteBuffer.wrap(bytes)).toString();
+      return input.readUtf8();
     }
 
     @Override
@@ -39,27 +35,43 @@ public class Plain {
       }
       return strings;
     }
-  }
 
-  public static class PlainStringEncoder extends BaseEncoder implements StringEncoder {
-    private final Charset charset = Charset.forName("UTF-8");
-
-    public void writeString(String s) {
-      ByteBuffer bb = charset.encode(s);
-      writeIntToBuffer(bb.limit());
-      writeBytesToBuffer(bb.array(), 0, bb.limit());
+    @Override
+    public void initialize(Input input) {
+      this.input = input;
     }
 
     @Override
-    public void writeStrings(String[] strings) {
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
+    }
+  }
+
+  public static class PlainStringEncoder implements StringEncoder {
+    public void writeString(String s, Output output) {
+      output.writeUtf8(s);
+    }
+
+    @Override
+    public void writeStrings(String[] strings, Output output) {
       for (String s : strings) {
-        writeString(s);
+        writeString(s, output);
       }
     }
 
     @Override
     public void reset() {
-      super.reset();
+
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

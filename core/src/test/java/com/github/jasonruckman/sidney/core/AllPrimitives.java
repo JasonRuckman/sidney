@@ -23,6 +23,7 @@ public class AllPrimitives {
   private boolean first;
   @Encode(Encoding.BITPACKED)
   private int second;
+  @Encode(Encoding.DELTABITPACKINGHYBRID)
   private char third;
   private short fourth;
   private byte fifth;

@@ -17,8 +17,9 @@ package com.github.jasonruckman.sidney.core;
 
 import com.github.jasonruckman.sidney.core.serde.Reader;
 import com.github.jasonruckman.sidney.core.serde.Writer;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 
-public class JavaSid extends BaseSid {
+public class JavaSid extends AbstractSid {
   /**
    * Creates a new {@link com.github.jasonruckman.sidney.core.serde.Writer} for the given type token
    *

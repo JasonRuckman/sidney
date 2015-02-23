@@ -15,9 +15,9 @@
  */
 package com.github.jasonruckman.sidney.scala
 
-import com.github.jasonruckman.sidney.core.SidneyConf
+import com.github.jasonruckman.sidney.core.Configuration
 import com.github.jasonruckman.sidney.core.serde.{BaseReader, Reader}
 
-class ScalaReader[T](conf: SidneyConf, tag: scala.reflect.runtime.universe.TypeTag[T])
+class ScalaReader[T](conf: Configuration, tag: scala.reflect.runtime.universe.TypeTag[T])
   extends BaseReader[T](conf, ScalaTypeRefBuilder.typeRef[T]()(tag)) with Reader[T] {
 }

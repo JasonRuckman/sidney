@@ -15,12 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.io.float64;
 
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
   public static class PlainFloat64Decoder implements Float64Decoder {
@@ -41,8 +40,13 @@ public class Plain {
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      decoder.readFromStream(inputStream);
+    public void initialize(Input input) {
+      decoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
@@ -50,14 +54,14 @@ public class Plain {
     private final Int64Encoder encoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
 
     @Override
-    public void writeDouble(double value) {
-      encoder.writeLong(Double.doubleToLongBits(value));
+    public void writeDouble(double value, Output output) {
+      encoder.writeLong(Double.doubleToLongBits(value), output);
     }
 
     @Override
-    public void writeDoubles(double[] values) {
+    public void writeDoubles(double[] values, Output output) {
       for (double value : values) {
-        writeDouble(value);
+        writeDouble(value, output);
       }
     }
 
@@ -67,8 +71,13 @@ public class Plain {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      encoder.writeToStream(outputStream);
+    public void flush(Output output) {
+      encoder.flush(output);
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

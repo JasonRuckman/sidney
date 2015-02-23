@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.ext.common;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
@@ -31,21 +30,21 @@ public class JodaDateTimeSerializer extends Serializer<DateTime> {
   private Serializer<Chronology> chrono;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     millis = context.longSerializer(typeRef.field("iMillis"));
     chrono = context.serializer(typeRef.field("iChronology"));
     tz = context.stringSerializer();
   }
 
   @Override
-  public void writeValue(DateTime value, WriteContext context) {
+  public void writeValue(DateTime value, Contexts.WriteContext context) {
     millis.writeLong(value.getMillis(), context);
     chrono.writeValue(value.getChronology(), context);
     tz.writeValue(value.getZone().getID(), context);
   }
 
   @Override
-  public DateTime readValue(ReadContext context) {
+  public DateTime readValue(Contexts.ReadContext context) {
     long m = millis.readLong(context);
     Chronology chronology = chrono.readValue(context);
     String zone = tz.readValue(context);

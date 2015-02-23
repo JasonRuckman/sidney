@@ -20,6 +20,7 @@ import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Encoder;
 import com.github.jasonruckman.sidney.core.io.float32.Plain;
 import com.github.jasonruckman.sidney.core.io.float32.RLE;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -32,11 +33,11 @@ public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Dec
       new EncoderDecoderPair<Float32Encoder, Float32Decoder>(new RLE.RLEFloat32Encoder(), new RLE.RLEFloat32Decoder())
   );
 
-  protected BiConsumer<Float32Encoder, float[]> encodingFunction() {
-    return new BiConsumer<Float32Encoder, float[]>() {
+  protected TriConsumer<Output, Float32Encoder, float[]> encodingFunction() {
+    return new TriConsumer<Output, Float32Encoder, float[]>() {
       @Override
-      public void accept(Float32Encoder encoder, float[] floats) {
-        encoder.writeFloats(floats);
+      public void accept(Output output, Float32Encoder encoder, float[] floats) {
+        encoder.writeFloats(floats, output);
       }
     };
   }

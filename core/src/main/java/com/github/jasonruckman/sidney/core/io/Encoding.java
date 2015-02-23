@@ -19,8 +19,6 @@ import com.github.jasonruckman.sidney.core.UnsupportedEncodingException;
 import com.github.jasonruckman.sidney.core.io.bool.BoolDecoder;
 import com.github.jasonruckman.sidney.core.io.bool.BoolEncoder;
 import com.github.jasonruckman.sidney.core.io.bool.EWAHBitmap;
-import com.github.jasonruckman.sidney.core.io.bytes.ByteArrayDecoder;
-import com.github.jasonruckman.sidney.core.io.bytes.ByteArrayEncoder;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesDecoder;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesEncoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
@@ -39,7 +37,7 @@ import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
 import com.github.jasonruckman.sidney.core.io.string.DeltaLength;
 import com.github.jasonruckman.sidney.core.io.string.StringDecoder;
 import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
-import com.github.jasonruckman.sidney.core.serde.Type;
+import com.github.jasonruckman.sidney.core.type.Type;
 
 public enum Encoding {
   PLAIN {
@@ -105,12 +103,12 @@ public enum Encoding {
 
     @Override
     public BytesEncoder newBytesEncoder() {
-      return new ByteArrayEncoder();
+      return new com.github.jasonruckman.sidney.core.io.bytes.Plain.ByteArrayEncoder();
     }
 
     @Override
     public BytesDecoder newBytesDecoder() {
-      return new ByteArrayDecoder();
+      return new com.github.jasonruckman.sidney.core.io.bytes.Plain.ByteArrayDecoder();
     }
   },
   BITPACKED {
@@ -137,12 +135,12 @@ public enum Encoding {
   DELTABITPACKINGHYBRID {
     @Override
     public Int32Encoder newInt32Encoder() {
-      return new DeltaBitPacking.DeltaBitPackingInt32Encoder();
+      return new DeltaBitPacking.DeltaBitpackingInt32Encoder();
     }
 
     @Override
     public Int32Decoder newInt32Decoder() {
-      return new DeltaBitPacking.DeltaBitPackingInt32Decoder();
+      return new DeltaBitPacking.DeltaBitpackingInt32Decoder();
     }
   },
   BITMAP {

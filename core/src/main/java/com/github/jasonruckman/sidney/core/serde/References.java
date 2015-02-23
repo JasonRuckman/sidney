@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.ObjectIntOpenIdentityHashMap;
+import com.github.jasonruckman.sidney.core.Configuration;
 
 /**
  * A class for tracking references and generating values for them
@@ -98,6 +99,35 @@ public class References {
       Object[] newArr = new Object[newSize * 2];
       System.arraycopy(arr, 0, newArr, 0, length);
       arr = newArr;
+    }
+  }
+
+  /**
+   * A read context that peeks at null markers, checks if it needs to pull a reference, otherwise delegates
+   */
+  public static class ReferenceTrackingReadContext extends Contexts.ReadContextImpl {
+    public ReferenceTrackingReadContext(Configuration conf) {
+      super(conf);
+    }
+
+    @Override
+    public boolean shouldReadValue() {
+      return true;
+    }
+
+    public boolean readNullMarker() {
+      return super.shouldReadValue();
+    }
+  }
+
+  public static class ReferenceTrackingWriteContext extends Contexts.WriteContextImpl {
+    public ReferenceTrackingWriteContext(PageHeader pageHeader, Configuration conf) {
+      super(pageHeader, conf);
+    }
+
+    @Override
+    public <T> boolean shouldWriteValue(T value) {
+      return true;
     }
   }
 }

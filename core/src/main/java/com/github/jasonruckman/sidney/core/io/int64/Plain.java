@@ -15,37 +15,65 @@
  */
 package com.github.jasonruckman.sidney.core.io.int64;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainInt64Decoder extends BaseDecoder implements Int64Decoder {
+  public static class PlainInt64Decoder implements Int64Decoder {
+    private Input input;
+
     @Override
     public long nextLong() {
-      return readLongFromBuffer();
+      return input.readLong();
     }
 
     @Override
     public long[] nextLongs(int num) {
       long[] longs = new long[num];
       for (int i = 0; i < num; i++) {
-        longs[i] = readLongFromBuffer();
+        longs[i] = nextLong();
       }
       return longs;
     }
-  }
 
-  public static class PlainInt64Encoder extends BaseEncoder implements Int64Encoder {
     @Override
-    public void writeLong(long value) {
-      writeLongToBuffer(value);
+    public void initialize(Input input) {
+      this.input = input;
     }
 
     @Override
-    public void writeLongs(long[] values) {
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
+    }
+  }
+
+  public static class PlainInt64Encoder implements Int64Encoder {
+    @Override
+    public void writeLong(long value, Output output) {
+      output.writeLong(value);
+    }
+
+    @Override
+    public void writeLongs(long[] values, Output output) {
       for (long l : values) {
-        writeLong(l);
+        writeLong(l, output);
       }
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

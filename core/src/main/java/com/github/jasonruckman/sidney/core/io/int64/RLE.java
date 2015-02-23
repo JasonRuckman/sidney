@@ -16,12 +16,11 @@
 package com.github.jasonruckman.sidney.core.io.int64;
 
 import com.github.jasonruckman.sidney.core.io.Encoding;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class RLE {
   private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
@@ -51,18 +50,22 @@ public class RLE {
       return longs;
     }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      runSize = 0;
-      currentRun = 0;
-
-      valueDecoder.readFromStream(inputStream);
-      runSizeDecoder.readFromStream(inputStream);
-    }
-
     private void loadNextRun() {
       currentRun = valueDecoder.nextLong();
       runSize = runSizeDecoder.nextInt();
+    }
+
+    @Override
+    public void initialize(Input input) {
+      runSize = 0;
+      currentRun = 0;
+      valueDecoder.initialize(input);
+      runSizeDecoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
@@ -75,21 +78,21 @@ public class RLE {
     private boolean isNewRun = true;
 
     @Override
-    public void writeLong(long value) {
+    public void writeLong(long value, Output output) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (currentRun != value) {
-        flush();
+        flush(output);
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeLongs(long[] longs) {
+    public void writeLongs(long[] longs, Output output) {
       for (long v : longs) {
-        writeLong(v);
+        writeLong(v, output);
       }
     }
 
@@ -103,16 +106,18 @@ public class RLE {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flush();
-
-      valueEncoder.writeToStream(outputStream);
-      runSizeEncoder.writeToStream(outputStream);
+    public void flush(Output output) {
+      flushRun(output);
     }
 
-    private void flush() {
-      valueEncoder.writeLong(currentRun);
-      runSizeEncoder.writeInt(runSize);
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
+    }
+
+    private void flushRun(Output output) {
+      valueEncoder.writeLong(currentRun, output);
+      runSizeEncoder.writeInt(runSize, output);
 
       currentRun = 0;
       runSize = 0;

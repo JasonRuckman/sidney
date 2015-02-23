@@ -16,7 +16,7 @@
 package com.github.jasonruckman.sidney.core;
 
 import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.serde.Type;
+import com.github.jasonruckman.sidney.core.type.Type;
 
 public class UnsupportedEncodingException extends SidneyException {
   public UnsupportedEncodingException(Encoding encoding, Type type) {

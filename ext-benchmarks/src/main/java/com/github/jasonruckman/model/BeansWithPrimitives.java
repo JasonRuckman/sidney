@@ -18,14 +18,7 @@ package com.github.jasonruckman.model;
 import com.github.jasonruckman.sidney.core.Encode;
 import com.github.jasonruckman.sidney.core.io.Encoding;
 
-/**
- *Generator<BeansWithPrimitives> bwpGenerator = beansWithPrimitivesGenerator
- .field(bwp.isFirst(), percentageTrue(0.7))
- .field(bwp.getSecond(), range(0L, 500L))
- .field(bwp.getThird(), incrementingBy(1L))
- .field(bwp.getFourth(), range(0, 5))
- .field(bwp.getFifth(), always(0.5D).build();
- */
+
 public class BeansWithPrimitives {
   @Encode(Encoding.BITMAP)
   private boolean first;
@@ -33,7 +26,7 @@ public class BeansWithPrimitives {
   private long second;
   @Encode(Encoding.GROUPVARINT)
   private long third;
-  @Encode(Encoding.BITPACKED)
+  @Encode(Encoding.DELTABITPACKINGHYBRID)
   private int fourth;
   @Encode(Encoding.RLE)
   private double fifth;

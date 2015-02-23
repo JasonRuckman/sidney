@@ -16,10 +16,8 @@
 package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
-import com.github.jasonruckman.sidney.core.io.bytes.ByteArrayDecoder;
-import com.github.jasonruckman.sidney.core.io.bytes.ByteArrayEncoder;
-import com.github.jasonruckman.sidney.core.io.bytes.BytesDecoder;
-import com.github.jasonruckman.sidney.core.io.bytes.BytesEncoder;
+import com.github.jasonruckman.sidney.core.io.bytes.*;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,14 +25,14 @@ import java.util.Random;
 
 public class BytesTest extends AbstractEncoderTests<BytesEncoder, BytesDecoder, byte[]> {
   private final List<EncoderDecoderPair<BytesEncoder, BytesDecoder>> pairs = Arrays.asList(
-      new EncoderDecoderPair<BytesEncoder, BytesDecoder>(new ByteArrayEncoder(), new ByteArrayDecoder())
+      new EncoderDecoderPair<BytesEncoder, BytesDecoder>(new Plain.ByteArrayEncoder(), new Plain.ByteArrayDecoder())
   );
 
-  protected BiConsumer<BytesEncoder, byte[]> encodingFunction() {
-    return new BiConsumer<BytesEncoder, byte[]>() {
+  protected TriConsumer<Output, BytesEncoder, byte[]> encodingFunction() {
+    return new TriConsumer<Output, BytesEncoder, byte[]>() {
       @Override
-      public void accept(BytesEncoder encoder, byte[] bytes) {
-        encoder.writeBytes(bytes);
+      public void accept(Output output, BytesEncoder encoder, byte[] bytes) {
+        encoder.writeBytes(bytes, output);
       }
     };
   }

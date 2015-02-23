@@ -15,8 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
 import com.github.jasonruckman.sidney.core.serde.*;
 
 /**
@@ -32,13 +32,13 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
   }
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
-    delegate.consume(typeRef, context);
+  public void initialize(TypeRef typeRef, SerializerContext context) {
+    delegate.initialize(typeRef, context);
   }
 
   @Override
-  public void writeValue(T value, WriteContext context) {
-    ReferenceTrackingWriteContext c = (ReferenceTrackingWriteContext) context;
+  public void writeValue(T value, Contexts.WriteContext context) {
+    References.ReferenceTrackingWriteContext c = (References.ReferenceTrackingWriteContext) context;
     if (value != null) {
       c.writeNotNull();
       context.setColumnIndex(delegate.startIndex());
@@ -56,8 +56,8 @@ public class ReferenceTrackingSerializerInterceptor<T> extends Serializer<T> {
   }
 
   @Override
-  public T readValue(ReadContext context) {
-    ReferenceTrackingReadContext c = (ReferenceTrackingReadContext) context;
+  public T readValue(Contexts.ReadContext context) {
+    References.ReferenceTrackingReadContext c = (References.ReferenceTrackingReadContext) context;
     boolean isNotNull = c.readNullMarker();
 
     if (!isNotNull) {

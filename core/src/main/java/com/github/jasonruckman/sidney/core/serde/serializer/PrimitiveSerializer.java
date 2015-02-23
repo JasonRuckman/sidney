@@ -16,9 +16,9 @@
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
 import com.github.jasonruckman.sidney.core.Encode;
-import com.github.jasonruckman.sidney.core.TypeRef;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
 import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.serde.Type;
+import com.github.jasonruckman.sidney.core.type.Type;
 
 public abstract class PrimitiveSerializer<T> extends Serializer<T> {
   private Encoding encoding;
@@ -37,7 +37,7 @@ public abstract class PrimitiveSerializer<T> extends Serializer<T> {
   }
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     if (typeRef instanceof TypeRef.TypeFieldRef &&
         ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class) != null) {
       encoding = ((TypeRef.TypeFieldRef) typeRef).getJdkField().getAnnotation(Encode.class).value();

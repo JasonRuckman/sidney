@@ -16,10 +16,9 @@
 package com.github.jasonruckman.sidney.core.io.int32;
 
 import com.github.jasonruckman.sidney.core.io.Encoding;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class RLE {
   private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
@@ -49,18 +48,23 @@ public class RLE {
       return ints;
     }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      runSize = 0;
-      currentRun = 0;
-
-      valueDecoder.readFromStream(inputStream);
-      runSizeDecoder.readFromStream(inputStream);
-    }
-
     private void loadNextRun() {
       currentRun = valueDecoder.nextInt();
       runSize = runSizeDecoder.nextInt();
+    }
+
+    @Override
+    public void initialize(Input input) {
+      runSize = 0;
+      currentRun = 0;
+
+      valueDecoder.initialize(input);
+      runSizeDecoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
@@ -72,21 +76,21 @@ public class RLE {
     private boolean isNewRun = true;
 
     @Override
-    public void writeInt(int value) {
+    public void writeInt(int value, Output output) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (currentRun != value) {
-        flush();
+        flush(output);
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeInts(int[] ints) {
+    public void writeInts(int[] ints, Output output) {
       for (int v : ints) {
-        writeInt(v);
+        writeInt(v, output);
       }
     }
 
@@ -100,16 +104,18 @@ public class RLE {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flush();
-
-      valueEncoder.writeToStream(outputStream);
-      runSizeEncoder.writeToStream(outputStream);
+    public void flush(Output output) {
+      flushWord(output);
     }
 
-    private void flush() {
-      valueEncoder.writeInt(currentRun);
-      runSizeEncoder.writeInt(runSize);
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
+    }
+
+    private void flushWord(Output output) {
+      valueEncoder.writeInt(currentRun, output);
+      runSizeEncoder.writeInt(runSize, output);
 
       currentRun = 0;
       runSize = 0;

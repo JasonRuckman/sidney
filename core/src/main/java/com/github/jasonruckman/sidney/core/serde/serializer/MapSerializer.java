@@ -15,10 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactoryCache;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactoryCache;
 
 import java.util.Map;
 
@@ -28,19 +27,19 @@ public class MapSerializer<K, V, T extends Map<K, V>> extends Serializer<T> {
   private InstanceFactoryCache cache;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     keySerializer = context.serializer(typeRef.getTypeParameters().get(0), this);
     valueSerializer = context.serializer(typeRef.getTypeParameters().get(1), this);
     cache = new InstanceFactoryCache(getFactories());
   }
 
   @Override
-  public void writeValue(T value, WriteContext context) {
+  public void writeValue(T value, Contexts.WriteContext context) {
     writeMap(value, context);
   }
 
   @Override
-  public T readValue(ReadContext context) {
+  public T readValue(Contexts.ReadContext context) {
     return readMap(context);
   }
 
@@ -49,7 +48,7 @@ public class MapSerializer<K, V, T extends Map<K, V>> extends Serializer<T> {
     return true;
   }
 
-  private void writeMap(T map, WriteContext context) {
+  private void writeMap(T map, Contexts.WriteContext context) {
     context.getMeta().writeConcreteType(map.getClass());
     context.getMeta().writeRepetitionCount(map.size());
     for (Map.Entry<K, V> e : map.entrySet()) {
@@ -58,7 +57,7 @@ public class MapSerializer<K, V, T extends Map<K, V>> extends Serializer<T> {
     }
   }
 
-  private T readMap(ReadContext context) {
+  private T readMap(Contexts.ReadContext context) {
     T map = (T) cache.newInstance(context.getMeta().readConcreteType());
     int size = context.getMeta().readRepetitionCount();
     for (int i = 0; i < size; i++) {

@@ -16,9 +16,9 @@
 package com.github.jasonruckman.sidney.core.io.string;
 
 import com.github.jasonruckman.sidney.core.io.Encoder;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public interface StringEncoder extends Encoder {
-  void writeString(String s);
-
-  void writeStrings(String[] s);
+  void writeString(String s, Output output);
+  void writeStrings(String[] s, Output output);
 }

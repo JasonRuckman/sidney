@@ -15,10 +15,10 @@
  */
 package com.github.jasonruckman.sidney.generator;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.Fields;
-import com.github.jasonruckman.sidney.core.serde.DefaultInstanceFactory;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.util.Fields;
+import com.github.jasonruckman.sidney.core.serde.factory.DefaultInstanceFactory;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;

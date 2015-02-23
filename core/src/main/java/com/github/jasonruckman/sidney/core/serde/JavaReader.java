@@ -16,11 +16,11 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.JavaTypeRefBuilder;
-import com.github.jasonruckman.sidney.core.SidneyConf;
-import com.github.jasonruckman.sidney.core.TypeToken;
+import com.github.jasonruckman.sidney.core.Configuration;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 
 public class JavaReader<T> extends BaseReader<T> implements Reader<T> {
-  public JavaReader(SidneyConf conf, TypeToken<T> token) {
+  public JavaReader(Configuration conf, TypeToken<T> token) {
     super(conf, JavaTypeRefBuilder.typeRef(token.getType()));
   }
 }

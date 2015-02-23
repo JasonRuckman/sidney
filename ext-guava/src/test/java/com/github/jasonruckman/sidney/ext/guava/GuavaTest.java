@@ -16,7 +16,7 @@
 package com.github.jasonruckman.sidney.ext.guava;
 
 import com.github.jasonruckman.sidney.core.Supplier;
-import com.github.jasonruckman.sidney.core.TypeToken;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 import com.github.jasonruckman.sidney.core.serde.ObjSerdeTest;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;

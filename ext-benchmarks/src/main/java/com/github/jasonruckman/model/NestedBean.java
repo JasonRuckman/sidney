@@ -17,11 +17,13 @@ package com.github.jasonruckman.model;
 
 import com.github.jasonruckman.sidney.core.Encode;
 import com.github.jasonruckman.sidney.core.io.Encoding;
+import com.github.jasonruckman.sidney.core.serde.Hint;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class NestedBean {
+  @Hint(HashMap.class)
   private Map<ComplexKey, BeansWithPrimitives> first = new HashMap<>();
   @Encode(Encoding.RLE)
   private int second;

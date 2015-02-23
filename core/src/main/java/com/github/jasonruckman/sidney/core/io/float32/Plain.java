@@ -15,17 +15,14 @@
  */
 package com.github.jasonruckman.sidney.core.io.float32;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainFloat32Decoder extends BaseDecoder implements Float32Decoder {
+  public static class PlainFloat32Decoder implements Float32Decoder {
     private Int32Decoder int32Decoder = new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Decoder();
 
     @Override
@@ -43,23 +40,28 @@ public class Plain {
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      int32Decoder.readFromStream(inputStream);
+    public void initialize(Input input) {
+      int32Decoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
-  public static class PlainFloat32Encoder extends BaseEncoder implements Float32Encoder {
+  public static class PlainFloat32Encoder implements Float32Encoder {
     private final Int32Encoder encoder = new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Encoder();
 
     @Override
-    public void writeFloat(float value) {
-      encoder.writeInt(Float.floatToIntBits(value));
+    public void writeFloat(float value, Output output) {
+      encoder.writeInt(Float.floatToIntBits(value), output);
     }
 
     @Override
-    public void writeFloats(float[] floats) {
+    public void writeFloats(float[] floats, Output output) {
       for (float v : floats) {
-        writeFloat(v);
+        writeFloat(v, output);
       }
     }
 
@@ -69,8 +71,13 @@ public class Plain {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      encoder.writeToStream(outputStream);
+    public void flush(Output output) {
+      encoder.flush(output);
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

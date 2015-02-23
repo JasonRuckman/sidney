@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -53,7 +52,7 @@ public class ArraySerializer extends Serializer<Object> {
   }
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     arrayWriter = PRIMITIVE_WRITERS.get(typeRef.getType());
     if (arrayWriter == null) {
       arrayWriter = new RefArrayWriter();
@@ -67,38 +66,38 @@ public class ArraySerializer extends Serializer<Object> {
   }
 
   @Override
-  public void writeValue(Object value, WriteContext context) {
+  public void writeValue(Object value, Contexts.WriteContext context) {
     writeArray(value, context);
   }
 
   @Override
-  public Object readValue(ReadContext context) {
+  public Object readValue(Contexts.ReadContext context) {
     return readArray(context);
   }
 
-  private void writeArray(Object array, WriteContext context) {
+  private void writeArray(Object array, Contexts.WriteContext context) {
     context.getMeta().writeRepetitionCount(Array.getLength(array));
     arrayWriter.writeArray(array, context);
   }
 
-  private Object readArray(ReadContext context) {
+  private Object readArray(Contexts.ReadContext context) {
     Object array = Array.newInstance(rawClass.getComponentType(), context.getMeta().readRepetitionCount());
     arrayReader.readValue(context, array);
     return array;
   }
 
   public abstract interface ArrayReader<T> {
-    void readValue(ReadContext context, T newArray);
+    void readValue(Contexts.ReadContext context, T newArray);
   }
 
 
   interface ArrayWriter<T> {
-    void writeArray(T value, WriteContext context);
+    void writeArray(T value, Contexts.WriteContext context);
   }
 
   class BoolArrayReader implements ArrayReader<boolean[]> {
     @Override
-    public void readValue(ReadContext context, boolean[] newArray) {
+    public void readValue(Contexts.ReadContext context, boolean[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readBoolean();
@@ -108,7 +107,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class CharArrayReader implements ArrayReader<char[]> {
     @Override
-    public void readValue(ReadContext context, char[] newArray) {
+    public void readValue(Contexts.ReadContext context, char[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readChar();
@@ -118,7 +117,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class ShortArrayReader implements ArrayReader<short[]> {
     @Override
-    public void readValue(ReadContext context, short[] newArray) {
+    public void readValue(Contexts.ReadContext context, short[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readShort();
@@ -128,7 +127,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class IntArrayReader implements ArrayReader<int[]> {
     @Override
-    public void readValue(ReadContext context, int[] newArray) {
+    public void readValue(Contexts.ReadContext context, int[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readInt();
@@ -138,7 +137,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class LongArrayReader implements ArrayReader<long[]> {
     @Override
-    public void readValue(ReadContext context, long[] newArray) {
+    public void readValue(Contexts.ReadContext context, long[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readLong();
@@ -148,7 +147,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class FloatArrayReader implements ArrayReader<float[]> {
     @Override
-    public void readValue(ReadContext context, float[] newArray) {
+    public void readValue(Contexts.ReadContext context, float[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readFloat();
@@ -158,7 +157,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class DoubleArrayReader implements ArrayReader<double[]> {
     @Override
-    public void readValue(ReadContext context, double[] newArray) {
+    public void readValue(Contexts.ReadContext context, double[] newArray) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = context.readDouble();
@@ -168,7 +167,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class BoolArrayWriter implements ArrayWriter<boolean[]> {
     @Override
-    public void writeArray(boolean[] value, WriteContext context) {
+    public void writeArray(boolean[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (boolean b : value) {
         context.writeBool(b);
@@ -178,7 +177,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class ShortArrayWriter implements ArrayWriter<short[]> {
     @Override
-    public void writeArray(short[] value, WriteContext context) {
+    public void writeArray(short[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (short s : value) {
         context.writeShort(s);
@@ -188,7 +187,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class CharArrayWriter implements ArrayWriter<char[]> {
     @Override
-    public void writeArray(char[] value, WriteContext context) {
+    public void writeArray(char[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (char c : value) {
         context.writeChar(c);
@@ -198,7 +197,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class IntArrayWriter implements ArrayWriter<int[]> {
     @Override
-    public void writeArray(int[] value, WriteContext context) {
+    public void writeArray(int[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (int i : value) {
         context.writeInt(i);
@@ -208,7 +207,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class LongArrayWriter implements ArrayWriter<long[]> {
     @Override
-    public void writeArray(long[] value, WriteContext context) {
+    public void writeArray(long[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (long l : value) {
         context.writeLong(l);
@@ -218,7 +217,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class FloatArrayWriter implements ArrayWriter<float[]> {
     @Override
-    public void writeArray(float[] value, WriteContext context) {
+    public void writeArray(float[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (float f : value) {
         context.writeFloat(f);
@@ -228,7 +227,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   class DoubleArrayWriter implements ArrayWriter<double[]> {
     @Override
-    public void writeArray(double[] value, WriteContext context) {
+    public void writeArray(double[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
       for (double d : value) {
         context.writeDouble(d);
@@ -239,7 +238,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   private class RefArrayWriter implements ArrayWriter<Object[]> {
     @Override
-    public void writeArray(Object[] value, WriteContext context) {
+    public void writeArray(Object[] value, Contexts.WriteContext context) {
       for (Object o : value) {
         contentSerializer.writeValue(o, context);
       }
@@ -248,7 +247,7 @@ public class ArraySerializer extends Serializer<Object> {
 
   private class RefArrayReader implements ArrayReader<Object[]> {
     @Override
-    public void readValue(ReadContext context, Object[] newArray) {
+    public void readValue(Contexts.ReadContext context, Object[] newArray) {
       for (int i = 0; i < newArray.length; i++) {
         newArray[i] = contentSerializer.readValue(context);
       }
