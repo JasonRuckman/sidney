@@ -15,12 +15,10 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.strategies.ColumnLoadStrategy;
 
 public interface Decoder {
-  /**
-   * Fully populate this decoder from the underlying stream
-   */
-  void readFromStream(InputStream inputStream) throws IOException;
+  void initialize(Input input);
+  ColumnLoadStrategy strategy();
 }

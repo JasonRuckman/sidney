@@ -16,6 +16,7 @@
 package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.string.*;
 import org.junit.Assert;
 
@@ -27,15 +28,14 @@ public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecode
   private List<EncoderDecoderPair<StringEncoder, StringDecoder>> pairs = Arrays.asList(
       new EncoderDecoderPair<StringEncoder, StringDecoder>(new Plain.PlainStringEncoder(), new Plain.PlainStringDecoder()),
       new EncoderDecoderPair<StringEncoder, StringDecoder>(new DeltaLength.DeltaLengthStringEncoder(), new DeltaLength.DeltaLengthStringDecoder()),
-      new EncoderDecoderPair<StringEncoder, StringDecoder>(new CharAsInt.CharAsIntStringEncoder(), new CharAsInt.CharAsIntStringDecoder()),
       new EncoderDecoderPair<StringEncoder, StringDecoder>(new RLE.RLEStringEncoder(), new RLE.RLEStringDecoder())
   );
 
-  protected BiConsumer<StringEncoder, String[]> encodingFunction() {
-    return new BiConsumer<StringEncoder, String[]>() {
+  protected TriConsumer<Output, StringEncoder, String[]> encodingFunction() {
+    return new TriConsumer<Output, StringEncoder, String[]>() {
       @Override
-      public void accept(StringEncoder encoder, String[] strings) {
-        encoder.writeStrings(strings);
+      public void accept(Output output, StringEncoder encoder, String[] strings) {
+        encoder.writeStrings(strings, output);
       }
     };
   }

@@ -15,10 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class BeanSerializer<T> extends Serializer<T> {
   private List<Serializer> fieldSerializers = new ArrayList<>();
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     for (TypeRef.TypeFieldRef fieldRef : typeRef.getFields()) {
       Serializer fieldSerializer = context.serializer(fieldRef, this);
       fieldSerializers.add(fieldSerializer);
@@ -40,22 +39,22 @@ public class BeanSerializer<T> extends Serializer<T> {
   }
 
   @Override
-  public void writeValue(T value, WriteContext context) {
+  public void writeValue(T value, Contexts.WriteContext context) {
     writeBean(value, context);
   }
 
   @Override
-  public T readValue(ReadContext context) {
+  public T readValue(Contexts.ReadContext context) {
     return readBean(context);
   }
 
-  private void writeBean(T value, WriteContext context) {
+  private void writeBean(T value, Contexts.WriteContext context) {
     for (Serializer serializer : fieldSerializers) {
       serializer.writeFromField(value, context);
     }
   }
 
-  private T readBean(ReadContext context) {
+  private T readBean(Contexts.ReadContext context) {
     T bean = instanceFactory.newInstance();
     for (Serializer handler : fieldSerializers) {
       handler.readIntoField(bean, context);

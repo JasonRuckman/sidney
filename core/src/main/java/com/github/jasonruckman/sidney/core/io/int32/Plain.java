@@ -15,14 +15,17 @@
  */
 package com.github.jasonruckman.sidney.core.io.int32;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainInt32Decoder extends BaseDecoder implements Int32Decoder {
+  public static class PlainInt32Decoder implements Int32Decoder {
+    private Input input;
+
     @Override
     public int nextInt() {
-      return readIntFromBuffer();
+      return input.readInt();
     }
 
     @Override
@@ -33,19 +36,44 @@ public class Plain {
       }
       return results;
     }
-  }
 
-  public static class PlainInt32Encoder extends BaseEncoder implements Int32Encoder {
     @Override
-    public void writeInt(int value) {
-      writeIntToBuffer(value);
+    public void initialize(Input input) {
+      this.input = input;
     }
 
     @Override
-    public void writeInts(int[] values) {
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
+    }
+  }
+
+  public static class PlainInt32Encoder implements Int32Encoder {
+    @Override
+    public void writeInt(int value, Output output) {
+      output.writeInt(value);
+    }
+
+    @Override
+    public void writeInts(int[] values, Output output) {
       for (int value : values) {
-        writeInt(value);
+        writeInt(value, output);
       }
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

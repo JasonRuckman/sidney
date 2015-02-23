@@ -15,8 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.ColumnWriteStrategy;
 
 public interface Encoder {
   /**
@@ -24,8 +24,7 @@ public interface Encoder {
    */
   void reset();
 
-  /**
-   * Flush this encoder to the given {@link java.io.OutputStream}
-   */
-  void writeToStream(OutputStream outputStream) throws IOException;
+  void flush(Output output);
+
+  ColumnWriteStrategy strategy();
 }

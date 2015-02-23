@@ -15,10 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 
 public class SerializerInterceptor<T> extends Serializer<T> {
   private final Serializer<T> delegate;
@@ -28,12 +27,12 @@ public class SerializerInterceptor<T> extends Serializer<T> {
   }
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
-    delegate.consume(typeRef, context);
+  public void initialize(TypeRef typeRef, SerializerContext context) {
+    delegate.initialize(typeRef, context);
   }
 
   @Override
-  public void writeValue(T value, WriteContext context) {
+  public void writeValue(T value, Contexts.WriteContext context) {
     context.setColumnIndex(delegate.startIndex());
     if (context.shouldWriteValue(value)) {
       delegate.writeValue(value, context);
@@ -41,7 +40,7 @@ public class SerializerInterceptor<T> extends Serializer<T> {
   }
 
   @Override
-  public T readValue(ReadContext context) {
+  public T readValue(Contexts.ReadContext context) {
     context.setColumnIndex(delegate.startIndex());
     T value;
     if (context.shouldReadValue()) {

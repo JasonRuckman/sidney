@@ -17,7 +17,7 @@ package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.AllPrimitives;
 import com.github.jasonruckman.sidney.core.Supplier;
-import com.github.jasonruckman.sidney.core.TypeToken;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 import org.junit.Test;
 
 import java.io.IOException;

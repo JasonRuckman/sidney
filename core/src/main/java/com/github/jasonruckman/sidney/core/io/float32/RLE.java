@@ -16,12 +16,11 @@
 package com.github.jasonruckman.sidney.core.io.float32;
 
 import com.github.jasonruckman.sidney.core.io.Encoding;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class RLE {
   private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
@@ -51,18 +50,23 @@ public class RLE {
       return floats;
     }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      runSize = 0;
-      currentRun = 0;
-
-      valueDecoder.readFromStream(inputStream);
-      runSizeDecoder.readFromStream(inputStream);
-    }
-
     private void loadNextRun() {
       currentRun = Float.intBitsToFloat(valueDecoder.nextInt());
       runSize = runSizeDecoder.nextInt();
+    }
+
+    @Override
+    public void initialize(Input input) {
+      runSize = 0;
+      currentRun = 0;
+
+      valueDecoder.initialize(input);
+      runSizeDecoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
@@ -74,29 +78,29 @@ public class RLE {
     private boolean isNewRun = true;
 
     @Override
-    public void writeFloat(float value) {
+    public void writeFloat(float value, Output output) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (Float.compare(currentRun, value) != 0) {
-        flush();
+        flush(output);
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeFloats(float[] floats) {
+    public void writeFloats(float[] floats, Output output) {
       for (float v : floats) {
-        writeFloat(v);
+        writeFloat(v, output);
       }
     }
 
-    private void flush() {
+    private void flushRun(Output output) {
       int floatBits = Float.floatToIntBits(currentRun);
 
-      valueEncoder.writeInt(floatBits);
-      runSizeEncoder.writeInt(runSize);
+      valueEncoder.writeInt(floatBits, output);
+      runSizeEncoder.writeInt(runSize, output);
 
       currentRun = 0;
       runSize = 0;
@@ -112,11 +116,16 @@ public class RLE {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flush();
+    public void flush(Output output) {
+      flushRun(output);
 
-      valueEncoder.writeToStream(outputStream);
-      runSizeEncoder.writeToStream(outputStream);
+      valueEncoder.flush(output);
+      runSizeEncoder.flush(output);
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

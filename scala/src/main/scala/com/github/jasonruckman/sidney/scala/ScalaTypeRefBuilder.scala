@@ -36,7 +36,7 @@ object ScalaTypeRefBuilder {
     decompose(tag.tpe, false)
   }
 
-  private def decompose(t: Type, isTypeArg: Boolean): core.TypeRef = {
+  private def decompose(t: Type, isTypeArg: Boolean): core.`type`.TypeRef = {
     val typeArgs = t match {
       case TypeRef(_, _, args) => args
     }
@@ -58,8 +58,8 @@ object ScalaTypeRefBuilder {
     }).toSeq)
   }
 
-  private def decompose(t: Type, sym: Symbol, typeArgs: List[Type], isTypeArg: Boolean, members: Seq[TermSymbol]): core.TypeRef = {
-    val ref = new core.TypeRef(adapt(sym.fullName, isTypeArg))
+  private def decompose(t: Type, sym: Symbol, typeArgs: List[Type], isTypeArg: Boolean, members: Seq[TermSymbol]): core.`type`.TypeRef = {
+    val ref = new core.`type`.TypeRef(adapt(sym.fullName, isTypeArg))
     ref.getType match {
       case i if i.eq(classOf[Object]) || i.eq(classOf[AnyRef]) || i.eq(classOf[Any]) => {
         throw new SidneyException("Cannot resolve type %s".format(i.getName))
@@ -102,7 +102,7 @@ object ScalaTypeRefBuilder {
     ref
   }
 
-  private def isPrimitiveArray(t: Type, ref: com.github.jasonruckman.sidney.core.TypeRef): Boolean = {
+  private def isPrimitiveArray(t: Type, ref: com.github.jasonruckman.sidney.core.`type`.TypeRef): Boolean = {
     val rawType = decompose(t, false)
     ScalaPrimitiveTypeAdapter.isJavaPrimitive(rawType.getType) && ref.getType.getName.eq("scala.Array")
   }

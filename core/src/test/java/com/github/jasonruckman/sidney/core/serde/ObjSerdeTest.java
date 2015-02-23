@@ -15,10 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-import com.github.jasonruckman.sidney.core.JavaSid;
-import com.github.jasonruckman.sidney.core.Supplier;
-import com.github.jasonruckman.sidney.core.TestUtils;
-import com.github.jasonruckman.sidney.core.TypeToken;
+import com.github.jasonruckman.sidney.core.*;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,7 +33,9 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
   public static final int NUM_TO_RUN = 5000;
 
   public JavaSid newSid() {
-    return new JavaSid();
+    JavaSid sid = new JavaSid();
+    //sid.setIOType(SidneyConf.IOType.Unsafe);
+    return sid;
   }
 
   public JavaSid newSidReferences() {
@@ -67,7 +67,7 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
   public <T> void runTest(TypeToken<T> token, int num, Supplier<T> dataSupplier, JavaSid sid, Comparator<T> comparator) throws IOException {
     Writer<T> writer = sid.newWriter(token);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    OutputStream os = new GZIPOutputStream(baos);
+    OutputStream os = baos;
     writer.open(os);
     List<T> expected = new ArrayList<>();
     for (int i = 0; i < num; i++) {
@@ -79,7 +79,7 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
     os.close();
 
     Reader<T> reader = sid.newReader(token);
-    reader.open(new GZIPInputStream(new ByteArrayInputStream(baos.toByteArray())));
+    reader.open(new ByteArrayInputStream(baos.toByteArray()));
     List<T> actual = reader.readAll();
 
     for (int i = 0; i < actual.size(); i++) {

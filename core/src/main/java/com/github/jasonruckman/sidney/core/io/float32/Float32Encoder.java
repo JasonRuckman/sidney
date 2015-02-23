@@ -16,9 +16,9 @@
 package com.github.jasonruckman.sidney.core.io.float32;
 
 import com.github.jasonruckman.sidney.core.io.Encoder;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public interface Float32Encoder extends Encoder {
-  void writeFloat(float value);
-
-  void writeFloats(float[] floats);
+  void writeFloat(float value, Output output);
+  void writeFloats(float[] floats, Output output);
 }

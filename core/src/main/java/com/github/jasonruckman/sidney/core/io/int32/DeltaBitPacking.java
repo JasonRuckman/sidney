@@ -13,29 +13,153 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.jasonruckman.sidney.core.io.int32;
 
-import com.github.jasonruckman.sidney.core.Bytes;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.util.Bytes;
 import com.github.jasonruckman.sidney.core.bitpacking.Int32BytePacker;
 import com.github.jasonruckman.sidney.core.bitpacking.Packers;
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.StreamReader;
+import com.github.jasonruckman.sidney.core.io.StreamWriter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static com.github.jasonruckman.sidney.core.Bytes.readIntFromStream;
-import static com.github.jasonruckman.sidney.core.Bytes.writeIntToStream;
+import static com.github.jasonruckman.sidney.core.util.Bytes.readIntFromStream;
+import static com.github.jasonruckman.sidney.core.util.Bytes.writeIntToStream;
 
 public class DeltaBitPacking {
-  public static class DeltaBitPackingInt32Decoder extends BaseDecoder implements Int32Decoder {
-    private int[] intBuffer = new int[0];
+  public static class DeltaBitpackingInt32Encoder extends StreamWriter implements Int32Encoder {
+    public static final int DEFAULT_BLOCK_SIZE = 128;
+
+    private int firstValue = 0;
+    private int prevValue = 0;
+    private int totalValueCount = 0;
+    private int[] currentMiniBlock = new int[DEFAULT_BLOCK_SIZE];
     private int currentIndex = 0;
-    private int blockSize;
+    private int currentMinDelta = Integer.MAX_VALUE;
+    private int position = 0;
+    private byte[] buffer = new byte[64];
+
+    @Override
+    public void writeInt(int value, Output output) {
+      if (++totalValueCount == 1) {
+        firstValue = value;
+        prevValue = value;
+        return;
+      }
+      int delta = value - prevValue;
+      prevValue = value;
+      currentMiniBlock[currentIndex++] = delta;
+      currentMinDelta = Math.min(delta, currentMinDelta);
+      if (currentIndex == DEFAULT_BLOCK_SIZE) {
+        flushMiniBlock();
+      }
+    }
+
+    @Override
+    public void writeInts(int[] values, Output output) {
+      for (int v : values) {
+        writeInt(v, output);
+      }
+    }
+
+    @Override
+    public void reset() {
+      currentIndex = 0;
+      currentMinDelta = 0;
+      prevValue = 0;
+      totalValueCount = 0;
+      firstValue = 0;
+      position = 0;
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new DirectStream.DirectStreamColumnWriteStrategy();
+    }
+
+    @Override
+    public void write(OutputStream outputStream) {
+      flushMiniBlock();
+      try {
+        writeIntToStream(totalValueCount, outputStream);
+        writeIntToStream(firstValue, outputStream);
+        if (totalValueCount <= 1) {
+          return;
+        }
+        writeIntToStream(position, outputStream);
+        outputStream.write(buffer, 0, position);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    private void flushMiniBlock() {
+      if (currentIndex == 0 || totalValueCount == 1) {
+        return;
+      }
+
+      int currentMaxBitwidth = 1;
+      for (int i = 0; i < currentIndex; i++) {
+        int num = currentMiniBlock[i] - currentMinDelta;
+        currentMiniBlock[i] = num;
+        currentMaxBitwidth = Math.max(currentMaxBitwidth, (32 - Integer.numberOfLeadingZeros(num)));
+      }
+
+      int numToWrite = Math.max(currentIndex, 8);
+      ensureCapacity(12);
+
+      Bytes.writeInt(currentMaxBitwidth, buffer, getPositionAndIncrement(4));
+      Bytes.writeInt(currentMinDelta, buffer, getPositionAndIncrement(4));
+      Bytes.writeInt(currentIndex, buffer, getPositionAndIncrement(4));
+
+      int strideSize = Bytes.sizeInBytes(8, currentMaxBitwidth);
+      Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);
+      ensureCapacity(Bytes.sizeInBytes(numToWrite, currentMaxBitwidth));
+
+      for (int i = 0; i < numToWrite; i += 8) {
+        packer.pack8Values(currentMiniBlock, i, buffer, getPositionAndIncrement(strideSize));
+      }
+
+      currentIndex = 0;
+      currentMinDelta = Integer.MAX_VALUE;
+      prevValue = firstValue;
+    }
+
+    protected void ensureCapacity(int bytes) {
+      if (position + bytes >= buffer.length) {
+        int newSize = Math.max(buffer.length * 2, (position + bytes) * 2);
+        byte[] newBuffer = new byte[newSize];
+        System.arraycopy(buffer, 0, newBuffer, 0, position);
+        buffer = newBuffer;
+      }
+    }
+
+    private int getPositionAndIncrement(int size) {
+      int pos = position;
+      position += size;
+      return pos;
+    }
+  }
+
+  public static class DeltaBitpackingInt32Decoder extends StreamReader implements Int32Decoder {
+    private int[] intBuffer = new int[128];
+    private int currentIndex = 0;
     private int totalValueCount;
     private int firstValue;
     private boolean isFirstValue = true;
+    private int position = 0;
+    private byte[] buffer = new byte[64];
 
     @Override
     public int nextInt() {
@@ -60,145 +184,68 @@ public class DeltaBitPacking {
       return ints;
     }
 
-    private void reset() {
-      currentIndex = 0;
-      totalValueCount = 0;
-      blockSize = 0;
-      isFirstValue = true;
-      setPosition(0);
+    @Override
+    public void initialize(Input input) {
+
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      reset();
+    public ColumnLoadStrategy strategy() {
+      return new DirectStream.DirectStreamColumnLoadStrategy();
+    }
 
-      totalValueCount = readIntFromStream(inputStream);
-      firstValue = readIntFromStream(inputStream);
-      blockSize = readIntFromStream(inputStream);
-      intBuffer = new int[blockSize];
-      if (totalValueCount <= 1) {
-        return;
+    @Override
+    public void read(InputStream inputStream) {
+      try {
+        currentIndex = 0;
+        isFirstValue = true;
+        position = 0;
+
+        totalValueCount = readIntFromStream(inputStream);
+        firstValue = readIntFromStream(inputStream);
+
+        if (totalValueCount <= 1) {
+          return;
+        }
+        int size = readIntFromStream(inputStream);
+        resizeIfNecessary(size);
+        Bytes.readFully(buffer, inputStream, size);
+        loadNextMiniBlock();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
-      int bufferSize = readIntFromStream(inputStream);
-      setBuffer(new byte[bufferSize]);
-      Bytes.readFully(getBuffer(), inputStream);
-      loadNextMiniBlock();
+    }
+
+    public int getAndIncrementPosition(int size) {
+      int pos = position;
+      position += size;
+      return pos;
     }
 
     private void loadNextMiniBlock() {
       currentIndex = 0;
-      int bitWidth = readIntFromBuffer();
-      int minDelta = readIntFromBuffer();
-      int numValuesToRead = readIntFromBuffer();
+      int bitWidth = Bytes.readInt(buffer, getAndIncrementPosition(4));
+      int minDelta = Bytes.readInt(buffer, getAndIncrementPosition(4));
+      int numValuesToRead = Bytes.readInt(buffer, getAndIncrementPosition(4));
       totalValueCount -= numValuesToRead;
       int strideSize = Bytes.sizeInBytes(8, bitWidth);
       Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);
 
       for (int i = 0; i < numValuesToRead; i += 8) {
-        packer.unpack8Values(getBuffer(), getPosition(), intBuffer, i);
-        incrementPosition(strideSize);
+        packer.unpack8Values(buffer, getAndIncrementPosition(strideSize), intBuffer, i);
       }
+
       for (int i = 0; i < numValuesToRead; i++) {
         intBuffer[i] += ((i == 0) ? firstValue : intBuffer[i - 1]) + minDelta;
       }
     }
-  }
 
-  /**
-   * Inspired by parquet's delta packer.  Packs ints into blocks of 128, bitpacked on the max bitwidth of the block
-   */
-  public static class DeltaBitPackingInt32Encoder extends BaseEncoder implements Int32Encoder {
-    public static final int DEFAULT_BLOCK_SIZE = 128;
-
-    private int firstValue = 0;
-    private int prevValue = 0;
-    private int totalValueCount = 0;
-    private int[] currentMiniBlock;
-    private int currentIndex = 0;
-    private int currentMinDelta = Integer.MAX_VALUE;
-    private int miniBlockSize;
-
-    public DeltaBitPackingInt32Encoder() {
-      this(DEFAULT_BLOCK_SIZE);
-    }
-
-    public DeltaBitPackingInt32Encoder(int miniBlockSize) {
-      this.miniBlockSize = miniBlockSize;
-      this.currentMiniBlock = new int[miniBlockSize];
-    }
-
-    public void writeInt(int value) {
-      if (++totalValueCount == 1) {
-        firstValue = value;
-        prevValue = value;
-        return;
+    protected void resizeIfNecessary(int size) {
+      if (buffer.length < size) {
+        byte[] buf = new byte[size];
+        System.arraycopy(buffer, 0, buf, 0, buffer.length);
+        buffer = buf;
       }
-      int delta = value - prevValue;
-      prevValue = value;
-      currentMiniBlock[currentIndex++] = delta;
-      currentMinDelta = Math.min(delta, currentMinDelta);
-      if (currentIndex == miniBlockSize) {
-        flushMiniBlock();
-      }
-    }
-
-    @Override
-    public void writeInts(int[] values) {
-      for (int v : values) {
-        writeInt(v);
-      }
-    }
-
-    @Override
-    public void reset() {
-      currentIndex = 0;
-      currentMinDelta = 0;
-      prevValue = 0;
-      totalValueCount = 0;
-      firstValue = 0;
-      setPosition(0);
-    }
-
-    @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flushMiniBlock();
-      writeIntToStream(totalValueCount, outputStream);
-      writeIntToStream(firstValue, outputStream);
-      writeIntToStream(miniBlockSize, outputStream);
-      if (totalValueCount <= 1) {
-        return;
-      }
-      writeIntToStream(getPosition(), outputStream);
-      outputStream.write(getBuffer(), 0, getPosition());
-    }
-
-    private void flushMiniBlock() {
-      if (currentIndex == 0 || totalValueCount == 1) {
-        return;
-      }
-
-      int currentMaxBitwidth = 1;
-      for (int i = 0; i < currentIndex; i++) {
-        int num = currentMiniBlock[i] - currentMinDelta;
-        currentMiniBlock[i] = num;
-        currentMaxBitwidth = Math.max(currentMaxBitwidth, (32 - Integer.numberOfLeadingZeros(num)));
-      }
-
-      int numToWrite = Math.max(currentIndex, 8);
-      writeIntToBuffer(currentMaxBitwidth);
-      writeIntToBuffer(currentMinDelta);
-      writeIntToBuffer(currentIndex);
-
-      int strideSize = Bytes.sizeInBytes(8, currentMaxBitwidth);
-      Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);
-      ensureCapacity(Bytes.sizeInBytes(numToWrite, currentMaxBitwidth));
-      for (int i = 0; i < numToWrite; i += 8) {
-        packer.pack8Values(currentMiniBlock, i, getBuffer(), getPosition());
-        incrementPosition(strideSize);
-      }
-      currentIndex = 0;
-      currentMinDelta = Integer.MAX_VALUE;
-      prevValue = firstValue;
     }
   }
 }

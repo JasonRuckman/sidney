@@ -16,6 +16,7 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.*;
+import com.github.jasonruckman.sidney.core.type.TypeToken;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -61,6 +62,17 @@ public class BeanSerdeTest extends ObjSerdeTest {
       @Override
       public GenericsContainer<Integer, Double> apply() {
         return getDataFactory().newGenericsContainer();
+      }
+    });
+  }
+
+  @Test
+  public void testSimpleBeans() throws IOException {
+    runTest(new TypeToken<SimpleBean>() {
+    }, NUM_TO_RUN, new Supplier<SimpleBean>() {
+      @Override
+      public SimpleBean apply() {
+        return getDataFactory().newSimpleBean();
       }
     });
   }

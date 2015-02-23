@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.int32.*;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -25,31 +26,31 @@ import java.util.Random;
 
 public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, int[]> {
   private final List<EncoderDecoderPair<Int32Encoder, Int32Decoder>> pairs = Arrays.asList(
-      new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-          new Plain.PlainInt32Encoder(),
-          new Plain.PlainInt32Decoder()
+      new EncoderDecoderPair<>(
+          Encoding.PLAIN.newInt32Encoder(),
+          Encoding.PLAIN.newInt32Decoder()
       ),
-      new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-          new DeltaBitPacking.DeltaBitPackingInt32Encoder(),
-          new DeltaBitPacking.DeltaBitPackingInt32Decoder()
+      new EncoderDecoderPair<>(
+          Encoding.DELTABITPACKINGHYBRID.newInt32Encoder(),
+          Encoding.DELTABITPACKINGHYBRID.newInt32Decoder()
       ),
-      new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-          new BitPacking.BitPackingInt32Encoder(),
-          new BitPacking.BitPackingInt32Decoder()
+      new EncoderDecoderPair<>(
+          Encoding.BITPACKED.newInt32Encoder(),
+          Encoding.BITPACKED.newInt32Decoder()
       ),
-      new EncoderDecoderPair<Int32Encoder, Int32Decoder>(
-          new RLE.RLEInt32Encoder(),
-          new RLE.RLEInt32Decoder()
+      new EncoderDecoderPair<>(
+          Encoding.RLE.newInt32Encoder(),
+          Encoding.RLE.newInt32Decoder()
       )
   );
 
   @Override
-  protected BiConsumer<Int32Encoder, int[]> encodingFunction() {
-    return new BiConsumer<Int32Encoder, int[]>() {
+  protected TriConsumer<Output, Int32Encoder, int[]> encodingFunction() {
+    return new TriConsumer<Output, Int32Encoder, int[]>() {
       @Override
-      public void accept(Int32Encoder encoder, int[] ints) {
+      public void accept(Output output, Int32Encoder encoder, int[] ints) {
         for (int i : ints) {
-          encoder.writeInt(i);
+          encoder.writeInt(i, output);
         }
       }
     };

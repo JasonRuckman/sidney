@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.ext.guava;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 import com.google.common.collect.ImmutableList;
@@ -26,12 +25,12 @@ public class ImmutableListSerializer<T> extends Serializer<ImmutableList<T>> {
   private Serializer<T> contentSerializer;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     contentSerializer = context.serializer(typeRef.getTypeParameters().get(0));
   }
 
   @Override
-  public void writeValue(ImmutableList<T> value, WriteContext context) {
+  public void writeValue(ImmutableList<T> value, Contexts.WriteContext context) {
     context.getMeta().writeRepetitionCount(value.size());
     for (T o : value) {
       contentSerializer.writeValue(o, context);
@@ -39,7 +38,7 @@ public class ImmutableListSerializer<T> extends Serializer<ImmutableList<T>> {
   }
 
   @Override
-  public ImmutableList<T> readValue(ReadContext context) {
+  public ImmutableList<T> readValue(Contexts.ReadContext context) {
     int size = context.getMeta().readRepetitionCount();
     ImmutableList.Builder<T> builder = ImmutableList.builder();
     for (int i = 0; i < size; i++) {

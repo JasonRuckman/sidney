@@ -15,15 +15,16 @@
  */
 package com.github.jasonruckman.sidney.scala
 
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer
-import com.github.jasonruckman.sidney.core.serde.{InstanceFactory, Reader, Writer}
-import com.github.jasonruckman.sidney.core.{BaseSid, SidneyConf}
+import com.github.jasonruckman.sidney.core.serde.{Reader, Writer}
+import com.github.jasonruckman.sidney.core.{AbstractSid, Configuration}
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
-class ScalaSid extends BaseSid {
-  private val conf = SidneyConf.newConf()
+class ScalaSid extends AbstractSid {
+  private val conf = Configuration.newConf()
 
   /**
    * Create new [[Writer]] from type parameters

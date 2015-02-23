@@ -15,20 +15,18 @@
  */
 package com.github.jasonruckman.sidney.core.io.bool;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 /**
- * Encodes bools as single bits, packed 64 to a long
+ * Encodes bools as single bits, packed 32 to a long
  */
 public class BitPacking {
-  public static class BitPackingBoolDecoder extends BaseDecoder implements BoolDecoder {
+  public static class BitPackingBoolDecoder implements BoolDecoder {
     private int currentBitIndex = 0;
     private long word = 0;
+    private Input input;
 
     @Override
     public boolean nextBool() {
@@ -50,59 +48,62 @@ public class BitPacking {
       return booleans;
     }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      super.readFromStream(inputStream);
+    private void loadNextWord() {
+      word = input.readLong();
+      currentBitIndex = 0;
+    }
 
+    @Override
+    public void initialize(Input input) {
+      this.input = input;
       loadNextWord();
     }
 
-    private void loadNextWord() {
-      word = readLongFromBuffer();
-      currentBitIndex = 0;
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
-  public static class BitPackingBoolEncoder extends BaseEncoder implements BoolEncoder {
+  public static class BitPackingBoolEncoder implements BoolEncoder {
     private int currentBitIndex = 0;
     private long word = 0;
-
     @Override
-    public void writeBool(boolean value) {
+    public void writeBool(boolean value, Output output) {
       if (value) {
         word |= (1L << currentBitIndex);
       }
 
       if (++currentBitIndex == 32) {
-        flushWord();
+        flushWord(output);
       }
     }
 
     @Override
-    public void writeBools(boolean[] values) {
+    public void writeBools(boolean[] values, Output output) {
       for (boolean b : values) {
-        writeBool(b);
+        writeBool(b, output);
       }
     }
 
     @Override
     public void reset() {
-      super.reset();
-
       currentBitIndex = 0;
       word = 0;
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      //account for the current byte we are on
-      flushWord();
-      super.writeToStream(outputStream);
+    public void flush(Output output) {
+      flushWord(output);
     }
 
-    private void flushWord() {
-      writeLongToBuffer(word);
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
+    }
 
+    private void flushWord(Output output) {
+      output.writeLong(word);
       currentBitIndex = 0;
       word = 0;
     }

@@ -15,29 +15,26 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.SidneyConf;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.Configuration;
 import com.github.jasonruckman.sidney.core.SidneyException;
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.Factories;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.factory.Factories;
 import com.github.jasonruckman.sidney.core.serde.References;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.BitSetSerializer;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.DateSerializer;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
-import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.UUIDSerializer;
+import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.*;
 
 import java.util.*;
 
 public class SerializerContextImpl implements SerializerContext {
   private final List<SerializerEntry> entries = new ArrayList<>();
   private final List<Serializer> serializers = new ArrayList<>();
-  private SidneyConf.Registrations registrations;
-  private SidneyConf conf;
+  private Configuration.Registrations registrations;
+  private Configuration conf;
   private References references;
   private Factories factories;
   private int counter = 0;
 
-  public SerializerContextImpl(SidneyConf conf, References references) {
+  public SerializerContextImpl(Configuration conf, References references) {
     this.conf = conf;
     this.references = references;
     registrations = conf.getRegistrations();
@@ -60,6 +57,7 @@ public class SerializerContextImpl implements SerializerContext {
     addEntry(Date.class, DateSerializer.class);
     addEntry(UUID.class, UUIDSerializer.class);
     addEntry(BitSet.class, BitSetSerializer.class);
+    addEntry(HashMap.class, HashMapSerializer.class);
   }
 
   private void addPrimitiveFactories() {
@@ -127,7 +125,7 @@ public class SerializerContextImpl implements SerializerContext {
 
     serializer.setStartIndex(counter++);
     serializer.setFactories(factories);
-    serializer.consume(typeRef, this);
+    serializer.initialize(typeRef, this);
 
     if (PrimitiveSerializer.class.isAssignableFrom(serializer.getClass())) {
       if (((PrimitiveSerializer) serializer).intercept()) {
@@ -329,7 +327,7 @@ public class SerializerContextImpl implements SerializerContext {
   }
 
   @Override
-  public SidneyConf conf() {
+  public Configuration conf() {
     return conf;
   }
 

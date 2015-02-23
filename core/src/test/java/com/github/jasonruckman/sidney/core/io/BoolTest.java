@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.bool.*;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,12 +30,12 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
       new EncoderDecoderPair<BoolEncoder, BoolDecoder>(new BitPacking.BitPackingBoolEncoder(), new BitPacking.BitPackingBoolDecoder())
   );
 
-  protected BiConsumer<BoolEncoder, boolean[]> encodingFunction() {
-    return new BiConsumer<BoolEncoder, boolean[]>() {
+  protected TriConsumer<Output, BoolEncoder, boolean[]> encodingFunction() {
+    return new TriConsumer<Output, BoolEncoder, boolean[]>() {
       @Override
-      public void accept(BoolEncoder encoder, boolean[] bools) {
+      public void accept(Output output, BoolEncoder encoder, boolean[] bools) {
         for (boolean b : bools) {
-          encoder.writeBool(b);
+          encoder.writeBool(b, output);
         }
       }
     };

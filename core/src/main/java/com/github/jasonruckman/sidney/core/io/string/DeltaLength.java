@@ -15,29 +15,27 @@
  */
 package com.github.jasonruckman.sidney.core.io.string;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.Fields;
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.util.Fields;
 import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.io.bytes.RawBytesDecoder;
-import com.github.jasonruckman.sidney.core.io.bytes.RawBytesEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.bytes.RawBytes;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
 public class DeltaLength {
-  private static final Encoding LENGTH_ENCODING = Encoding.DELTABITPACKINGHYBRID;
+  private static final Encoding LENGTH_ENCODING = Encoding.PLAIN;
 
-  public static class DeltaLengthStringDecoder extends BaseDecoder implements StringDecoder {
+  public static class DeltaLengthStringDecoder implements StringDecoder {
     private final Int32Decoder lengthDecoder = LENGTH_ENCODING.newInt32Decoder();
-    private final RawBytesDecoder bytesDecoder = new RawBytesDecoder();
+    private final RawBytes.RawBytesDecoder bytesDecoder = new RawBytes.RawBytesDecoder();
     private final Charset charset = Charset.forName("UTF-8");
 
     public String readString() {
@@ -57,15 +55,20 @@ public class DeltaLength {
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      lengthDecoder.readFromStream(inputStream);
-      bytesDecoder.readFromStream(inputStream);
+    public void initialize(Input input) {
+      lengthDecoder.initialize(input);
+      bytesDecoder.initialize(input);
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
   public static class DeltaLengthStringEncoder implements StringEncoder {
     private final Int32Encoder lengthEncoder = LENGTH_ENCODING.newInt32Encoder();
-    private final RawBytesEncoder bytesEncoder = new RawBytesEncoder();
+    private final RawBytes.RawBytesEncoder bytesEncoder = new RawBytes.RawBytesEncoder();
     private final Charset charset = Charset.forName("UTF-8");
     private Accessors.FieldAccessor charArrayField;
 
@@ -78,20 +81,20 @@ public class DeltaLength {
       }
     }
 
-    public void writeString(String s) {
+    public void writeString(String s, Output output) {
       char[] arr = (char[]) charArrayField.get(s);
       ByteBuffer bb = charset.encode(
           CharBuffer.wrap(arr)
       );
 
-      lengthEncoder.writeInt(bb.limit());
-      bytesEncoder.writeBytes(bb.array(), 0, bb.limit());
+      lengthEncoder.writeInt(bb.limit(), output);
+      bytesEncoder.writeBytes(bb.array(), 0, bb.limit(), output);
     }
 
     @Override
-    public void writeStrings(String[] s) {
+    public void writeStrings(String[] s, Output output) {
       for (String str : s) {
-        writeString(str);
+        writeString(str, output);
       }
     }
 
@@ -102,9 +105,14 @@ public class DeltaLength {
     }
 
     @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      lengthEncoder.writeToStream(outputStream);
-      bytesEncoder.writeToStream(outputStream);
+    public void flush(Output output) {
+      lengthEncoder.flush(output);
+      bytesEncoder.flush(output);
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

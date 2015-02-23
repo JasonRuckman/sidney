@@ -35,6 +35,11 @@
       <version>0.6.1</version>
     </dependency>
     <dependency>
+      <groupId>me.lemire.integercompression</groupId>
+      <artifactId>JavaFastPFOR</artifactId>
+      <version>0.1.2</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -80,6 +85,10 @@
                 <relocation>
                   <pattern>com.carrotsearch</pattern>
                   <shadedPattern>com.github.jasonruckman.sidney.internal.com.carrotsearch</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>me.lemire.integercompression</pattern>
+                  <shadedPattern>com.github.jasonruckman.sidney.internal.me.lemire.integercompression</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>

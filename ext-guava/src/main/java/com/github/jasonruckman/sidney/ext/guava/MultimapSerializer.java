@@ -15,12 +15,11 @@
  */
 package com.github.jasonruckman.sidney.ext.guava;
 
-import com.github.jasonruckman.sidney.core.BaseSid;
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactoryCache;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.AbstractSid;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactoryCache;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.*;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 import com.google.common.collect.*;
@@ -33,7 +32,7 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   private Serializer<V> valueSerializer;
   private InstanceFactoryCache cache;
 
-  public static void registerMaps(BaseSid sid) {
+  public static void registerMaps(AbstractSid sid) {
     sid.addSerializer(Multimap.class, MultimapSerializer.class);
     sid.addInstanceFactory(ArrayListMultimap.class, new InstanceFactory<ArrayListMultimap>() {
       @Override
@@ -68,20 +67,19 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   }
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     keySerializer = context.serializer(typeRef.param(0));
     valueSerializer = context.serializer(typeRef.param(1));
     cache = new InstanceFactoryCache(getFactories());
   }
 
   @Override
-  public void writeValue(Multimap<K, V> value, WriteContext context) {
+  public void writeValue(Multimap<K, V> value, Contexts.WriteContext context) {
     Map<K, Collection<V>> map = value.asMap();
     context.getMeta().writeConcreteType(value.getClass());
     context.getMeta().writeRepetitionCount(map.size());
     for (Map.Entry<K, Collection<V>> entry : map.entrySet()) {
       keySerializer.writeValue(entry.getKey(), context);
-      //can't use the defaults here, because its an inner class
       context.getMeta().writeRepetitionCount(entry.getValue().size());
       for (V v : entry.getValue()) {
         valueSerializer.writeValue(v, context);
@@ -90,7 +88,7 @@ public class MultimapSerializer<K, V> extends Serializer<Multimap<K, V>> {
   }
 
   @Override
-  public Multimap<K, V> readValue(ReadContext context) {
+  public Multimap<K, V> readValue(Contexts.ReadContext context) {
     Multimap<K, V> multimap = (Multimap<K, V>) cache.newInstance(context.getMeta().readConcreteType());
     int num = context.getMeta().readRepetitionCount();
     for (int i = 0; i < num; i++) {

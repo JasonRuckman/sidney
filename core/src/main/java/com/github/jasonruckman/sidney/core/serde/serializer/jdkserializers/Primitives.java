@@ -15,33 +15,32 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.Type;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
+import com.github.jasonruckman.sidney.core.type.Type;
 import com.github.jasonruckman.sidney.core.serde.serializer.PrimitiveSerializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 
 public class Primitives {
   public static class BooleanSerializer extends BoolRefSerializer {
-    public final boolean readBoolean(ReadContext context) {
+    public final boolean readBoolean(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       boolean value = context.readBoolean();
       return value;
     }
 
-    public final void writeBoolean(boolean value, WriteContext context) {
+    public final void writeBoolean(boolean value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeBool(value);
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeBoolean(getAccessor().getBoolean(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setBoolean(parent, readBoolean(context));
     }
 
@@ -53,12 +52,12 @@ public class Primitives {
 
   public static class BoolRefSerializer extends PrimitiveSerializer<Boolean> {
     @Override
-    public void writeValue(Boolean value, WriteContext context) {
+    public void writeValue(Boolean value, Contexts.WriteContext context) {
       context.writeBool(value);
     }
 
     @Override
-    public Boolean readValue(ReadContext context) {
+    public Boolean readValue(Contexts.ReadContext context) {
       return context.readBoolean();
     }
 
@@ -71,13 +70,13 @@ public class Primitives {
 
   public static class ByteArraySerializer extends PrimitiveSerializer<byte[]> {
     @Override
-    public void writeValue(byte[] value, WriteContext context) {
+    public void writeValue(byte[] value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeBytes(value);
     }
 
     @Override
-    public byte[] readValue(ReadContext context) {
+    public byte[] readValue(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readBytes();
     }
@@ -90,13 +89,13 @@ public class Primitives {
 
   public static class ByteRefSerializer extends PrimitiveSerializer<Byte> {
     @Override
-    public void writeValue(Byte value, WriteContext context) {
+    public void writeValue(Byte value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeByte(value);
     }
 
     @Override
-    public Byte readValue(ReadContext context) {
+    public Byte readValue(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       byte b = context.readByte();
       return b;
@@ -110,23 +109,23 @@ public class Primitives {
   }
 
   public static class ByteSerializer extends ByteRefSerializer {
-    public final byte readByte(ReadContext context) {
+    public final byte readByte(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readByte();
     }
 
-    public final void writeByte(byte value, WriteContext context) {
+    public final void writeByte(byte value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeByte(value);
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeByte(getAccessor().getByte(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setByte(parent, readByte(context));
     }
 
@@ -138,12 +137,12 @@ public class Primitives {
 
   public static class CharRefSerializer extends PrimitiveSerializer<Character> {
     @Override
-    public void writeValue(Character value, WriteContext context) {
+    public void writeValue(Character value, Contexts.WriteContext context) {
       context.writeChar(value);
     }
 
     @Override
-    public Character readValue(ReadContext context) {
+    public Character readValue(Contexts.ReadContext context) {
       return context.readChar();
     }
 
@@ -155,23 +154,23 @@ public class Primitives {
   }
 
   public static class CharSerializer extends CharRefSerializer {
-    public final void writeChar(char value, WriteContext context) {
+    public final void writeChar(char value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeChar(value);
     }
 
-    public final char readChar(ReadContext context) {
+    public final char readChar(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readChar();
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeChar(getAccessor().getChar(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setChar(parent, readChar(context));
     }
 
@@ -183,12 +182,12 @@ public class Primitives {
 
   public static class DoubleRefSerializer extends PrimitiveSerializer<Double> {
     @Override
-    public void writeValue(Double value, WriteContext context) {
+    public void writeValue(Double value, Contexts.WriteContext context) {
       context.writeDouble(value);
     }
 
     @Override
-    public Double readValue(ReadContext context) {
+    public Double readValue(Contexts.ReadContext context) {
       return context.readDouble();
     }
 
@@ -200,23 +199,23 @@ public class Primitives {
   }
 
   public static class DoubleSerializer extends DoubleRefSerializer {
-    public final double readDouble(ReadContext context) {
+    public final double readDouble(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readDouble();
     }
 
-    public void writeDouble(double value, WriteContext context) {
+    public void writeDouble(double value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeDouble(value);
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeDouble(getAccessor().getDouble(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setDouble(parent, readDouble(context));
     }
 
@@ -230,17 +229,17 @@ public class Primitives {
     private T[] values;
 
     @Override
-    public void consume(TypeRef typeRef, SerializerContext context) {
+    public void initialize(TypeRef typeRef, SerializerContext context) {
       values = (T[]) typeRef.getType().getEnumConstants();
     }
 
     @Override
-    public void writeValue(T value, WriteContext context) {
+    public void writeValue(T value, Contexts.WriteContext context) {
       context.writeInt(value.ordinal());
     }
 
     @Override
-    public T readValue(ReadContext context) {
+    public T readValue(Contexts.ReadContext context) {
       return values[context.readInt()];
     }
 
@@ -252,12 +251,12 @@ public class Primitives {
 
   public static class FloatRefSerializer extends PrimitiveSerializer<Float> {
     @Override
-    public void writeValue(Float value, WriteContext context) {
+    public void writeValue(Float value, Contexts.WriteContext context) {
       context.writeFloat(value);
     }
 
     @Override
-    public Float readValue(ReadContext context) {
+    public Float readValue(Contexts.ReadContext context) {
       return context.readFloat();
     }
 
@@ -269,23 +268,23 @@ public class Primitives {
   }
 
   public static class FloatSerializer extends FloatRefSerializer {
-    public final void writeFloat(float value, WriteContext context) {
+    public final void writeFloat(float value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeFloat(value);
     }
 
-    public final float readFloat(ReadContext context) {
+    public final float readFloat(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readFloat();
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeFloat(getAccessor().getFloat(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setFloat(parent, readFloat(context));
     }
 
@@ -297,12 +296,12 @@ public class Primitives {
 
   public static class LongRefSerializer extends PrimitiveSerializer<Long> {
     @Override
-    public void writeValue(Long value, WriteContext context) {
+    public void writeValue(Long value, Contexts.WriteContext context) {
       context.writeLong(value);
     }
 
     @Override
-    public Long readValue(ReadContext context) {
+    public Long readValue(Contexts.ReadContext context) {
       return context.readLong();
     }
 
@@ -314,23 +313,23 @@ public class Primitives {
   }
 
   public static class LongSerializer extends LongRefSerializer {
-    public final void writeLong(long value, WriteContext context) {
+    public final void writeLong(long value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeLong(value);
     }
 
-    public final long readLong(ReadContext context) {
+    public final long readLong(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readLong();
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeLong(getAccessor().getLong(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setLong(parent, readLong(context));
     }
 
@@ -342,12 +341,12 @@ public class Primitives {
 
   public static class StringSerializer extends PrimitiveSerializer<String> {
     @Override
-    public void writeValue(String value, WriteContext context) {
+    public void writeValue(String value, Contexts.WriteContext context) {
       context.writeString(value);
     }
 
     @Override
-    public String readValue(ReadContext context) {
+    public String readValue(Contexts.ReadContext context) {
       return context.readString();
     }
 
@@ -364,34 +363,34 @@ public class Primitives {
     }
 
     @Override
-    public void writeValue(Short value, WriteContext context) {
+    public void writeValue(Short value, Contexts.WriteContext context) {
       context.writeShort(value);
     }
 
     @Override
-    public Short readValue(ReadContext context) {
+    public Short readValue(Contexts.ReadContext context) {
       return context.readShort();
     }
   }
 
   public static class ShortSerializer extends ShortRefSerializer {
-    public final void writeShort(short value, WriteContext context) {
+    public final void writeShort(short value, Contexts.WriteContext context) {
       context.setColumnIndex(startIndex());
       context.writeShort(value);
     }
 
-    public final short readShort(ReadContext context) {
+    public final short readShort(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readShort();
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeShort(getAccessor().getShort(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setShort(parent, readShort(context));
     }
 
@@ -403,12 +402,12 @@ public class Primitives {
 
   public static class IntRefSerializer extends PrimitiveSerializer<Integer> {
     @Override
-    public void writeValue(Integer value, WriteContext context) {
+    public void writeValue(Integer value, Contexts.WriteContext context) {
       context.writeInt(value);
     }
 
     @Override
-    public Integer readValue(ReadContext context) {
+    public Integer readValue(Contexts.ReadContext context) {
       return context.readInt();
     }
 
@@ -420,23 +419,23 @@ public class Primitives {
   }
 
   public static class IntSerializer extends IntRefSerializer {
-    public final void writeInt(int value, WriteContext writeContext) {
+    public final void writeInt(int value, Contexts.WriteContext writeContext) {
       writeContext.setColumnIndex(startIndex());
       writeContext.writeInt(value);
     }
 
-    public final int readInt(ReadContext context) {
+    public final int readInt(Contexts.ReadContext context) {
       context.setColumnIndex(startIndex());
       return context.readInt();
     }
 
     @Override
-    public void writeFromField(Object parent, WriteContext context) {
+    public void writeFromField(Object parent, Contexts.WriteContext context) {
       writeInt(getAccessor().getInt(parent), context);
     }
 
     @Override
-    public void readIntoField(Object parent, ReadContext context) {
+    public void readIntoField(Object parent, Contexts.ReadContext context) {
       getAccessor().setInt(parent, readInt(context));
     }
 

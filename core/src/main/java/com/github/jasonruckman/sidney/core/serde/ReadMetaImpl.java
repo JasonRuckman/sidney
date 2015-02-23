@@ -15,10 +15,10 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-public class ReadMetaImpl implements ReadContext.Meta {
-  private final ReadContextImpl parent;
+public class ReadMetaImpl implements Contexts.ReadContext.Meta {
+  private final Contexts.ReadContextImpl parent;
 
-  public ReadMetaImpl(ReadContextImpl parent) {
+  public ReadMetaImpl(Contexts.ReadContextImpl parent) {
     this.parent = parent;
   }
 

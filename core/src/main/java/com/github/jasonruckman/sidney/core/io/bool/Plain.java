@@ -15,37 +15,65 @@
  */
 package com.github.jasonruckman.sidney.core.io.bool;
 
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainBoolDecoder extends BaseDecoder implements BoolDecoder {
+  public static class PlainBoolDecoder implements BoolDecoder {
+    private Input input;
+
     @Override
     public boolean nextBool() {
-      return readBooleanFromBuffer();
+      return input.readBoolean();
     }
 
     @Override
     public boolean[] nextBools(int num) {
       boolean[] booleans = new boolean[num];
       for (int i = 0; i < num; i++) {
-        booleans[i] = readBooleanFromBuffer();
+        booleans[i] = nextBool();
       }
       return booleans;
     }
-  }
 
-  public static class PlainBoolEncoder extends BaseEncoder implements BoolEncoder {
     @Override
-    public void writeBool(boolean value) {
-      writeBooleanToBuffer(value);
+    public void initialize(Input input) {
+      this.input = input;
     }
 
     @Override
-    public void writeBools(boolean[] values) {
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
+    }
+  }
+
+  public static class PlainBoolEncoder implements BoolEncoder {
+    @Override
+    public void writeBool(boolean value, Output output) {
+      output.writeBoolean(value);
+    }
+
+    @Override
+    public void writeBools(boolean[] values, Output output) {
       for (boolean value : values) {
-        writeBool(value);
+        writeBool(value, output);
       }
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

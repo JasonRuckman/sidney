@@ -44,9 +44,9 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.esotericsoftware.kryo</groupId>
+      <groupId>com.esotericsoftware</groupId>
       <artifactId>kryo</artifactId>
-      <version>2.24.0</version>
+      <version>3.0.0</version>
     </dependency>
   </dependencies>
 
@@ -70,7 +70,7 @@
                   <finalName>benchmarks</finalName>
                   <transformers>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                      <mainClass>org.openjdk.jmh.Main</mainClass>
+                      <mainClass>com.github.jasonruckman.BenchmarkEntry</mainClass>
                     </transformer>
                   </transformers>
                   <filters>
@@ -106,6 +106,8 @@
                   <arguments>
                     <argument>-jar</argument>
                     <argument>target/benchmarks.jar</argument>
+                    <argument>-t</argument>
+                    <argument>1</argument>
                   </arguments>
                 </configuration>
               </execution>

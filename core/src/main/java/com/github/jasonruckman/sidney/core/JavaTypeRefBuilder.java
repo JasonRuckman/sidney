@@ -18,7 +18,10 @@ package com.github.jasonruckman.sidney.core;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.ArrayType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
-import com.github.jasonruckman.sidney.core.serde.serializer.Types;
+import com.github.jasonruckman.sidney.core.serde.Hint;
+import com.github.jasonruckman.sidney.core.type.Types;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.util.Fields;
 
 import java.lang.reflect.*;
 
@@ -34,8 +37,18 @@ public class JavaTypeRefBuilder {
 
     typeBindings = Types.binding(type, parentBindings);
     jt = Types.type(type, parentBindings);
+    TypeRef ref;
+    if(field == null) {
+      ref = new TypeRef(jt.getRawClass());
+    } else {
+      Hint hint = field.getAnnotation(Hint.class);
+      if(hint != null) {
+        ref = new TypeRef.TypeFieldRef(hint.value(), field);
+      } else {
+        ref = new TypeRef.TypeFieldRef(jt.getRawClass(), field);
+      }
+    }
 
-    TypeRef ref = (field == null) ? new TypeRef(jt.getRawClass()) : new TypeRef.TypeFieldRef(jt.getRawClass(), field);
     for (Field subField : Fields.getAllFields(jt.getRawClass())) {
       Type subType = subField.getGenericType();
       TypeRef subRef = buildTypeRef(subType, typeBindings, subField);
@@ -56,7 +69,6 @@ public class JavaTypeRefBuilder {
       GenericArrayType t = (GenericArrayType) type;
       ref.addTypeParameter(buildTypeRef(t.getGenericComponentType(), parentBindings, null));
     }
-
 
     if (jt.isArrayType() && !GenericArrayType.class.isAssignableFrom(type.getClass())) {
       ArrayType arrType = (ArrayType) jt;

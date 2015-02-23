@@ -19,6 +19,5 @@ import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Int32Decoder extends Decoder {
   int nextInt();
-
   int[] nextInts(int num);
 }

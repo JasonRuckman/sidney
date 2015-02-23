@@ -15,26 +15,22 @@
  */
 package com.github.jasonruckman.sidney.generator;
 
-import com.github.jasonruckman.sidney.core.serde.DefaultInstanceFactory;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactory;
+import com.github.jasonruckman.sidney.core.serde.factory.DefaultInstanceFactory;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MapGenerator<K, V> extends Generator<Map<K, V>> {
   private Generator<Integer> sizeGenerator;
   private Generator<K> keyGenerator;
   private Generator<V> valueGenerator;
-  private InstanceFactory<Map<K, V>> factory = (InstanceFactory) new DefaultInstanceFactory<>(HashMap.class);
+  private InstanceFactory<HashMap<K, V>> hashMapFactory = (InstanceFactory) new DefaultInstanceFactory<>(HashMap.class);
+  private InstanceFactory<TreeMap<K, V>> treeMapFactory = (InstanceFactory) new DefaultInstanceFactory<>(TreeMap.class);
 
   public MapGenerator(Generator<Integer> sizeGenerator, Generator<K> keyGenerator, Generator<V> valueGenerator) {
     this.sizeGenerator = sizeGenerator;
     this.keyGenerator = keyGenerator;
     this.valueGenerator = valueGenerator;
-  }
-
-  public void setFactory(InstanceFactory<Map<K, V>> factory) {
-    this.factory = factory;
   }
 
   public void setSizeGenerator(Generator<Integer> sizeGenerator) {
@@ -51,10 +47,34 @@ public class MapGenerator<K, V> extends Generator<Map<K, V>> {
 
   @Override
   public Map<K, V> next() {
-    Map<K, V> map = factory.newInstance();
+    Map<K, V> map = hashMapFactory.newInstance();
     for (int i = 0; i < sizeGenerator.next(); i++) {
       map.put(keyGenerator.next(), valueGenerator.next());
     }
     return map;
+  }
+
+  public HashMap<K, V> nextHashMap() {
+    HashMap<K, V> map = hashMapFactory.newInstance();
+    for (int i = 0; i < sizeGenerator.next(); i++) {
+      map.put(keyGenerator.next(), valueGenerator.next());
+    }
+    return map;
+  }
+
+  public TreeMap<K, V> nextTreeMap() {
+    TreeMap<K, V> map = treeMapFactory.newInstance();
+    for (int i = 0; i < sizeGenerator.next(); i++) {
+      map.put(keyGenerator.next(), valueGenerator.next());
+    }
+    return map;
+  }
+
+  public List<HashMap<K, V>> listHashMaps(int count) {
+    List<HashMap<K, V>> list = new ArrayList<>();
+    for(int i = 0; i < count; i++) {
+      list.add(nextHashMap());
+    }
+    return list;
   }
 }

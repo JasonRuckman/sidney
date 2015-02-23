@@ -15,10 +15,10 @@
  */
 package com.github.jasonruckman.sidney.core.serde;
 
-public class WriteMetaImpl implements WriteContext.Meta {
-  private WriteContextImpl parent;
+public class WriteMetaImpl implements Contexts.WriteContext.Meta {
+  private Contexts.WriteContextImpl parent;
 
-  public WriteMetaImpl(WriteContextImpl parent) {
+  public WriteMetaImpl(Contexts.WriteContextImpl parent) {
     this.parent = parent;
   }
 

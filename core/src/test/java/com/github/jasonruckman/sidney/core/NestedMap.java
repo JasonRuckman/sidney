@@ -15,9 +15,13 @@
  */
 package com.github.jasonruckman.sidney.core;
 
+import com.github.jasonruckman.sidney.core.serde.Hint;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class NestedMap<X, Y> {
+  @Hint(HashMap.class)
   private Map<X, Y> map;
 
   public Map<X, Y> getMap() {

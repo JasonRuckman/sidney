@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.ext.guava;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 import com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers.Primitives;
@@ -29,17 +28,17 @@ public class Unsigned {
     private Primitives.LongSerializer serializer;
 
     @Override
-    public void consume(TypeRef typeRef, SerializerContext context) {
+    public void initialize(TypeRef typeRef, SerializerContext context) {
       serializer = context.longSerializer();
     }
 
     @Override
-    public void writeValue(UnsignedInteger value, WriteContext context) {
+    public void writeValue(UnsignedInteger value, Contexts.WriteContext context) {
       serializer.writeLong(value.longValue(), context);
     }
 
     @Override
-    public UnsignedInteger readValue(ReadContext context) {
+    public UnsignedInteger readValue(Contexts.ReadContext context) {
       return UnsignedInteger.valueOf(serializer.readLong(context));
     }
   }
@@ -48,17 +47,17 @@ public class Unsigned {
     private Primitives.LongSerializer serializer;
 
     @Override
-    public void consume(TypeRef typeRef, SerializerContext context) {
+    public void initialize(TypeRef typeRef, SerializerContext context) {
       serializer = context.longSerializer();
     }
 
     @Override
-    public void writeValue(UnsignedLong value, WriteContext context) {
+    public void writeValue(UnsignedLong value, Contexts.WriteContext context) {
       serializer.writeLong(value.longValue(), context);
     }
 
     @Override
-    public UnsignedLong readValue(ReadContext context) {
+    public UnsignedLong readValue(Contexts.ReadContext context) {
       return UnsignedLong.valueOf(serializer.readLong(context));
     }
   }

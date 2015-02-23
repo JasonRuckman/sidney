@@ -50,7 +50,7 @@ public class JustPrimitivesTest {
     JavaSid sid = new JavaSid();
     BaseWriter.ShortWriter writer = sid.newShortWriter();
     writer.open(baos);
-    short[] shorts = new short[100];
+    short[] shorts = new short[2049];
     for (int i = 0; i < shorts.length; i++) {
       shorts[i] = (short) i;
       writer.writeShort((short) i);
@@ -71,7 +71,7 @@ public class JustPrimitivesTest {
     JavaSid sid = new JavaSid();
     BaseWriter.IntWriter writer = sid.newIntWriter();
     writer.open(baos);
-    int[] ints = new int[100];
+    int[] ints = new int[2049];
     for (int i = 0; i < ints.length; i++) {
       ints[i] = i;
       writer.writeInt(i);

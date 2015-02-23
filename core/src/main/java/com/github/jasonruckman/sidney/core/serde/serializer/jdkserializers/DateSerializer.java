@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 
@@ -30,17 +29,17 @@ public class DateSerializer extends Serializer<Date> {
   private Primitives.LongSerializer longSerializer;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     longSerializer = context.longSerializer();
   }
 
   @Override
-  public void writeValue(Date value, WriteContext context) {
+  public void writeValue(Date value, Contexts.WriteContext context) {
     longSerializer.writeLong(value.getTime(), context);
   }
 
   @Override
-  public Date readValue(ReadContext context) {
+  public Date readValue(Contexts.ReadContext context) {
     return new Date(longSerializer.readLong(context));
   }
 }

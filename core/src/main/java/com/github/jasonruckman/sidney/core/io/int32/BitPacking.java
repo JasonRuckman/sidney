@@ -15,20 +15,32 @@
  */
 package com.github.jasonruckman.sidney.core.io.int32;
 
-import com.github.jasonruckman.sidney.core.Bytes;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.util.Bytes;
 import com.github.jasonruckman.sidney.core.bitpacking.Int32BytePacker;
 import com.github.jasonruckman.sidney.core.bitpacking.Packers;
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.io.StreamReader;
+import com.github.jasonruckman.sidney.core.io.StreamWriter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.BufferUnderflowException;
 
 public class BitPacking {
-  public static class BitPackingInt32Decoder extends BaseDecoder implements Int32Decoder {
-    private int[] currentMiniBlock;
+  public static class BitPackingInt32Decoder extends StreamReader implements Int32Decoder {
+    private int[] currentMiniBlock = new int[128];
     private int currentIndex;
+    private int position;
+    private byte[] buffer = new byte[64];
+
+    public int getAndIncrementPosition(int size) {
+      int pos = position;
+      position += size;
+      return pos;
+    }
 
     @Override
     public int nextInt() {
@@ -48,36 +60,69 @@ public class BitPacking {
       return result;
     }
 
-    @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      super.readFromStream(inputStream);
-
-      loadNextMiniBlock();
-    }
-
     private void loadNextMiniBlock() {
       currentIndex = 0;
-      currentMiniBlock = new int[128];
-
-      int numValuesToRead = readIntFromBuffer();
-      int bitWidth = readIntFromBuffer();
+      require(8);
+      int numValuesToRead = Bytes.readInt(buffer, getAndIncrementPosition(4));
+      int bitWidth = Bytes.readInt(buffer, getAndIncrementPosition(4));
       if (numValuesToRead > 0) {
         int strideSize = Bytes.sizeInBytes(8, bitWidth);
+
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(bitWidth);
         for (int i = 0; i < numValuesToRead; i += 8) {
-          packer.unpack8Values(getBuffer(), getPosition(), currentMiniBlock, i);
-          incrementPosition(strideSize);
+          packer.unpack8Values(buffer, getAndIncrementPosition(strideSize), currentMiniBlock, i);
         }
+      }
+    }
+
+    @Override
+    public void initialize(Input input) {
+
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new DirectStream.DirectStreamColumnLoadStrategy();
+    }
+
+    @Override
+    public void read(InputStream inputStream) {
+      position = 0;
+      currentIndex = 0;
+
+      try {
+        int size = Bytes.readIntFromStream(inputStream);
+        resizeIfNecessary(size);
+        Bytes.readFully(buffer, inputStream, size);
+        loadNextMiniBlock();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    protected void resizeIfNecessary(int size) {
+      if (buffer.length < size) {
+        byte[] buf = new byte[size];
+        System.arraycopy(buffer, 0, buf, 0, buffer.length);
+        buffer = buf;
+      }
+    }
+
+    protected void require(int size) {
+      if (position + size > buffer.length) {
+        throw new BufferUnderflowException();
       }
     }
   }
 
-  public static class BitPackingInt32Encoder extends BaseEncoder implements Int32Encoder {
+  public static class BitPackingInt32Encoder extends StreamWriter implements Int32Encoder {
     public static final int DEFAULT_BLOCK_SIZE = 128;
     private final int miniBlockSize;
     private int[] currentMiniBlock;
     private int currentIndex = 0;
     private int currentMaxBitwidth = 0;
+    private int position;
+    private byte[] buffer = new byte[64];
 
     public BitPackingInt32Encoder() {
       this(DEFAULT_BLOCK_SIZE);
@@ -89,7 +134,7 @@ public class BitPacking {
     }
 
     @Override
-    public void writeInt(int value) {
+    public void writeInt(int value, Output output) {
       currentMiniBlock[currentIndex++] = value;
       currentMaxBitwidth = Math.max(currentMaxBitwidth, 32 - Integer.numberOfLeadingZeros(value));
 
@@ -99,35 +144,78 @@ public class BitPacking {
     }
 
     @Override
-    public void writeInts(int[] values) {
+    public void writeInts(int[] values, Output output) {
       for (int value : values) {
-        writeInt(value);
+        writeInt(value, output);
       }
-    }
-
-    @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flushMiniBlock();
-
-      super.writeToStream(outputStream);
     }
 
     private void flushMiniBlock() {
       int numToWrite = Math.max(currentIndex, 8);
-      writeIntToBuffer(currentIndex);
-      writeIntToBuffer(currentMaxBitwidth);
+
+      ensureCapacity(8);
+
+      Bytes.writeInt(currentIndex, buffer, getPositionAndIncrement(4));
+      Bytes.writeInt(currentMaxBitwidth, buffer, getPositionAndIncrement(4));
+
       if (currentIndex > 0) {
         int strideSize = Bytes.sizeInBytes(8, currentMaxBitwidth);
+        //pad
+        int bytesRequired = ((Bytes.sizeInBytes(2, currentMaxBitwidth) * numToWrite));
+
+        ensureCapacity(bytesRequired);
         Int32BytePacker packer = Packers.LITTLE_ENDIAN.packer32(currentMaxBitwidth);
-        ensureCapacity(Bytes.sizeInBytes(numToWrite, currentMaxBitwidth));
+
         for (int i = 0; i < numToWrite; i += 8) {
-          packer.pack8Values(currentMiniBlock, i, getBuffer(), getPosition());
-          incrementPosition(strideSize);
+          packer.pack8Values(currentMiniBlock, i, buffer, getPositionAndIncrement(strideSize));
         }
       }
-      currentMiniBlock = new int[miniBlockSize];
       currentMaxBitwidth = 0;
       currentIndex = 0;
+    }
+
+    @Override
+    public void reset() {
+      currentMaxBitwidth = 0;
+      currentIndex = 0;
+      position = 0;
+    }
+
+    @Override
+    public void flush(Output output) {
+
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new DirectStream.DirectStreamColumnWriteStrategy();
+    }
+
+    @Override
+    public void write(OutputStream outputStream) {
+      flushMiniBlock();
+
+      try {
+        Bytes.writeIntToStream(position, outputStream);
+        outputStream.write(buffer, 0, position);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    protected void ensureCapacity(int bytes) {
+      if (position + bytes >= buffer.length) {
+        int newSize = Math.max(buffer.length * 2, (position + bytes) * 2);
+        byte[] newBuffer = new byte[newSize];
+        System.arraycopy(buffer, 0, newBuffer, 0, position);
+        buffer = newBuffer;
+      }
+    }
+
+    private int getPositionAndIncrement(int size) {
+      int pos = position;
+      position += size;
+      return pos;
     }
   }
 }

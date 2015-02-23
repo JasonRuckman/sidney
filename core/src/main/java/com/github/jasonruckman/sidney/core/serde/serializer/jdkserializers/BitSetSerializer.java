@@ -15,9 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer.jdkserializers;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
 import com.github.jasonruckman.sidney.core.serde.serializer.Serializer;
 import com.github.jasonruckman.sidney.core.serde.serializer.SerializerContext;
 
@@ -27,12 +26,12 @@ public class BitSetSerializer extends Serializer<BitSet> {
   private Primitives.BooleanSerializer bitsSerializer;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     bitsSerializer = context.boolSerializer();
   }
 
   @Override
-  public void writeValue(BitSet value, WriteContext context) {
+  public void writeValue(BitSet value, Contexts.WriteContext context) {
     int length = value.length();
     context.getMeta().writeRepetitionCount(length);
     for (int i = 0; i < length; i++) {
@@ -41,7 +40,7 @@ public class BitSetSerializer extends Serializer<BitSet> {
   }
 
   @Override
-  public BitSet readValue(ReadContext context) {
+  public BitSet readValue(Contexts.ReadContext context) {
     BitSet bitSet = new BitSet();
     int length = context.getMeta().readRepetitionCount();
     for (int i = 0; i < length; i++) {

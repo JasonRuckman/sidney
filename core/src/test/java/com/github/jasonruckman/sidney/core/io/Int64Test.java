@@ -17,6 +17,7 @@ package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
 import com.github.jasonruckman.sidney.core.io.int64.*;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -31,12 +32,12 @@ public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, 
   );
 
   @Override
-  protected BiConsumer<Int64Encoder, long[]> encodingFunction() {
-    return new BiConsumer<Int64Encoder, long[]>() {
+  protected TriConsumer<Output, Int64Encoder, long[]> encodingFunction() {
+    return new TriConsumer<Output, Int64Encoder, long[]>() {
       @Override
-      public void accept(Int64Encoder encoder, long[] longs) {
+      public void accept(Output output, Int64Encoder encoder, long[] longs) {
         for (long l : longs) {
-          encoder.writeLong(l);
+          encoder.writeLong(l, output);
         }
       }
     };

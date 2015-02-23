@@ -15,19 +15,17 @@
  */
 package com.github.jasonruckman.sidney.core.io.int64;
 
-import com.github.jasonruckman.sidney.core.Bytes;
-import com.github.jasonruckman.sidney.core.Longs;
-import com.github.jasonruckman.sidney.core.io.BaseDecoder;
-import com.github.jasonruckman.sidney.core.io.BaseEncoder;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.util.Bytes;
+import com.github.jasonruckman.sidney.core.util.Longs;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public class GroupVarInt {
-  public static class GroupVarInt64Decoder extends BaseDecoder implements Int64Decoder {
+  public static class GroupVarInt64Decoder implements Int64Decoder {
     private long[] buffer = new long[4];
     private int currentIndex = 0;
+    private Input input;
 
     @Override
     public long nextLong() {
@@ -50,20 +48,20 @@ public class GroupVarInt {
     private void loadNextBlock() {
       buffer = new long[4];
 
-      byte prefixOne = readByteFromBuffer();
-      byte prefixTwo = readByteFromBuffer();
+      byte prefixOne = input.readByte();
+      byte prefixTwo = input.readByte();
 
       int lengthOne = prefixOne & 15;
       int lengthTwo = (prefixOne >>> 4) & 15;
       int lengthThree = prefixTwo & 15;
       int lengthFour = (prefixTwo >>> 4) & 15;
 
-      buffer[0] = readLongOfLength(lengthOne, getBuffer(), getPosition());
-      buffer[1] = readLongOfLength(lengthTwo, getBuffer(), getPosition() + lengthOne);
-      buffer[2] = readLongOfLength(lengthThree, getBuffer(), getPosition() + lengthOne + lengthTwo);
-      buffer[3] = readLongOfLength(lengthFour, getBuffer(), getPosition() + lengthOne + lengthTwo + lengthThree);
+      byte[] buf = input.readBytes(lengthOne + lengthTwo + lengthThree + lengthFour);
 
-      incrementPosition(lengthOne + lengthTwo + lengthThree + lengthFour);
+      buffer[0] = readLongOfLength(lengthOne, buf, 0);
+      buffer[1] = readLongOfLength(lengthTwo, buf, lengthOne);
+      buffer[2] = readLongOfLength(lengthThree, buf, lengthOne + lengthTwo);
+      buffer[3] = readLongOfLength(lengthFour, buf, lengthOne + lengthTwo + lengthThree);
     }
 
     private long readLongOfLength(int length, byte[] buffer, int offset) {
@@ -102,40 +100,39 @@ public class GroupVarInt {
     }
 
     @Override
-    public void readFromStream(InputStream inputStream) throws IOException {
-      super.readFromStream(inputStream);
+    public void initialize(Input input) {
+      this.input = input;
       currentIndex = 4;
+    }
+
+    @Override
+    public ColumnLoadStrategy strategy() {
+      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
   /**
    * Zigzag encodes integers, then variable length encodes them
    */
-  public static class GroupVarInt64Encoder extends BaseEncoder implements Int64Encoder {
+  public static class GroupVarInt64Encoder implements Int64Encoder {
     private byte[] buf = new byte[34];
     private int count = 0;
     private int offset = 2;
 
     @Override
-    public void writeLong(long value) {
+    public void writeLong(long value, Output output) {
       ++count;
       write(value);
       if (count == 4) {
-        flushBlock();
+        flushBlock(output);
       }
     }
 
     @Override
-    public void writeLongs(long[] values) {
+    public void writeLongs(long[] values, Output output) {
       for (long value : values) {
-        writeLong(value);
+        writeLong(value, output);
       }
-    }
-
-    @Override
-    public void writeToStream(OutputStream outputStream) throws IOException {
-      flushBlock();
-      super.writeToStream(outputStream);
     }
 
     private void write(long value) {
@@ -204,12 +201,26 @@ public class GroupVarInt {
       }
     }
 
-    private void flushBlock() {
-      writeBytesToBuffer(buf, 0, offset);
+    private void flushBlock(Output output) {
+      output.writeBytes(buf, 0, offset);
+      reset();
+    }
 
+    @Override
+    public void reset() {
       count = 0;
       offset = 2;
       buf = new byte[34];
+    }
+
+    @Override
+    public void flush(Output output) {
+      flushBlock(output);
+    }
+
+    @Override
+    public ColumnWriteStrategy strategy() {
+      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

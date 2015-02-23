@@ -15,7 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core;
 
-import com.github.jasonruckman.sidney.core.serde.Type;
+import com.github.jasonruckman.sidney.core.type.Type;
 
 public class UnsupportedColumnTypeException extends SidneyException {
   public UnsupportedColumnTypeException(Type type) {

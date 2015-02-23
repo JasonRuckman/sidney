@@ -15,11 +15,10 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.Accessors;
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.Factories;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.util.Accessors;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
+import com.github.jasonruckman.sidney.core.serde.factory.Factories;
 
 /**
  * Handles serializing a given type, is responsible for decomposing that type and constructing sub serializers if necessary
@@ -37,21 +36,21 @@ public abstract class Serializer<T> {
   /**
    * Called after a type ref is fully constructed, the implementing class should use this information to create any sub-serializers necessary
    */
-  public abstract void consume(TypeRef typeRef, SerializerContext context);
+  public abstract void initialize(TypeRef typeRef, SerializerContext context);
 
   /**
    * Fully consume a value
-   * The {@link com.github.jasonruckman.sidney.core.serde.WriteContext#getColumnIndex()} on context must be incremented to the number of fields + subfields + 1 after the value is consumed
+   * The {@link com.github.jasonruckman.sidney.core.serde.Contexts.WriteContext#getColumnIndex()} on context must be incremented to the number of fields + subfields + 1 after the value is consumed
    * For example, if value is a bean with two int fields, it must be incremented by 4, one for the bean, two for the ints,
    * and one more to advance into the next field
    */
-  public abstract void writeValue(T value, WriteContext context);
+  public abstract void writeValue(T value, Contexts.WriteContext context);
 
   /**
    * Fully consume a field value from the parent, parent is guaranteed to be non-null
    * Follow the same incrementing rules as {@link #writeValue}
    */
-  public void writeFromField(Object parent, WriteContext context) {
+  public void writeFromField(Object parent, Contexts.WriteContext context) {
     writeValue((T) getAccessor().get(parent), context);
   }
 
@@ -61,13 +60,13 @@ public abstract class Serializer<T> {
    *
    * @return a fully materialized value
    */
-  public abstract T readValue(ReadContext context);
+  public abstract T readValue(Contexts.ReadContext context);
 
   /**
    * Materialize a value from sub columns, columns must be incremented and read in the same order as they were written
    * in either {@link #writeValue} or {@link #writeFromField} and the materialized value must be written into the field of the parent
    */
-  public void readIntoField(Object parent, ReadContext context) {
+  public void readIntoField(Object parent, Contexts.ReadContext context) {
     getAccessor().set(parent, readValue(context));
   }
 

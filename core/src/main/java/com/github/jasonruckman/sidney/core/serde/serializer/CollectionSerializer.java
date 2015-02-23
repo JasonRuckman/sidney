@@ -15,10 +15,9 @@
  */
 package com.github.jasonruckman.sidney.core.serde.serializer;
 
-import com.github.jasonruckman.sidney.core.TypeRef;
-import com.github.jasonruckman.sidney.core.serde.InstanceFactoryCache;
-import com.github.jasonruckman.sidney.core.serde.ReadContext;
-import com.github.jasonruckman.sidney.core.serde.WriteContext;
+import com.github.jasonruckman.sidney.core.type.TypeRef;
+import com.github.jasonruckman.sidney.core.serde.Contexts;
+import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactoryCache;
 
 import java.util.Collection;
 
@@ -30,18 +29,18 @@ public class CollectionSerializer<V, T extends Collection<V>> extends Serializer
   private InstanceFactoryCache cache;
 
   @Override
-  public void consume(TypeRef typeRef, SerializerContext context) {
+  public void initialize(TypeRef typeRef, SerializerContext context) {
     contentSerializer = context.serializer(typeRef.getTypeParameters().get(0), this);
     cache = new InstanceFactoryCache(getFactories());
   }
 
   @Override
-  public void writeValue(T value, WriteContext context) {
+  public void writeValue(T value, Contexts.WriteContext context) {
     writeCollection(value, context);
   }
 
   @Override
-  public T readValue(ReadContext context) {
+  public T readValue(Contexts.ReadContext context) {
     return readCollection(context);
   }
 
@@ -50,7 +49,7 @@ public class CollectionSerializer<V, T extends Collection<V>> extends Serializer
     return true;
   }
 
-  private void writeCollection(Collection<V> collection, WriteContext context) {
+  private void writeCollection(Collection<V> collection, Contexts.WriteContext context) {
     context.getMeta().writeConcreteType(collection.getClass());
     context.getMeta().writeRepetitionCount(collection.size());
 
@@ -59,7 +58,7 @@ public class CollectionSerializer<V, T extends Collection<V>> extends Serializer
     }
   }
 
-  private T readCollection(ReadContext context) {
+  private T readCollection(Contexts.ReadContext context) {
     T c = (T) cache.newInstance(context.getMeta().readConcreteType());
     int count = context.getMeta().readRepetitionCount();
     for (int i = 0; i < count; i++) {

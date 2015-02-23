@@ -16,6 +16,8 @@
 package com.github.jasonruckman.sidney.core.io;
 
 import com.github.jasonruckman.sidney.core.IntFunction;
+import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,7 @@ import java.util.zip.GZIPOutputStream;
 public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder, T> {
   private Logger logger = LoggerFactory.getLogger(getRunningClass());
 
-  protected abstract BiConsumer<E, T> encodingFunction();
+  protected abstract TriConsumer<Output, E, T> encodingFunction();
 
   protected abstract IntFunction<T> dataSupplier();
 
@@ -92,19 +94,25 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
   private void logAndRunWithCompression(EncoderDecoderPair<E, D> pair, int size) throws IOException {
     pair.getEncoder().reset();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    OutputStream gos = new GZIPOutputStream(baos);
+    GZIPOutputStream gos = new GZIPOutputStream(baos);
+    logger.debug(String.format("Testing size %s", size));
     T t = dataSupplier().apply(size);
-    encodingFunction().accept(pair.getEncoder(), t);
-    pair.getEncoder().writeToStream(gos);
+    Output output = new Output();
+    pair.getEncoder().reset();
+    encodingFunction().accept(output, pair.getEncoder(), t);
+    pair.getEncoder().strategy().write(pair.getEncoder(), output, gos);
+    pair.getEncoder().flush(output);
+    output.flush(gos);
 
-    gos.close();
     baos.close();
+    gos.close();
 
     byte[] bytes = baos.toByteArray();
-    logger.info(String.format("Num values %s size in bytes compressed: %s", size, bytes.length));
-    pair.getDecoder().readFromStream(new GZIPInputStream(
-            new ByteArrayInputStream(bytes))
-    );
+    logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
+    Input input = new Input();
+    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+    GZIPInputStream gis = new GZIPInputStream(bais);
+    pair.getDecoder().strategy().load(pair.getDecoder(), input, gis);
     consumeAndAssert().accept(pair.getDecoder(), t);
   }
 
@@ -113,14 +121,20 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     logger.debug(String.format("Testing size %s", size));
     T t = dataSupplier().apply(size);
-    encodingFunction().accept(pair.getEncoder(), t);
-    pair.getEncoder().writeToStream(baos);
+    Output output = new Output();
+    pair.getEncoder().reset();
+    encodingFunction().accept(output, pair.getEncoder(), t);
+    pair.getEncoder().strategy().write(pair.getEncoder(), output, baos);
+    pair.getEncoder().flush(output);
+    output.flush(baos);
 
     baos.close();
 
     byte[] bytes = baos.toByteArray();
     logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
-    pair.getDecoder().readFromStream(new ByteArrayInputStream(bytes));
+    Input input = new Input();
+    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+    pair.getDecoder().strategy().load(pair.getDecoder(), input, bais);
     consumeAndAssert().accept(pair.getDecoder(), t);
   }
 }
