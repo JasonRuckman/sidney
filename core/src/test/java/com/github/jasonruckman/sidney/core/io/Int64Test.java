@@ -36,8 +36,9 @@ public class Int64Test extends AbstractEncoderTests<Int64Encoder, Int64Decoder, 
     return new TriConsumer<Output, Int64Encoder, long[]>() {
       @Override
       public void accept(Output output, Int64Encoder encoder, long[] longs) {
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
         for (long l : longs) {
-          encoder.writeLong(l, output);
+          encoder.writeLong(l);
         }
       }
     };

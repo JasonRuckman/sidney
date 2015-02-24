@@ -37,7 +37,8 @@ public class Float32Test extends AbstractEncoderTests<Float32Encoder, Float32Dec
     return new TriConsumer<Output, Float32Encoder, float[]>() {
       @Override
       public void accept(Output output, Float32Encoder encoder, float[] floats) {
-        encoder.writeFloats(floats, output);
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
+        encoder.writeFloats(floats);
       }
     };
   }

@@ -15,17 +15,17 @@
  */
 package com.github.jasonruckman.sidney.core.io.int64;
 
-import com.github.jasonruckman.sidney.core.io.strategies.*;
-import com.github.jasonruckman.sidney.core.util.Bytes;
-import com.github.jasonruckman.sidney.core.util.Longs;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
 import com.github.jasonruckman.sidney.core.io.output.Output;
+import com.github.jasonruckman.sidney.core.util.Bytes;
+import com.github.jasonruckman.sidney.core.util.Longs;
 
 public class GroupVarInt {
-  public static class GroupVarInt64Decoder implements Int64Decoder {
+  public static class GroupVarInt64Decoder extends IndirectDecoder implements Int64Decoder {
     private long[] buffer = new long[4];
     private int currentIndex = 0;
-    private Input input;
 
     @Override
     public long nextLong() {
@@ -100,27 +100,21 @@ public class GroupVarInt {
     }
 
     @Override
-    public void initialize(Input input) {
-      this.input = input;
+    public void load() {
       currentIndex = 4;
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
   /**
    * Zigzag encodes integers, then variable length encodes them
    */
-  public static class GroupVarInt64Encoder implements Int64Encoder {
+  public static class GroupVarInt64Encoder extends IndirectEncoder implements Int64Encoder {
     private byte[] buf = new byte[34];
     private int count = 0;
     private int offset = 2;
 
     @Override
-    public void writeLong(long value, Output output) {
+    public void writeLong(long value) {
       ++count;
       write(value);
       if (count == 4) {
@@ -129,9 +123,9 @@ public class GroupVarInt {
     }
 
     @Override
-    public void writeLongs(long[] values, Output output) {
+    public void writeLongs(long[] values) {
       for (long value : values) {
-        writeLong(value, output);
+        writeLong(value);
       }
     }
 
@@ -214,13 +208,8 @@ public class GroupVarInt {
     }
 
     @Override
-    public void flush(Output output) {
+    public void flush() {
       flushBlock(output);
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

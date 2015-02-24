@@ -19,6 +19,6 @@ import com.github.jasonruckman.sidney.core.io.Encoder;
 import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public interface Float64Encoder extends Encoder {
-  void writeDouble(double value, Output output);
-  void writeDoubles(double[] values, Output output);
+  void writeDouble(double value);
+  void writeDoubles(double[] values);
 }

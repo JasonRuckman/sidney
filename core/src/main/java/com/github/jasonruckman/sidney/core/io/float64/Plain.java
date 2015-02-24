@@ -15,69 +15,33 @@
  */
 package com.github.jasonruckman.sidney.core.io.float64;
 
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
-import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 
 public class Plain {
-  public static class PlainFloat64Decoder implements Float64Decoder {
-    private final Int64Decoder decoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Decoder();
-
+  public static class PlainFloat64Decoder extends IndirectDecoder implements Float64Decoder {
     @Override
     public double nextDouble() {
-      return Double.longBitsToDouble(decoder.nextLong());
+      return input.readDouble();
     }
 
     @Override
     public double[] nextDoubles(int num) {
-      double[] results = new double[num];
-      for (int i = 0; i < num; i++) {
-        results[i] = nextDouble();
-      }
-      return results;
-    }
-
-    @Override
-    public void initialize(Input input) {
-      decoder.initialize(input);
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      return input.readDoubles(num);
     }
   }
 
-  public static class PlainFloat64Encoder implements Float64Encoder {
-    private final Int64Encoder encoder = new com.github.jasonruckman.sidney.core.io.int64.Plain.PlainInt64Encoder();
-
+  public static class PlainFloat64Encoder extends IndirectEncoder implements Float64Encoder {
     @Override
-    public void writeDouble(double value, Output output) {
-      encoder.writeLong(Double.doubleToLongBits(value), output);
+    public void writeDouble(double value) {
+      output.writeDouble(value);
     }
 
     @Override
-    public void writeDoubles(double[] values, Output output) {
+    public void writeDoubles(double[] values) {
       for (double value : values) {
-        writeDouble(value, output);
+        writeDouble(value);
       }
-    }
-
-    @Override
-    public void reset() {
-      encoder.reset();
-    }
-
-    @Override
-    public void flush(Output output) {
-      encoder.flush(output);
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

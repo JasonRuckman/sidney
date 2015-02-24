@@ -56,27 +56,15 @@ public class MetaEncoding {
     return definitionDecoder;
   }
 
-  public void loadRepetition(Input input) {
-    repetitionDecoder.initialize(input);
-  }
-
-  public void loadDefinition(Input input) {
-    definitionDecoder.initialize(input);
-  }
-
-  public void loadReferences(Input input) {
-
-  }
-
-  public void writeNullMarker(boolean isNotNull, Output output) {
-    definitionEncoder.writeBool(isNotNull, output);
+  public void writeNullMarker(boolean isNotNull) {
+    definitionEncoder.writeBool(isNotNull);
   }
 
   public boolean readNullMarker() {
     return definitionDecoder.nextBool();
   }
 
-  public void writeDefinition(int definition, Output output) {
+  public void writeDefinition(int definition) {
     throw new IllegalStateException();
   }
 
@@ -84,8 +72,8 @@ public class MetaEncoding {
     throw new IllegalStateException();
   }
 
-  public void writeRepetitionCount(int count, Output output) {
-    repetitionEncoder.writeInt(count, output);
+  public void writeRepetitionCount(int count) {
+    repetitionEncoder.writeInt(count);
   }
 
   public int readRepetitionCount() {

@@ -81,7 +81,8 @@ public class UnsafeInput extends Input {
 
   @Override
   public float readFloat() {
-    return super.readFloat();
+    require(4);
+    return unsafe.getFloat(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(4));
   }
 
   @Override

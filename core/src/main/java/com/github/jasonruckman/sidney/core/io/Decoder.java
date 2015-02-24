@@ -15,10 +15,7 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.strategies.ColumnLoadStrategy;
-
 public interface Decoder {
-  void initialize(Input input);
-  ColumnLoadStrategy strategy();
+  boolean isDirect();
+  IndirectDecoder asIndirect();
 }

@@ -15,20 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.io.string;
 
-import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 
 public class RLE {
-  private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
-
-  public static class RLEStringDecoder implements StringDecoder {
-    private final StringDecoder valueDecoder = Encoding.PLAIN.newStringDecoder();
-    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
-
+  public static class RLEStringDecoder extends IndirectDecoder implements StringDecoder {
     private int runSize = 0;
     private String currentRun = null;
 
@@ -51,73 +42,56 @@ public class RLE {
     }
 
     private void loadNextRun() {
-      currentRun = valueDecoder.readString();
-      runSize = runSizeDecoder.nextInt();
+      currentRun = input.readUtf8();
+      runSize = input.readInt();
     }
 
     @Override
-    public void initialize(Input input) {
+    public void load() {
       runSize = 0;
       currentRun = null;
-
-      valueDecoder.initialize(input);
-      runSizeDecoder.initialize(input);
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
     }
   }
 
-  public static class RLEStringEncoder implements StringEncoder {
-    private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
-    private final StringEncoder valueEncoder = new Plain.PlainStringEncoder();
+  public static class RLEStringEncoder extends IndirectEncoder implements StringEncoder {
     private String currentRun = "";
     private int runSize;
     private boolean isNewRun = true;
 
     @Override
-    public void writeString(String s, Output output) {
+    public void writeString(String s) {
       if (isNewRun) {
         currentRun = s;
         isNewRun = false;
       } else if (!s.equals(currentRun)) {
-        flush(output);
+        flush();
         currentRun = s;
       }
       ++runSize;
     }
 
     @Override
-    public void writeStrings(String[] s, Output output) {
+    public void writeStrings(String[] s) {
       for (String str : s) {
-        writeString(str, output);
+        writeString(str);
       }
     }
 
     @Override
     public void reset() {
-      valueEncoder.reset();
-      runSizeEncoder.reset();
       currentRun = "";
       runSize = 0;
       isNewRun = true;
     }
 
     @Override
-    public void flush(Output output) {
-      flushRun(output);
+    public void flush() {
+      flushRun();
     }
 
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
-    }
-
-    private void flushRun(Output output) {
-      valueEncoder.writeString(currentRun, output);
-      runSizeEncoder.writeInt(runSize, output);
+    private void flushRun() {
+      output.writeUtf8(currentRun);
+      output.writeInt(runSize);
       currentRun = "";
       runSize = 0;
     }

@@ -15,16 +15,13 @@
  */
 package com.github.jasonruckman.sidney.core.io;
 
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.strategies.ColumnWriteStrategy;
-
 public interface Encoder {
   /**
    * Reset this encoder to its initial state
    */
   void reset();
-
-  void flush(Output output);
-
-  ColumnWriteStrategy strategy();
+  boolean isDirect();
+  void flush();
+  IndirectEncoder asIndirect();
+  DirectEncoder asDirect();
 }

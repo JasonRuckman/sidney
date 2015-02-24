@@ -51,7 +51,7 @@ public enum Type {
   STRING {
     @Override
     public Encoding defaultEncoding() {
-      return Encoding.DELTALENGTH;
+      return Encoding.PLAIN;
     }
   },
   BINARY {

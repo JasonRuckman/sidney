@@ -16,19 +16,15 @@
 package com.github.jasonruckman.sidney.core.io.int64;
 
 import com.github.jasonruckman.sidney.core.io.Encoding;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public class RLE {
-  private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
-  private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
-
-  public static class RLEInt64Decoder implements Int64Decoder {
-    private final Int64Decoder valueDecoder = VALUE_ENCODING.newInt64Decoder();
-    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+  public static class RLEInt64Decoder extends IndirectDecoder implements Int64Decoder {
     private int runSize = 0;
     private long currentRun = 0;
 
@@ -51,73 +47,58 @@ public class RLE {
     }
 
     private void loadNextRun() {
-      currentRun = valueDecoder.nextLong();
-      runSize = runSizeDecoder.nextInt();
+      currentRun = input.readLong();
+      runSize = input.readInt();
     }
 
     @Override
-    public void initialize(Input input) {
+    public void load() {
       runSize = 0;
       currentRun = 0;
-      valueDecoder.initialize(input);
-      runSizeDecoder.initialize(input);
-    }
 
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      loadNextRun();
     }
   }
 
-  public static class RLEInt64Encoder implements Int64Encoder {
-    private Int64Encoder valueEncoder = VALUE_ENCODING.newInt64Encoder();
-    private Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
-
+  public static class RLEInt64Encoder extends IndirectEncoder implements Int64Encoder {
     private long currentRun = 0;
     private int runSize = 0;
     private boolean isNewRun = true;
 
     @Override
-    public void writeLong(long value, Output output) {
+    public void writeLong(long value) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (currentRun != value) {
-        flush(output);
+        flush();
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeLongs(long[] longs, Output output) {
+    public void writeLongs(long[] longs) {
       for (long v : longs) {
-        writeLong(v, output);
+        writeLong(v);
       }
     }
 
     @Override
     public void reset() {
-      valueEncoder.reset();
-      runSizeEncoder.reset();
       isNewRun = true;
       currentRun = 0;
       runSize = 0;
     }
 
     @Override
-    public void flush(Output output) {
-      flushRun(output);
+    public void flush() {
+      flushRun();
     }
 
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
-    }
-
-    private void flushRun(Output output) {
-      valueEncoder.writeLong(currentRun, output);
-      runSizeEncoder.writeInt(runSize, output);
+    private void flushRun() {
+      output.writeLong(currentRun);
+      output.writeInt(runSize);
 
       currentRun = 0;
       runSize = 0;

@@ -15,14 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.io.int32;
 
-import com.github.jasonruckman.sidney.core.io.strategies.*;
-import com.github.jasonruckman.sidney.core.util.Bytes;
 import com.github.jasonruckman.sidney.core.bitpacking.Int32BytePacker;
 import com.github.jasonruckman.sidney.core.bitpacking.Packers;
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.StreamReader;
-import com.github.jasonruckman.sidney.core.io.StreamWriter;
+import com.github.jasonruckman.sidney.core.io.DirectDecoder;
+import com.github.jasonruckman.sidney.core.io.DirectEncoder;
+import com.github.jasonruckman.sidney.core.util.Bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +27,7 @@ import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 
 public class BitPacking {
-  public static class BitPackingInt32Decoder extends StreamReader implements Int32Decoder {
+  public static class BitPackingInt32Decoder extends DirectDecoder implements Int32Decoder {
     private int[] currentMiniBlock = new int[128];
     private int currentIndex;
     private int position;
@@ -76,17 +73,7 @@ public class BitPacking {
     }
 
     @Override
-    public void initialize(Input input) {
-
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new DirectStream.DirectStreamColumnLoadStrategy();
-    }
-
-    @Override
-    public void read(InputStream inputStream) {
+    public void load(InputStream inputStream) {
       position = 0;
       currentIndex = 0;
 
@@ -115,7 +102,7 @@ public class BitPacking {
     }
   }
 
-  public static class BitPackingInt32Encoder extends StreamWriter implements Int32Encoder {
+  public static class BitPackingInt32Encoder extends DirectEncoder implements Int32Encoder {
     public static final int DEFAULT_BLOCK_SIZE = 128;
     private final int miniBlockSize;
     private int[] currentMiniBlock;
@@ -134,7 +121,7 @@ public class BitPacking {
     }
 
     @Override
-    public void writeInt(int value, Output output) {
+    public void writeInt(int value) {
       currentMiniBlock[currentIndex++] = value;
       currentMaxBitwidth = Math.max(currentMaxBitwidth, 32 - Integer.numberOfLeadingZeros(value));
 
@@ -144,9 +131,9 @@ public class BitPacking {
     }
 
     @Override
-    public void writeInts(int[] values, Output output) {
+    public void writeInts(int[] values) {
       for (int value : values) {
-        writeInt(value, output);
+        writeInt(value);
       }
     }
 
@@ -182,17 +169,7 @@ public class BitPacking {
     }
 
     @Override
-    public void flush(Output output) {
-
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new DirectStream.DirectStreamColumnWriteStrategy();
-    }
-
-    @Override
-    public void write(OutputStream outputStream) {
+    public void flush(OutputStream outputStream) {
       flushMiniBlock();
 
       try {

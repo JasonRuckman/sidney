@@ -33,8 +33,6 @@ import com.github.jasonruckman.sidney.core.io.string.StringDecoder;
 import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
 import com.github.jasonruckman.sidney.core.serde.Contexts;
 
-import java.io.OutputStream;
-
 public class Columns {
   public static class BoolColumnIO extends ColumnIO {
     private final BoolEncoder encoder;
@@ -47,7 +45,7 @@ public class Columns {
 
     @Override
     public void writeBoolean(boolean value) {
-      this.encoder.writeBool(value, getColumnOutput());
+      this.encoder.writeBool(value);
     }
 
     @Override
@@ -77,7 +75,7 @@ public class Columns {
 
     @Override
     public void writeBytes(byte[] bytes) {
-      this.encoder.writeBytes(bytes, getColumnOutput());
+      this.encoder.writeBytes(bytes);
     }
 
     @Override
@@ -99,77 +97,32 @@ public class Columns {
 
   public abstract static class ColumnIO {
     private MetaEncoding encoding;
-    private Output columnOutput;
-    private Output repetitionOutput;
-    private Output definitionOutput;
-    private Output referencesOutput;
-    private Input columnInput;
-    private Input repetitionInput;
-    private Input definitionInput;
-    private Input referencesInput;
-
-    public Input getColumnInput() {
-      return columnInput;
-    }
-
-    public void setColumnInput(Input columnInput) {
-      this.columnInput = columnInput;
-    }
-
-    public Input getRepetitionInput() {
-      return repetitionInput;
-    }
-
-    public void setRepetitionInput(Input repetitionInput) {
-      this.repetitionInput = repetitionInput;
-    }
-
-    public Input getDefinitionInput() {
-      return definitionInput;
-    }
-
-    public void setDefinitionInput(Input definitionInput) {
-      this.definitionInput = definitionInput;
-    }
-
-    public Input getReferencesInput() {
-      return referencesInput;
-    }
-
-    public void setReferencesInput(Input referencesInput) {
-      this.referencesInput = referencesInput;
-    }
-
-    public Output getColumnOutput() {
-      return columnOutput;
-    }
 
     public void setColumnOutput(Output columnOutput) {
-      this.columnOutput = columnOutput;
-    }
-
-    public Output getRepetitionOutput() {
-      return repetitionOutput;
+      if (shouldLoadColumn() && !getEncoder().isDirect()) {
+        getEncoder().asIndirect().setOutput(columnOutput);
+      }
     }
 
     public void setRepetitionOutput(Output repetitionOutput) {
-      this.repetitionOutput = repetitionOutput;
-    }
-
-    public Output getDefinitionOutput() {
-      return definitionOutput;
+      if (!getEncoding().getRepetitionEncoder().isDirect()) {
+        getEncoding().getRepetitionEncoder().asIndirect().setOutput(repetitionOutput);
+      }
     }
 
     public void setDefinitionOutput(Output definitionOutput) {
-      this.definitionOutput = definitionOutput;
-    }
-
-    public Output getReferencesOutput() {
-      return referencesOutput;
+      if (!getEncoding().getDefinitionEncoder().isDirect()) {
+        getEncoding().getDefinitionEncoder().asIndirect().setOutput(definitionOutput);
+      }
     }
 
     public void setReferencesOutput(Output referencesOutput) {
-      this.referencesOutput = referencesOutput;
+      if (shouldLoadReferences()) {
+        ReferencesMetaEncoding rme = (ReferencesMetaEncoding) getEncoding();
+        if (!rme.getReferencesEncoder().isDirect()) {
+          rme.getReferencesEncoder().asIndirect().setOutput(referencesOutput);
+        }
+      }
     }
 
     public MetaEncoding getEncoding() {
@@ -209,7 +162,7 @@ public class Columns {
     }
 
     public void writeNotNull() {
-      encoding.writeNullMarker(true, getDefinitionOutput());
+      encoding.writeNullMarker(true);
     }
 
     public void writeConcreteType(Class<?> type, Contexts.WriteContext context) {
@@ -217,15 +170,15 @@ public class Columns {
     }
 
     public void writeNull() {
-      encoding.writeNullMarker(false, getDefinitionOutput());
+      encoding.writeNullMarker(false);
     }
 
     public void writeRepetitionCount(int value) {
-      encoding.writeRepetitionCount(value, getRepetitionOutput());
+      encoding.writeRepetitionCount(value);
     }
 
     public void writeReference(int definition) {
-      encoding.writeDefinition(definition, getReferencesOutput());
+      encoding.writeDefinition(definition);
     }
 
     public boolean readBoolean() {
@@ -300,7 +253,7 @@ public class Columns {
 
     @Override
     public void writeDouble(double value) {
-      encoder.writeDouble(value, getColumnOutput());
+      encoder.writeDouble(value);
     }
 
     @Override
@@ -330,7 +283,7 @@ public class Columns {
 
     @Override
     public void writeFloat(float value) {
-      encoder.writeFloat(value, getColumnOutput());
+      encoder.writeFloat(value);
     }
 
     @Override
@@ -360,7 +313,7 @@ public class Columns {
 
     @Override
     public void writeInt(int value) {
-      encoder.writeInt(value, getColumnOutput());
+      encoder.writeInt(value);
     }
 
     @Override
@@ -390,7 +343,7 @@ public class Columns {
 
     @Override
     public void writeLong(long value) {
-      encoder.writeLong(value, getColumnOutput());
+      encoder.writeLong(value);
     }
 
     @Override
@@ -420,7 +373,7 @@ public class Columns {
 
     @Override
     public void writeString(String value) {
-      encoder.writeString(value, getColumnOutput());
+      encoder.writeString(value);
     }
 
     @Override
@@ -450,7 +403,7 @@ public class Columns {
 
     @Override
     public void writeConcreteType(Class<?> type, Contexts.WriteContext context) {
-      concreteTypeEncoder.writeInt(context.getPageHeader().valueForType(type), getColumnOutput());
+      concreteTypeEncoder.writeInt(context.getPageHeader().valueForType(type));
     }
 
     @Override

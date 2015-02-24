@@ -32,7 +32,8 @@ public class BytesTest extends AbstractEncoderTests<BytesEncoder, BytesDecoder, 
     return new TriConsumer<Output, BytesEncoder, byte[]>() {
       @Override
       public void accept(Output output, BytesEncoder encoder, byte[] bytes) {
-        encoder.writeBytes(bytes, output);
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
+        encoder.writeBytes(bytes);
       }
     };
   }

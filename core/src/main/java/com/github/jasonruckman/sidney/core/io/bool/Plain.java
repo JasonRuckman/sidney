@@ -15,14 +15,12 @@
  */
 package com.github.jasonruckman.sidney.core.io.bool;
 
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainBoolDecoder implements BoolDecoder {
-    private Input input;
-
+  public static class PlainBoolDecoder extends IndirectDecoder implements BoolDecoder {
     @Override
     public boolean nextBool() {
       return input.readBoolean();
@@ -30,50 +28,19 @@ public class Plain {
 
     @Override
     public boolean[] nextBools(int num) {
-      boolean[] booleans = new boolean[num];
-      for (int i = 0; i < num; i++) {
-        booleans[i] = nextBool();
-      }
-      return booleans;
-    }
-
-    @Override
-    public void initialize(Input input) {
-      this.input = input;
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      return input.readBooleans(num);
     }
   }
 
-  public static class PlainBoolEncoder implements BoolEncoder {
+  public static class PlainBoolEncoder extends IndirectEncoder implements BoolEncoder {
     @Override
-    public void writeBool(boolean value, Output output) {
+    public void writeBool(boolean value) {
       output.writeBoolean(value);
     }
 
     @Override
-    public void writeBools(boolean[] values, Output output) {
-      for (boolean value : values) {
-        writeBool(value, output);
-      }
-    }
-
-    @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public void flush(Output output) {
-
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
+    public void writeBools(boolean[] values) {
+      output.writeBooleans(values);
     }
   }
 }
