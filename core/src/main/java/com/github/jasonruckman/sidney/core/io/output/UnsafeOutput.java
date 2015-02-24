@@ -102,12 +102,15 @@ public class UnsafeOutput extends Output {
 
   @Override
   public void writeFloat(float value) {
-    super.writeFloat(value);
+    ensureCapacity(4);
+    unsafe.putFloat(buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(4), value);
   }
 
   @Override
   public void writeFloats(float[] values) {
-    super.writeFloats(values);
+    int size = 4 * values.length;
+    ensureCapacity(size);
+    unsafe.copyMemory(values, UnsafeUtil.floatArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size);
   }
 
   @Override

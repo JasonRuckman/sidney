@@ -15,20 +15,12 @@
  */
 package com.github.jasonruckman.sidney.core.io.float32;
 
-import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class RLE {
-  private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
-  private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
-
-  public static class RLEFloat32Decoder implements Float32Decoder {
-    private final Int32Decoder valueDecoder = VALUE_ENCODING.newInt32Decoder();
-    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+  public static class RLEFloat32Decoder extends IndirectDecoder implements Float32Decoder {
     private int runSize = 0;
     private float currentRun = 0;
 
@@ -51,56 +43,46 @@ public class RLE {
     }
 
     private void loadNextRun() {
-      currentRun = Float.intBitsToFloat(valueDecoder.nextInt());
-      runSize = runSizeDecoder.nextInt();
+      currentRun = input.readFloat();
+      runSize = input.readInt();
     }
 
     @Override
-    public void initialize(Input input) {
+    public void load() {
       runSize = 0;
       currentRun = 0;
 
-      valueDecoder.initialize(input);
-      runSizeDecoder.initialize(input);
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      loadNextRun();
     }
   }
 
-  public static class RLEFloat32Encoder implements Float32Encoder {
-    private final Int32Encoder valueEncoder = VALUE_ENCODING.newInt32Encoder();
-    private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
+  public static class RLEFloat32Encoder extends IndirectEncoder implements Float32Encoder {
     private float currentRun = 0;
     private int runSize = 0;
     private boolean isNewRun = true;
 
     @Override
-    public void writeFloat(float value, Output output) {
+    public void writeFloat(float value) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (Float.compare(currentRun, value) != 0) {
-        flush(output);
+        flush();
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeFloats(float[] floats, Output output) {
+    public void writeFloats(float[] floats) {
       for (float v : floats) {
-        writeFloat(v, output);
+        writeFloat(v);
       }
     }
 
     private void flushRun(Output output) {
-      int floatBits = Float.floatToIntBits(currentRun);
-
-      valueEncoder.writeInt(floatBits, output);
-      runSizeEncoder.writeInt(runSize, output);
+      output.writeFloat(currentRun);
+      output.writeInt(runSize);
 
       currentRun = 0;
       runSize = 0;
@@ -108,24 +90,14 @@ public class RLE {
 
     @Override
     public void reset() {
-      valueEncoder.reset();
-      runSizeEncoder.reset();
       isNewRun = true;
       currentRun = 0;
       runSize = 0;
     }
 
     @Override
-    public void flush(Output output) {
+    public void flush() {
       flushRun(output);
-
-      valueEncoder.flush(output);
-      runSizeEncoder.flush(output);
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

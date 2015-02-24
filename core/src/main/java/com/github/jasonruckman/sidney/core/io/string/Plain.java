@@ -15,63 +15,31 @@
  */
 package com.github.jasonruckman.sidney.core.io.string;
 
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 
 public class Plain {
-  public static class PlainStringDecoder implements StringDecoder {
-    private Input input;
-
+  public static class PlainStringDecoder extends IndirectDecoder implements StringDecoder {
     public String readString() {
       return input.readUtf8();
     }
 
     @Override
     public String[] readStrings(int num) {
-      String[] strings = new String[num];
-      for (int i = 0; i < num; i++) {
-        strings[i] = readString();
-      }
-      return strings;
-    }
-
-    @Override
-    public void initialize(Input input) {
-      this.input = input;
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      return input.readUtf8Strings(num);
     }
   }
 
-  public static class PlainStringEncoder implements StringEncoder {
-    public void writeString(String s, Output output) {
+  public static class PlainStringEncoder extends IndirectEncoder implements StringEncoder {
+    public void writeString(String s) {
       output.writeUtf8(s);
     }
 
     @Override
-    public void writeStrings(String[] strings, Output output) {
+    public void writeStrings(String[] strings) {
       for (String s : strings) {
-        writeString(s, output);
+        writeString(s);
       }
-    }
-
-    @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public void flush(Output output) {
-
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }

@@ -15,11 +15,8 @@
  */
 package com.github.jasonruckman.sidney.core.io.bool;
 
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.StreamReader;
-import com.github.jasonruckman.sidney.core.io.StreamWriter;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.DirectDecoder;
+import com.github.jasonruckman.sidney.core.io.DirectEncoder;
 import com.github.jasonruckman.sidney.core.util.Bytes;
 import com.googlecode.javaewah.EWAHCompressedBitmap;
 import com.googlecode.javaewah.IntIterator;
@@ -27,7 +24,7 @@ import com.googlecode.javaewah.IntIterator;
 import java.io.*;
 
 public class EWAHBitmap {
-  public static class EWAHBitmapBoolDecoder extends StreamReader implements BoolDecoder {
+  public static class EWAHBitmapBoolDecoder extends DirectDecoder implements BoolDecoder {
     private EWAHCompressedBitmap bitmap = new EWAHCompressedBitmap();
 
     private int index = 0;
@@ -55,17 +52,7 @@ public class EWAHBitmap {
     }
 
     @Override
-    public void initialize(Input input) {
-
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new DirectStream.DirectStreamColumnLoadStrategy();
-    }
-
-    @Override
-    public void read(InputStream inputStream) {
+    public void load(InputStream inputStream) {
       try {
         int num = Bytes.readIntFromStream(inputStream);
         if (num > 0) {
@@ -86,7 +73,7 @@ public class EWAHBitmap {
   /**
    * Encodes booleans into a compressed bitmap.
    */
-  public static class EWAHBitmapBoolEncoder extends StreamWriter implements BoolEncoder {
+  public static class EWAHBitmapBoolEncoder extends DirectEncoder implements BoolEncoder {
     private EWAHCompressedBitmap currentBitmap;
     private int currentIndex = 0;
 
@@ -95,7 +82,7 @@ public class EWAHBitmap {
     }
 
     @Override
-    public void writeBool(boolean value, Output output) {
+    public void writeBool(boolean value) {
       if (value) {
         currentBitmap.set(currentIndex);
       }
@@ -103,9 +90,9 @@ public class EWAHBitmap {
     }
 
     @Override
-    public void writeBools(boolean[] values, Output output) {
+    public void writeBools(boolean[] values) {
       for (boolean value : values) {
-        writeBool(value, output);
+        writeBool(value);
       }
     }
 
@@ -116,17 +103,7 @@ public class EWAHBitmap {
     }
 
     @Override
-    public void flush(Output output) {
-
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new DirectStream.DirectStreamColumnWriteStrategy();
-    }
-
-    @Override
-    public void write(OutputStream outputStream) {
+    public void flush(OutputStream outputStream) {
       try {
         Bytes.writeIntToStream(currentIndex, outputStream);
         if (currentIndex > 0) {

@@ -15,7 +15,6 @@
  */
 package com.github.jasonruckman.sidney.core.io.output;
 
-import com.github.jasonruckman.sidney.core.io.StreamWriter;
 import com.github.jasonruckman.sidney.core.util.Bytes;
 
 import java.io.IOException;
@@ -91,7 +90,7 @@ public class Output {
   }
 
   public void writeInts(int[] values, int position, int length) {
-    for(int i = position; i < (position + length); i++) {
+    for (int i = position; i < (position + length); i++) {
       writeInt(values[i]);
     }
   }

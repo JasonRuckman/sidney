@@ -19,6 +19,6 @@ import com.github.jasonruckman.sidney.core.io.Encoder;
 import com.github.jasonruckman.sidney.core.io.output.Output;
 
 public interface Int64Encoder extends Encoder {
-  void writeLong(long value, Output output);
-  void writeLongs(long[] values, Output output);
+  void writeLong(long value);
+  void writeLongs(long[] values);
 }

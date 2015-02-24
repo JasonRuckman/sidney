@@ -49,13 +49,8 @@ public class ReferencesMetaEncoding extends MetaEncoding {
   }
 
   @Override
-  public void loadReferences(Input input) {
-    referencesDecoder.initialize(input);
-  }
-
-  @Override
-  public void writeDefinition(int definition, Output output) {
-    referencesEncoder.writeInt(definition, output);
+  public void writeDefinition(int definition) {
+    referencesEncoder.writeInt(definition);
   }
 
   @Override

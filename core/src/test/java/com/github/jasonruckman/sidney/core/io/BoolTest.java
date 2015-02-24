@@ -34,8 +34,9 @@ public class BoolTest extends AbstractEncoderTests<BoolEncoder, BoolDecoder, boo
     return new TriConsumer<Output, BoolEncoder, boolean[]>() {
       @Override
       public void accept(Output output, BoolEncoder encoder, boolean[] bools) {
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
         for (boolean b : bools) {
-          encoder.writeBool(b, output);
+          encoder.writeBool(b);
         }
       }
     };

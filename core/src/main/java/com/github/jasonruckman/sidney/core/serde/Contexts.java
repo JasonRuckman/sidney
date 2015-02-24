@@ -16,12 +16,8 @@
 package com.github.jasonruckman.sidney.core.serde;
 
 import com.github.jasonruckman.sidney.core.Configuration;
-import com.github.jasonruckman.sidney.core.io.ColumnGenerator;
-import com.github.jasonruckman.sidney.core.io.Columns;
-import com.github.jasonruckman.sidney.core.io.Decoder;
-import com.github.jasonruckman.sidney.core.io.ReferencesMetaEncoding;
+import com.github.jasonruckman.sidney.core.io.*;
 import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.strategies.ColumnLoadStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -178,28 +174,40 @@ public class Contexts {
           continue;
         }
 
-        Input input = getConf().newInput();
         Decoder decoder = columnIO.getDecoder();
-        ColumnLoadStrategy strategy = decoder.strategy();
-        strategy.load(decoder, input, inputStream);
-        columnIO.setColumnInput(input);
+        if (!decoder.isDirect()) {
+          Input input = getConf().newInput();
+          input.initialize(inputStream);
+          decoder.asIndirect().setInput(input);
+          decoder.asIndirect().load();
+        } else {
+          ((DirectDecoder) decoder).load(inputStream);
+        }
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
-        Input input = getConf().newInput();
         Decoder decoder = columnIO.getEncoding().getDefinitionDecoder();
-        ColumnLoadStrategy strategy = decoder.strategy();
-        strategy.load(decoder, input, inputStream);
-        columnIO.setDefinitionInput(input);
+
+        if (!decoder.isDirect()) {
+          Input input = getConf().newInput();
+          input.initialize(inputStream);
+          decoder.asIndirect().setInput(input);
+          decoder.asIndirect().load();
+        } else {
+          ((DirectDecoder) decoder).load(inputStream);
+        }
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
-        Input input = getConf().newInput();
-
         Decoder decoder = columnIO.getEncoding().getRepetitionDecoder();
-        ColumnLoadStrategy strategy = decoder.strategy();
-        strategy.load(decoder, input, inputStream);
-        columnIO.setRepetitionInput(input);
+        if (!decoder.isDirect()) {
+          Input input = getConf().newInput();
+          input.initialize(inputStream);
+          decoder.asIndirect().setInput(input);
+          decoder.asIndirect().load();
+        } else {
+          ((DirectDecoder) decoder).load(inputStream);
+        }
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
@@ -207,13 +215,16 @@ public class Contexts {
           continue;
         }
 
-        Input input = getConf().newInput();
-
         ReferencesMetaEncoding rme = (ReferencesMetaEncoding) columnIO.getEncoding();
         Decoder decoder = rme.getReferencesDecoder();
-        ColumnLoadStrategy strategy = decoder.strategy();
-        strategy.load(decoder, input, inputStream);
-        columnIO.setReferencesInput(input);
+        if (!decoder.isDirect()) {
+          Input input = getConf().newInput();
+          input.initialize(inputStream);
+          decoder.asIndirect().setInput(input);
+          decoder.asIndirect().load();
+        } else {
+          ((DirectDecoder) decoder).load(inputStream);
+        }
       }
     }
 
@@ -494,31 +505,63 @@ public class Contexts {
         if (!columnIO.shouldLoadColumn()) {
           continue;
         }
-        columnIO.getEncoder().strategy().write(
-            columnIO.getEncoder(), columnIO.getColumnOutput(), outputStream
-        );
+
+        Encoder encoder = columnIO.getEncoder();
+        encoder.flush();
+
+        if (encoder.isDirect()) {
+          encoder.asDirect().flush(outputStream);
+        } else {
+          encoder.asIndirect().getOutput().flush(outputStream);
+          encoder.asIndirect().getOutput().clear();
+        }
+
+        encoder.reset();
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
-        columnIO.getEncoding().getDefinitionEncoder().strategy().write(
-            columnIO.getEncoding().getDefinitionEncoder(), columnIO.getDefinitionOutput(), outputStream
-        );
+        Encoder encoder = columnIO.getEncoding().getDefinitionEncoder();
+        encoder.flush();
+
+        if (encoder.isDirect()) {
+          encoder.asDirect().flush(outputStream);
+        } else {
+          encoder.asIndirect().getOutput().flush(outputStream);
+          encoder.asIndirect().getOutput().clear();
+        }
+
+        encoder.reset();
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
-        columnIO.getEncoding().getRepetitionEncoder().strategy().write(
-            columnIO.getEncoding().getRepetitionEncoder(), columnIO.getRepetitionOutput(), outputStream
-        );
+        Encoder encoder = columnIO.getEncoding().getRepetitionEncoder();
+        encoder.flush();
+
+        if (encoder.isDirect()) {
+          encoder.asDirect().flush(outputStream);
+        } else {
+          encoder.asIndirect().getOutput().flush(outputStream);
+          encoder.asIndirect().getOutput().clear();
+        }
+
+        encoder.reset();
       }
 
       for (Columns.ColumnIO columnIO : columnIOs) {
         if (!columnIO.shouldLoadReferences()) {
           continue;
         }
-        if (columnIO.getEncoding() instanceof ReferencesMetaEncoding) {
-          ReferencesMetaEncoding metaEncoding = (ReferencesMetaEncoding) columnIO.getEncoding();
-          metaEncoding.getReferencesEncoder().strategy().write(metaEncoding.getReferencesEncoder(), columnIO.getReferencesOutput(), outputStream);
+        Encoder encoder = ((ReferencesMetaEncoding) columnIO.getEncoding()).getReferencesEncoder();
+        encoder.flush();
+
+        if (encoder.isDirect()) {
+          encoder.asDirect().flush(outputStream);
+        } else {
+          encoder.asIndirect().getOutput().flush(outputStream);
+          encoder.asIndirect().getOutput().clear();
         }
+
+        encoder.reset();
       }
     }
 

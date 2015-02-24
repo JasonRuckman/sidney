@@ -34,7 +34,6 @@ import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
 import com.github.jasonruckman.sidney.core.io.int64.GroupVarInt;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
-import com.github.jasonruckman.sidney.core.io.string.DeltaLength;
 import com.github.jasonruckman.sidney.core.io.string.StringDecoder;
 import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
 import com.github.jasonruckman.sidney.core.type.Type;
@@ -163,17 +162,6 @@ public enum Encoding {
     @Override
     public Int64Decoder newInt64Decoder() {
       return new GroupVarInt.GroupVarInt64Decoder();
-    }
-  },
-  DELTALENGTH {
-    @Override
-    public StringEncoder newStringEncoder() {
-      return new DeltaLength.DeltaLengthStringEncoder();
-    }
-
-    @Override
-    public StringDecoder newStringDecoder() {
-      return new DeltaLength.DeltaLengthStringDecoder();
     }
   },
   RLE {

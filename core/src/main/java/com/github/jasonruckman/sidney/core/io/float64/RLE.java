@@ -15,22 +15,11 @@
  */
 package com.github.jasonruckman.sidney.core.io.float64;
 
-import com.github.jasonruckman.sidney.core.io.Encoding;
-import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
-import com.github.jasonruckman.sidney.core.io.int64.Int64Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 
 public class RLE {
-  private static final Encoding VALUE_ENCODING = Encoding.PLAIN;
-  private static final Encoding RUN_SIZE_ENCODING = Encoding.PLAIN;
-
-  public static class RLEFloat64Decoder implements Float64Decoder {
-    private final Int64Decoder valueDecoder = VALUE_ENCODING.newInt64Decoder();
-    private final Int32Decoder runSizeDecoder = RUN_SIZE_ENCODING.newInt32Decoder();
+  public static class RLEFloat64Decoder extends IndirectDecoder implements Float64Decoder {
     private int runSize = 0;
     private double currentRun = 0;
 
@@ -54,78 +43,58 @@ public class RLE {
     }
 
     private void loadNextRun() {
-      currentRun = Double.longBitsToDouble(valueDecoder.nextLong());
-      runSize = runSizeDecoder.nextInt();
+      currentRun = input.readDouble();
+      runSize = input.readInt();
     }
 
     @Override
-    public void initialize(Input input) {
+    public void load() {
       runSize = 0;
       currentRun = 0;
 
-      valueDecoder.initialize(input);
-      runSizeDecoder.initialize(input);
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      loadNextRun();
     }
   }
 
-  public static class RLEFloat64Encoder implements Float64Encoder {
-    private final Int64Encoder valueEncoder = VALUE_ENCODING.newInt64Encoder();
-    private final Int32Encoder runSizeEncoder = RUN_SIZE_ENCODING.newInt32Encoder();
+  public static class RLEFloat64Encoder extends IndirectEncoder implements Float64Encoder {
     private double currentRun = 0;
     private int runSize = 0;
     private boolean isNewRun = true;
 
     @Override
-    public void writeDouble(double value, Output output) {
+    public void writeDouble(double value) {
       if (isNewRun) {
         currentRun = value;
         isNewRun = false;
       } else if (Double.compare(currentRun, value) != 0) {
-        flushWord(output);
+        flushWord();
         currentRun = value;
       }
       ++runSize;
     }
 
     @Override
-    public void writeDoubles(double[] floats, Output output) {
+    public void writeDoubles(double[] floats) {
       for (double v : floats) {
-        writeDouble(v, output);
+        writeDouble(v);
       }
     }
 
-    private void flushWord(Output output) {
-      long floatBits = Double.doubleToLongBits(currentRun);
-
-      valueEncoder.writeLong(floatBits, output);
-      runSizeEncoder.writeInt(runSize, output);
+    private void flushWord() {
+      output.writeDouble(currentRun);
+      output.writeInt(runSize);
 
       currentRun = 0;
       runSize = 0;
     }
 
     @Override
-    public void flush(Output output) {
-      flushWord(output);
-
-      valueEncoder.flush(output);
-      runSizeEncoder.flush(output);
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
+    public void flush() {
+      flushWord();
     }
 
     @Override
     public void reset() {
-      valueEncoder.reset();
-      runSizeEncoder.reset();
       isNewRun = true;
       currentRun = 0;
       runSize = 0;

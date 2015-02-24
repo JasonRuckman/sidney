@@ -27,7 +27,6 @@ import java.util.Random;
 public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecoder, String[]> {
   private List<EncoderDecoderPair<StringEncoder, StringDecoder>> pairs = Arrays.asList(
       new EncoderDecoderPair<StringEncoder, StringDecoder>(new Plain.PlainStringEncoder(), new Plain.PlainStringDecoder()),
-      new EncoderDecoderPair<StringEncoder, StringDecoder>(new DeltaLength.DeltaLengthStringEncoder(), new DeltaLength.DeltaLengthStringDecoder()),
       new EncoderDecoderPair<StringEncoder, StringDecoder>(new RLE.RLEStringEncoder(), new RLE.RLEStringDecoder())
   );
 
@@ -35,7 +34,8 @@ public class StringTest extends AbstractEncoderTests<StringEncoder, StringDecode
     return new TriConsumer<Output, StringEncoder, String[]>() {
       @Override
       public void accept(Output output, StringEncoder encoder, String[] strings) {
-        encoder.writeStrings(strings, output);
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
+        encoder.writeStrings(strings);
       }
     };
   }

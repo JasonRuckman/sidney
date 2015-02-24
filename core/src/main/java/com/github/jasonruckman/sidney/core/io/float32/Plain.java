@@ -15,69 +15,32 @@
  */
 package com.github.jasonruckman.sidney.core.io.float32;
 
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
-import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class Plain {
-  public static class PlainFloat32Decoder implements Float32Decoder {
-    private Int32Decoder int32Decoder = new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Decoder();
-
+  public static class PlainFloat32Decoder extends IndirectDecoder implements Float32Decoder {
     @Override
     public float nextFloat() {
-      return Float.intBitsToFloat(int32Decoder.nextInt());
+      return input.readFloat();
     }
 
     @Override
     public float[] nextFloats(int num) {
-      float[] floats = new float[num];
-      for (int i = 0; i < num; i++) {
-        floats[i] = nextFloat();
-      }
-      return floats;
-    }
-
-    @Override
-    public void initialize(Input input) {
-      int32Decoder.initialize(input);
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
+      return input.readFloats(num);
     }
   }
 
-  public static class PlainFloat32Encoder implements Float32Encoder {
-    private final Int32Encoder encoder = new com.github.jasonruckman.sidney.core.io.int32.Plain.PlainInt32Encoder();
-
+  public static class PlainFloat32Encoder extends IndirectEncoder implements Float32Encoder {
     @Override
-    public void writeFloat(float value, Output output) {
-      encoder.writeInt(Float.floatToIntBits(value), output);
+    public void writeFloat(float value) {
+      output.writeFloat(value);
     }
 
     @Override
-    public void writeFloats(float[] floats, Output output) {
-      for (float v : floats) {
-        writeFloat(v, output);
-      }
-    }
-
-    @Override
-    public void reset() {
-      encoder.reset();
-    }
-
-    @Override
-    public void flush(Output output) {
-      encoder.flush(output);
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
+    public void writeFloats(float[] floats) {
+      output.writeFloats(floats);
     }
   }
 }

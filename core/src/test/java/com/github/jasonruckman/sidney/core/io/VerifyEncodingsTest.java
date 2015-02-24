@@ -39,7 +39,7 @@ public class VerifyEncodingsTest {
   };
 
   private final Encoding[] validStringEncodings = new Encoding[]{
-      Encoding.PLAIN, Encoding.DELTALENGTH
+      Encoding.PLAIN, Encoding.RLE
   };
 
   private final Encoding[] validBytesEncodings = new Encoding[]{

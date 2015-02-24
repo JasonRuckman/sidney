@@ -49,8 +49,9 @@ public class Int32Test extends AbstractEncoderTests<Int32Encoder, Int32Decoder, 
     return new TriConsumer<Output, Int32Encoder, int[]>() {
       @Override
       public void accept(Output output, Int32Encoder encoder, int[] ints) {
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
         for (int i : ints) {
-          encoder.writeInt(i, output);
+          encoder.writeInt(i);
         }
       }
     };

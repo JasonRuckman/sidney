@@ -100,19 +100,29 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     Output output = new Output();
     pair.getEncoder().reset();
     encodingFunction().accept(output, pair.getEncoder(), t);
-    pair.getEncoder().strategy().write(pair.getEncoder(), output, gos);
-    pair.getEncoder().flush(output);
-    output.flush(gos);
+    pair.getEncoder().flush();
+    if(!pair.getEncoder().isDirect()) {
+      output.flush(gos);
+    } else {
+      pair.getEncoder().asDirect().flush(gos);
+    }
 
-    baos.close();
     gos.close();
+    baos.close();
 
     byte[] bytes = baos.toByteArray();
     logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
     Input input = new Input();
     ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
     GZIPInputStream gis = new GZIPInputStream(bais);
-    pair.getDecoder().strategy().load(pair.getDecoder(), input, gis);
+    if(pair.getDecoder().isDirect()) {
+      ((DirectDecoder) pair.getDecoder()).load(gis);
+    } else {
+      input.initialize(gis);
+      IndirectDecoder idd = (IndirectDecoder) pair.getDecoder();
+      idd.setInput(input);
+      idd.load();
+    }
     consumeAndAssert().accept(pair.getDecoder(), t);
   }
 
@@ -124,9 +134,12 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     Output output = new Output();
     pair.getEncoder().reset();
     encodingFunction().accept(output, pair.getEncoder(), t);
-    pair.getEncoder().strategy().write(pair.getEncoder(), output, baos);
-    pair.getEncoder().flush(output);
-    output.flush(baos);
+    pair.getEncoder().flush();
+    if(!pair.getEncoder().isDirect()) {
+      output.flush(baos);
+    } else {
+      pair.getEncoder().asDirect().flush(baos);
+    }
 
     baos.close();
 
@@ -134,7 +147,14 @@ public abstract class AbstractEncoderTests<E extends Encoder, D extends Decoder,
     logger.info(String.format("Num values %s size in bytes uncompressed: %s", size, bytes.length));
     Input input = new Input();
     ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-    pair.getDecoder().strategy().load(pair.getDecoder(), input, bais);
+    if(pair.getDecoder().isDirect()) {
+      ((DirectDecoder) pair.getDecoder()).load(bais);
+    } else {
+      input.initialize(bais);
+      IndirectDecoder idd = (IndirectDecoder) pair.getDecoder();
+      idd.setInput(input);
+      idd.load();
+    }
     consumeAndAssert().accept(pair.getDecoder(), t);
   }
 }

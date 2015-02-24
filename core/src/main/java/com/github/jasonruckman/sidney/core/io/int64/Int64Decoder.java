@@ -19,6 +19,5 @@ import com.github.jasonruckman.sidney.core.io.Decoder;
 
 public interface Int64Decoder extends Decoder {
   long nextLong();
-
   long[] nextLongs(int num);
 }

@@ -38,8 +38,9 @@ public class Float64Test extends AbstractEncoderTests<Float64Encoder, Float64Dec
     return new TriConsumer<Output, Float64Encoder, double[]>() {
       @Override
       public void accept(Output output, Float64Encoder encoder, double[] nums) {
+        if(!encoder.isDirect()) encoder.asIndirect().setOutput(output);
         for (double num : nums) {
-          encoder.writeDouble(num, output);
+          encoder.writeDouble(num);
         }
       }
     };

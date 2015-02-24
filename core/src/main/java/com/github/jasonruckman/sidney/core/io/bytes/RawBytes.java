@@ -15,54 +15,27 @@
  */
 package com.github.jasonruckman.sidney.core.io.bytes;
 
+import com.github.jasonruckman.sidney.core.io.IndirectDecoder;
+import com.github.jasonruckman.sidney.core.io.IndirectEncoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
-import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.strategies.*;
 
 public class RawBytes {
-  public static class RawBytesDecoder implements BytesDecoder {
-    private Input input;
-
+  public static class RawBytesDecoder extends IndirectDecoder implements BytesDecoder {
     @Override
     public byte[] readBytes(int num) {
       return input.readBytes(num);
     }
-
-    @Override
-    public void initialize(Input input) {
-      this.input = input;
-    }
-
-    @Override
-    public ColumnLoadStrategy strategy() {
-      return new Default.DefaultColumnLoadStrategy();
-    }
   }
 
-  public static class RawBytesEncoder implements BytesEncoder {
+  public static class RawBytesEncoder extends IndirectEncoder implements BytesEncoder {
     @Override
-    public void writeBytes(byte[] bytes, Output output) {
+    public void writeBytes(byte[] bytes) {
       output.writeBytes(bytes);
     }
 
     @Override
-    public void writeBytes(byte[] bytes, int offset, int length, Output output) {
+    public void writeBytes(byte[] bytes, int offset, int length) {
       output.writeBytes(bytes, offset, length);
-    }
-
-    @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public void flush(Output output) {
-
-    }
-
-    @Override
-    public ColumnWriteStrategy strategy() {
-      return new Default.DefaultColumnWriteStrategy();
     }
   }
 }
