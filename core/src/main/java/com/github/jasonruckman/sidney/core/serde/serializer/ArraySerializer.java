@@ -81,13 +81,11 @@ public class ArraySerializer extends Serializer<Object> {
   }
 
   private Object readArray(Contexts.ReadContext context) {
-    Object array = Array.newInstance(rawClass.getComponentType(), context.getMeta().readRepetitionCount());
-    arrayReader.readValue(context, array);
-    return array;
+    return arrayReader.readValue(context, context.getMeta().readRepetitionCount(), rawClass.getComponentType());
   }
 
   public abstract interface ArrayReader<T> {
-    void readValue(Contexts.ReadContext context, T newArray);
+    T readValue(Contexts.ReadContext context, int length, Class<?> componentType);
   }
 
 
@@ -97,71 +95,57 @@ public class ArraySerializer extends Serializer<Object> {
 
   class BoolArrayReader implements ArrayReader<boolean[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, boolean[] newArray) {
+    public boolean[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readBoolean();
-      }
+      return context.readBooleans(length);
     }
   }
 
   class CharArrayReader implements ArrayReader<char[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, char[] newArray) {
+    public char[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readChar();
-      }
+      return context.readChars(length);
     }
   }
 
   class ShortArrayReader implements ArrayReader<short[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, short[] newArray) {
+    public short[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readShort();
-      }
+      return context.readShorts(length);
     }
   }
 
   class IntArrayReader implements ArrayReader<int[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, int[] newArray) {
+    public int[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readInt();
-      }
+      return context.readInts(length);
     }
   }
 
   class LongArrayReader implements ArrayReader<long[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, long[] newArray) {
+    public long[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readLong();
-      }
+      return context.readLongs(length);
     }
   }
 
   class FloatArrayReader implements ArrayReader<float[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, float[] newArray) {
+    public float[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readFloat();
-      }
+      return context.readFloats(length);
     }
   }
 
   class DoubleArrayReader implements ArrayReader<double[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, double[] newArray) {
+    public double[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = context.readDouble();
-      }
+      return context.readDoubles(length);
     }
   }
 
@@ -169,9 +153,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(boolean[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (boolean b : value) {
-        context.writeBool(b);
-      }
+      context.writeBooleans(value);
     }
   }
 
@@ -189,9 +171,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(char[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (char c : value) {
-        context.writeChar(c);
-      }
+      context.writeChars(value);
     }
   }
 
@@ -199,9 +179,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(int[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (int i : value) {
-        context.writeInt(i);
-      }
+      context.writeInts(value);
     }
   }
 
@@ -209,9 +187,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(long[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (long l : value) {
-        context.writeLong(l);
-      }
+      context.writeLongs(value);
     }
   }
 
@@ -219,9 +195,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(float[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (float f : value) {
-        context.writeFloat(f);
-      }
+      context.writeFloats(value);
     }
   }
 
@@ -229,9 +203,7 @@ public class ArraySerializer extends Serializer<Object> {
     @Override
     public void writeArray(double[] value, Contexts.WriteContext context) {
       context.setColumnIndex(contentSerializer.startIndex());
-      for (double d : value) {
-        context.writeDouble(d);
-      }
+      context.writeDoubles(value);
     }
   }
 
@@ -247,10 +219,12 @@ public class ArraySerializer extends Serializer<Object> {
 
   private class RefArrayReader implements ArrayReader<Object[]> {
     @Override
-    public void readValue(Contexts.ReadContext context, Object[] newArray) {
-      for (int i = 0; i < newArray.length; i++) {
-        newArray[i] = contentSerializer.readValue(context);
+    public Object[] readValue(Contexts.ReadContext context, int length, Class<?> componentType) {
+      Object[] arr = (Object[]) Array.newInstance(componentType, length);
+      for (int i = 0; i < length; i++) {
+        arr[i] = contentSerializer.readValue(context);
       }
+      return arr;
     }
   }
 }

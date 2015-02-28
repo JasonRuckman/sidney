@@ -18,9 +18,7 @@ package com.github.jasonruckman.sidney.core;
 import com.github.jasonruckman.sidney.core.io.*;
 import com.github.jasonruckman.sidney.core.io.input.Input;
 import com.github.jasonruckman.sidney.core.io.input.UnsafeInput;
-import com.github.jasonruckman.sidney.core.io.input.UnsafeMemoryInput;
 import com.github.jasonruckman.sidney.core.io.output.Output;
-import com.github.jasonruckman.sidney.core.io.output.UnsafeMemoryOutput;
 import com.github.jasonruckman.sidney.core.io.output.UnsafeOutput;
 import com.github.jasonruckman.sidney.core.serde.factory.InstanceFactory;
 import com.github.jasonruckman.sidney.core.type.Type;
@@ -129,7 +127,6 @@ public class Configuration {
   public Input newInput() {
     switch (type) {
       case Unsafe: return new UnsafeInput();
-      case UnsafeMemory: return new UnsafeMemoryInput();
       default: return new Input();
     }
   }
@@ -137,7 +134,6 @@ public class Configuration {
   public Output newOutput() {
     switch (type) {
       case Unsafe: return new UnsafeOutput();
-      case UnsafeMemory: return new UnsafeMemoryOutput();
       default: return new Output();
     }
   }

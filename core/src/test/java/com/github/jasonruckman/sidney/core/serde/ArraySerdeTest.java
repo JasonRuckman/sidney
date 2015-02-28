@@ -41,6 +41,22 @@ public class ArraySerdeTest extends ObjSerdeTest {
   }
 
   @Test
+  public void testDoubles() throws IOException {
+    runTest(new TypeToken<double[]>() {
+    }, NUM_TO_RUN, new Supplier<double[]>() {
+      @Override
+      public double[] apply() {
+        return getDataFactory().newDoubles();
+      }
+    }, new Comparator<double[]>() {
+      @Override
+      public int compare(double[] o1, double[] o2) {
+        return (Arrays.equals(o1, o2)) ? 0 : -1;
+      }
+    });
+  }
+
+  @Test
   public void testArrayOfBeans() throws IOException {
     runTest(new TypeToken<AllPrimitives[]>() {
     }, NUM_TO_RUN, new Supplier<AllPrimitives[]>() {

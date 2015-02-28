@@ -27,13 +27,13 @@ import java.util.List;
  */
 public class BeanSerializer<T> extends Serializer<T> {
   private InstanceFactory<T> instanceFactory;
-  private List<Serializer> fieldSerializers = new ArrayList<>();
+  private Serializer[] fieldSerializers;
 
   @Override
   public void initialize(TypeRef typeRef, SerializerContext context) {
-    for (TypeRef.TypeFieldRef fieldRef : typeRef.getFields()) {
-      Serializer fieldSerializer = context.serializer(fieldRef, this);
-      fieldSerializers.add(fieldSerializer);
+    fieldSerializers = new Serializer[typeRef.getFields().size()];
+    for(int i = 0; i < fieldSerializers.length; i++) {
+      fieldSerializers[i] = context.serializer(typeRef.getFields().get(i), this);
     }
     instanceFactory = getFactories().get(typeRef.getType());
   }

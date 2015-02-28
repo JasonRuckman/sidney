@@ -34,8 +34,8 @@ public abstract class ColumnGenerator extends Contexts.Context implements Serial
   public static final Encoding BOOL_DEFINITION_ENCODING = Encoding.BITMAP;
   public static final Encoding REPETITION_ENCODING = Encoding.DELTABITPACKINGHYBRID;
 
-  protected final List<Columns.ColumnIO> columnIOs = new ArrayList<>();
-
+  private final List<Columns.ColumnIO> columnsAsList = new ArrayList<>();
+  protected Columns.ColumnIO[] columnIOs;
   public ColumnGenerator(Configuration conf) {
     super(conf);
   }
@@ -107,6 +107,20 @@ public abstract class ColumnGenerator extends Contexts.Context implements Serial
         );
         break;
       }
+      case INT16: {
+        columnIO = new Columns.ShortColumnIO(
+            typeHandler.getEncoding().newShortEncoder(),
+            typeHandler.getEncoding().newShortDecoder()
+        );
+        break;
+      }
+      case CHAR: {
+        columnIO = new Columns.CharColumnIO(
+            typeHandler.getEncoding().newCharEncoder(),
+            typeHandler.getEncoding().newCharDecoder()
+        );
+        break;
+      }
       case INT32: {
         columnIO = new Columns.IntColumnIO(
             typeHandler.getEncoding().newInt32Encoder(),
@@ -165,6 +179,7 @@ public abstract class ColumnGenerator extends Contexts.Context implements Serial
 
   @Override
   public void finish(Serializer serializer) {
-    columnIOs.addAll(columnsFor(serializer));
+    columnsAsList.addAll(columnsFor(serializer));
+    columnIOs = columnsAsList.toArray(new Columns.ColumnIO[columnsAsList.size()]);
   }
 }

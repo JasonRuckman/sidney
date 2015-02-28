@@ -148,7 +148,7 @@ public class Primitives {
 
     @Override
     public Type getType() {
-      return Type.INT32;
+      return Type.CHAR;
     }
 
   }
@@ -359,7 +359,7 @@ public class Primitives {
   public static class ShortRefSerializer extends PrimitiveSerializer<Short> {
     @Override
     public Type getType() {
-      return Type.INT32;
+      return Type.INT16;
     }
 
     @Override

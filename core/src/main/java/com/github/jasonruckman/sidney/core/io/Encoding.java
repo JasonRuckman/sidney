@@ -21,12 +21,16 @@ import com.github.jasonruckman.sidney.core.io.bool.BoolEncoder;
 import com.github.jasonruckman.sidney.core.io.bool.EWAHBitmap;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesDecoder;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesEncoder;
+import com.github.jasonruckman.sidney.core.io.character.CharDecoder;
+import com.github.jasonruckman.sidney.core.io.character.CharEncoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Encoder;
 import com.github.jasonruckman.sidney.core.io.float32.Plain;
 import com.github.jasonruckman.sidney.core.io.float32.RLE;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Decoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Encoder;
+import com.github.jasonruckman.sidney.core.io.int16.ShortDecoder;
+import com.github.jasonruckman.sidney.core.io.int16.ShortEncoder;
 import com.github.jasonruckman.sidney.core.io.int32.BitPacking;
 import com.github.jasonruckman.sidney.core.io.int32.DeltaBitPacking;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
@@ -48,6 +52,26 @@ public enum Encoding {
     @Override
     public BoolDecoder newBoolDecoder() {
       return new com.github.jasonruckman.sidney.core.io.bool.Plain.PlainBoolDecoder();
+    }
+
+    @Override
+    public CharEncoder newCharEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.Plain.PlainCharEncoder();
+    }
+
+    @Override
+    public CharDecoder newCharDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.Plain.PlainCharDecoder();
+    }
+
+    @Override
+    public ShortEncoder newShortEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.Plain.PlainShortEncoder();
+    }
+
+    @Override
+    public ShortDecoder newShortDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.Plain.PlainShortDecoder();
     }
 
     @Override
@@ -112,6 +136,26 @@ public enum Encoding {
   },
   BITPACKED {
     @Override
+    public CharEncoder newCharEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.BitPacking.BitPackingCharEncoder();
+    }
+
+    @Override
+    public CharDecoder newCharDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.BitPacking.BitPackingCharDecoder();
+    }
+
+    @Override
+    public ShortEncoder newShortEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.BitPacking.BitPackingShortEncoder();
+    }
+
+    @Override
+    public ShortDecoder newShortDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.BitPacking.BitPackingShortDecoder();
+    }
+
+    @Override
     public Int32Encoder newInt32Encoder() {
       return new BitPacking.BitPackingInt32Encoder();
     }
@@ -132,6 +176,26 @@ public enum Encoding {
     }
   },
   DELTABITPACKINGHYBRID {
+    @Override
+    public CharDecoder newCharDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.DeltaBitPacking.DeltaBitpackingCharDecoder();
+    }
+
+    @Override
+    public CharEncoder newCharEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.DeltaBitPacking.DeltaBitpackingCharEncoder();
+    }
+
+    @Override
+    public ShortEncoder newShortEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.DeltaBitPacking.DeltaBitpackingShortEncoder();
+    }
+
+    @Override
+    public ShortDecoder newShortDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.DeltaBitPacking.DeltaBitpackingShortDecoder();
+    }
+
     @Override
     public Int32Encoder newInt32Encoder() {
       return new DeltaBitPacking.DeltaBitpackingInt32Encoder();
@@ -165,6 +229,26 @@ public enum Encoding {
     }
   },
   RLE {
+    @Override
+    public ShortEncoder newShortEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.RLE.RLEShortEncoder();
+    }
+
+    @Override
+    public ShortDecoder newShortDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.int16.RLE.RLEShortDecoder();
+    }
+
+    @Override
+    public CharEncoder newCharEncoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.RLE.RLECharEncoder();
+    }
+
+    @Override
+    public CharDecoder newCharDecoder() {
+      return new com.github.jasonruckman.sidney.core.io.character.RLE.RLECharDecoder();
+    }
+
     @Override
     public Int32Encoder newInt32Encoder() {
       return new com.github.jasonruckman.sidney.core.io.int32.RLE.RLEInt32Encoder();
@@ -226,6 +310,22 @@ public enum Encoding {
     throw new UnsupportedEncodingException(
         this, Type.BOOLEAN
     );
+  }
+
+  public CharDecoder newCharDecoder() {
+    throw new UnsupportedEncodingException(this, Type.CHAR);
+  }
+
+  public CharEncoder newCharEncoder() {
+    throw new UnsupportedEncodingException(this, Type.CHAR);
+  }
+
+  public ShortEncoder newShortEncoder() {
+    throw new UnsupportedEncodingException(this, Type.INT16);
+  }
+
+  public ShortDecoder newShortDecoder() {
+    throw new UnsupportedEncodingException(this, Type.INT16);
   }
 
   public Int32Encoder newInt32Encoder() {

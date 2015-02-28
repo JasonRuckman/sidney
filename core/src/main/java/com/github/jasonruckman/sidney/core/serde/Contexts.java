@@ -39,6 +39,8 @@ public class Contexts {
      */
     boolean readBoolean();
 
+    boolean[] readBooleans(int num);
+
     /**
      * Read an byte value from the column at the current index
      *
@@ -53,12 +55,16 @@ public class Contexts {
      */
     short readShort();
 
+    short[] readShorts(int num);
+
     /**
      * Read an char value from the column at the current index
      *
      * @return a char value
      */
     char readChar();
+
+    char[] readChars(int num);
 
     /**
      * Read an int from the column at the current index
@@ -67,12 +73,16 @@ public class Contexts {
      */
     int readInt();
 
+    int[] readInts(int num);
+
     /**
      * Read an long from the column at the current index
      *
      * @return a long value
      */
     long readLong();
+
+    long[] readLongs(int num);
 
     /**
      * Read an float from the column at the current index
@@ -81,6 +91,8 @@ public class Contexts {
      */
     float readFloat();
 
+    float[] readFloats(int num);
+
     /**
      * Read an double from the column at the current index
      *
@@ -88,6 +100,7 @@ public class Contexts {
      */
     double readDouble();
 
+    double[] readDoubles(int num);
     /**
      * Read bytes from the column at the current index
      *
@@ -229,47 +242,74 @@ public class Contexts {
     }
 
     public boolean readBoolean() {
-      return columnIOs.get(getColumnIndex()).readBoolean();
+      return columnIOs[getColumnIndex()].readBoolean();
     }
 
+    public boolean[] readBooleans(int num) {
+      return columnIOs[getColumnIndex()].readBooleans(num);
+    }
     public byte readByte() {
-      return (byte) columnIOs.get(getColumnIndex()).readInt();
+      return (byte) columnIOs[getColumnIndex()].readInt();
     }
 
     public short readShort() {
-      return (short) columnIOs.get(getColumnIndex()).readInt();
+      return columnIOs[getColumnIndex()].readShort();
+    }
+
+    public short[] readShorts(int num) {
+      return columnIOs[getColumnIndex()].readShorts(num);
     }
 
     public char readChar() {
-      return (char) columnIOs.get(getColumnIndex()).readInt();
+      return columnIOs[getColumnIndex()].readChar();
+    }
+
+    public char[] readChars(int num) {
+      return columnIOs[getColumnIndex()].readChars(num);
     }
 
     public int readInt() {
-      return columnIOs.get(getColumnIndex()).readInt();
+      return columnIOs[getColumnIndex()].readInt();
+    }
+
+    public int[] readInts(int num) {
+      return columnIOs[getColumnIndex()].readInts(num);
     }
 
     public long readLong() {
-      return columnIOs.get(getColumnIndex()).readLong();
+      return columnIOs[getColumnIndex()].readLong();
+    }
+
+    public long[] readLongs(int num) {
+      return columnIOs[getColumnIndex()].readLongs(num);
     }
 
     public float readFloat() {
-      return columnIOs.get(getColumnIndex()).readFloat();
+      return columnIOs[getColumnIndex()].readFloat();
+    }
+
+    public float[] readFloats(int num) {
+      return columnIOs[getColumnIndex()].readFloats(num);
     }
 
     public double readDouble() {
-      return columnIOs.get(getColumnIndex()).readDouble();
+      return columnIOs[getColumnIndex()].readDouble();
+    }
+
+    public double[] readDoubles(int num) {
+      return columnIOs[getColumnIndex()].readDoubles(num);
     }
 
     public byte[] readBytes() {
-      return columnIOs.get(getColumnIndex()).readBytes();
+      return columnIOs[getColumnIndex()].readBytes();
     }
 
     public String readString() {
-      return columnIOs.get(getColumnIndex()).readString();
+      return columnIOs[getColumnIndex()].readString();
     }
 
     public boolean shouldReadValue() {
-      return columnIOs.get(getColumnIndex()).readNullMarker();
+      return columnIOs[getColumnIndex()].readNullMarker();
     }
 
     @Override
@@ -278,11 +318,11 @@ public class Contexts {
     }
 
     public int readDefinition() {
-      return columnIOs.get(getColumnIndex()).readDefinition();
+      return columnIOs[getColumnIndex()].readDefinition();
     }
 
     Columns.ColumnIO column(int pos) {
-      return columnIOs.get(pos);
+      return columnIOs[pos];
     }
   }
 
@@ -294,6 +334,7 @@ public class Contexts {
      */
     void writeBool(boolean value);
 
+    void writeBooleans(boolean[] values);
     /**
      * Write byte to current column
      *
@@ -308,12 +349,16 @@ public class Contexts {
      */
     void writeChar(char value);
 
+    void writeChars(char[] values);
+
     /**
      * Write short to current column
      *
      * @param value the short
      */
     void writeShort(short value);
+
+    void writeShorts(short[] values);
 
     /**
      * Write int to current column
@@ -322,12 +367,16 @@ public class Contexts {
      */
     void writeInt(int value);
 
+    void writeInts(int[] values);
+
     /**
      * Write long to current column
      *
      * @param value the long
      */
     void writeLong(long value);
+
+    void writeLongs(long[] values);
 
     /**
      * Write float to current column
@@ -336,12 +385,16 @@ public class Contexts {
      */
     void writeFloat(float value);
 
+    void writeFloats(float[] values);
+
     /**
      * Write double to current column
      *
      * @param value the double
      */
     void writeDouble(double value);
+
+    void writeDoubles(double[] values);
 
     /**
      * Write bytes to current column
@@ -439,7 +492,12 @@ public class Contexts {
     }
 
     public void writeBool(boolean value) {
-      columnIOs.get(getColumnIndex()).writeBoolean(value);
+      columnIOs[getColumnIndex()].writeBoolean(value);
+    }
+
+    @Override
+    public void writeBooleans(boolean[] values) {
+      columnIOs[getColumnIndex()].writeBooleans(values);
     }
 
     public void writeByte(byte value) {
@@ -447,56 +505,86 @@ public class Contexts {
     }
 
     public void writeChar(char value) {
-      writeIntLike(value);
+      columnIOs[getColumnIndex()].writeChar(value);
+    }
+
+    @Override
+    public void writeChars(char[] values) {
+      columnIOs[getColumnIndex()].writeChars(values);
     }
 
     public void writeShort(short value) {
-      writeIntLike(value);
+      columnIOs[getColumnIndex()].writeShort(value);
+    }
+
+    @Override
+    public void writeShorts(short[] values) {
+      columnIOs[getColumnIndex()].writeShorts(values);
     }
 
     public void writeInt(int value) {
       writeIntLike(value);
     }
 
+    @Override
+    public void writeInts(int[] values) {
+      columnIOs[getColumnIndex()].writeInts(values);
+    }
+
     public void writeLong(long value) {
-      columnIOs.get(getColumnIndex()).writeLong(value);
+      columnIOs[getColumnIndex()].writeLong(value);
+    }
+
+    @Override
+    public void writeLongs(long[] values) {
+      columnIOs[getColumnIndex()].writeLongs(values);
     }
 
     public void writeFloat(float value) {
-      columnIOs.get(getColumnIndex()).writeFloat(value);
+      columnIOs[getColumnIndex()].writeFloat(value);
+    }
+
+    @Override
+    public void writeFloats(float[] values) {
+      columnIOs[getColumnIndex()].writeFloats(values);
     }
 
     public void writeDouble(double value) {
-      columnIOs.get(getColumnIndex()).writeDouble(value);
+      columnIOs[getColumnIndex()].writeDouble(value);
+    }
+
+    @Override
+    public void writeDoubles(double[] values) {
+      columnIOs[getColumnIndex()].writeDoubles(values);
     }
 
     public void writeBytes(byte[] value) {
-      columnIOs.get(getColumnIndex()).writeBytes(value);
+      columnIOs[getColumnIndex()].writeBytes(value);
     }
 
     public void writeString(String value) {
-      columnIOs.get(getColumnIndex()).writeString(value);
+      columnIOs[getColumnIndex()].writeString(value);
     }
 
     public <T> boolean shouldWriteValue(T value) {
       if (value == null) {
-        columnIOs.get(getColumnIndex()).writeNull();
+        columnIOs[getColumnIndex()].writeNull();
         return false;
       }
-      columnIOs.get(getColumnIndex()).writeNotNull();
+      columnIOs[getColumnIndex()].writeNotNull();
       return true;
     }
 
     public void writeNotNull() {
-      columnIOs.get(getColumnIndex()).writeNotNull();
+      columnIOs[getColumnIndex()].writeNotNull();
     }
 
     public void writeNull() {
-      columnIOs.get(getColumnIndex()).writeNull();
+      columnIOs[getColumnIndex()].writeNull();
     }
 
     public void writeDefinition(int definition) {
-      columnIOs.get(getColumnIndex()).writeReference(definition);
+      columnIOs[getColumnIndex()].writeReference(definition);
     }
 
     @Override
@@ -571,11 +659,11 @@ public class Contexts {
     }
 
     Columns.ColumnIO column(int pos) {
-      return columnIOs.get(pos);
+      return columnIOs[pos];
     }
 
     private void writeIntLike(int value) {
-      columnIOs.get(getColumnIndex()).writeInt(value);
+      columnIOs[getColumnIndex()].writeInt(value);
     }
   }
 

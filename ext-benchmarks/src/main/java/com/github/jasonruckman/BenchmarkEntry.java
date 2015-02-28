@@ -26,9 +26,10 @@ public class BenchmarkEntry {
   public static void main(String[] args) throws IOException, RunnerException {
     Options e = new OptionsBuilder()
         .threads(1)
+        //.jvmArgs("-XX:+PrintCompilation", "-XX:+UnlockDiagnosticVMOptions", "-XX:+PrintInlining")
         .forks(1)
-        .measurementIterations(1)
-        .warmupIterations(10).build();
+        .measurementIterations(2)
+        .warmupIterations(5).build();
 
     Runner runner = new Runner(e);
     runner.run();
