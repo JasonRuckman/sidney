@@ -20,7 +20,6 @@ import sun.misc.Unsafe;
 
 import java.io.OutputStream;
 
-//TODO: Finish out this class
 public class UnsafeOutput extends Output {
   private final Unsafe unsafe = UnsafeUtil.unsafe();
 
@@ -47,22 +46,28 @@ public class UnsafeOutput extends Output {
 
   @Override
   public void writeChar(char value) {
-    super.writeChar(value);
+    ensureCapacity(2);
+    unsafe.putChar(buffer, UnsafeUtil.charArrayBaseOffset + getPositionAndIncrement(2), value);
   }
 
   @Override
   public void writeChars(char[] values) {
-    super.writeChars(values);
+    int size = values.length * 2;
+    ensureCapacity(size);
+    unsafe.copyMemory(values, UnsafeUtil.charArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size);
   }
 
   @Override
   public void writeShort(short value) {
-    super.writeShort(value);
+    ensureCapacity(2);
+    unsafe.putShort(buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(2), value);
   }
 
   @Override
   public void writeShorts(short[] values) {
-    super.writeShorts(values);
+    int size = values.length << 1;
+    ensureCapacity(size);
+    unsafe.copyMemory(values, UnsafeUtil.shortArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size);
   }
 
   @Override
@@ -97,7 +102,9 @@ public class UnsafeOutput extends Output {
 
   @Override
   public void writeLongs(long[] values) {
-    super.writeLongs(values);
+    int size = 8 * values.length;
+    ensureCapacity(size);
+    unsafe.copyMemory(values, UnsafeUtil.longArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size);
   }
 
   @Override
@@ -123,7 +130,9 @@ public class UnsafeOutput extends Output {
   public void writeDoubles(double[] values) {
     int size = 8 * values.length;
     ensureCapacity(size);
-    unsafe.copyMemory(values, UnsafeUtil.doubleArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size);
+    unsafe.copyMemory(
+        values, UnsafeUtil.doubleArrayBaseOffset, buffer, UnsafeUtil.byteArrayBaseOffset + getPositionAndIncrement(size), size
+    );
   }
 
   @Override

@@ -28,27 +28,37 @@ public class UnsafeInput extends Input {
 
   @Override
   public byte readByte() {
+    require(1);
     return unsafe.getByte(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(1));
   }
 
   @Override
   public char readChar() {
-    return super.readChar();
+    require(2);
+    return unsafe.getChar(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(2));
   }
 
   @Override
   public char[] readChars(int num) {
-    return super.readChars(num);
+    int size = num << 1;
+    require(size);
+    char[] chars = new char[num];
+    unsafe.copyMemory(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(size), chars, UnsafeUtil.charArrayBaseOffset, size);
+    return chars;
   }
 
   @Override
   public short readShort() {
-    return super.readShort();
+    require(2);
+    return unsafe.getShort(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(2));
   }
 
   @Override
   public short[] readShorts(int num) {
-    return super.readShorts(num);
+    require(num * 2);
+    short[] shorts = new short[num];
+    unsafe.copyMemory(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(num * 2), shorts, UnsafeUtil.shortArrayBaseOffset, num * 2);
+    return shorts;
   }
 
   @Override
@@ -76,7 +86,11 @@ public class UnsafeInput extends Input {
 
   @Override
   public long[] readLongs(int num) {
-    return super.readLongs(num);
+    int size = num * 8;
+    require(size);
+    long[] longs = new long[num];
+    unsafe.copyMemory(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(size), longs, UnsafeUtil.longArrayBaseOffset, size);
+    return longs;
   }
 
   @Override
@@ -87,7 +101,11 @@ public class UnsafeInput extends Input {
 
   @Override
   public float[] readFloats(int num) {
-    return super.readFloats(num);
+    int size = num << 2;
+    require(size);
+    float[] floats = new float[num];
+    unsafe.copyMemory(buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(size), floats, UnsafeUtil.longArrayBaseOffset, size);
+    return floats;
   }
 
   @Override
@@ -98,7 +116,13 @@ public class UnsafeInput extends Input {
 
   @Override
   public double[] readDoubles(int num) {
-    return super.readDoubles(num);
+    int size = num * 8;
+    require(size);
+    double[] doubles = new double[num];
+    unsafe.copyMemory(
+        buffer, UnsafeUtil.byteArrayBaseOffset + getAndIncrementPosition(size), doubles, UnsafeUtil.doubleArrayBaseOffset, size
+    );
+    return doubles;
   }
 
   @Override

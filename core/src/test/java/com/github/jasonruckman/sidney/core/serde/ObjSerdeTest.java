@@ -38,6 +38,12 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
     return sid;
   }
 
+  public JavaSid newUnsafeSid() {
+    JavaSid sid = new JavaSid();
+    sid.setIOType(Configuration.IOType.Unsafe);
+    return sid;
+  }
+
   public JavaSid newSidReferences() {
     JavaSid sid = new JavaSid();
     sid.setReferences(true);
@@ -65,6 +71,13 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
   }
 
   public <T> void runTest(TypeToken<T> token, int num, Supplier<T> dataSupplier, JavaSid sid, Comparator<T> comparator) throws IOException {
+    runSafe(token, num, dataSupplier, sid, comparator);
+    sid.setIOType(Configuration.IOType.Unsafe);
+    runUnsafe(token, num, dataSupplier, sid, comparator);
+    sid.setIOType(Configuration.IOType.Default);
+  }
+
+  private <T> void runSafe(TypeToken<T> token, int num, Supplier<T> dataSupplier, JavaSid sid, Comparator<T> comparator) throws IOException {
     Writer<T> writer = sid.newWriter(token);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     OutputStream os = baos;
@@ -92,6 +105,36 @@ public abstract class ObjSerdeTest extends SerdeTestBase {
       }
     }
   }
+
+  private <T> void runUnsafe(TypeToken<T> token, int num, Supplier<T> dataSupplier, JavaSid sid, Comparator<T> comparator) throws IOException {
+    Writer<T> writer = sid.newWriter(token);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream os = baos;
+    writer.open(os);
+    List<T> expected = new ArrayList<>();
+    for (int i = 0; i < num; i++) {
+      T val = dataSupplier.apply();
+      writer.write(val);
+      expected.add(val);
+    }
+    writer.close();
+    os.close();
+
+    Reader<T> reader = sid.newReader(token);
+    reader.open(new ByteArrayInputStream(baos.toByteArray()));
+    List<T> actual = reader.readAll();
+
+    for (int i = 0; i < actual.size(); i++) {
+      T left = expected.get(i);
+      T right = actual.get(i);
+
+      int result = comparator.compare(left, right);
+      if (result != 0) {
+        throw new AssertionError(String.format("Expected: %s \nActual: %s", left, right));
+      }
+    }
+  }
+
 
   protected <T> T maybeMakeNull(T value) {
     return TestUtils.maybeMakeNull(value);

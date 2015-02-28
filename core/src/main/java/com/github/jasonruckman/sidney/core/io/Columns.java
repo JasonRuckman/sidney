@@ -19,11 +19,15 @@ import com.github.jasonruckman.sidney.core.io.bool.BoolDecoder;
 import com.github.jasonruckman.sidney.core.io.bool.BoolEncoder;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesDecoder;
 import com.github.jasonruckman.sidney.core.io.bytes.BytesEncoder;
+import com.github.jasonruckman.sidney.core.io.character.CharDecoder;
+import com.github.jasonruckman.sidney.core.io.character.CharEncoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Decoder;
 import com.github.jasonruckman.sidney.core.io.float32.Float32Encoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Decoder;
 import com.github.jasonruckman.sidney.core.io.float64.Float64Encoder;
 import com.github.jasonruckman.sidney.core.io.input.Input;
+import com.github.jasonruckman.sidney.core.io.int16.ShortDecoder;
+import com.github.jasonruckman.sidney.core.io.int16.ShortEncoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Decoder;
 import com.github.jasonruckman.sidney.core.io.int32.Int32Encoder;
 import com.github.jasonruckman.sidney.core.io.int64.Int64Decoder;
@@ -34,67 +38,6 @@ import com.github.jasonruckman.sidney.core.io.string.StringEncoder;
 import com.github.jasonruckman.sidney.core.serde.Contexts;
 
 public class Columns {
-  public static class BoolColumnIO extends ColumnIO {
-    private final BoolEncoder encoder;
-    private final BoolDecoder decoder;
-
-    public BoolColumnIO(BoolEncoder encoder, BoolDecoder decoder) {
-      this.encoder = encoder;
-      this.decoder = decoder;
-    }
-
-    @Override
-    public void writeBoolean(boolean value) {
-      this.encoder.writeBool(value);
-    }
-
-    @Override
-    public boolean readBoolean() {
-      return decoder.nextBool();
-    }
-
-    @Override
-    public Encoder getEncoder() {
-      return encoder;
-    }
-
-    @Override
-    public Decoder getDecoder() {
-      return decoder;
-    }
-  }
-
-  public static class BytesColumnIO extends ColumnIO {
-    private final BytesEncoder encoder;
-    private final BytesDecoder decoder;
-
-    public BytesColumnIO(BytesEncoder encoder, BytesDecoder decoder) {
-      this.encoder = encoder;
-      this.decoder = decoder;
-    }
-
-    @Override
-    public void writeBytes(byte[] bytes) {
-      this.encoder.writeBytes(bytes);
-    }
-
-    @Override
-    public byte[] readBytes() {
-      //fix this call, the arg is ignored
-      return decoder.readBytes(0);
-    }
-
-    @Override
-    public Encoder getEncoder() {
-      return encoder;
-    }
-
-    @Override
-    public Decoder getDecoder() {
-      return decoder;
-    }
-  }
-
   public abstract static class ColumnIO {
     private MetaEncoding encoding;
 
@@ -137,7 +80,31 @@ public class Columns {
       throw new IllegalStateException();
     }
 
+    public void writeBooleans(boolean[] values) {
+      throw new IllegalStateException();
+    }
+
+    public void writeChar(char value) {
+      throw new IllegalStateException();
+    }
+
+    public void writeChars(char[] values) {
+      throw new IllegalStateException();
+    }
+
+    public void writeShort(short value) {
+      throw new IllegalStateException();
+    }
+
+    public void writeShorts(short[] values) {
+      throw new IllegalStateException();
+    }
+
     public void writeInt(int value) {
+      throw new IllegalStateException();
+    }
+
+    public void writeInts(int[] values) {
       throw new IllegalStateException();
     }
 
@@ -145,11 +112,23 @@ public class Columns {
       throw new IllegalStateException();
     }
 
+    public void writeLongs(long[] values) {
+      throw new IllegalStateException();
+    }
+
     public void writeFloat(float value) {
       throw new IllegalStateException();
     }
 
+    public void writeFloats(float[] values) {
+      throw new IllegalStateException();
+    }
+
     public void writeDouble(double value) {
+      throw new IllegalStateException();
+    }
+
+    public void writeDoubles(double[] values) {
       throw new IllegalStateException();
     }
 
@@ -185,7 +164,30 @@ public class Columns {
       throw new IllegalStateException();
     }
 
+    public boolean[] readBooleans(int num) {
+      throw new IllegalStateException();
+    }
+
+    public short readShort() {
+      throw new IllegalStateException();
+    }
+
+    public short[] readShorts(int num) {
+      throw new IllegalStateException();
+    }
+
+    public char readChar() {
+      throw new IllegalStateException();
+    }
+
+    public char[] readChars(int num) {
+      throw new IllegalStateException();
+    }
     public int readInt() {
+      throw new IllegalStateException();
+    }
+
+    public int[] readInts(int num) {
       throw new IllegalStateException();
     }
 
@@ -193,11 +195,23 @@ public class Columns {
       throw new IllegalStateException();
     }
 
+    public long[] readLongs(int num) {
+      throw new IllegalStateException();
+    }
+
     public float readFloat() {
       throw new IllegalStateException();
     }
 
+    public float[] readFloats(int num) {
+      throw new IllegalStateException();
+    }
+
     public double readDouble() {
+      throw new IllegalStateException();
+    }
+
+    public double[] readDoubles(int num) {
       throw new IllegalStateException();
     }
 
@@ -242,6 +256,77 @@ public class Columns {
     }
   }
 
+  public static class BoolColumnIO extends ColumnIO {
+    private final BoolEncoder encoder;
+    private final BoolDecoder decoder;
+
+    public BoolColumnIO(BoolEncoder encoder, BoolDecoder decoder) {
+      this.encoder = encoder;
+      this.decoder = decoder;
+    }
+
+    @Override
+    public void writeBoolean(boolean value) {
+      this.encoder.writeBool(value);
+    }
+
+    @Override
+    public void writeBooleans(boolean[] values) {
+      encoder.writeBools(values);
+    }
+
+    @Override
+    public boolean readBoolean() {
+      return decoder.nextBool();
+    }
+
+    @Override
+    public boolean[] readBooleans(int num) {
+      return decoder.nextBools(num);
+    }
+
+    @Override
+    public Encoder getEncoder() {
+      return encoder;
+    }
+
+    @Override
+    public Decoder getDecoder() {
+      return decoder;
+    }
+  }
+
+  public static class BytesColumnIO extends ColumnIO {
+    private final BytesEncoder encoder;
+    private final BytesDecoder decoder;
+
+    public BytesColumnIO(BytesEncoder encoder, BytesDecoder decoder) {
+      this.encoder = encoder;
+      this.decoder = decoder;
+    }
+
+    @Override
+    public void writeBytes(byte[] bytes) {
+      this.encoder.writeBytes(bytes);
+    }
+
+    @Override
+    public byte[] readBytes() {
+      //fix this call, the arg is ignored
+      return decoder.readBytes(0);
+    }
+
+    @Override
+    public Encoder getEncoder() {
+      return encoder;
+    }
+
+    @Override
+    public Decoder getDecoder() {
+      return decoder;
+    }
+  }
+
   public static class DoubleColumnIO extends ColumnIO {
     private final Float64Encoder encoder;
     private final Float64Decoder decoder;
@@ -257,8 +342,18 @@ public class Columns {
     }
 
     @Override
+    public void writeDoubles(double[] values) {
+      encoder.writeDoubles(values);
+    }
+
+    @Override
     public double readDouble() {
       return decoder.nextDouble();
+    }
+
+    @Override
+    public double[] readDoubles(int num) {
+      return decoder.nextDoubles(num);
     }
 
     @Override
@@ -287,8 +382,18 @@ public class Columns {
     }
 
     @Override
+    public void writeFloats(float[] values) {
+      encoder.writeFloats(values);
+    }
+
+    @Override
     public float readFloat() {
       return decoder.nextFloat();
+    }
+
+    @Override
+    public float[] readFloats(int num) {
+      return decoder.nextFloats(num);
     }
 
     @Override
@@ -298,6 +403,86 @@ public class Columns {
 
     @Override
     public Decoder getDecoder() {
+      return decoder;
+    }
+  }
+
+  public static class CharColumnIO extends ColumnIO {
+    private final CharEncoder encoder;
+    private final CharDecoder decoder;
+
+    public CharColumnIO(CharEncoder encoder, CharDecoder decoder) {
+      this.encoder = encoder;
+      this.decoder = decoder;
+    }
+
+    @Override
+    public void writeChar(char value) {
+      encoder.writeChar(value);
+    }
+
+    @Override
+    public void writeChars(char[] values) {
+      encoder.writeChars(values);
+    }
+
+    @Override
+    public char readChar() {
+      return decoder.nextChar();
+    }
+
+    @Override
+    public char[] readChars(int num) {
+      return decoder.nextChars(num);
+    }
+
+    @Override
+    public CharEncoder getEncoder() {
+      return encoder;
+    }
+
+    @Override
+    public CharDecoder getDecoder() {
+      return decoder;
+    }
+  }
+
+  public static class ShortColumnIO extends ColumnIO {
+    private final ShortEncoder encoder;
+    private final ShortDecoder decoder;
+
+    public ShortColumnIO(ShortEncoder encoder, ShortDecoder decoder) {
+      this.encoder = encoder;
+      this.decoder = decoder;
+    }
+
+    @Override
+    public void writeShort(short value) {
+      encoder.writeShort(value);
+    }
+
+    @Override
+    public void writeShorts(short[] values) {
+      encoder.writeShorts(values);
+    }
+
+    @Override
+    public short readShort() {
+      return decoder.nextShort();
+    }
+
+    @Override
+    public short[] readShorts(int num) {
+      return decoder.nextShorts(num);
+    }
+
+    @Override
+    public ShortEncoder getEncoder() {
+      return encoder;
+    }
+
+    @Override
+    public ShortDecoder getDecoder() {
       return decoder;
     }
   }
@@ -317,8 +502,18 @@ public class Columns {
     }
 
     @Override
+    public void writeInts(int[] values) {
+      encoder.writeInts(values);
+    }
+
+    @Override
     public int readInt() {
       return decoder.nextInt();
+    }
+
+    @Override
+    public int[] readInts(int num) {
+      return decoder.nextInts(num);
     }
 
     @Override
@@ -347,8 +542,18 @@ public class Columns {
     }
 
     @Override
+    public void writeLongs(long[] values) {
+      encoder.writeLongs(values);
+    }
+
+    @Override
     public long readLong() {
       return decoder.nextLong();
+    }
+
+    @Override
+    public long[] readLongs(int num) {
+      return decoder.nextLongs(num);
     }
 
     @Override

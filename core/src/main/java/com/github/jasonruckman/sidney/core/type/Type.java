@@ -21,19 +21,31 @@ public enum Type {
   BOOLEAN {
     @Override
     public Encoding defaultEncoding() {
-      return Encoding.BITPACKED;
+      return Encoding.BITMAP;
+    }
+  },
+  INT16 {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
+    }
+  },
+  CHAR {
+    @Override
+    public Encoding defaultEncoding() {
+      return Encoding.PLAIN;
     }
   },
   INT32 {
     @Override
     public Encoding defaultEncoding() {
-      return Encoding.BITPACKED;
+      return Encoding.PLAIN;
     }
   },
   INT64 {
     @Override
     public Encoding defaultEncoding() {
-      return Encoding.GROUPVARINT;
+      return Encoding.PLAIN;
     }
   },
   FLOAT32 {
