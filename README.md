@@ -7,17 +7,13 @@ It's named after my dog Sid and is a side project I did on my own time.  It is v
 
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is much more flexible and efficient on smaller numbers of objects (not to mention being far more battletested).  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
-Sidney works on java beans, maps, arrays and collection types and primitives, as well as enums. Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
+Sidney works on java beans, maps, arrays and collection types and primitives, as well as enums and other types under (Joda / Guava types). Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
 
 Custom serializers are possible by implementing the [Serializer](https://github.com/JasonRuckman/sidney/blob/master/core/src/main/java/com/github/jasonruckman/sidney/core/serde/serializer/Serializer.java) class.
 
 ### When would I use it?
 
 Sidney is very new, and hasn't had nearly the amount of work put into it that something like the very excellent [Kryo](https://github.com/EsotericSoftware/kryo) library has and doesn't support nearly the wide variety of data types, however for certain data shapes, Sidney can make your data friendlier to a compressor and can reduce data size and improve speed.
-
-Please consider this pre-alpha quality code and don't use it in your production systems without some serious testing. Other serializers are far more battle-tested.
-
-My original use case was for serializing [Spark](https://github.com/apache/spark) RDDs, however Spark doesn't pass type tags to their serializer implementations so it's not possible to use Sidney in this capacity just yet.
 
 ### Algorithm Description
 
@@ -27,7 +23,7 @@ Sidney will descend depth first into your object tree, marking null / not null i
 
 Repetition counts are encoded back to back and bitpacked into a single column.  When the reader starts reading entities, it follows the same path as the writer, reading null markers and repetition counts when necessary.
 
-For map and collection types (and eventually generalized to any interface type) the actual concrete type is encoded as its own int column, it is RLE encoded and a map of the class name to that types int value is encoded into the page header.
+For interface types the actual concrete type is encoded as its own int column, it is RLE encoded and a map of the class name to that types int value is encoded into the page header.
 
 Given an example bean:
 ```
