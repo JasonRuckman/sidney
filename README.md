@@ -3,8 +3,6 @@ sidney
 
 Sidney is an generic java / scala serializer. 
 
-It's named after my dog Sid and is a side project I did on my own time.  It is very much still a work in progress. Please submit any bugs you have as issues and I'll try and get them taken care of ASAP.
-
 It is heavily influenced by the [Parquet](https://github.com/apache/incubator-parquet-mr) project.  It will decompose your POJOs into their fields and write those as columns. It's generally useful for serializing lots of objects rather than something like [Kryo](https://github.com/EsotericSoftware/kryo) which is much more flexible and efficient on smaller numbers of objects (not to mention being far more battletested).  Untyped maps / lists / arrays are not allowed, as Sidney needs to know types up front so it can generate column writers for leaves.
 
 Sidney works on java beans, maps, arrays and collection types and primitives, as well as enums and other types under (Joda / Guava types). Sidney ignores getters and setters and accesses fields directly, and will ignore transient fields.
